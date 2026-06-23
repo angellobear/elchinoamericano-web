@@ -39,12 +39,12 @@ function TikTokIcon() {
 export default function Footer() {
   return (
     <footer className="bg-navy-dark">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-white/8">
           {/* Brand + social */}
-          <div className="lg:col-span-1 flex flex-col gap-5">
-            <a href="/" className="flex items-center gap-3 w-fit">
-              <div className="w-9 h-9 bg-brand flex items-center justify-center rounded-sm shrink-0">
+          <div className="lg:col-span-1 flex flex-col gap-6">
+            <a href="/" className="flex items-center gap-3 w-fit group">
+              <div className="w-10 h-10 bg-brand flex items-center justify-center rounded-md shadow-lg shadow-brand/25 group-hover:shadow-brand/40 transition-shadow duration-200 shrink-0">
                 <span className="font-display font-bold text-white text-base">CA</span>
               </div>
               <div className="leading-none">
@@ -52,31 +52,31 @@ export default function Footer() {
                 <div className="font-display font-bold text-brand text-sm tracking-wide uppercase">Americano</div>
               </div>
             </a>
-            <p className="text-white/40 text-sm leading-relaxed">
-              Repuestos automotrices originales y alternos para vehículos chinos y americanos en Ecuador.
+            <p className="text-white/55 text-sm leading-relaxed">
+              Repuestos automotrices originales, OEM y alternos para vehículos chinos y americanos en Ecuador.
             </p>
-            {/* Social media */}
-            <div className="flex flex-col gap-2">
-              <span className="text-white/40 text-xs uppercase tracking-widest font-semibold">Redes sociales</span>
-              <div className="flex items-center gap-3">
+            {/* Social media — min 44×44px touch areas */}
+            <div className="flex flex-col gap-3">
+              <span className="text-white/45 text-xs uppercase tracking-widest font-semibold">Redes sociales</span>
+              <div className="flex items-center gap-1 -ml-2">
                 <a
                   href="#"
                   aria-label="Facebook"
-                  className="text-white/40 hover:text-white transition-colors duration-150"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/8 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 >
                   <FacebookIcon />
                 </a>
                 <a
                   href="#"
                   aria-label="Instagram"
-                  className="text-white/40 hover:text-white transition-colors duration-150"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/8 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 >
                   <InstagramIcon />
                 </a>
                 <a
                   href="#"
                   aria-label="TikTok"
-                  className="text-white/40 hover:text-white transition-colors duration-150"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/8 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                 >
                   <TikTokIcon />
                 </a>
@@ -85,7 +85,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="WhatsApp"
-                  className="text-wa/60 hover:text-wa transition-colors duration-150"
+                  className="w-10 h-10 flex items-center justify-center rounded-lg text-wa/60 hover:text-wa hover:bg-wa/10 transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
                 >
                   <MessageCircle size={18} />
                 </a>
@@ -95,15 +95,15 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-display font-bold text-white/55 text-xs uppercase tracking-widest mb-4">
+            <h4 className="font-display font-bold text-white/60 text-xs uppercase tracking-widest mb-5">
               Categorías
             </h4>
-            <ul className="flex flex-col gap-2">
+            <ul className="flex flex-col gap-1">
               {CATEGORIES.map((cat) => (
                 <li key={cat.id}>
                   <a
                     href={`/catalogo?categoria=${cat.id}`}
-                    className="text-white/45 hover:text-white text-sm transition-colors duration-150"
+                    className="inline-flex items-center py-1.5 text-white/55 hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                   >
                     {cat.label}
                   </a>
@@ -114,15 +114,15 @@ export default function Footer() {
 
           {/* Brands */}
           <div>
-            <h4 className="font-display font-bold text-white/55 text-xs uppercase tracking-widest mb-4">
+            <h4 className="font-display font-bold text-white/60 text-xs uppercase tracking-widest mb-5">
               Marcas
             </h4>
-            <ul className="grid grid-cols-2 gap-x-4 gap-y-2">
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-1">
               {ALL_BRANDS.map((brand) => (
                 <li key={brand.id}>
                   <a
                     href={`/catalogo?marca=${brand.id}`}
-                    className="text-white/45 hover:text-white text-sm transition-colors duration-150"
+                    className="inline-flex items-center py-1.5 text-white/55 hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                   >
                     {brand.name}
                   </a>
@@ -133,14 +133,14 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="font-display font-bold text-white/55 text-xs uppercase tracking-widest mb-4">
+            <h4 className="font-display font-bold text-white/60 text-xs uppercase tracking-widest mb-5">
               Contacto
             </h4>
             <ul className="flex flex-col gap-3">
               <li>
                 <a
                   href="tel:+593984878153"
-                  className="text-white/45 hover:text-white text-sm transition-colors duration-150"
+                  className="text-white/55 hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                 >
                   +593 984 878 153
                 </a>
@@ -150,7 +150,7 @@ export default function Footer() {
                   href="https://wa.me/593984878153"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-wa/12 hover:bg-wa/22 border border-wa/25 text-wa text-sm font-medium px-3 py-2 rounded-md transition-colors duration-150"
+                  className="inline-flex items-center gap-2 bg-wa/10 hover:bg-wa/20 border border-wa/25 hover:border-wa/40 text-wa text-sm font-semibold px-3 py-2 rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
                 >
                   <MessageCircle size={14} />
                   WhatsApp
@@ -159,21 +159,26 @@ export default function Footer() {
               <li>
                 <a
                   href="/contacto"
-                  className="text-white/45 hover:text-white text-sm transition-colors duration-150"
+                  className="text-white/55 hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                 >
                   Formulario de contacto
                 </a>
               </li>
-              <li className="text-white/35 text-xs">Quito, Ecuador</li>
+              <li className="text-white/45 text-xs leading-relaxed">
+                Quito, Ecuador
+                <br />
+                Lun – Sáb: 8:00 – 18:00
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-12 pt-6 border-t border-white/8 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-white/25 text-xs">
+        {/* Bottom bar */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-white/40 text-xs">
             &copy; {new Date().getFullYear()} El Chino Americano. Todos los derechos reservados.
           </p>
-          <p className="text-white/25 text-xs">Envíos seguros a nivel nacional</p>
+          <p className="text-white/40 text-xs">Envíos seguros a nivel nacional 🇪🇨</p>
         </div>
       </div>
     </footer>

@@ -113,7 +113,7 @@ export default function Hero() {
             <motion.div variants={item} className="flex flex-wrap gap-3 pt-1">
               <a
                 href="/catalogo"
-                className="group inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-sm px-6 py-3 rounded-md transition-all duration-150 active:scale-[0.97] shadow-lg shadow-brand/30"
+                className="group inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-all duration-150 active:scale-[0.97] shadow-lg shadow-brand/30 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
               >
                 Ver catálogo
                 <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-150" />
@@ -122,7 +122,7 @@ export default function Hero() {
                 href="https://wa.me/593984878153"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-white/25 hover:border-white/50 hover:bg-white/5 text-white font-bold text-sm px-6 py-3 rounded-md transition-all duration-150 active:scale-[0.97]"
+                className="inline-flex items-center gap-2 border border-white/25 hover:border-white/50 hover:bg-white/5 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-all duration-150 active:scale-[0.97] min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
               >
                 <MessageCircle size={16} />
                 WhatsApp
@@ -140,9 +140,9 @@ export default function Hero() {
             {BRAND_CHIPS.map((brand) => (
               <motion.a
                 key={brand.name}
-                href="/catalogo"
+                href={`/catalogo?marca=${brand.name.toLowerCase().replace(" ", "_")}`}
                 variants={chipItem}
-                className="flex flex-col items-center justify-center border border-white/12 hover:border-brand hover:bg-brand/5 rounded-xl p-4 cursor-pointer transition-all duration-200 gap-1 group"
+                className="flex flex-col items-center justify-center border border-white/12 hover:border-brand hover:bg-brand/5 rounded-xl p-4 min-h-[72px] transition-all duration-200 gap-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <span className="font-display font-bold text-white text-base leading-tight text-center group-hover:text-brand transition-colors duration-200">
                   {brand.name}

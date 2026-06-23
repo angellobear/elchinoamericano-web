@@ -38,8 +38,8 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="h-36 bg-slate-50 flex items-center justify-center">
         <Icon
           size={44}
-          className="text-slate-300 group-hover:text-navy/30 transition-colors duration-200"
-          strokeWidth={1.5}
+          className="text-slate-300 group-hover:text-navy/25 transition-colors duration-200"
+          strokeWidth={1.25}
         />
       </div>
 
