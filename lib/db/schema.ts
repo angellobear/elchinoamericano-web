@@ -59,8 +59,6 @@ export const vehicleModels = pgTable('vehicle_models', {
   fuelType:     varchar('fuel_type', { length: 20 }),
   transmission: varchar('transmission', { length: 20 }),
   bodyType:     varchar('body_type', { length: 30 }),
-  yearStart:    integer('year_start'),
-  yearEnd:      integer('year_end'),
   isActive:     boolean('is_active').default(true),
   createdAt:    timestamp('created_at').defaultNow(),
 })
@@ -164,6 +162,8 @@ export const productEquivalencies = pgTable('product_equivalencies', {
 export const productCompatibilities = pgTable('product_compatibilities', {
   productId:      integer('product_id').references(() => products.id, { onDelete: 'cascade' }),
   vehicleModelId: integer('vehicle_model_id').references(() => vehicleModels.id, { onDelete: 'cascade' }),
+  yearStart:      integer('year_start'),
+  yearEnd:        integer('year_end'),
   notes:          varchar('notes', { length: 255 }),
 }, t => ({ pk: primaryKey({ columns: [t.productId, t.vehicleModelId] }) }))
 

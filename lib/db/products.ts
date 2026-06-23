@@ -1,4 +1,3 @@
-import 'server-only'
 import { getDb } from './client'
 import {
   products, productImages, productSpecs, productAlternateCodes,
@@ -147,7 +146,7 @@ export async function setEquivalencies(productId: number, equivalentIds: number[
   )
 }
 
-export async function setCompatibilities(productId: number, entries: { vehicleModelId: number; notes?: string }[]) {
+export async function setCompatibilities(productId: number, entries: { vehicleModelId: number; yearStart?: number; yearEnd?: number; notes?: string }[]) {
   const db = await getDb()
   await db.delete(productCompatibilities).where(eq(productCompatibilities.productId, productId))
   if (entries.length) await db.insert(productCompatibilities).values(entries.map(e => ({ ...e, productId })))

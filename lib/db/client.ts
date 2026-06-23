@@ -1,4 +1,3 @@
-import 'server-only'
 
 // El tipo de `db` se basa en el schema PG (fuente de verdad para prod).
 // En local con MySQL, se castea — la estructura de columnas es idéntica.

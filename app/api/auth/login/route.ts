@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs'
 import { getUserByEmail } from '@/lib/db/users'
 import { getDb } from '@/lib/db/client'
 import { rolePermissions, modules, users } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, sql } from 'drizzle-orm'
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET)
 const expiresIn = process.env.JWT_EXPIRES_IN ?? '8h'
@@ -26,9 +26,9 @@ export async function POST(req: NextRequest) {
     .innerJoin(modules, eq(rolePermissions.moduleId, modules.id))
     .where(eq(rolePermissions.roleId, user.roleId!))
 
-  const permissions: Record<string, { canView: boolean; canCreate: boolean; canEdit: boolean; canDelete: boolean }> = {}
+  const permissions: Record<string, { can_view: boolean; can_create: boolean; can_edit: boolean; can_delete: boolean }> = {}
   for (const p of perms) {
-    permissions[p.key] = { canView: p.canView!, canCreate: p.canCreate!, canEdit: p.canEdit!, canDelete: p.canDelete! }
+    permissions[p.key] = { can_view: p.canView!, can_create: p.canCreate!, can_edit: p.canEdit!, can_delete: p.canDelete! }
   }
 
   const token = await new SignJWT({ userId: user.id, email: user.email, role: user.role?.name ?? '', permissions })
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     .setExpirationTime(expiresIn)
     .sign(secret)
 
-  await db.update(users).set({ lastLoginAt: new Date() }).where(eq(users.id, user.id))
+  await db.update(users).set({ lastLoginAt: sql`now()` }).where(eq(users.id, user.id))
 
   const res = NextResponse.json({ ok: true })
   res.cookies.set('admin_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', path: '/', maxAge: 60 * 60 * 8 })

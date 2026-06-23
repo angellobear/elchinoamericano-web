@@ -1,4 +1,3 @@
-import 'server-only'
 import { getDb } from './client'
 import { categories } from './schema'
 import { eq, asc } from 'drizzle-orm'

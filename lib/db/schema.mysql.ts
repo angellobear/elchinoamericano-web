@@ -61,8 +61,6 @@ export const vehicleModels = mysqlTable('vehicle_models', {
   fuelType:     varchar('fuel_type', { length: 20 }),
   transmission: varchar('transmission', { length: 20 }),
   bodyType:     varchar('body_type', { length: 30 }),
-  yearStart:    int('year_start'),
-  yearEnd:      int('year_end'),
   isActive:     boolean('is_active').default(true),
   createdAt:    timestamp('created_at').defaultNow(),
 })
@@ -166,6 +164,8 @@ export const productEquivalencies = mysqlTable('product_equivalencies', {
 export const productCompatibilities = mysqlTable('product_compatibilities', {
   productId:      int('product_id').references(() => products.id),
   vehicleModelId: int('vehicle_model_id').references(() => vehicleModels.id),
+  yearStart:      int('year_start'),
+  yearEnd:        int('year_end'),
   notes:          varchar('notes', { length: 255 }),
 }, t => ({ pk: primaryKey({ columns: [t.productId, t.vehicleModelId] }) }))
 

@@ -1,4 +1,3 @@
-import 'server-only'
 import { getDb } from './client'
 import { partBrands } from './schema'
 import { eq, asc } from 'drizzle-orm'

@@ -1,4 +1,3 @@
-import 'server-only'
 import { getDb } from './client'
 import { vehicleBrands, vehicleModels } from './schema'
 import { eq, asc } from 'drizzle-orm'

@@ -8,13 +8,13 @@ const routePermissions: Record<string, { module: string; action: keyof import('@
   '/admin/products':      { module: 'products',       action: 'can_view' },
   '/admin/categories':    { module: 'categories',     action: 'can_view' },
   '/admin/inventory':     { module: 'inventory',      action: 'can_view' },
-  '/admin/vehicle-brands':{ module: 'vehicle_brands', action: 'can_view' },
-  '/admin/part-brands':   { module: 'part_brands',    action: 'can_view' },
+  '/admin/vehicle-brands':{ module: 'vehicle-brands', action: 'can_view' },
+  '/admin/part-brands':   { module: 'part-brands',    action: 'can_view' },
   '/admin/suppliers':     { module: 'suppliers',      action: 'can_view' },
   '/admin/users':         { module: 'users',           action: 'can_view' },
 }
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl
 
   if (!pathname.startsWith('/admin')) return NextResponse.next()

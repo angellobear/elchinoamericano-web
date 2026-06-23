@@ -1,4 +1,3 @@
-import 'server-only'
 import { getDb } from './client'
 import { users } from './schema'
 import { eq, desc } from 'drizzle-orm'
