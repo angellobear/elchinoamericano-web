@@ -215,18 +215,24 @@ export default function CatalogoClient() {
     const priceRange = PRICE_RANGES.find((r) => r.id === filters.priceRange)!
     const q = search.toLowerCase()
     return products.filter((p) => {
+      const effectivePrice = p.offer_price ?? p.price
       const matchSearch =
         q === "" ||
-        p.name.toLowerCase().includes(q) ||
-        p.compatible.toLowerCase().includes(q) ||
-        p.brandProduct.toLowerCase().includes(q)
+        p.title.toLowerCase().includes(q) ||
+        (p.short_description ?? "").toLowerCase().includes(q) ||
+        (p.part_brand?.name ?? "").toLowerCase().includes(q) ||
+        p.code.toLowerCase().includes(q)
       const matchPrice =
-        p.price >= priceRange.min &&
-        (priceRange.max === Infinity ? true : p.price <= priceRange.max)
+        effectivePrice >= priceRange.min &&
+        (priceRange.max === Infinity ? true : effectivePrice <= priceRange.max)
       const matchCategory =
-        filters.categories.length === 0 || filters.categories.includes(p.category)
+        filters.categories.length === 0 || filters.categories.includes(p.category?.key ?? "")
+      // Match vehicle brand by checking all compatibilities
+      const vehicleBrandKeys = p.compatibilities?.map(c =>
+        c.model?.brand?.name.toLowerCase().replace(/ /g, "_") ?? ""
+      ) ?? []
       const matchBrand =
-        filters.carBrands.length === 0 || filters.carBrands.includes(p.carBrand)
+        filters.carBrands.length === 0 || filters.carBrands.some(b => vehicleBrandKeys.includes(b))
       return matchSearch && matchPrice && matchCategory && matchBrand
     })
   }, [search, filters])

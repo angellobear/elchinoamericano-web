@@ -59,7 +59,6 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
       ``,
       `¿Pueden ayudarme a conseguirlo?`,
     ]
-      .filter((l) => l !== false && l !== undefined)
       .join("\n")
 
     window.open(

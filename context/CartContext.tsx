@@ -10,6 +10,20 @@ type Action =
   | { type: "DECREMENT"; id: number }
   | { type: "CLEAR" }
 
+function toCartItem(product: Product): CartItem {
+  return {
+    id: product.id,
+    code: product.code,
+    title: product.title,
+    short_title: product.short_title,
+    price: product.price,
+    offer_price: product.offer_price,
+    slug: product.slug,
+    primary_image: product.images?.find(i => i.is_primary)?.url ?? product.images?.[0]?.url,
+    qty: 1,
+  }
+}
+
 function reducer(state: CartItem[], action: Action): CartItem[] {
   switch (action.type) {
     case "ADD": {
@@ -18,7 +32,7 @@ function reducer(state: CartItem[], action: Action): CartItem[] {
         return state.map((i) =>
           i.id === action.product.id ? { ...i, qty: i.qty + 1 } : i
         )
-      return [...state, { ...action.product, qty: 1 }]
+      return [...state, toCartItem(action.product)]
     }
     case "REMOVE":
       return state.filter((i) => i.id !== action.id)
@@ -47,14 +61,14 @@ const CartContext = createContext<{
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, dispatch] = useReducer(reducer, [])
-  const total = cart.reduce((s, i) => s + i.price * i.qty, 0)
+  const total = cart.reduce((s, i) => s + (i.offer_price ?? i.price) * i.qty, 0)
   const itemCount = cart.reduce((s, i) => s + i.qty, 0)
 
   function buildWhatsAppUrl() {
     const lines = cart
       .map(
         (i) =>
-          `- ${i.name} (${i.compatible}) x${i.qty} => $${(i.price * i.qty).toFixed(2)}`
+          `- ${i.title} x${i.qty} => $${((i.offer_price ?? i.price) * i.qty).toFixed(2)}`
       )
       .join("\n")
     const msg = `Hola! Quiero hacer el siguiente pedido:\n\n${lines}\n\nTotal estimado: $${total.toFixed(2)}\n\nPueden confirmarme disponibilidad y costo de envio?`

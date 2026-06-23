@@ -47,8 +47,8 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 <li key={item.id} className="py-4 flex flex-col gap-2">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 truncate">{item.name}</p>
-                      <p className="text-[11px] text-slate-400 mt-0.5 leading-tight line-clamp-2">{item.compatible}</p>
+                      <p className="text-sm font-semibold text-slate-900 truncate">{item.title}</p>
+                      <p className="text-[11px] text-slate-400 mt-0.5 font-mono">{item.code}</p>
                     </div>
                     <button
                       onClick={() => dispatch({ type: "REMOVE", id: item.id })}
@@ -78,7 +78,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                       </button>
                     </div>
                     <span className="font-display font-bold text-navy text-base">
-                      ${(item.price * item.qty).toFixed(2)}
+                      ${((item.offer_price ?? item.price) * item.qty).toFixed(2)}
                     </span>
                   </div>
                 </li>

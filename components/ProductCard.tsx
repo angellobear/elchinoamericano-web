@@ -1,22 +1,17 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { motion } from "framer-motion"
-import {
-  Droplets, CircleDot, Filter, Spline, Zap, ArrowUpDown,
-  Thermometer, Disc3, Settings2, Eye, Wind, Activity, Package,
-} from "lucide-react"
+import { Package } from "lucide-react"
 import { useCart } from "@/context/CartContext"
 import { Product } from "@/types"
 
-const ICON_MAP: Record<string, React.ElementType> = {
-  Droplets, CircleDot, Filter, Spline, Zap, ArrowUpDown,
-  Thermometer, Disc3, Settings2, Eye, Wind, Activity,
-}
-
 export default function ProductCard({ product }: { product: Product }) {
   const { dispatch } = useCart()
-  const Icon = ICON_MAP[product.icon] ?? Package
+  const primaryImage = product.images?.find(i => i.is_primary)?.url ?? product.images?.[0]?.url
+
+  const effectivePrice = product.offer_price ?? product.price
 
   return (
     <motion.article
@@ -29,34 +24,57 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       {/* Full-card link (behind everything) */}
       <Link
-        href={`/catalogo/${product.id}`}
+        href={`/catalogo/${product.slug}`}
         className="absolute inset-0 z-0"
-        aria-label={`Ver ${product.name}`}
+        aria-label={`Ver ${product.title}`}
       />
 
-      {/* Icon area */}
-      <div className="h-36 bg-slate-50 flex items-center justify-center">
-        <Icon
-          size={44}
-          className="text-slate-300 group-hover:text-navy/25 transition-colors duration-200"
-          strokeWidth={1.25}
-        />
+      {/* Image area */}
+      <div className="h-36 bg-slate-50 flex items-center justify-center relative overflow-hidden">
+        {primaryImage ? (
+          <Image
+            src={primaryImage}
+            alt={product.title}
+            fill
+            className="object-contain p-3"
+            sizes="(max-width: 640px) 50vw, 25vw"
+          />
+        ) : (
+          <Package
+            size={44}
+            className="text-slate-300 group-hover:text-navy/25 transition-colors duration-200"
+            strokeWidth={1.25}
+          />
+        )}
+        {/* Type badge */}
+        <span className={`absolute top-2 left-2 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ${
+          product.type === 'original' ? 'bg-navy text-white' :
+          product.type === 'oem'      ? 'bg-blue-600 text-white' :
+                                        'bg-brand text-white'
+        }`}>
+          {product.type === 'aftermarket' ? 'Alterno' : product.type}
+        </span>
       </div>
 
       {/* Info */}
       <div className="flex flex-col flex-1 p-4 gap-2.5">
         <div>
           <p className="text-[10px] text-slate-400 font-semibold mb-0.5 uppercase tracking-wide">
-            {product.brandProduct}
+            {product.part_brand?.name}
           </p>
-          <h3 className="text-sm font-semibold text-slate-900 leading-snug">{product.name}</h3>
-          <p className="text-[11px] text-slate-400 mt-1 leading-tight">{product.compatible}</p>
+          <h3 className="text-sm font-semibold text-slate-900 leading-snug">{product.title}</h3>
+          <p className="text-[11px] text-slate-400 mt-1 leading-tight">{product.short_description}</p>
         </div>
 
         <div className="mt-auto pt-3 flex items-end justify-between gap-2">
-          <span className="font-display font-bold text-navy text-xl leading-none relative z-10">
-            ${product.price.toFixed(2)}
-          </span>
+          <div className="flex flex-col">
+            {product.offer_price && (
+              <span className="text-xs text-slate-400 line-through leading-none">${product.price.toFixed(2)}</span>
+            )}
+            <span className={`font-display font-bold text-xl leading-none relative z-10 ${product.offer_price ? 'text-brand' : 'text-navy'}`}>
+              ${effectivePrice.toFixed(2)}
+            </span>
+          </div>
           <button
             onClick={(e) => {
               e.preventDefault()
