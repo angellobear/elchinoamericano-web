@@ -36,6 +36,7 @@ export interface Product {
   type: ProductType
   price: number
   icon: string
+  images?: string[]       // real photo URLs; if empty, fallback icon is shown
   description?: string
   specs?: ProductSpec[]
 }

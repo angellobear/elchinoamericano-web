@@ -156,47 +156,18 @@ export default async function ProductDetailPage({
     .filter((p) => p.category === product.category && p.id !== product.id)
     .slice(0, 4)
 
-  // Build carousel slides
-  const slides = [
-    {
-      bg: "bg-slate-100",
-      content: (
-        <div className="flex flex-col items-center gap-4">
-          <Icon size={80} className="text-navy/20" strokeWidth={1} />
-          <span className="text-xs text-slate-400 font-semibold uppercase tracking-widest">
-            Vista principal
-          </span>
-        </div>
-      ),
-    },
-    {
-      bg: "bg-slate-200",
-      content: (
-        <div className="flex flex-col items-center gap-3 px-8 text-center">
-          <Icon size={56} className="text-slate-500" strokeWidth={1.5} />
-          <span className="font-display font-bold text-slate-700 text-xl leading-tight">
-            {categoryName}
-          </span>
-          <span className="text-xs text-slate-500">{product.name}</span>
-        </div>
-      ),
-    },
-    {
-      bg: "bg-navy",
-      content: (
-        <div className="flex flex-col items-center gap-4 px-8 text-center">
-          <div className="w-12 h-0.5 bg-brand" />
-          <span className="font-display font-bold text-white text-2xl leading-tight">
-            {product.brandProduct}
-          </span>
-          <span className="text-white/60 text-xs uppercase tracking-widest">
-            {product.name}
-          </span>
-          <div className="w-12 h-0.5 bg-brand" />
-        </div>
-      ),
-    },
-  ]
+  // Fallback when no real product images exist
+  const carouselFallback = (
+    <div className="flex flex-col items-center gap-5 px-8 text-center">
+      <Icon size={88} className="text-navy/15" strokeWidth={0.75} />
+      <div className="flex flex-col items-center gap-1">
+        <span className="font-display font-bold text-slate-400 text-lg leading-tight">
+          {product.brandProduct}
+        </span>
+        <span className="text-xs text-slate-400">{categoryName}</span>
+      </div>
+    </div>
+  )
 
   const whatsappMsg = encodeURIComponent(
     `Hola! Me interesa el repuesto: ${product.name} ${product.brandProduct} (ID: ${product.id}). Compatible con ${product.compatible}. ¿Está disponible? ¿Cuánto es el envío?`
@@ -239,9 +210,13 @@ export default async function ProductDetailPage({
         {/* Product hero: carousel + info */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-            {/* Carousel */}
+            {/* Carousel — real images if available, fallback icon otherwise */}
             <div className="w-full max-w-md mx-auto lg:max-w-none">
-              <ProductCarousel slides={slides} />
+              <ProductCarousel
+                images={product.images}
+                fallback={carouselFallback}
+                productName={`${product.name} ${product.brandProduct}`}
+              />
             </div>
 
             {/* Info panel */}

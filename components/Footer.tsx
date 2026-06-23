@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react"
+// MessageCircle is still used for the WhatsApp social icon
 import { chineseBrands, americanBrands } from "@/data/brands"
 
 const CATEGORIES = [
@@ -147,17 +148,6 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://wa.me/593984878153"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 bg-wa/10 hover:bg-wa/20 border border-wa/25 hover:border-wa/40 text-wa text-sm font-semibold px-3 py-2 rounded-md transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
-                >
-                  <MessageCircle size={14} />
-                  WhatsApp
-                </a>
-              </li>
-              <li>
-                <a
                   href="/contacto"
                   className="text-white/55 hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                 >
@@ -165,9 +155,11 @@ export default function Footer() {
                 </a>
               </li>
               <li className="text-white/45 text-xs leading-relaxed">
-                Quito, Ecuador
+                Santo Domingo, Ecuador
                 <br />
-                Lun – Sáb: 8:00 – 18:00
+                Lun – Vie: 8:30 – 17:30
+                <br />
+                Sáb: 9:00 – 13:00
               </li>
             </ul>
           </div>

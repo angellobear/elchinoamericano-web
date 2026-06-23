@@ -1,9 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { MessageCircle, Phone, MapPin, Clock, Send, CheckCircle } from "lucide-react"
+import { Mail, Phone, MapPin, Clock, Send, CheckCircle, MessageCircle } from "lucide-react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
+
+// ← Cambia este correo por el de la empresa
+const BUSINESS_EMAIL = "pedidos@elchinoamericano.com"
 
 function FacebookIcon() {
   return (
@@ -29,38 +32,10 @@ function TikTokIcon() {
   )
 }
 
-const CONTACT_INFO = [
-  {
-    icon: Phone,
-    label: "Teléfono",
-    value: "+593 984 878 153",
-    href: "tel:+593984878153",
-  },
-  {
-    icon: MessageCircle,
-    label: "WhatsApp",
-    value: "Escríbenos ahora",
-    href: "https://wa.me/593984878153",
-    external: true,
-  },
-  {
-    icon: MapPin,
-    label: "Ubicación",
-    value: "Quito, Ecuador",
-    href: "#mapa",
-  },
-  {
-    icon: Clock,
-    label: "Horario",
-    value: "Lun - Sáb: 8:00 - 18:00",
-    href: undefined,
-  },
-]
-
 const SOCIAL_LINKS = [
   { label: "Facebook", href: "#", Icon: FacebookIcon, color: "text-[#1877F2]" },
   { label: "Instagram", href: "#", Icon: InstagramIcon, color: "text-[#E4405F]" },
-  { label: "TikTok", href: "#", Icon: TikTokIcon, color: "text-slate-900" },
+  { label: "TikTok", href: "#", Icon: TikTokIcon, color: "text-slate-800" },
   { label: "WhatsApp", href: "https://wa.me/593984878153", Icon: MessageCircle, color: "text-wa", external: true },
 ]
 
@@ -82,30 +57,28 @@ export default function ContactoPage() {
   })
   const [sent, setSent] = useState(false)
 
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const parts = [
-      `Hola! Me llamo ${form.nombre}.`,
-      form.telefono && `Mi numero es: ${form.telefono}.`,
-      form.vehiculo && `Vehiculo: ${form.vehiculo}.`,
-      form.repuesto && `Necesito el repuesto: ${form.repuesto}.`,
-      form.mensaje && `Nota adicional: ${form.mensaje}`,
+
+    const subject = `Consulta de repuesto — ${form.repuesto} | ${form.nombre}`
+    const body = [
+      `Nombre: ${form.nombre}`,
+      form.telefono ? `Teléfono / WhatsApp: ${form.telefono}` : null,
+      form.vehiculo ? `Modelo del vehículo: ${form.vehiculo}` : null,
+      `Repuesto necesario: ${form.repuesto}`,
+      form.mensaje ? `\nMensaje adicional:\n${form.mensaje}` : null,
+      `\n---\nEnviado desde el formulario de contacto de elchinoamericano.com`,
     ]
       .filter(Boolean)
-      .join(" ")
+      .join("\n")
 
-    window.open(
-      `https://wa.me/593984878153?text=${encodeURIComponent(parts)}`,
-      "_blank"
-    )
+    window.location.href = `mailto:${BUSINESS_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     setSent(true)
-    setTimeout(() => setSent(false), 4000)
+    setTimeout(() => setSent(false), 5000)
   }
 
   const isValid = form.nombre.trim() && form.repuesto.trim()
@@ -117,9 +90,10 @@ export default function ContactoPage() {
         {/* Page header */}
         <div className="bg-navy">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-            <h1 className="font-display font-bold text-white text-4xl lg:text-5xl">Contacto</h1>
-            <p className="text-white/55 mt-2 text-base max-w-lg">
-              Escríbenos por WhatsApp, llámanos, o usa el formulario. Respondemos en menos de 24 horas.
+            <h1 className="font-display font-bold text-white text-4xl lg:text-5xl leading-none">Contacto</h1>
+            <p className="text-white/55 mt-3 text-base max-w-lg">
+              Escríbenos por correo, llámanos o visítanos en Santo Domingo de los Tsáchilas.
+              Respondemos en menos de 24 horas en días laborables.
             </p>
           </div>
         </div>
@@ -129,19 +103,26 @@ export default function ContactoPage() {
 
             {/* Left: form */}
             <div className="order-2 lg:order-1">
-              <h2 className="font-display font-bold text-navy text-2xl mb-6">
-                Envía tu consulta
+              <h2 className="font-display font-bold text-navy text-2xl mb-2">
+                Envía tu consulta por correo
               </h2>
+              <p className="text-slate-500 text-sm mb-7">
+                Al enviar, se abrirá tu cliente de correo con el mensaje listo para mandarnos a{" "}
+                <span className="font-semibold text-navy">{BUSINESS_EMAIL}</span>.
+              </p>
 
               {sent ? (
-                <div className="flex flex-col items-center gap-4 py-16 text-center">
-                  <CheckCircle size={48} className="text-wa" />
+                <div className="flex flex-col items-center gap-4 py-14 text-center bg-slate-50 rounded-2xl">
+                  <CheckCircle size={48} className="text-emerald-600" />
                   <div>
                     <p className="font-semibold text-slate-800 text-lg">
-                      Te redirigimos a WhatsApp
+                      ¡Tu cliente de correo se abrió!
                     </p>
-                    <p className="text-slate-500 text-sm mt-1">
-                      Si no se abrió, escríbenos directamente al +593 984 878 153
+                    <p className="text-slate-500 text-sm mt-1 max-w-xs">
+                      Si no se abrió automáticamente, escríbenos directamente a{" "}
+                      <a href={`mailto:${BUSINESS_EMAIL}`} className="text-navy font-semibold underline">
+                        {BUSINESS_EMAIL}
+                      </a>
                     </p>
                   </div>
                 </div>
@@ -159,7 +140,7 @@ export default function ContactoPage() {
                         required
                         value={form.nombre}
                         onChange={handleChange}
-                        placeholder="Tu nombre"
+                        placeholder="Tu nombre completo"
                         className="px-3 py-2.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors"
                       />
                     </div>
@@ -220,23 +201,30 @@ export default function ContactoPage() {
                       rows={4}
                       value={form.mensaje}
                       onChange={handleChange}
-                      placeholder="Algún detalle adicional, urgencia, o pregunta..."
+                      placeholder="Detalles adicionales, urgencia, o cualquier pregunta..."
                       className="px-3 py-2.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors resize-none"
                     />
                   </div>
 
-                  <button
-                    type="submit"
-                    disabled={!isValid}
-                    className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm px-6 py-3.5 rounded-md transition-colors duration-150 active:scale-[0.98] mt-1"
-                  >
-                    <Send size={16} />
-                    Enviar por WhatsApp
-                  </button>
-
-                  <p className="text-xs text-slate-400">
-                    Al enviar, se abrirá WhatsApp con tu mensaje listo para enviarnos.
-                  </p>
+                  <div className="flex flex-col sm:flex-row gap-3 mt-1">
+                    <button
+                      type="submit"
+                      disabled={!isValid}
+                      className="inline-flex items-center justify-center gap-2 bg-navy hover:bg-navy/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm px-6 py-3.5 rounded-md transition-colors duration-150 active:scale-[0.98] min-h-[48px]"
+                    >
+                      <Send size={16} />
+                      Enviar por correo
+                    </button>
+                    <a
+                      href={`https://wa.me/593984878153?text=${encodeURIComponent(`Hola! Soy ${form.nombre || "un cliente"}. Necesito el repuesto: ${form.repuesto || "..."} para mi vehículo ${form.vehiculo || ""}.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-colors duration-150 active:scale-[0.98] min-h-[48px]"
+                    >
+                      <MessageCircle size={16} />
+                      WhatsApp
+                    </a>
+                  </div>
                 </form>
               )}
             </div>
@@ -244,44 +232,62 @@ export default function ContactoPage() {
             {/* Right: contact info + map + social */}
             <div className="order-1 lg:order-2 flex flex-col gap-8">
               {/* Contact info */}
-              <div className="bg-slate-50 rounded-xl p-6 flex flex-col gap-5">
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 flex flex-col gap-5">
                 <h2 className="font-display font-bold text-navy text-xl">
                   Información de contacto
                 </h2>
                 <ul className="flex flex-col gap-4">
-                  {CONTACT_INFO.map(({ icon: Icon, label, value, href, external }) => (
-                    <li key={label} className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-navy/8 rounded-lg flex items-center justify-center shrink-0">
-                        <Icon size={18} className="text-navy" strokeWidth={1.5} />
-                      </div>
-                      <div>
-                        <p className="text-[11px] text-slate-400 font-semibold uppercase tracking-wide">
-                          {label}
-                        </p>
-                        {href ? (
-                          <a
-                            href={href}
-                            target={external ? "_blank" : undefined}
-                            rel={external ? "noopener noreferrer" : undefined}
-                            className="text-sm font-medium text-navy hover:text-brand transition-colors"
-                          >
-                            {value}
-                          </a>
-                        ) : (
-                          <p className="text-sm font-medium text-slate-700">{value}</p>
-                        )}
-                      </div>
-                    </li>
-                  ))}
+                  <li className="flex items-start gap-3">
+                    <div className="w-9 h-9 bg-navy/8 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                      <Phone size={16} className="text-navy" strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide mb-0.5">Teléfono</p>
+                      <a href="tel:+593984878153" className="text-sm font-semibold text-navy hover:text-brand transition-colors">
+                        +593 984 878 153
+                      </a>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-9 h-9 bg-navy/8 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                      <Mail size={16} className="text-navy" strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide mb-0.5">Correo</p>
+                      <a href={`mailto:${BUSINESS_EMAIL}`} className="text-sm font-semibold text-navy hover:text-brand transition-colors break-all">
+                        {BUSINESS_EMAIL}
+                      </a>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-9 h-9 bg-navy/8 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                      <MapPin size={16} className="text-navy" strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide mb-0.5">Ubicación</p>
+                      <p className="text-sm font-semibold text-slate-700">
+                        Santo Domingo de los Tsáchilas, Ecuador
+                      </p>
+                    </div>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-9 h-9 bg-navy/8 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
+                      <Clock size={16} className="text-navy" strokeWidth={1.75} />
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-slate-400 font-bold uppercase tracking-wide mb-0.5">Horario de atención</p>
+                      <p className="text-sm font-semibold text-slate-700">Lun – Vie: 8:30 – 17:30</p>
+                      <p className="text-sm text-slate-500">Sábados: 9:00 – 13:00</p>
+                      <p className="text-xs text-slate-400 mt-0.5">Domingos cerrado</p>
+                    </div>
+                  </li>
                 </ul>
               </div>
 
               {/* Social media */}
               <div className="flex flex-col gap-3">
-                <h3 className="font-display font-bold text-navy text-lg">
-                  Redes sociales
-                </h3>
-                <div className="flex items-center gap-4">
+                <h3 className="font-display font-bold text-navy text-lg">Redes sociales</h3>
+                <div className="flex items-center gap-2 -ml-2">
                   {SOCIAL_LINKS.map(({ label, href, Icon, color, external }) => (
                     <a
                       key={label}
@@ -289,36 +295,39 @@ export default function ContactoPage() {
                       aria-label={label}
                       target={external ? "_blank" : undefined}
                       rel={external ? "noopener noreferrer" : undefined}
-                      className={`${color} hover:opacity-70 transition-opacity duration-150`}
+                      className={`w-10 h-10 flex items-center justify-center rounded-lg hover:bg-slate-100 transition-all duration-150 ${color}`}
                     >
                       <Icon size={20} />
                     </a>
                   ))}
                 </div>
-                <p className="text-xs text-slate-400">
-                  Síguenos para ver novedades, repuestos nuevos y promociones.
-                </p>
               </div>
 
               {/* Map */}
               <div id="mapa" className="flex flex-col gap-3">
-                <h3 className="font-display font-bold text-navy text-lg">
-                  Ubicación
-                </h3>
-                <div className="rounded-xl overflow-hidden border border-slate-200 shadow-sm aspect-[4/3]">
+                <h3 className="font-display font-bold text-navy text-lg">Ubicación</h3>
+                <div className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm aspect-[4/3]">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15971.21637063374!2d-78.52495!3d-0.22985!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d59a4002427c9f%3A0x44b991e158ef5572!2sQuito%2C%20Ecuador!5e0!3m2!1ses!2sec!4v1750000000000!5m2!1ses!2sec"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63920.12895556985!2d-79.20380!3d-0.24986!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d584d74820e3f3%3A0x1d25fcb87a7e06e!2sSanto%20Domingo%20de%20los%20Ts%C3%A1chilas%2C%20Ecuador!5e0!3m2!1ses!2sec!4v1750620000000!5m2!1ses!2sec"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
-                    title="Ubicación El Chino Americano — Quito, Ecuador"
+                    title="Ubicación El Chino Americano — Santo Domingo de los Tsáchilas, Ecuador"
                   />
                 </div>
                 <p className="text-xs text-slate-400">
-                  Quito, Ecuador. Contáctanos para coordinar visita o entrega.
+                  Santo Domingo de los Tsáchilas, Ecuador.
+                  <a
+                    href="https://share.google/oyOGKZdm6gVo680qE"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-navy font-medium hover:text-brand ml-1 transition-colors"
+                  >
+                    Ver en Google Maps →
+                  </a>
                 </p>
               </div>
             </div>
