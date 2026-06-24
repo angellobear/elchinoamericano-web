@@ -17,10 +17,10 @@ export async function createCategory(data: typeof categories.$inferInsert) {
 
 export async function updateCategory(id: number, data: Partial<typeof categories.$inferInsert>) {
   const db = await getDb()
-  await db.update(categories).set(data).where(eq(categories.id, id))
+  await db.update(categories).set({ ...data, updatedAt: new Date() }).where(eq(categories.id, id))
 }
 
 export async function deleteCategory(id: number) {
   const db = await getDb()
-  await db.update(categories).set({ isActive: false }).where(eq(categories.id, id))
+  await db.update(categories).set({ isActive: false, updatedAt: new Date() }).where(eq(categories.id, id))
 }

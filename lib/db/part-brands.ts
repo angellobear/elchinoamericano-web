@@ -17,5 +17,10 @@ export async function createPartBrand(data: typeof partBrands.$inferInsert) {
 
 export async function updatePartBrand(id: number, data: Partial<typeof partBrands.$inferInsert>) {
   const db = await getDb()
-  await db.update(partBrands).set(data).where(eq(partBrands.id, id))
+  await db.update(partBrands).set({ ...data, updatedAt: new Date() }).where(eq(partBrands.id, id))
+}
+
+export async function deletePartBrand(id: number) {
+  const db = await getDb()
+  await db.update(partBrands).set({ isActive: false, updatedAt: new Date() }).where(eq(partBrands.id, id))
 }

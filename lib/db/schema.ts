@@ -42,13 +42,15 @@ export const users = pgTable('users', {
 // ─── VEHICLES ────────────────────────────────────────────────────────────────
 
 export const vehicleBrands = pgTable('vehicle_brands', {
-  id:        serial('id').primaryKey(),
-  name:      varchar('name', { length: 100 }).notNull(),
-  origin:    varchar('origin', { length: 20 }).notNull(),
-  logoUrl:   varchar('logo_url', { length: 500 }),
-  sortOrder: integer('sort_order').default(0),
-  isActive:  boolean('is_active').default(true),
-  createdAt: timestamp('created_at').defaultNow(),
+  id:            serial('id').primaryKey(),
+  name:          varchar('name', { length: 100 }).notNull(),
+  origin:        varchar('origin', { length: 20 }).notNull(),
+  logoUrl:       varchar('logo_url', { length: 500 }),
+  logoPublicId:  varchar('logo_public_id', { length: 200 }),
+  sortOrder:     integer('sort_order').default(0),
+  isActive:      boolean('is_active').default(true),
+  createdAt:     timestamp('created_at').defaultNow(),
+  updatedAt:     timestamp('updated_at').defaultNow(),
 })
 
 export const vehicleModels = pgTable('vehicle_models', {
@@ -61,29 +63,34 @@ export const vehicleModels = pgTable('vehicle_models', {
   bodyType:     varchar('body_type', { length: 30 }),
   isActive:     boolean('is_active').default(true),
   createdAt:    timestamp('created_at').defaultNow(),
+  updatedAt:    timestamp('updated_at').defaultNow(),
 })
 
 // ─── CATALOG ─────────────────────────────────────────────────────────────────
 
 export const categories = pgTable('categories', {
-  id:          serial('id').primaryKey(),
-  parentId:    integer('parent_id'),
-  key:         varchar('key', { length: 50 }).unique().notNull(),
-  name:        varchar('name', { length: 100 }).notNull(),
-  description: text('description'),
-  imageUrl:    varchar('image_url', { length: 500 }),
-  sortOrder:   integer('sort_order').default(0),
-  isActive:    boolean('is_active').default(true),
-  createdAt:   timestamp('created_at').defaultNow(),
+  id:             serial('id').primaryKey(),
+  parentId:       integer('parent_id'),
+  key:            varchar('key', { length: 50 }).unique().notNull(),
+  name:           varchar('name', { length: 100 }).notNull(),
+  description:    text('description'),
+  imageUrl:       varchar('image_url', { length: 500 }),
+  imagePublicId:  varchar('image_public_id', { length: 200 }),
+  sortOrder:      integer('sort_order').default(0),
+  isActive:       boolean('is_active').default(true),
+  createdAt:      timestamp('created_at').defaultNow(),
+  updatedAt:      timestamp('updated_at').defaultNow(),
 })
 
 export const partBrands = pgTable('part_brands', {
   id:            serial('id').primaryKey(),
   name:          varchar('name', { length: 100 }).notNull(),
   logoUrl:       varchar('logo_url', { length: 500 }),
+  logoPublicId:  varchar('logo_public_id', { length: 200 }),
   originCountry: varchar('origin_country', { length: 100 }),
   isActive:      boolean('is_active').default(true),
   createdAt:     timestamp('created_at').defaultNow(),
+  updatedAt:     timestamp('updated_at').defaultNow(),
 })
 
 export const suppliers = pgTable('suppliers', {
@@ -95,6 +102,7 @@ export const suppliers = pgTable('suppliers', {
   address:     text('address'),
   isActive:    boolean('is_active').default(true),
   createdAt:   timestamp('created_at').defaultNow(),
+  updatedAt:   timestamp('updated_at').defaultNow(),
 })
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────

@@ -1,17 +1,39 @@
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getPartBrands, updatePartBrand } from '@/lib/db/part-brands'
+import { handleImageReplace } from '@/lib/cloudinary'
+import { logger } from '@/lib/logger'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { SubmitButton } from '@/app/admin/_components/SubmitButton'
+import { ImageUploadField } from '@/app/admin/_components/ImageUploadField'
 
 async function save(id: number, formData: FormData) {
   'use server'
-  const name          = String(formData.get('name')).trim()
-  const originCountry = formData.get('originCountry') ? String(formData.get('originCountry')) : undefined
-  const isActive      = formData.get('isActive') === 'on'
-  await updatePartBrand(id, { name, originCountry, isActive })
-  revalidatePath('/admin/part-brands')
-  redirect('/admin/part-brands')
+  try {
+    const name           = String(formData.get('name')).trim()
+    const originCountry  = (formData.get('originCountry') as string)?.trim() || undefined
+    const isActive       = formData.get('isActive') === 'on'
+    const file           = formData.get('logo') as File | null
+    const currentUrl     = formData.get('logo_current_url') as string
+    const currentPublicId = formData.get('logo_public_id') as string
+    const removed        = formData.get('logo_removed') === '1'
+
+    const { url: logoUrl, publicId: logoPublicId } = await handleImageReplace(
+      file && file.size > 0 ? file : null,
+      removed,
+      currentPublicId || null,
+      currentUrl || null,
+    )
+
+    await updatePartBrand(id, { name, originCountry, isActive, logoUrl: logoUrl ?? undefined, logoPublicId: logoPublicId ?? undefined })
+    logger.info({ id, name }, 'Part brand updated')
+    revalidatePath('/admin/part-brands')
+  } catch (err) {
+    logger.error({ err }, 'Error updating part brand')
+    redirect('/admin/part-brands?error=' + encodeURIComponent('Error al guardar marca'))
+  }
+  redirect('/admin/part-brands?success=' + encodeURIComponent('Marca guardada'))
 }
 
 export default async function EditPartBrandPage({ params }: { params: Promise<{ id: string }> }) {
@@ -23,7 +45,7 @@ export default async function EditPartBrandPage({ params }: { params: Promise<{ 
   const saveWithId = save.bind(null, brand.id)
 
   return (
-    <div className="p-8 max-w-lg">
+    <div className="p-8 max-w-xl">
       <div className="mb-6">
         <Link href="/admin/part-brands" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0d1f3c] transition-colors mb-3">
           <ArrowLeft size={14} />
@@ -57,6 +79,13 @@ export default async function EditPartBrandPage({ params }: { params: Promise<{ 
             />
           </div>
 
+          <ImageUploadField
+            name="logo"
+            label="Logo de la marca"
+            currentUrl={brand.logoUrl}
+            currentPublicId={(brand as { logoPublicId?: string | null }).logoPublicId}
+          />
+
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -69,12 +98,9 @@ export default async function EditPartBrandPage({ params }: { params: Promise<{ 
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              className="px-5 py-2 bg-[#0d1f3c] text-white text-sm rounded-lg hover:bg-[#0a1628] transition-colors font-medium"
-            >
+            <SubmitButton className="px-5 py-2 bg-[#0d1f3c] text-white text-sm rounded-lg hover:bg-[#0a1628] transition-colors font-medium disabled:opacity-60">
               Guardar cambios
-            </button>
+            </SubmitButton>
             <Link
               href="/admin/part-brands"
               className="px-5 py-2 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50 transition-colors"

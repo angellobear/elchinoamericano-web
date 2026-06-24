@@ -14,7 +14,7 @@ export async function getVehicleBrandWithModels(brandId: number) {
   const db = await getDb()
   return db.query.vehicleBrands.findFirst({
     where: eq(vehicleBrands.id, brandId),
-    with: { models: true },
+    with: { models: { orderBy: asc(vehicleModels.name) } },
   })
 }
 
@@ -37,7 +37,12 @@ export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert
 
 export async function updateVehicleBrand(id: number, data: Partial<typeof vehicleBrands.$inferInsert>) {
   const db = await getDb()
-  await db.update(vehicleBrands).set(data).where(eq(vehicleBrands.id, id))
+  await db.update(vehicleBrands).set({ ...data, updatedAt: new Date() }).where(eq(vehicleBrands.id, id))
+}
+
+export async function deleteVehicleBrand(id: number) {
+  const db = await getDb()
+  await db.update(vehicleBrands).set({ isActive: false, updatedAt: new Date() }).where(eq(vehicleBrands.id, id))
 }
 
 export async function createVehicleModel(data: typeof vehicleModels.$inferInsert) {
@@ -48,19 +53,18 @@ export async function createVehicleModel(data: typeof vehicleModels.$inferInsert
 
 export async function updateVehicleModel(id: number, data: Partial<typeof vehicleModels.$inferInsert>) {
   const db = await getDb()
-  await db.update(vehicleModels).set(data).where(eq(vehicleModels.id, id))
+  await db.update(vehicleModels).set({ ...data, updatedAt: new Date() }).where(eq(vehicleModels.id, id))
 }
 
 export async function deleteVehicleModel(id: number) {
   const db = await getDb()
-  await db.update(vehicleModels).set({ isActive: false }).where(eq(vehicleModels.id, id))
+  await db.update(vehicleModels).set({ isActive: false, updatedAt: new Date() }).where(eq(vehicleModels.id, id))
 }
 
 export async function getVehicleBrandsWithModels() {
   const db = await getDb()
   return db.query.vehicleBrands.findMany({
     orderBy: asc(vehicleBrands.sortOrder),
-    // fetch only id to count — avoids loading all model data
     with: { models: { columns: { id: true } } },
   })
 }

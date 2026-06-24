@@ -1,18 +1,40 @@
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getCategories, updateCategory } from '@/lib/db/categories'
+import { handleImageReplace } from '@/lib/cloudinary'
+import { logger } from '@/lib/logger'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
+import { SubmitButton } from '@/app/admin/_components/SubmitButton'
+import { ImageUploadField } from '@/app/admin/_components/ImageUploadField'
 
 async function save(id: number, formData: FormData) {
   'use server'
-  const name        = String(formData.get('name')).trim()
-  const description = formData.get('description') ? String(formData.get('description')) : undefined
-  const sortOrder   = Number(formData.get('sortOrder')) || 0
-  const isActive    = formData.get('isActive') === 'on'
-  await updateCategory(id, { name, description, sortOrder, isActive })
-  revalidatePath('/admin/categories')
-  redirect('/admin/categories')
+  try {
+    const name           = String(formData.get('name')).trim()
+    const description    = (formData.get('description') as string)?.trim() || undefined
+    const sortOrder      = Number(formData.get('sortOrder')) || 0
+    const isActive       = formData.get('isActive') === 'on'
+    const file           = formData.get('image') as File | null
+    const currentUrl     = formData.get('image_current_url') as string
+    const currentPublicId = formData.get('image_public_id') as string
+    const removed        = formData.get('image_removed') === '1'
+
+    const { url: imageUrl, publicId: imagePublicId } = await handleImageReplace(
+      file && file.size > 0 ? file : null,
+      removed,
+      currentPublicId || null,
+      currentUrl || null,
+    )
+
+    await updateCategory(id, { name, description, sortOrder, isActive, imageUrl: imageUrl ?? undefined, imagePublicId: imagePublicId ?? undefined })
+    logger.info({ id, name }, 'Category updated')
+    revalidatePath('/admin/categories')
+  } catch (err) {
+    logger.error({ err }, 'Error updating category')
+    redirect('/admin/categories?error=' + encodeURIComponent('Error al guardar categoría'))
+  }
+  redirect('/admin/categories?success=' + encodeURIComponent('Categoría guardada'))
 }
 
 export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
@@ -24,7 +46,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
   const saveWithId = save.bind(null, cat.id)
 
   return (
-    <div className="p-8 max-w-lg">
+    <div className="p-8 max-w-xl">
       <div className="mb-6">
         <Link href="/admin/categories" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0d1f3c] transition-colors mb-3">
           <ArrowLeft size={14} />
@@ -69,6 +91,13 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
             />
           </div>
 
+          <ImageUploadField
+            name="image"
+            label="Imagen de categoría"
+            currentUrl={cat.imageUrl}
+            currentPublicId={(cat as { imagePublicId?: string | null }).imagePublicId}
+          />
+
           <div className="flex items-center gap-3">
             <input
               type="checkbox"
@@ -81,12 +110,9 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
           </div>
 
           <div className="flex gap-3 pt-2">
-            <button
-              type="submit"
-              className="px-5 py-2 bg-[#0d1f3c] text-white text-sm rounded-lg hover:bg-[#0a1628] transition-colors font-medium"
-            >
+            <SubmitButton className="px-5 py-2 bg-[#0d1f3c] text-white text-sm rounded-lg hover:bg-[#0a1628] transition-colors font-medium disabled:opacity-60">
               Guardar cambios
-            </button>
+            </SubmitButton>
             <Link
               href="/admin/categories"
               className="px-5 py-2 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50 transition-colors"

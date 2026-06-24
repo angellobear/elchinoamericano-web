@@ -13,7 +13,7 @@ export default async function CategoriesPage() {
   const categories = await getCategories(true)
 
   return (
-    <div className="p-8 max-w-3xl">
+    <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-[#0d1f3c]">Categorías</h1>

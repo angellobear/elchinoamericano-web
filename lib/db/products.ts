@@ -59,7 +59,10 @@ export async function getProductById(id: number) {
   const db = await getDb()
   const row = await db.query.products.findFirst({
     where: eq(products.id, id),
-    with:  { category: true, partBrand: true, images: true, specs: true, alternateCodes: true },
+    with:  {
+      category: true, partBrand: true, images: true, specs: true, alternateCodes: true,
+      compatibilities: { with: { vehicleModel: { with: { brand: true } } } },
+    },
   })
   if (!row) return null
   return { ...row, offerPrice: offerPrice(row.price, row.discountPct, row.discountUntil) }
@@ -156,6 +159,15 @@ export async function setSpecs(productId: number, specs: { label: string; value:
   const db = await getDb()
   await db.delete(productSpecs).where(eq(productSpecs.productId, productId))
   if (specs.length) await db.insert(productSpecs).values(specs.map((s, i) => ({ ...s, productId, sortOrder: s.sortOrder ?? i })))
+}
+
+export async function setImages(
+  productId: number,
+  images: { url: string; cloudinaryPublicId?: string | null; altText?: string; isPrimary: boolean; sortOrder: number }[]
+) {
+  const db = await getDb()
+  await db.delete(productImages).where(eq(productImages.productId, productId))
+  if (images.length) await db.insert(productImages).values(images.map(img => ({ ...img, productId })))
 }
 
 // ─── Stock ───────────────────────────────────────────────────────────────────

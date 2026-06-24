@@ -44,13 +44,15 @@ export const users = mysqlTable('users', {
 // ─── VEHICLES ────────────────────────────────────────────────────────────────
 
 export const vehicleBrands = mysqlTable('vehicle_brands', {
-  id:        int('id').autoincrement().primaryKey(),
-  name:      varchar('name', { length: 100 }).notNull(),
-  origin:    varchar('origin', { length: 20 }).notNull(),
-  logoUrl:   varchar('logo_url', { length: 500 }),
-  sortOrder: int('sort_order').default(0),
-  isActive:  boolean('is_active').default(true),
-  createdAt: timestamp('created_at').defaultNow(),
+  id:           int('id').autoincrement().primaryKey(),
+  name:         varchar('name', { length: 100 }).notNull(),
+  origin:       varchar('origin', { length: 20 }).notNull(),
+  logoUrl:      varchar('logo_url', { length: 500 }),
+  logoPublicId: varchar('logo_public_id', { length: 200 }),
+  sortOrder:    int('sort_order').default(0),
+  isActive:     boolean('is_active').default(true),
+  createdAt:    timestamp('created_at').defaultNow(),
+  updatedAt:    timestamp('updated_at').defaultNow(),
 })
 
 export const vehicleModels = mysqlTable('vehicle_models', {
@@ -63,29 +65,34 @@ export const vehicleModels = mysqlTable('vehicle_models', {
   bodyType:     varchar('body_type', { length: 30 }),
   isActive:     boolean('is_active').default(true),
   createdAt:    timestamp('created_at').defaultNow(),
+  updatedAt:    timestamp('updated_at').defaultNow(),
 })
 
 // ─── CATALOG ─────────────────────────────────────────────────────────────────
 
 export const categories = mysqlTable('categories', {
-  id:          int('id').autoincrement().primaryKey(),
-  parentId:    int('parent_id'),
-  key:         varchar('key', { length: 50 }).unique().notNull(),
-  name:        varchar('name', { length: 100 }).notNull(),
-  description: text('description'),
-  imageUrl:    varchar('image_url', { length: 500 }),
-  sortOrder:   int('sort_order').default(0),
-  isActive:    boolean('is_active').default(true),
-  createdAt:   timestamp('created_at').defaultNow(),
+  id:            int('id').autoincrement().primaryKey(),
+  parentId:      int('parent_id'),
+  key:           varchar('key', { length: 50 }).unique().notNull(),
+  name:          varchar('name', { length: 100 }).notNull(),
+  description:   text('description'),
+  imageUrl:      varchar('image_url', { length: 500 }),
+  imagePublicId: varchar('image_public_id', { length: 200 }),
+  sortOrder:     int('sort_order').default(0),
+  isActive:      boolean('is_active').default(true),
+  createdAt:     timestamp('created_at').defaultNow(),
+  updatedAt:     timestamp('updated_at').defaultNow(),
 })
 
 export const partBrands = mysqlTable('part_brands', {
   id:            int('id').autoincrement().primaryKey(),
   name:          varchar('name', { length: 100 }).notNull(),
   logoUrl:       varchar('logo_url', { length: 500 }),
+  logoPublicId:  varchar('logo_public_id', { length: 200 }),
   originCountry: varchar('origin_country', { length: 100 }),
   isActive:      boolean('is_active').default(true),
   createdAt:     timestamp('created_at').defaultNow(),
+  updatedAt:     timestamp('updated_at').defaultNow(),
 })
 
 export const suppliers = mysqlTable('suppliers', {
@@ -97,6 +104,7 @@ export const suppliers = mysqlTable('suppliers', {
   address:     text('address'),
   isActive:    boolean('is_active').default(true),
   createdAt:   timestamp('created_at').defaultNow(),
+  updatedAt:   timestamp('updated_at').defaultNow(),
 })
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
