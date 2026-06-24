@@ -120,14 +120,14 @@ export default async function NewProductPage() {
   return (
     <div className="p-8">
       <div className="mb-6">
-        <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0d1f3c] transition-colors mb-3">
+        <Link href="/admin/products" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-navy transition-colors mb-3">
           <ArrowLeft size={14} />
           Volver a productos
         </Link>
-        <h1 className="text-2xl font-bold text-[#0d1f3c]">Nuevo producto</h1>
+        <h1 className="text-2xl font-bold text-navy">Nuevo producto</h1>
       </div>
 
-      <form action={create} className="space-y-6 max-w-4xl">
+      <form action={create} className="space-y-6">
 
         {/* ── Básico ──────────────────────────────────── */}
         <Section title="Información básica">
@@ -285,7 +285,7 @@ export default async function NewProductPage() {
         <div className="flex gap-3 pt-2">
           <SubmitButton
             pendingText="Creando..."
-            className="px-6 py-2.5 bg-[#0d1f3c] text-white text-sm rounded-lg hover:bg-[#0a1628] transition-colors font-medium disabled:opacity-60"
+            className="px-6 py-2.5 bg-navy text-white text-sm rounded-lg hover:bg-navy-dark transition-colors font-medium disabled:opacity-60"
           >
             Crear producto
           </SubmitButton>
@@ -301,7 +301,7 @@ export default async function NewProductPage() {
 
 // ── Small helpers ─────────────────────────────────────────────────────────────
 
-const inputCls = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c] focus:border-transparent'
+const inputCls = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent'
 const selectCls = inputCls + ' bg-white'
 
 function Label({ children }: { children: React.ReactNode }) {
@@ -309,14 +309,14 @@ function Label({ children }: { children: React.ReactNode }) {
 }
 
 function Required() {
-  return <span className="text-[#e03030]"> *</span>
+  return <span className="text-brand"> *</span>
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
       <div className="px-5 py-3.5 border-b border-gray-50">
-        <h2 className="text-sm font-semibold text-[#0d1f3c]">{title}</h2>
+        <h2 className="text-sm font-semibold text-navy">{title}</h2>
       </div>
       <div className="p-5">{children}</div>
     </div>
@@ -326,7 +326,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function CheckField({ name, label, defaultChecked = false }: { name: string; label: string; defaultChecked?: boolean }) {
   return (
     <label className="flex items-center gap-2 cursor-pointer">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="w-4 h-4 rounded border-gray-300 text-[#0d1f3c] focus:ring-[#0d1f3c]" />
+      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="w-4 h-4 rounded border-gray-300 text-navy focus:ring-navy" />
       <span className="text-sm text-gray-700">{label}</span>
     </label>
   )

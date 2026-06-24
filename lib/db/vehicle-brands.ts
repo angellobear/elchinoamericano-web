@@ -36,6 +36,7 @@ export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert
 }
 
 export async function updateVehicleBrand(id: number, data: Partial<typeof vehicleBrands.$inferInsert>) {
+  console.log('updateVehicleBrand', id, data)
   const db = await getDb()
   await db.update(vehicleBrands).set({ ...data, updatedAt: new Date() }).where(eq(vehicleBrands.id, id))
 }

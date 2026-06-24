@@ -16,18 +16,19 @@ async function toggleActive(id: number, current: boolean) {
 }
 
 export default async function VehicleBrandsPage() {
+
   const brands = await getVehicleBrandsWithModels()
 
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#0d1f3c]">Marcas de Vehículos</h1>
+          <h1 className="text-2xl font-bold text-navy">Marcas de Vehículos</h1>
           <p className="text-gray-500 text-sm mt-0.5">{brands.length} marcas registradas</p>
         </div>
         <Link
           href="/admin/vehicle-brands/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#e03030] text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
         >
           <Plus size={15} />
           Nueva marca
@@ -55,11 +56,10 @@ export default async function VehicleBrandsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3.5">
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                    b.origin === 'chinese'  ? 'bg-red-100 text-red-700' :
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${b.origin === 'chinese' ? 'bg-red-100 text-red-700' :
                     b.origin === 'american' ? 'bg-blue-100 text-blue-700' :
-                                              'bg-gray-100 text-gray-600'
-                  }`}>
+                      'bg-gray-100 text-gray-600'
+                    }`}>
                     {b.origin === 'chinese' ? 'China' : b.origin === 'american' ? 'EE.UU.' : b.origin}
                   </span>
                 </td>
@@ -69,9 +69,8 @@ export default async function VehicleBrandsPage() {
                   </span>
                 </td>
                 <td className="px-4 py-3.5 text-center">
-                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${
-                    b.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
-                  }`}>
+                  <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${b.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                    }`}>
                     {b.isActive ? 'Activa' : 'Inactiva'}
                   </span>
                 </td>
@@ -91,7 +90,7 @@ export default async function VehicleBrandsPage() {
                     </form>
                     <Link
                       href={`/admin/vehicle-brands/${b.id}`}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-[#0d1f3c] hover:text-white text-gray-500 text-xs font-medium transition-colors"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-navy hover:text-white text-gray-500 text-xs font-medium transition-colors"
                     >
                       Gestionar
                       <ChevronRight size={12} />

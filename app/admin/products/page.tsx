@@ -21,12 +21,12 @@ export default async function ProductsPage({
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#0d1f3c]">Productos</h1>
+          <h1 className="text-2xl font-bold text-navy">Productos</h1>
           <p className="text-gray-500 text-sm mt-0.5">{products.length} productos encontrados</p>
         </div>
         <Link
           href="/admin/products/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#e03030] text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
         >
           <Plus size={15} />
           Nuevo producto
@@ -40,10 +40,10 @@ export default async function ProductsPage({
             name="search"
             defaultValue={search}
             placeholder="Buscar por título, código, SKU..."
-            className="w-full border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c] bg-white"
+            className="w-full border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
           />
         </div>
-        <button type="submit" className="px-4 py-2 bg-[#0d1f3c] text-white text-sm rounded-lg hover:bg-[#0a1628] transition-colors">
+        <button type="submit" className="px-4 py-2 bg-navy text-white text-sm rounded-lg hover:bg-navy-dark transition-colors">
           Buscar
         </button>
       </form>
@@ -75,7 +75,7 @@ export default async function ProductsPage({
                 <td className="px-4 py-3.5 text-gray-500">{p.category?.name ?? '—'}</td>
                 <td className="px-4 py-3.5">
                   <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${
-                    p.type === 'original' ? 'bg-[#0d1f3c] text-white' :
+                    p.type === 'original' ? 'bg-navy text-white' :
                     p.type === 'oem'      ? 'bg-blue-100 text-blue-700' :
                                             'bg-red-100 text-red-700'
                   }`}>
@@ -87,7 +87,7 @@ export default async function ProductsPage({
                 </td>
                 <td className="px-4 py-3.5 text-center">
                   <span className={`font-semibold ${
-                    p.stock === 0 ? 'text-[#e03030]' :
+                    p.stock === 0 ? 'text-brand' :
                     p.stock <= 5  ? 'text-amber-600' :
                                     'text-emerald-600'
                   }`}>
@@ -105,7 +105,7 @@ export default async function ProductsPage({
                   <div className="flex items-center justify-end gap-1">
                     <Link
                       href={`/admin/products/${p.id}`}
-                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-[#0d1f3c] transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-navy transition-colors"
                       title="Editar"
                     >
                       <Pencil size={13} />
@@ -113,7 +113,7 @@ export default async function ProductsPage({
                     <form action={handleDelete.bind(null, p.id)}>
                       <button
                         type="submit"
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-[#e03030] transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-brand transition-colors cursor-pointer"
                         title="Eliminar"
                       >
                         <Trash2 size={13} />
