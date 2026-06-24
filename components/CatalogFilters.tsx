@@ -3,16 +3,12 @@
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { brands } from "@/data/brands"
+import {
+  CATALOG_PRICE_RANGES,
+  type FilterState,
+} from "@/lib/catalog"
 
 const CAR_BRANDS = brands.map((b) => ({ id: b.id, label: b.name }))
-
-const PRICE_RANGES = [
-  { id: "all", label: "Todos los precios", min: 0, max: Infinity },
-  { id: "lt20", label: "Menos de $20", min: 0, max: 20 },
-  { id: "20-50", label: "$20 a $50", min: 20, max: 50 },
-  { id: "50-100", label: "$50 a $100", min: 50, max: 100 },
-  { id: "gt100", label: "Más de $100", min: 100, max: Infinity },
-]
 
 const CATEGORIES = [
   { id: "motor", label: "Motor" },
@@ -22,13 +18,6 @@ const CATEGORIES = [
   { id: "carroceria", label: "Carrocería" },
   { id: "enfriamiento", label: "Enfriamiento" },
 ]
-
-
-export interface FilterState {
-  priceRange: string
-  categories: string[]
-  carBrands: string[]
-}
 
 interface CatalogFiltersProps {
   filters: FilterState
@@ -116,7 +105,7 @@ export default function CatalogFilters({
       {/* Price range */}
       <FilterSection title="Precio">
         <div className="flex flex-col gap-2">
-          {PRICE_RANGES.map((range) => (
+          {CATALOG_PRICE_RANGES.map((range) => (
             <label
               key={range.id}
               className={cn(
@@ -177,5 +166,3 @@ export default function CatalogFilters({
     </div>
   )
 }
-
-export { PRICE_RANGES }

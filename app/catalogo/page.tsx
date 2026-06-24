@@ -1,9 +1,84 @@
+import type { Metadata } from "next"
 import { Suspense } from "react"
-import CatalogoClient from "./CatalogoClient"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
+import CatalogoClient from "./CatalogoClient"
+import { products } from "@/data/products"
+import {
+  CATALOG_PAGE_SIZE,
+  CATALOG_PRICE_RANGES,
+  parseCatalogFilters,
+} from "@/lib/catalog"
 
-export default function CatalogoPage() {
+export const metadata: Metadata = {
+  title: "Catálogo de Repuestos | El Chino Americano",
+  description:
+    "Explora el catálogo de repuestos automotrices para vehículos chinos y americanos. Filtra por precio, categoría y marca con una experiencia lista para SEO.",
+  alternates: {
+    canonical: "/catalogo",
+  },
+  openGraph: {
+    title: "Catálogo de Repuestos | El Chino Americano",
+    description:
+      "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador.",
+    type: "website",
+    locale: "es_EC",
+    siteName: "El Chino Americano",
+    url: "https://elchinoamericano.com/catalogo",
+  },
+  twitter: {
+    card: "summary",
+    title: "Catálogo de Repuestos | El Chino Americano",
+    description:
+      "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador.",
+  },
+}
+
+function filterProducts(search: string, priceRangeId: string, categories: string[], carBrands: string[]) {
+  const normalizedSearch = search.trim().toLowerCase()
+  const selectedPriceRange =
+    CATALOG_PRICE_RANGES.find((range) => range.id === priceRangeId) ??
+    CATALOG_PRICE_RANGES[0]
+
+  return products.filter((product) => {
+    const effectivePrice = product.offer_price ?? product.price
+    const matchesSearch =
+      normalizedSearch === "" ||
+      product.title.toLowerCase().includes(normalizedSearch) ||
+      (product.short_description ?? "").toLowerCase().includes(normalizedSearch) ||
+      (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch) ||
+      product.code.toLowerCase().includes(normalizedSearch)
+    const matchesPrice =
+      effectivePrice >= selectedPriceRange.min &&
+      (selectedPriceRange.max === Infinity
+        ? true
+        : effectivePrice <= selectedPriceRange.max)
+    const matchesCategory =
+      categories.length === 0 || categories.includes(product.category?.key ?? "")
+    const vehicleBrandKeys =
+      product.compatibilities?.map((compatibility) =>
+        compatibility.model?.brand?.name.toLowerCase().replace(/ /g, "_") ?? ""
+      ) ?? []
+    const matchesBrand =
+      carBrands.length === 0 ||
+      carBrands.some((brand) => vehicleBrandKeys.includes(brand))
+
+    return matchesSearch && matchesPrice && matchesCategory && matchesBrand
+  })
+}
+
+export default async function CatalogoPage(props: PageProps<"/catalogo">) {
+  const resolvedSearchParams = await props.searchParams
+  const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
+  const filteredProducts = filterProducts(
+    search,
+    filters.priceRange,
+    filters.categories,
+    filters.carBrands
+  )
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / CATALOG_PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+
   return (
     <>
       <Navbar />
@@ -14,7 +89,12 @@ export default function CatalogoPage() {
           </main>
         }
       >
-        <CatalogoClient />
+        <CatalogoClient
+          key={`${search}-${filters.priceRange}-${filters.categories.join(",")}-${filters.carBrands.join(",")}-${safePage}`}
+          initialFilters={filters}
+          initialPage={safePage}
+          initialSearch={search}
+        />
       </Suspense>
       <Footer />
     </>

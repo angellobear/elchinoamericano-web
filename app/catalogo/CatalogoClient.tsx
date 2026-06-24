@@ -1,37 +1,67 @@
 "use client"
 
-import { useState, useMemo, useCallback } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { SlidersHorizontal, Search, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { useState, useTransition } from "react"
+import { useRouter } from "next/navigation"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  SlidersHorizontal,
+  X,
+} from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
-import CatalogFilters, { FilterState, PRICE_RANGES } from "@/components/CatalogFilters"
+import CatalogFilters from "@/components/CatalogFilters"
 import ProductGrid from "@/components/ProductGrid"
 import RequestPartForm from "@/components/RequestPartForm"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { products } from "@/data/products"
+import {
+  buildCatalogUrl,
+  CATALOG_PAGE_SIZE,
+  CATALOG_PRICE_RANGES,
+  countActiveFilters,
+  DEFAULT_CATALOG_FILTERS,
+  type FilterState,
+} from "@/lib/catalog"
 
-const PAGE_SIZE = 8
-
-// Use "|" as array separator to avoid %2C encoding in URLs
-const SEP = "|"
-
-const DEFAULT_FILTERS: FilterState = {
-  priceRange: "all",
-  categories: [],
-  carBrands: [],
+interface CatalogoClientProps {
+  initialFilters: FilterState
+  initialPage: number
+  initialSearch: string
 }
 
-function countActiveFilters(f: FilterState): number {
-  let n = 0
-  if (f.priceRange !== "all") n++
-  n += f.categories.length
-  n += f.carBrands.length
-  return n
-}
+function getFilteredProducts(search: string, filters: FilterState) {
+  const normalizedSearch = search.trim().toLowerCase()
+  const selectedPriceRange =
+    CATALOG_PRICE_RANGES.find((range) => range.id === filters.priceRange) ??
+    CATALOG_PRICE_RANGES[0]
 
-function parseArrayParam(val: string | null): string[] {
-  if (!val) return []
-  return val.split(SEP).filter(Boolean)
+  return products.filter((product) => {
+    const effectivePrice = product.offer_price ?? product.price
+    const matchesSearch =
+      normalizedSearch === "" ||
+      product.title.toLowerCase().includes(normalizedSearch) ||
+      (product.short_description ?? "").toLowerCase().includes(normalizedSearch) ||
+      (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch) ||
+      product.code.toLowerCase().includes(normalizedSearch)
+    const matchesPrice =
+      effectivePrice >= selectedPriceRange.min &&
+      (selectedPriceRange.max === Infinity
+        ? true
+        : effectivePrice <= selectedPriceRange.max)
+    const matchesCategory =
+      filters.categories.length === 0 ||
+      filters.categories.includes(product.category?.key ?? "")
+    const vehicleBrandKeys =
+      product.compatibilities?.map((compatibility) =>
+        compatibility.model?.brand?.name.toLowerCase().replace(/ /g, "_") ?? ""
+      ) ?? []
+    const matchesBrand =
+      filters.carBrands.length === 0 ||
+      filters.carBrands.some((brand) => vehicleBrandKeys.includes(brand))
+
+    return matchesSearch && matchesPrice && matchesCategory && matchesBrand
+  })
 }
 
 function ActiveFilterChips({
@@ -44,8 +74,8 @@ function ActiveFilterChips({
 }: {
   filters: FilterState
   search: string
-  onRemoveCategory: (c: string) => void
-  onRemoveBrand: (b: string) => void
+  onRemoveCategory: (category: string) => void
+  onRemoveBrand: (brand: string) => void
   onRemovePrice: () => void
   onClear: () => void
 }) {
@@ -55,28 +85,27 @@ function ActiveFilterChips({
   return (
     <div className="flex flex-wrap items-center gap-2 mb-5">
       {search && (
-        <Chip
-          label={`"${search}"`}
-          onRemove={onClear}
-        />
+        <Chip label={`"${search}"`} onRemove={onClear} />
       )}
       {filters.priceRange !== "all" && (
         <Chip
-          label={PRICE_RANGES.find((r) => r.id === filters.priceRange)?.label ?? ""}
+          label={
+            CATALOG_PRICE_RANGES.find((range) => range.id === filters.priceRange)?.label ?? ""
+          }
           onRemove={onRemovePrice}
         />
       )}
-      {filters.categories.map((cat) => (
+      {filters.categories.map((category) => (
         <Chip
-          key={cat}
-          label={cat.charAt(0).toUpperCase() + cat.slice(1)}
-          onRemove={() => onRemoveCategory(cat)}
+          key={category}
+          label={category.charAt(0).toUpperCase() + category.slice(1)}
+          onRemove={() => onRemoveCategory(category)}
         />
       ))}
       {filters.carBrands.map((brand) => (
         <Chip
           key={brand}
-          label={brand.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase())}
+          label={brand.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())}
           onRemove={() => onRemoveBrand(brand)}
         />
       ))}
@@ -112,11 +141,11 @@ function Pagination({
 }: {
   page: number
   totalPages: number
-  onPage: (p: number) => void
+  onPage: (page: number) => void
 }) {
   if (totalPages <= 1) return null
 
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1)
+  const pages = Array.from({ length: totalPages }, (_, index) => index + 1)
 
   return (
     <nav aria-label="Paginación" className="flex items-center justify-center gap-1 mt-10">
@@ -129,18 +158,18 @@ function Pagination({
         <ChevronLeft size={16} />
       </button>
 
-      {pages.map((p) => (
+      {pages.map((currentPage) => (
         <button
-          key={p}
-          onClick={() => onPage(p)}
-          aria-current={p === page ? "page" : undefined}
+          key={currentPage}
+          onClick={() => onPage(currentPage)}
+          aria-current={currentPage === page ? "page" : undefined}
           className={`w-9 h-9 flex items-center justify-center rounded-md text-sm font-semibold transition-colors border ${
-            p === page
+            currentPage === page
               ? "bg-navy border-navy text-white"
               : "border-slate-200 text-slate-600 hover:border-navy hover:text-navy"
           }`}
         >
-          {p}
+          {currentPage}
         </button>
       ))}
 
@@ -156,110 +185,84 @@ function Pagination({
   )
 }
 
-export default function CatalogoClient() {
-  const searchParams = useSearchParams()
+export default function CatalogoClient({
+  initialFilters,
+  initialPage,
+  initialSearch,
+}: CatalogoClientProps) {
   const router = useRouter()
+  const [, startTransition] = useTransition()
 
-  const [search, setSearch] = useState(() => searchParams.get("q") ?? "")
-  const [filters, setFilters] = useState<FilterState>(() => ({
-    priceRange: searchParams.get("precio") ?? "all",
-    categories: parseArrayParam(searchParams.get("categoria")),
-    carBrands: parseArrayParam(searchParams.get("marca")),
-  }))
-  const [page, setPage] = useState(() =>
-    Math.max(1, Number(searchParams.get("pagina") ?? "1"))
+  const [search, setSearch] = useState(initialSearch)
+  const [filters, setFilters] = useState(initialFilters)
+  const [page, setPage] = useState(initialPage)
+
+  const filteredProducts = getFilteredProducts(search, filters)
+  const totalPages = Math.max(1, Math.ceil(filteredProducts.length / CATALOG_PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paginatedProducts = filteredProducts.slice(
+    (safePage - 1) * CATALOG_PAGE_SIZE,
+    safePage * CATALOG_PAGE_SIZE
   )
-
   const activeCount = countActiveFilters(filters)
 
-  const buildUrl = useCallback(
-    (q: string, f: FilterState, p: number) => {
-      const params = new URLSearchParams()
-      if (q) params.set("q", q)
-      if (f.priceRange !== "all") params.set("precio", f.priceRange)
-      if (f.categories.length) params.set("categoria", f.categories.join(SEP))
-      if (f.carBrands.length) params.set("marca", f.carBrands.join(SEP))
-      if (p > 1) params.set("pagina", String(p))
-      const qs = params.toString()
-      router.replace(qs ? `/catalogo?${qs}` : "/catalogo", { scroll: false })
-    },
-    [router]
-  )
+  function syncRoute(nextSearch: string, nextFilters: FilterState, nextPage: number) {
+    const nextUrl = buildCatalogUrl(nextSearch, nextFilters, nextPage)
 
-  function handleSearch(q: string) {
-    setSearch(q)
-    setPage(1)
-    buildUrl(q, filters, 1)
+    startTransition(() => {
+      router.replace(nextUrl, { scroll: false })
+    })
   }
 
-  function handleFiltersChange(f: FilterState) {
-    setFilters(f)
+  function handleSearch(nextSearch: string) {
+    setSearch(nextSearch)
     setPage(1)
-    buildUrl(search, f, 1)
+    syncRoute(nextSearch, filters, 1)
+  }
+
+  function handleFiltersChange(nextFilters: FilterState) {
+    setFilters(nextFilters)
+    setPage(1)
+    syncRoute(search, nextFilters, 1)
   }
 
   function handleClear() {
-    setFilters(DEFAULT_FILTERS)
+    setFilters(DEFAULT_CATALOG_FILTERS)
     setSearch("")
     setPage(1)
-    router.replace("/catalogo", { scroll: false })
+    syncRoute("", DEFAULT_CATALOG_FILTERS, 1)
   }
 
-  function handlePage(p: number) {
-    setPage(p)
-    buildUrl(search, filters, p)
+  function handlePage(nextPage: number) {
+    setPage(nextPage)
+    syncRoute(search, filters, nextPage)
     window.scrollTo({ top: 0, behavior: "smooth" })
   }
 
-  const filtered = useMemo(() => {
-    const priceRange = PRICE_RANGES.find((r) => r.id === filters.priceRange)!
-    const q = search.toLowerCase()
-    return products.filter((p) => {
-      const effectivePrice = p.offer_price ?? p.price
-      const matchSearch =
-        q === "" ||
-        p.title.toLowerCase().includes(q) ||
-        (p.short_description ?? "").toLowerCase().includes(q) ||
-        (p.part_brand?.name ?? "").toLowerCase().includes(q) ||
-        p.code.toLowerCase().includes(q)
-      const matchPrice =
-        effectivePrice >= priceRange.min &&
-        (priceRange.max === Infinity ? true : effectivePrice <= priceRange.max)
-      const matchCategory =
-        filters.categories.length === 0 || filters.categories.includes(p.category?.key ?? "")
-      // Match vehicle brand by checking all compatibilities
-      const vehicleBrandKeys = p.compatibilities?.map(c =>
-        c.model?.brand?.name.toLowerCase().replace(/ /g, "_") ?? ""
-      ) ?? []
-      const matchBrand =
-        filters.carBrands.length === 0 || filters.carBrands.some(b => vehicleBrandKeys.includes(b))
-      return matchSearch && matchPrice && matchCategory && matchBrand
-    })
-  }, [search, filters])
-
-  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
-  const safePage = Math.min(page, Math.max(1, totalPages))
-  const paginated = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
-
   return (
     <main className="min-h-screen bg-slate-50 pt-16">
-      {/* Sticky page header — title, count, search, filter button ONLY */}
       <div className="bg-white border-b border-slate-200 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
             <div>
-              <h1 className="font-display font-bold text-navy text-2xl leading-none">Catálogo</h1>
+              <h1 className="font-display font-bold text-navy text-2xl leading-none">
+                Catálogo
+              </h1>
               <p className="text-slate-500 text-xs mt-1">
-                {filtered.length}{" "}
-                {filtered.length === 1 ? "repuesto encontrado" : "repuestos encontrados"}
+                {filteredProducts.length}{" "}
+                {filteredProducts.length === 1
+                  ? "repuesto encontrado"
+                  : "repuestos encontrados"}
                 {totalPages > 1 && (
-                  <span className="text-slate-400"> · Página {safePage} de {totalPages}</span>
+                  <span className="text-slate-400">
+                    {" "}
+                    · Página {safePage} de {totalPages}
+                  </span>
                 )}
               </p>
             </div>
 
             <div className="flex items-center gap-2">
-              {/* Search */}
               <div className="relative flex-1 sm:w-64 sm:flex-none">
                 <Search
                   size={14}
@@ -268,7 +271,7 @@ export default function CatalogoClient() {
                 <input
                   type="search"
                   value={search}
-                  onChange={(e) => handleSearch(e.target.value)}
+                  onChange={(event) => handleSearch(event.target.value)}
                   placeholder="Buscar repuesto..."
                   className="w-full pl-8 pr-8 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors bg-white"
                 />
@@ -283,7 +286,6 @@ export default function CatalogoClient() {
                 )}
               </div>
 
-              {/* Mobile filters trigger */}
               <Sheet>
                 <SheetTrigger asChild>
                   <button className="lg:hidden relative inline-flex items-center gap-1.5 border border-slate-200 bg-white text-slate-700 text-sm font-medium px-3 py-2 rounded-md hover:border-navy/30 transition-colors shrink-0 min-h-[36px]">
@@ -310,10 +312,8 @@ export default function CatalogoClient() {
         </div>
       </div>
 
-      {/* Layout: aside + content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-          {/* Desktop aside */}
           <aside className="hidden lg:block w-60 shrink-0">
             <div className="sticky top-[120px] bg-white rounded-xl border border-slate-200 p-5">
               <CatalogFilters
@@ -325,9 +325,7 @@ export default function CatalogoClient() {
             </div>
           </aside>
 
-          {/* Main: chips + grid + pagination */}
           <div className="flex-1 min-w-0">
-            {/* Active filter chips — above the cards */}
             <AnimatePresence>
               {(activeCount > 0 || search) && (
                 <motion.div
@@ -339,24 +337,32 @@ export default function CatalogoClient() {
                   <ActiveFilterChips
                     filters={filters}
                     search={search}
-                    onRemoveCategory={(cat) =>
-                      handleFiltersChange({ ...filters, categories: filters.categories.filter((c) => c !== cat) })
+                    onRemoveCategory={(category) =>
+                      handleFiltersChange({
+                        ...filters,
+                        categories: filters.categories.filter((item) => item !== category),
+                      })
                     }
                     onRemoveBrand={(brand) =>
-                      handleFiltersChange({ ...filters, carBrands: filters.carBrands.filter((b) => b !== brand) })
+                      handleFiltersChange({
+                        ...filters,
+                        carBrands: filters.carBrands.filter((item) => item !== brand),
+                      })
                     }
-                    onRemovePrice={() => handleFiltersChange({ ...filters, priceRange: "all" })}
+                    onRemovePrice={() =>
+                      handleFiltersChange({ ...filters, priceRange: "all" })
+                    }
                     onClear={handleClear}
                   />
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {filtered.length === 0 ? (
+            {filteredProducts.length === 0 ? (
               <RequestPartForm searchQuery={search} />
             ) : (
               <>
-                <ProductGrid products={paginated} />
+                <ProductGrid products={paginatedProducts} />
                 <Pagination page={safePage} totalPages={totalPages} onPage={handlePage} />
               </>
             )}

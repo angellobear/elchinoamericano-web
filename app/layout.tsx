@@ -15,6 +15,7 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://elchinoamericano.com"),
   title: "El Chino Americano — Repuestos Automotrices",
   description:
     "Tienda online de repuestos para vehiculos chinos y americanos. Catalogo con filtros y pedido por WhatsApp. Entrega en Quito y envios a todo el Ecuador.",
