@@ -66,7 +66,6 @@ export default function InventoryTable({ products }: { products: InventoryProduc
               const current = stockMap[p.id] ?? p.stock
               const threshold = p.minStockAlert ?? 5
               const isLow = current <= threshold
-              const changed = current !== (stockMap[p.id] !== undefined ? p.stock : p.stock)
 
               return (
                 <tr key={p.id} className={`transition-colors ${isLow ? 'bg-amber-50/50 hover:bg-amber-50' : 'hover:bg-gray-50/70'}`}>
@@ -84,7 +83,7 @@ export default function InventoryTable({ products }: { products: InventoryProduc
                       min={0}
                       value={current}
                       onChange={e => setStockMap(m => ({ ...m, [p.id]: Number(e.target.value) }))}
-                      className={`w-20 text-center border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c] transition-colors ${
+                      className={`w-20 text-center border rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy transition-colors ${
                         isLow
                           ? 'border-amber-300 text-amber-700 bg-amber-50'
                           : 'border-gray-200 text-gray-800'
@@ -99,7 +98,7 @@ export default function InventoryTable({ products }: { products: InventoryProduc
                         saved[p.id]
                           ? 'bg-emerald-100 text-emerald-700'
                           : current !== p.stock && !saving[p.id]
-                            ? 'bg-[#0d1f3c] text-white hover:bg-[#0a1628] cursor-pointer'
+                            ? 'bg-navy text-white hover:bg-navy-dark cursor-pointer'
                             : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                       }`}
                     >

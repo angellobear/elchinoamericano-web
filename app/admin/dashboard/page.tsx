@@ -1,6 +1,6 @@
 import { getProductStats } from '@/lib/db/products'
 import { getCategories } from '@/lib/db/categories'
-import { Package, PackageX, AlertTriangle, Tag, Boxes, Car, Wrench, Plus } from 'lucide-react'
+import { Package, PackageX, AlertTriangle, Tag, Boxes, Car, Wrench } from 'lucide-react'
 import Link from 'next/link'
 
 async function getStats() {
@@ -12,8 +12,8 @@ export default async function DashboardPage() {
   const stats = await getStats()
 
   const kpis = [
-    { label: 'Productos activos', value: stats.total, icon: Package, bg: 'bg-[#0d1f3c]' },
-    { label: 'Sin stock', value: stats.outOfStock, icon: PackageX, bg: 'bg-[#e03030]' },
+    { label: 'Productos activos', value: stats.total, icon: Package, bg: 'bg-navy' },
+    { label: 'Sin stock', value: stats.outOfStock, icon: PackageX, bg: 'bg-brand' },
     { label: 'Stock bajo (≤5)', value: stats.lowStock, icon: AlertTriangle, bg: 'bg-amber-500' },
     { label: 'Categorías', value: stats.categories, icon: Tag, bg: 'bg-slate-600' },
   ]

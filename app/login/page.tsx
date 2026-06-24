@@ -32,17 +32,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0d1f3c] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-navy flex items-center justify-center p-4">
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">
         {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-2">
-            <div className="w-10 h-10 bg-[#0d1f3c] rounded-lg flex items-center justify-center text-white font-bold text-lg">
+            <div className="w-10 h-10 bg-navy rounded-lg flex items-center justify-center text-white font-bold text-lg">
               CA
             </div>
-            <span className="text-[#0d1f3c] font-semibold text-lg leading-tight">
+            <span className="text-navy font-semibold text-lg leading-tight">
               El Chino<br />
-              <span className="text-[#e03030]">Americano</span>
+              <span className="text-brand">Americano</span>
             </span>
           </div>
           <p className="text-gray-500 text-sm mt-2">Panel Administrador</p>
@@ -58,7 +58,7 @@ export default function LoginPage() {
               required
               value={email}
               onChange={e => setEmail(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
               placeholder="admin@chinoamericano.com"
             />
           </div>
@@ -72,19 +72,19 @@ export default function LoginPage() {
               required
               value={password}
               onChange={e => setPassword(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
               placeholder="••••••••"
             />
           </div>
 
           {error && (
-            <p className="text-[#e03030] text-sm">{error}</p>
+            <p className="text-brand text-sm">{error}</p>
           )}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[#0d1f3c] hover:bg-[#0a1628] text-white font-medium py-2.5 rounded-lg text-sm transition-colors disabled:opacity-60"
+            className="w-full bg-navy hover:bg-navy-dark text-white font-medium py-2.5 rounded-lg text-sm transition-colors disabled:opacity-60"
           >
             {loading ? 'Verificando...' : 'Ingresar'}
           </button>

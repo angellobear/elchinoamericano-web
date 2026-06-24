@@ -36,7 +36,7 @@ export function ImageUploadField({ name, currentUrl, currentPublicId, label = 'I
         {displayUrl ? (
           <>
             <div className="relative w-full h-32">
-              {/* ponytail: img normal evita config de dominio Next.js para previews de Cloudinary */}
+              {/* eslint-disable-next-line @next/next/no-img-element -- local object URLs and remote previews keep this field simple without forcing next/image config */}
               <img src={displayUrl} alt="Preview" className="w-full h-full object-contain p-2" />
             </div>
             <button

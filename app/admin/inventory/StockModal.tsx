@@ -53,7 +53,7 @@ export function StockModal({ products, onSuccess }: Props) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-[#e03030] text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
       >
         <Plus size={15} />
         Ingresar stock
@@ -64,7 +64,7 @@ export function StockModal({ products, onSuccess }: Props) {
           <div className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-md">
             <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-              <h2 className="font-semibold text-[#0d1f3c]">Ingresar stock</h2>
+              <h2 className="font-semibold text-navy">Ingresar stock</h2>
               <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 p-1 rounded">
                 <X size={16} />
               </button>
@@ -73,13 +73,13 @@ export function StockModal({ products, onSuccess }: Props) {
             <form onSubmit={submit} className="p-5 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Producto <span className="text-[#e03030]">*</span>
+                  Producto <span className="text-brand">*</span>
                 </label>
                 <select
                   required
                   value={form.productId}
                   onChange={e => setForm(f => ({ ...f, productId: e.target.value }))}
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c] bg-white"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
                 >
                   <option value="">Seleccionar producto...</option>
                   {products.map(p => (
@@ -93,7 +93,7 @@ export function StockModal({ products, onSuccess }: Props) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    Cantidad <span className="text-[#e03030]">*</span>
+                    Cantidad <span className="text-brand">*</span>
                   </label>
                   <input
                     type="number"
@@ -101,7 +101,7 @@ export function StockModal({ products, onSuccess }: Props) {
                     value={form.quantity}
                     onChange={e => setForm(f => ({ ...f, quantity: e.target.value }))}
                     placeholder={form.movementType === 'adjustment' ? '-5, +10' : '10'}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c]"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
                   />
                 </div>
                 <div>
@@ -109,7 +109,7 @@ export function StockModal({ products, onSuccess }: Props) {
                   <select
                     value={form.movementType}
                     onChange={e => setForm(f => ({ ...f, movementType: e.target.value }))}
-                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c] bg-white"
+                    className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
                   >
                     <option value="purchase">Compra</option>
                     <option value="adjustment">Ajuste</option>
@@ -130,7 +130,7 @@ export function StockModal({ products, onSuccess }: Props) {
                   value={form.reason}
                   onChange={e => setForm(f => ({ ...f, reason: e.target.value }))}
                   placeholder="ej: compra a proveedor X"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c]"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
                 />
               </div>
 
@@ -138,7 +138,7 @@ export function StockModal({ products, onSuccess }: Props) {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-2 bg-[#0d1f3c] text-white text-sm rounded-lg hover:bg-[#0a1628] transition-colors font-medium disabled:opacity-60"
+                  className="flex-1 px-4 py-2 bg-navy text-white text-sm rounded-lg hover:bg-navy-dark transition-colors font-medium disabled:opacity-60"
                 >
                   {loading ? 'Guardando…' : 'Registrar ingreso'}
                 </button>

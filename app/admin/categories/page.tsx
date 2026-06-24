@@ -22,12 +22,12 @@ export default async function CategoriesPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#0d1f3c]">Categorías</h1>
+          <h1 className="text-2xl font-bold text-navy">Categorías</h1>
           <p className="text-gray-500 text-sm mt-0.5">{categories.length} categorías registradas</p>
         </div>
         <Link
           href="/admin/categories/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#e03030] text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
         >
           <Plus size={15} />
           Nueva categoría
@@ -68,7 +68,7 @@ export default async function CategoriesPage() {
                   <div className="flex items-center justify-end gap-1">
                     <Link
                       href={`/admin/categories/${c.id}`}
-                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-[#0d1f3c] transition-colors"
+                      className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-navy transition-colors"
                       title="Editar"
                     >
                       <Pencil size={13} />
@@ -76,7 +76,7 @@ export default async function CategoriesPage() {
                     <form action={handleDelete.bind(null, c.id)}>
                       <button
                         type="submit"
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-[#e03030] transition-colors cursor-pointer"
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-brand transition-colors cursor-pointer"
                         title="Eliminar"
                       >
                         <Trash2 size={13} />

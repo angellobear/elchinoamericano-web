@@ -36,7 +36,6 @@ export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert
 }
 
 export async function updateVehicleBrand(id: number, data: Partial<typeof vehicleBrands.$inferInsert>) {
-  console.log('updateVehicleBrand', id, data)
   const db = await getDb()
   await db.update(vehicleBrands).set({ ...data, updatedAt: new Date() }).where(eq(vehicleBrands.id, id))
 }
@@ -66,6 +65,6 @@ export async function getVehicleBrandsWithModels() {
   const db = await getDb()
   return db.query.vehicleBrands.findMany({
     orderBy: asc(vehicleBrands.sortOrder),
-    with: { models: { columns: { id: true } } },
+    with: { models: { columns: { id: true, name: true } } },
   })
 }

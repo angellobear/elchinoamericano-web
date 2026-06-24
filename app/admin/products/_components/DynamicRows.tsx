@@ -41,7 +41,7 @@ export function DynamicRows({ name, columns, initialRows = [], addLabel = 'Agreg
                 value={row[col.key] ?? ''}
                 onChange={e => update(i, col.key, e.target.value)}
                 placeholder={col.placeholder ?? col.label}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c]"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
               />
             </div>
           ))}
@@ -60,7 +60,7 @@ export function DynamicRows({ name, columns, initialRows = [], addLabel = 'Agreg
       <button
         type="button"
         onClick={addRow}
-        className="inline-flex items-center gap-1.5 text-sm text-[#0d1f3c] hover:text-[#e03030] transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-navy hover:text-brand transition-colors"
       >
         <Plus size={14} />
         {addLabel}

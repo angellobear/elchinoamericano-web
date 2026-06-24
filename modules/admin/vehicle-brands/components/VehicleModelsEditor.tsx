@@ -1,0 +1,325 @@
+'use client'
+
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Pencil, Trash2, Check, X } from 'lucide-react'
+import { routes } from '@/lib/routes'
+import { vehicleModelFormSchema } from '@/modules/admin/vehicle-brands/form-schema'
+
+interface Model {
+  id: number
+  name: string
+  displacement?: string | null
+  fuelType?: string | null
+  transmission?: string | null
+  bodyType?: string | null
+  isActive?: boolean | null
+}
+
+interface Brand {
+  id: number
+  name: string
+  origin: string
+  isActive?: boolean | null
+  models?: Model[]
+}
+
+const emptyForm = {
+  name: '',
+  displacement: '',
+  fuelType: 'gasoline',
+  transmission: '',
+  bodyType: '',
+}
+
+function getPayloadErrorMessage() {
+  return 'Revisa los datos del modelo antes de guardar.'
+}
+
+export function VehicleModelsEditor({ brand }: { brand: Brand }) {
+  const [models, setModels] = useState<Model[]>((brand.models ?? []).filter((model) => model.isActive !== false))
+  const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [editingId, setEditingId] = useState<number | null>(null)
+  const [editForm, setEditForm] = useState(emptyForm)
+
+  async function addModel() {
+    const parsed = vehicleModelFormSchema.safeParse({
+      ...form,
+      displacement: form.displacement || undefined,
+      fuelType: form.fuelType || undefined,
+      transmission: form.transmission || undefined,
+      bodyType: form.bodyType || undefined,
+    })
+
+    if (!parsed.success) {
+      toast.error(getPayloadErrorMessage())
+      return
+    }
+
+    setSaving(true)
+    try {
+      const res = await fetch(routes.admin.vehicleBrands.models(brand.id), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(parsed.data),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      const { model } = await res.json()
+      setModels((current) => [...current, { ...model, isActive: true }])
+      setForm(emptyForm)
+      toast.success('Modelo agregado')
+    } catch {
+      toast.error('Error al agregar modelo')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function startEdit(model: Model) {
+    setEditingId(model.id)
+    setEditForm({
+      name: model.name,
+      displacement: model.displacement ?? '',
+      fuelType: model.fuelType ?? 'gasoline',
+      transmission: model.transmission ?? '',
+      bodyType: model.bodyType ?? '',
+    })
+  }
+
+  async function saveEdit(id: number) {
+    const parsed = vehicleModelFormSchema.safeParse({
+      ...editForm,
+      displacement: editForm.displacement || undefined,
+      fuelType: editForm.fuelType || undefined,
+      transmission: editForm.transmission || undefined,
+      bodyType: editForm.bodyType || undefined,
+    })
+
+    if (!parsed.success) {
+      toast.error(getPayloadErrorMessage())
+      return
+    }
+
+    setSaving(true)
+    try {
+      const res = await fetch(routes.admin.vehicleBrands.model(brand.id, id), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(parsed.data),
+      })
+      if (!res.ok) throw new Error(await res.text())
+      setModels((current) => current.map((model) => (model.id === id ? { ...model, ...parsed.data } : model)))
+      setEditingId(null)
+      toast.success('Modelo actualizado')
+    } catch {
+      toast.error('Error al actualizar modelo')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  async function removeModel(id: number) {
+    try {
+      const res = await fetch(routes.admin.vehicleBrands.model(brand.id, id), { method: 'DELETE' })
+      if (!res.ok) throw new Error()
+      setModels((current) => current.filter((model) => model.id !== id))
+      toast.success('Modelo eliminado')
+    } catch {
+      toast.error('Error al eliminar modelo')
+    }
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-100 font-medium text-gray-700 text-sm">
+          Modelos ({models.length})
+        </div>
+        <table className="w-full text-sm">
+          <thead className="bg-gray-50 border-b border-gray-100">
+            <tr>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Modelo</th>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Cilindraje</th>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Combustible</th>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Transmisión</th>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Carrocería</th>
+              <th className="px-4 py-2 w-20"></th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {models.map((model) => (
+              <tr key={model.id} className="hover:bg-gray-50">
+                {editingId === model.id ? (
+                  <>
+                    <td className="px-2 py-2">
+                      <input
+                        value={editForm.name}
+                        onChange={(event) => setEditForm((current) => ({ ...current, name: event.target.value }))}
+                        className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
+                      />
+                    </td>
+                    <td className="px-2 py-2">
+                      <input
+                        value={editForm.displacement}
+                        onChange={(event) => setEditForm((current) => ({ ...current, displacement: event.target.value }))}
+                        placeholder="2.2"
+                        className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
+                      />
+                    </td>
+                    <td className="px-2 py-2">
+                      <select
+                        value={editForm.fuelType}
+                        onChange={(event) => setEditForm((current) => ({ ...current, fuelType: event.target.value }))}
+                        className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
+                      >
+                        <option value="gasoline">Gasolina</option>
+                        <option value="diesel">Diésel</option>
+                        <option value="hybrid">Híbrido</option>
+                        <option value="electric">Eléctrico</option>
+                      </select>
+                    </td>
+                    <td className="px-2 py-2">
+                      <select
+                        value={editForm.transmission}
+                        onChange={(event) => setEditForm((current) => ({ ...current, transmission: event.target.value }))}
+                        className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
+                      >
+                        <option value="">—</option>
+                        <option value="manual">Manual</option>
+                        <option value="automatic">Automática</option>
+                        <option value="cvt">CVT</option>
+                      </select>
+                    </td>
+                    <td className="px-2 py-2">
+                      <input
+                        value={editForm.bodyType}
+                        onChange={(event) => setEditForm((current) => ({ ...current, bodyType: event.target.value }))}
+                        placeholder="SUV, sedan..."
+                        className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
+                      />
+                    </td>
+                    <td className="px-2 py-2">
+                      <div className="flex gap-1 justify-end">
+                        <button
+                          onClick={() => saveEdit(model.id)}
+                          disabled={saving}
+                          className="p-1 rounded text-emerald-600 hover:bg-emerald-50 disabled:opacity-40"
+                        >
+                          <Check size={13} />
+                        </button>
+                        <button
+                          onClick={() => setEditingId(null)}
+                          className="p-1 rounded text-gray-400 hover:bg-gray-100"
+                        >
+                          <X size={13} />
+                        </button>
+                      </div>
+                    </td>
+                  </>
+                ) : (
+                  <>
+                    <td className="px-4 py-2.5 font-medium">{model.name}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{model.displacement ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{model.fuelType ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{model.transmission ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{model.bodyType ?? '—'}</td>
+                    <td className="px-4 py-2.5">
+                      <div className="flex gap-1 justify-end">
+                        <button
+                          onClick={() => startEdit(model)}
+                          className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-navy"
+                        >
+                          <Pencil size={12} />
+                        </button>
+                        <button
+                          onClick={() => removeModel(model.id)}
+                          className="p-1.5 rounded hover:bg-red-50 text-gray-400 hover:text-brand"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    </td>
+                  </>
+                )}
+              </tr>
+            ))}
+            {models.length === 0 ? (
+              <tr>
+                <td colSpan={6} className="text-center text-gray-400 py-8 text-sm">
+                  Sin modelos registrados
+                </td>
+              </tr>
+            ) : null}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-sm p-5">
+        <h3 className="font-medium text-gray-700 text-sm mb-4">Agregar modelo</h3>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="col-span-2">
+            <label className="block text-xs text-gray-500 mb-1">Nombre del modelo *</label>
+            <input
+              value={form.name}
+              onChange={(event) => setForm((current) => ({ ...current, name: event.target.value }))}
+              placeholder="Wingle 5"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Cilindraje</label>
+            <input
+              value={form.displacement}
+              onChange={(event) => setForm((current) => ({ ...current, displacement: event.target.value }))}
+              placeholder="2.2, 1.5T"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+            />
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Combustible</label>
+            <select
+              value={form.fuelType}
+              onChange={(event) => setForm((current) => ({ ...current, fuelType: event.target.value }))}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
+            >
+              <option value="gasoline">Gasolina</option>
+              <option value="diesel">Diésel</option>
+              <option value="hybrid">Híbrido</option>
+              <option value="electric">Eléctrico</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Transmisión</label>
+            <select
+              value={form.transmission}
+              onChange={(event) => setForm((current) => ({ ...current, transmission: event.target.value }))}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
+            >
+              <option value="">—</option>
+              <option value="manual">Manual</option>
+              <option value="automatic">Automática</option>
+              <option value="cvt">CVT</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Carrocería</label>
+            <input
+              value={form.bodyType}
+              onChange={(event) => setForm((current) => ({ ...current, bodyType: event.target.value }))}
+              placeholder="SUV, sedan, pickup..."
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
+            />
+          </div>
+        </div>
+        <button
+          onClick={addModel}
+          disabled={!form.name.trim() || saving}
+          className="mt-4 px-4 py-2 bg-navy text-white text-sm rounded-lg disabled:opacity-40 hover:bg-navy-dark transition-colors"
+        >
+          {saving ? 'Guardando…' : '+ Agregar modelo'}
+        </button>
+      </div>
+    </div>
+  )
+}

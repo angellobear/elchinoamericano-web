@@ -36,13 +36,13 @@ export default async function UsersPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-[#0d1f3c]">Usuarios</h1>
+          <h1 className="text-2xl font-bold text-navy">Usuarios</h1>
           <p className="text-gray-500 text-sm mt-0.5">{users.length} usuarios registrados</p>
         </div>
         {isSuperAdmin && (
           <Link
             href="/admin/users/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-[#e03030] text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
           >
             <Plus size={15} />
             Nuevo usuario
@@ -71,8 +71,8 @@ export default async function UsersPage() {
                 <tr key={u.id} className="hover:bg-gray-50/70 transition-colors">
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 bg-[#0d1f3c]/10 rounded-full flex items-center justify-center shrink-0">
-                        <span className="text-[#0d1f3c] text-xs font-semibold uppercase">
+                      <div className="w-7 h-7 bg-navy/10 rounded-full flex items-center justify-center shrink-0">
+                        <span className="text-navy text-xs font-semibold uppercase">
                           {(u.fullName ?? u.email).charAt(0)}
                         </span>
                       </div>
@@ -85,7 +85,7 @@ export default async function UsersPage() {
                   <td className="px-4 py-3.5 text-gray-500">{u.email}</td>
                   <td className="px-4 py-3.5">
                     <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${
-                      roleName === 'superadmin' ? 'bg-[#0d1f3c] text-white' :
+                      roleName === 'superadmin' ? 'bg-navy text-white' :
                       roleName === 'admin'       ? 'bg-blue-100 text-blue-700' :
                                                    'bg-gray-100 text-gray-600'
                     }`}>
@@ -108,7 +108,7 @@ export default async function UsersPage() {
                       {isSuperAdmin && (
                         <Link
                           href={`/admin/users/${u.id}`}
-                          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-[#0d1f3c] transition-colors"
+                          className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-navy transition-colors"
                           title="Editar"
                         >
                           <Pencil size={13} />

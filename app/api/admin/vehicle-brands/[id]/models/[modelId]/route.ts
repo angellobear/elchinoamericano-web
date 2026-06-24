@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { deleteVehicleModel, updateVehicleModel } from '@/lib/db/vehicle-brands'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { logger } from '@/lib/logger'
+import { vehicleModelFormSchema } from '@/modules/admin/vehicle-brands/form-schema'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string; modelId: string }> }) {
   const payload = await getJwtPayload()
@@ -11,12 +12,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   try {
     const { modelId } = await params
     const body = await req.json()
+    const parsed = vehicleModelFormSchema.safeParse(body)
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error.issues[0]?.message ?? 'Datos inválidos' }, { status: 400 })
+    }
+
+    const data = parsed.data
     await updateVehicleModel(Number(modelId), {
-      name:         body.name,
-      displacement: body.displacement ?? null,
-      fuelType:     body.fuelType ?? null,
-      transmission: body.transmission ?? null,
-      bodyType:     body.bodyType ?? null,
+      name:         data.name,
+      displacement: data.displacement ?? null,
+      fuelType:     data.fuelType ?? null,
+      transmission: data.transmission ?? null,
+      bodyType:     data.bodyType ?? null,
     })
     logger.info({ modelId }, 'Vehicle model updated')
     return NextResponse.json({ ok: true })

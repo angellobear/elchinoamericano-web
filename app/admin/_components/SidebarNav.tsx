@@ -39,13 +39,13 @@ export function SidebarNav({ isSuperAdmin, email, role }: Props) {
               href={href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 ${
                 active
-                  ? 'bg-white/15 text-white font-medium border-l-2 border-[#e03030]'
+                  ? 'bg-white/15 text-white font-medium border-l-2 border-brand'
                   : 'text-white/60 hover:text-white hover:bg-white/10'
               }`}
             >
               <Icon
                 size={16}
-                className={active ? 'text-[#e03030] shrink-0' : 'shrink-0 opacity-60'}
+                className={active ? 'text-brand shrink-0' : 'shrink-0 opacity-60'}
               />
               {label}
             </Link>

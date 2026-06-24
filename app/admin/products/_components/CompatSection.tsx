@@ -76,7 +76,7 @@ export function CompatSection({ brands, initialCompat = [] }: Props) {
             <select
               value={row.brandId}
               onChange={e => update(i, 'brandId', e.target.value)}
-              className="border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c] bg-white"
+              className="border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
             >
               <option value="">Marca...</option>
               {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
@@ -88,7 +88,7 @@ export function CompatSection({ brands, initialCompat = [] }: Props) {
               value={row.modelId}
               onChange={e => update(i, 'modelId', e.target.value)}
               disabled={!row.brandId}
-              className="border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0d1f3c] bg-white disabled:bg-gray-50 disabled:text-gray-400"
+              className="border border-gray-200 rounded-lg px-2 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white disabled:bg-gray-50 disabled:text-gray-400"
             >
               <option value="">Modelo...</option>
               {models.map(m => <option key={m.id} value={m.id}>{m.name}</option>)}
@@ -102,7 +102,7 @@ export function CompatSection({ brands, initialCompat = [] }: Props) {
               placeholder="2018"
               min={1990}
               max={2030}
-              className="border border-gray-200 rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#0d1f3c]"
+              className="border border-gray-200 rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-navy"
             />
 
             <input
@@ -113,7 +113,7 @@ export function CompatSection({ brands, initialCompat = [] }: Props) {
               placeholder="2024"
               min={1990}
               max={2030}
-              className="border border-gray-200 rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-[#0d1f3c]"
+              className="border border-gray-200 rounded-lg px-2 py-2 text-sm text-center focus:outline-none focus:ring-2 focus:ring-navy"
             />
 
             <button
@@ -134,7 +134,7 @@ export function CompatSection({ brands, initialCompat = [] }: Props) {
       <button
         type="button"
         onClick={addRow}
-        className="inline-flex items-center gap-1.5 text-sm text-[#0d1f3c] hover:text-[#e03030] transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-navy hover:text-brand transition-colors"
       >
         <Plus size={14} />
         Agregar compatibilidad
