@@ -1,0 +1,18 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0F172A"/>
+  <rect x="72" y="72" width="1056" height="486" rx="32" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <rect x="116" y="116" width="120" height="120" rx="18" fill="#E03030"/>
+  <path d="M167.592 192V160.64H185.96V166.448H174.696V173.456H185.128V179.264H174.696V192H167.592Z" fill="white"/>
+  <path d="M304 176C304 125.19 345.19 84 396 84H1020C1070.81 84 1112 125.19 1112 176V454C1112 504.81 1070.81 546 1020 546H396C345.19 546 304 504.81 304 454V176Z" fill="#0B1220"/>
+  <text x="116" y="286" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">EL CHINO</text>
+  <text x="116" y="328" fill="#E03030" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">AMERICANO</text>
+  <text x="116" y="398" fill="#CBD5E1" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700">Repuestos automotrices</text>
+  <text x="116" y="454" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="400">Comparte productos, marcas y compatibilidades con una URL lista para redes.</text>
+  <text x="116" y="505" fill="#94A3B8" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="400">Vehículos chinos y americanos · Envíos a todo Ecuador</text>
+  <circle cx="984" cy="214" r="98" fill="#111827" stroke="#334155" stroke-width="2"/>
+  <circle cx="984" cy="214" r="68" fill="#1E293B"/>
+  <path d="M952 214H1016" stroke="#E03030" stroke-width="14" stroke-linecap="round"/>
+  <path d="M984 182V246" stroke="#E03030" stroke-width="14" stroke-linecap="round"/>
+  <rect x="862" y="364" width="244" height="92" rx="18" fill="#E03030"/>
+  <text x="905" y="421" fill="white" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="700">Catálogo</text>
+</svg>

@@ -1,163 +1,175 @@
-# Catalog Architecture Ideas
+# Catalog Architecture
 
-Documento de referencia para una futura implementación del catálogo con mejor SEO, URLs compartibles y pre-renderizado estratégico.
+## Objective
 
-## Objetivos
+Define the current and future architecture for the public catalog so it stays:
 
-- Mantener URLs fáciles de compartir para filtros y productos.
-- Aprovechar renderizado estático donde sí aporta valor.
-- Evitar generar estáticamente combinaciones infinitas de filtros.
-- Separar claramente páginas SEO de navegación exploratoria.
+- shareable
+- server-first
+- SEO-friendly
+- compatible with SSG where it adds value
 
-## Estado actual
+## Current Architecture
 
-- La ficha de producto en `app/catalogo/[id]/page.tsx` ya es una buena candidata a SSG.
-- El listado de `app/catalogo/page.tsx` usa filtros por query string, útil para compartir.
-- Los filtros actuales viven en parámetros como `q`, `precio`, `categoria`, `marca` y `pagina`.
-
-## Dirección recomendada
-
-### 1. Mantener producto como página estática
-
-Ruta:
-
-- `/catalogo/[id]`
-
-Idea:
-
-- Seguir usando `generateStaticParams()`.
-- Mantener `generateMetadata()` por producto.
-- Agregar Open Graph más fuerte en una etapa posterior.
-
-Beneficio:
-
-- Excelente para SEO.
-- Excelente para compartir.
-- Carga rápida y HTML pre-renderizado.
-
-### 2. Mantener `/catalogo` como entrada general
-
-Ruta:
+### Main routes
 
 - `/catalogo`
+- `/catalogo/[id]`
 
-Idea:
+### Current file ownership
 
-- Usarla como página principal del catálogo.
-- Puede renderizar una selección general, destacados o un listado inicial.
-- Los filtros complejos pueden seguir viviendo en query params.
+- `app/catalogo/page.tsx`
+  Server-first catalog entry page.
+  Owns metadata and high-level catalog JSON-LD.
 
-Ejemplos:
+- `app/catalogo/CatalogoClient.tsx`
+  Interactive client layer for filters, search, chip removal, and pagination behavior.
+
+- `app/catalogo/[id]/page.tsx`
+  Product detail page.
+  Owns product metadata, canonical, social-sharing metadata, and structured data.
+
+- `lib/catalog.ts`
+  Shared parsing and URL-building helpers for the catalog.
+
+- `lib/seo.ts`
+  Shared SEO helpers for titles, descriptions, canonical URLs, and social image fallbacks.
+
+## Implemented Decisions
+
+### 1. Catalog entry stays server-first
+
+`/catalogo` should stay as the general entry to the catalog.
+
+Why:
+
+- It can ship metadata and structured data from the server.
+- It keeps the page ready for future SEO upgrades.
+- It still supports shareable query params for real user flows.
+
+### 2. Filters use query params
+
+Current filter state can live in query params such as:
+
+- `q`
+- `precio`
+- `categoria`
+- `marca`
+- `pagina`
+
+Why:
+
+- URLs can be shared easily.
+- The filter state is stable and inspectable.
+- We avoid trying to statically generate an unbounded number of combinations.
+
+### 3. Product detail is the main SEO asset
+
+`/catalogo/[id]` is the strongest catalog page for:
+
+- SEO
+- AEO
+- GEO
+- social sharing
+
+Current direction:
+
+- use `generateStaticParams()`
+- use server metadata
+- use JSON-LD
+- use product image for sharing when available
+- fallback to a stable asset in `public/` when not
+
+## Sharing Rules
+
+### Catalog listing
+
+`/catalogo` supports shareable query strings for:
+
+- filtered navigation
+- quick user sharing
+- commercial support flows
+
+Examples:
 
 - `/catalogo?q=filtro+aceite`
 - `/catalogo?marca=chery`
 - `/catalogo?categoria=frenos&precio=20-50`
 
-Beneficio:
+### Product detail
 
-- Muy buena UX.
-- URLs fáciles de compartir.
-- No obliga a generar miles de páginas estáticas.
+`/catalogo/[id]` must remain the preferred share URL for products.
 
-### 3. Crear rutas SEO dedicadas para taxonomías
+Rules:
 
-Rutas propuestas:
+- canonical must point to the product URL
+- Open Graph must use product image if available
+- Twitter metadata must use large image mode
+- fallback image must exist in `public/`
+
+## Rendering Strategy
+
+### `/catalogo`
+
+- server-first page
+- interactive filtering in client component
+- query params for shareability
+- do not try to pre-generate every filter combination
+
+### `/catalogo/[id]`
+
+- strong SSG candidate
+- server metadata
+- product structured data
+- social-sharing ready
+
+## Structured Data Direction
+
+### Catalog page
+
+Use collection-oriented structured data such as:
+
+- `CollectionPage`
+- `ItemList`
+
+### Product page
+
+Use product-oriented structured data such as:
+
+- `Product`
+- `BreadcrumbList`
+- `FAQPage`
+
+## Future Expansion
+
+If we want stronger taxonomy SEO later, the preferred route structure is:
 
 - `/catalogo/categoria/[categoria]`
 - `/catalogo/marca/[marca]`
 
-Idea:
+These should be treated as stable landing pages, not as arbitrary filter combinations.
 
-- Estas rutas representarían landing pages más estables.
-- Sí conviene evaluarlas para SSG o ISR.
-- Desde ahí se pueden aplicar filtros adicionales por query string si hace falta.
+## Explicit Non-Goals
 
-Ejemplos:
+Do not:
 
-- `/catalogo/categoria/frenos`
-- `/catalogo/marca/chery`
-- `/catalogo/marca/chery?precio=20-50`
+- pre-generate every search/filter combination
+- move SEO responsibilities into `CatalogoClient`
+- make product detail depend on client-only rendering for core content
 
-Beneficio:
+## Next Steps
 
-- Mejor posicionamiento por intención de búsqueda.
-- Arquitectura más clara para SEO.
-- Permite contenido editorial adicional por categoría o marca.
+### Phase 1
 
-### 4. No pre-generar combinaciones de filtros
+- Keep current catalog architecture stable.
+- Continue improving metadata and structured data on public routes.
 
-No recomendado:
+### Phase 2
 
-- Generar estáticamente todas las combinaciones de búsqueda, precio, marca, categoría y paginación.
+- Add taxonomy routes for category and brand.
+- Add route-specific metadata and editorial SEO copy.
 
-Motivo:
+### Phase 3
 
-- El espacio de combinaciones crece demasiado.
-- Mucha URL tendría poco valor SEO.
-- Aumenta complejidad sin beneficio claro.
-
-## Arquitectura futura sugerida
-
-### Nivel 1: páginas SEO fuertes
-
-- `/catalogo`
-- `/catalogo/categoria/[categoria]`
-- `/catalogo/marca/[marca]`
-- `/catalogo/[id]`
-
-### Nivel 2: refinamientos de navegación
-
-- Query params para filtros secundarios.
-- Query params para búsqueda interna.
-- Query params para paginación.
-
-## Estrategia de renderizado sugerida
-
-### Producto
-
-- SSG.
-
-### Categoría y marca
-
-- SSG o ISR, dependiendo de la fuente real de datos.
-
-### Catálogo general con búsqueda y filtros
-
-- Página base estable.
-- Query params compartibles.
-- Sin intento de pre-generar todas las variantes.
-
-## Ideas adicionales para una segunda fase
-
-- Agregar breadcrumbs específicos por marca y categoría.
-- Crear copy SEO por categoría.
-- Crear copy SEO por marca.
-- Definir canonical para evitar duplicados por filtros.
-- Decidir qué combinaciones deben ser `index` y cuáles `noindex`.
-- Agregar `opengraph-image` por producto o por secciones del catálogo.
-
-## Propuesta de implementación por fases
-
-### Fase 1
-
-- Mantener detalle de producto estático.
-- Mantener `/catalogo` como página compartible con query params.
-
-### Fase 2
-
-- Crear rutas `/catalogo/categoria/[categoria]`.
-- Crear rutas `/catalogo/marca/[marca]`.
-- Agregar metadata específica por taxonomía.
-
-### Fase 3
-
-- Revisar canónicos.
-- Revisar indexabilidad de combinaciones con filtros.
-- Añadir contenido SEO adicional.
-
-## Decisiones abiertas
-
-- Si `id` debe seguir siendo slug de producto o conviene renombrarlo a `slug`.
-- Si categoría y marca vivirán con datos mock o con fuente persistente.
-- Si la paginación debe permanecer en query params o moverse a segmentos.
-- Si algunas páginas filtradas específicas merecen indexación.
+- Refine canonical rules for filtered pages.
+- Decide which filtered states should be indexable.

@@ -44,3 +44,6 @@ logs/
 
 .claude
 .agents
+
+# local design/ai prompts
+/prompts

@@ -1,90 +1,138 @@
 # Admin Architecture
 
-## Objetivo
+## Objective
 
-Tratar `admin` como un subproyecto dentro de la app de Next.js, de forma que:
+Treat `admin` as a separate internal subproject inside the Next.js app with clear boundaries between:
 
-- `app/admin` sea solo la capa de rutas.
-- `modules/admin` concentre la logica del dominio admin.
-- `lib/db` quede como adaptador de infraestructura a la base de datos.
-- Los componentes compartidos del admin vivan fuera de las rutas y puedan migrarse con menos friccion.
+- route layer
+- module/domain layer
+- shared admin layer
+- infrastructure layer
 
-Esta estructura permite seguir usando Server Actions hoy, sin acoplar toda la UI directamente a Drizzle o al App Router.
+## Important Scope Rule
 
-## Capas
+Admin pages are internal tooling.
 
-### 1. Route layer
+They do not require:
 
-Ubicacion: `app/admin/**`
+- SEO
+- AEO
+- GEO
+- social-sharing metadata optimization
 
-Responsabilidad:
+That work is reserved for customer-facing public routes.
 
-- definir rutas de Next.js
-- resolver params
-- cargar datos desde `modules/admin/**/server`
-- renderizar vistas del modulo
+## Current Route Layer
 
-Regla:
+Location:
 
-- las pages deben ser delgadas
-- no deben contener mutaciones inline salvo casos excepcionales
+- `app/admin/**`
 
-### 2. Module layer
+Current routes include:
 
-Ubicacion: `modules/admin/**`
+- `app/admin/layout.tsx`
+- `app/admin/dashboard/page.tsx`
+- `app/admin/categories/page.tsx`
+- `app/admin/products/page.tsx`
+- `app/admin/users/page.tsx`
+- `app/admin/vehicle-brands/page.tsx`
+- `app/admin/part-brands/page.tsx`
+- `app/admin/suppliers/page.tsx`
+- `app/admin/inventory/page.tsx`
 
-Responsabilidad:
+Shared route-adjacent components currently present:
 
-- tipos del modulo
-- componentes del modulo
-- server actions del modulo
-- contratos entre UI y servidor
-- repositorios del modulo que desacoplan la UI de `lib/db`
+- `app/admin/_components/ImageUploadField.tsx`
+- `app/admin/_components/SidebarNav.tsx`
+- `app/admin/_components/SubmitButton.tsx`
+- `app/admin/_components/ToastOnMount.tsx`
 
-Cada modulo tiene, cuando aplica:
+## Layer Responsibilities
 
-```text
-modules/admin/<module>/
-  components/
-  server/
-    actions.ts
-    repository.ts
-  types.ts
-```
+### 1. Route Layer
 
-### 3. Shared admin layer
+Location:
 
-Ubicacion: `modules/admin/shared/**`
+- `app/admin/**`
 
-Responsabilidad:
+Responsibilities:
 
-- componentes compartidos por varios modulos
-- tipos compartidos de acciones
-- helpers server reutilizables
+- define Next.js routes
+- resolve params
+- load data from module server logic
+- render module UI
 
-Ejemplos:
+Rules:
 
+- pages should stay thin
+- avoid embedding domain logic directly in route files
+
+### 2. Module Layer
+
+Location:
+
+- `modules/admin/**`
+
+Responsibilities:
+
+- module-specific components
+- schemas
+- server actions
+- repositories
+- types
+
+Current module areas:
+
+- `modules/admin/categories/**`
+- `modules/admin/products/**`
+- `modules/admin/users/**`
+- `modules/admin/vehicle-brands/**`
+- `modules/admin/part-brands/**`
+- `modules/admin/suppliers/**`
+- `modules/admin/shared/**`
+
+### 3. Shared Admin Layer
+
+Location:
+
+- `modules/admin/shared/**`
+
+Responsibilities:
+
+- reusable admin components
+- shared action result contracts
+- form helpers
+- permission helpers
+
+Current examples:
+
+- `modules/admin/shared/components/AdminFormControls.tsx`
+- `modules/admin/shared/components/AdminPageHeader.tsx`
 - `modules/admin/shared/components/StatusToggleButton.tsx`
-- `modules/admin/shared/types/action-result.ts`
+- `modules/admin/shared/components/ValidatedForm.tsx`
+- `modules/admin/shared/server/form-data.ts`
 - `modules/admin/shared/server/permissions.ts`
+- `modules/admin/shared/server/zod.ts`
+- `modules/admin/shared/types/action-result.ts`
 
-### 4. Infrastructure layer
+### 4. Infrastructure Layer
 
-Ubicacion: `lib/**`
+Location:
 
-Responsabilidad:
+- `lib/**`
 
-- acceso real a DB
+Responsibilities:
+
+- database access
 - auth
-- logger
-- integraciones externas
+- logging
+- external integrations
 
-Regla:
+Rule:
 
-- `lib/db` no debe conocer toasts, redirects ni UX
-- esa orquestacion vive en Server Actions del modulo
+- infrastructure should not know about toasts, route revalidation strategy at the page UX level, or view concerns
 
-## Estructura actual recomendada
+## Current Recommended Organization
 
 ```text
 app/admin/
@@ -96,6 +144,7 @@ app/admin/
   vehicle-brands/page.tsx
   part-brands/page.tsx
   suppliers/page.tsx
+  inventory/page.tsx
 
 modules/admin/
   shared/
@@ -125,42 +174,19 @@ modules/admin/
     types.ts
 ```
 
-## Reglas de organizacion
+## Actions and Repositories
 
-### Shared vs local
+Each admin module should own its own server action and repository boundary where needed.
 
-Algo es `shared` si:
+Action responsibilities:
 
-- se usa en varios modulos, o
-- es una primitive del admin, o
-- define un contrato comun
+- validate auth and permissions
+- validate input
+- call repository logic
+- trigger revalidation
+- return a consistent result shape
 
-Algo se queda local al modulo si:
-
-- conoce labels, columnas o reglas de negocio de una sola entidad
-- solo tiene sentido dentro de un modulo
-
-### Server Actions
-
-Cada modulo define sus propias Server Actions.
-
-Las actions:
-
-- validan sesion y permisos
-- llaman a un repositorio del modulo
-- revalidan rutas
-- devuelven un `ActionResult`
-
-Eso evita mezclar:
-
-- acceso a DB
-- auth
-- mensajes de UI
-- detalles del App Router
-
-## Contratos compartidos
-
-Todas las mutaciones del admin deberian converger en un shape comun:
+Recommended shared result shape:
 
 ```ts
 interface ActionResult<TData = void> {
@@ -171,69 +197,49 @@ interface ActionResult<TData = void> {
 }
 ```
 
-Esto unifica:
+## Form Strategy
 
-- toasts
-- formularios
-- toggles
-- manejo de errores de servidor
+Preferred approach:
 
-## Validacion de formularios
+- native HTML validation for basic UX
+- `zod` for server truth
+- `ValidatedForm` for reusable admin behavior
+- `react-hook-form` only when a view truly needs heavier client form UX
 
-La estrategia recomendada es:
+Suggested ownership:
 
-- validacion HTML nativa para feedback basico inmediato
-- validacion cliente con `ValidatedForm` + `zod` para evitar submits invalidos
-- validacion con `zod` en servidor como fuente de verdad
-- `react-hook-form` solo cuando una pantalla necesite UX cliente compleja
+- `modules/admin/<module>/form-schema.ts`
+- `modules/admin/<module>/components/*Form*.tsx`
 
-Esto mantiene el bundle del admin liviano y funciona bien con Server Actions.
+## Shared vs Local Rule
 
-Ubicacion sugerida:
+Put code in `shared` only when:
 
-```text
-modules/admin/<module>/form-schema.ts
-modules/admin/<module>/components/*FormFields.tsx
-```
+- multiple admin modules use it, or
+- it is a true admin primitive, or
+- it defines a cross-module contract
 
-## Rutas centralizadas
+Keep code local to a module when:
 
-Las rutas deben salir de `lib/routes.ts`.
+- it knows one entity deeply
+- it only serves one module’s workflow
+- it contains labels, columns, or domain rules for one area
 
-Eso evita strings hardcodeados en:
+## Uploads Rule
 
-- pages
-- links
-- actions
-- fetches cliente
+Single-image helpers can stay generic.
 
-Y deja el admin mejor preparado para una migracion futura.
+For product-specific multi-image needs, prefer a dedicated product component under:
 
-## Uploads multiples en productos
+- `modules/admin/products/components/`
 
-`ImageUploadField` funciona bien para entidades con imagen unica.
+instead of pushing that complexity into generic shared inputs.
 
-Para productos, la direccion recomendada es crear un componente dedicado como:
+## Future Direction
 
-```text
-modules/admin/products/components/ProductImagesField.tsx
-```
+This structure should remain flexible enough to support either:
 
-Ese componente debe soportar multiples archivos (`n` imagenes), orden, preview y eliminacion, sin meter esa complejidad en formularios simples como marcas o categorias.
+1. Next.js admin with Server Actions
+2. a future separate backend behind repositories
 
-## Decision sobre backend futuro
-
-Esta arquitectura deja abierta cualquiera de estas rutas:
-
-1. Mantener admin y backend dentro del mismo proyecto usando Server Actions.
-2. Migrar despues a otro backend reemplazando `repository.ts` por un cliente HTTP o SDK.
-
-La ventaja es que la UI del admin ya no depende directamente de `lib/db` en las rutas ni en los componentes cliente.
-
-## Principios aplicados
-
-- Colocation por modulo para mantener contexto cerca del uso.
-- Shared explicito solo cuando hay reutilizacion real.
-- Server Actions autenticadas como capa de aplicacion.
-- Separacion entre dominio admin e infraestructura DB.
-- Pages delgadas para reducir acoplamiento con App Router.
+The key principle is to avoid coupling admin UI directly to raw DB calls inside route files or client components.

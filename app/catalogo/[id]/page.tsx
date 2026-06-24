@@ -2,13 +2,22 @@ import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import Link from "next/link"
 import Image from "next/image"
-import { ChevronRight, ShoppingCart, MessageCircle, Tag, Layers, Car, Package } from "lucide-react"
+import { ChevronRight, MessageCircle, Tag, Layers, Car, Package } from "lucide-react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import ProductCarousel from "@/components/ProductCarousel"
 import AddToCartButton from "@/components/AddToCartButton"
 import { products } from "@/data/products"
 import { Product, ProductType } from "@/types"
+import {
+  getProductSeoDescription,
+  getProductSeoTitle,
+  getProductShareImage,
+  getProductShareImageAlt,
+  getProductUrl,
+  SITE_NAME,
+  SITE_URL,
+} from "@/lib/seo"
 
 export async function generateStaticParams() {
   return products.map((p) => ({ id: p.slug }))
@@ -28,15 +37,44 @@ export async function generateMetadata({
     : product.type === "oem"   ? "Genuino OEM"
                                 : "Alterno / Aftermarket"
 
-  const title = `${product.title} ${product.part_brand?.name ?? ''} | El Chino Americano`
-  const description = `Compra ${product.title} marca ${product.part_brand?.name ?? ''}. ${typeLabel}. Compatible con ${product.short_description ?? ''}. Precio: $${product.price.toFixed(2)}.`
+  const title = getProductSeoTitle(product)
+  const description = getProductSeoDescription(product, typeLabel)
+  const imageUrl = getProductShareImage(product)
+  const imageAlt = getProductShareImageAlt(product)
+  const canonicalUrl = getProductUrl(product)
 
   return {
     title,
     description,
-    openGraph: { title, description, type: "website", siteName: "El Chino Americano", locale: "es_EC" },
-    twitter: { card: "summary", title, description },
-    alternates: { canonical: `https://elchinoamericano.com/catalogo/${product.slug}` },
+    keywords: [
+      product.title,
+      product.part_brand?.name,
+      product.category?.name,
+      product.code,
+      "repuestos automotrices",
+      "Ecuador",
+    ].filter((value): value is string => Boolean(value)),
+    alternates: { canonical: canonicalUrl },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      siteName: SITE_NAME,
+      locale: "es_EC",
+      url: canonicalUrl,
+      images: [
+        {
+          url: imageUrl,
+          alt: imageAlt,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
   }
 }
 
@@ -59,20 +97,44 @@ const TYPE_CONFIG: Record<ProductType, { label: string; description: string; col
 }
 
 function buildJsonLd(product: Product) {
+  const productUrl = getProductUrl(product)
+  const productImage = getProductShareImage(product)
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: `${product.title} ${product.part_brand?.name ?? ''}`,
+    name: `${product.title} ${product.part_brand?.name ?? ""}`.trim(),
     description: product.description ?? product.short_description,
+    image: [productImage],
+    url: productUrl,
+    sku: product.sku ?? product.code,
+    mpn: product.code,
     brand: { "@type": "Brand", name: product.part_brand?.name },
+    category: product.category?.name,
+    itemCondition:
+      product.condition === "used"
+        ? "https://schema.org/UsedCondition"
+        : product.condition === "refurbished"
+          ? "https://schema.org/RefurbishedCondition"
+          : "https://schema.org/NewCondition",
     offers: {
       "@type": "Offer",
+      url: productUrl,
       price: (product.offer_price ?? product.price).toFixed(2),
       priceCurrency: "USD",
       availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      seller: { "@type": "Organization", name: "El Chino Americano", url: "https://elchinoamericano.com" },
+      seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
+      areaServed: {
+        "@type": "Country",
+        name: "Ecuador",
+      },
     },
-    category: product.category?.name,
+    additionalProperty:
+      product.specs?.map((spec) => ({
+        "@type": "PropertyValue",
+        name: spec.label,
+        value: spec.value,
+      })) ?? [],
   }
 }
 
@@ -81,9 +143,45 @@ function buildBreadcrumbJsonLd(product: Product) {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio",   item: "https://elchinoamericano.com" },
-      { "@type": "ListItem", position: 2, name: "Catálogo", item: "https://elchinoamericano.com/catalogo" },
-      { "@type": "ListItem", position: 3, name: product.title, item: `https://elchinoamericano.com/catalogo/${product.slug}` },
+      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
+      { "@type": "ListItem", position: 3, name: product.title, item: getProductUrl(product) },
+    ],
+  }
+}
+
+function buildFaqJsonLd(product: Product, typeLabel: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "¿Con qué vehículos es compatible este repuesto?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            product.short_description ??
+            "La compatibilidad exacta se confirma según marca, modelo, año y versión del vehículo.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Qué tipo de repuesto es?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `${product.title} corresponde al tipo ${typeLabel}.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: "¿Se puede pedir por WhatsApp y enviar en Ecuador?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text:
+            "Sí. El producto puede consultarse por WhatsApp y la tienda coordina envíos a diferentes ciudades de Ecuador.",
+        },
+      },
     ],
   }
 }
@@ -96,8 +194,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
   const typeConfig = TYPE_CONFIG[product.type]
   const categoryName = product.category?.name ?? ''
-  const primaryImage = product.images?.find(i => i.is_primary)?.url ?? product.images?.[0]?.url
   const effectivePrice = product.offer_price ?? product.price
+  const productUrl = getProductUrl(product)
 
   const related = products
     .filter((p) => p.category?.key === product.category?.key && p.id !== product.id)
@@ -116,12 +214,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const whatsappMsg = encodeURIComponent(
     `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ''} (Cód: ${product.code}). ¿Está disponible? ¿Cuánto es el envío?`
   )
+  const typeLabel = typeConfig.label
+  const faqJsonLd = buildFaqJsonLd(product, typeLabel)
 
   return (
     <>
       <Navbar />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(product)) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(product)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
       <main className="min-h-screen bg-white pt-16">
         {/* Breadcrumb */}
@@ -181,6 +282,16 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 <p className="text-xs text-slate-400 mt-1 font-mono">Cód. {product.code}{product.sku && ` · SKU ${product.sku}`}</p>
               </div>
 
+              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-2">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                  Enlace compartible
+                </p>
+                <p className="text-sm text-slate-700 break-all">{productUrl}</p>
+                <p className="text-xs text-slate-500">
+                  Al compartir esta URL, las redes tomarán la imagen principal del producto. Si no existe, se usará la imagen institucional del sitio.
+                </p>
+              </div>
+
               {/* Price */}
               <div className="flex items-baseline gap-3">
                 {product.offer_price && (
@@ -237,6 +348,36 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <p className="text-xs text-slate-400">
                 El precio final y disponibilidad son confirmados por el vendedor. Envíos a todo Ecuador.
               </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-slate-100 bg-slate-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
+                  Compatibilidad
+                </p>
+                <p className="text-sm text-slate-700">
+                  {product.short_description ??
+                    "Confirma la compatibilidad con marca, modelo, año y versión antes de comprar."}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
+                  Tipo de repuesto
+                </p>
+                <p className="text-sm text-slate-700">{typeLabel}</p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-5">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
+                  Cobertura
+                </p>
+                <p className="text-sm text-slate-700">
+                  Atención por WhatsApp y coordinación de envíos a diferentes ciudades de Ecuador.
+                </p>
+              </div>
             </div>
           </div>
         </div>
