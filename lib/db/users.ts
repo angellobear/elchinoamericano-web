@@ -3,6 +3,7 @@ import { users, roles } from './schema'
 import { eq, desc, asc } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
+import { dbNow } from './db-now'
 
 export async function getUsers() {
   const db = await getDb()
@@ -47,7 +48,7 @@ export async function createUser(data: { email: string; fullName?: string; passw
 
 export async function updateUser(id: string, data: { fullName?: string; roleId?: number; isActive?: boolean; passwordHash?: string }) {
   const db = await getDb()
-  await db.update(users).set({ ...data, updatedAt: new Date() }).where(eq(users.id, id))
+  await db.update(users).set({ ...data, updatedAt: dbNow() }).where(eq(users.id, id))
 }
 
 export async function deactivateUser(id: string) {

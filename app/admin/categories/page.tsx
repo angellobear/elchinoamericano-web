@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { getCategories, deleteCategory } from '@/lib/db/categories'
 import { revalidatePath } from 'next/cache'
 import { Plus, Pencil, Trash2, Tag } from 'lucide-react'
+import { CategoryStatusToggle } from '@/modules/admin/categories/components/CategoryStatusToggle'
 
 async function handleDelete(id: number) {
   'use server'
@@ -66,6 +67,7 @@ export default async function CategoriesPage() {
                 </td>
                 <td className="px-4 py-3.5">
                   <div className="flex items-center justify-end gap-1">
+                    <CategoryStatusToggle id={c.id} isActive={c.isActive ?? true} />
                     <Link
                       href={`/admin/categories/${c.id}`}
                       className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-navy transition-colors"

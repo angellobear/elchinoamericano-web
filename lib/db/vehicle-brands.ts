@@ -1,6 +1,7 @@
 import { getDb } from './client'
 import { vehicleBrands, vehicleModels } from './schema'
 import { eq, asc } from 'drizzle-orm'
+import { dbNow } from './db-now'
 
 export async function getVehicleBrands(includeInactive = false) {
   const db = await getDb()
@@ -37,12 +38,12 @@ export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert
 
 export async function updateVehicleBrand(id: number, data: Partial<typeof vehicleBrands.$inferInsert>) {
   const db = await getDb()
-  await db.update(vehicleBrands).set({ ...data, updatedAt: new Date() }).where(eq(vehicleBrands.id, id))
+  await db.update(vehicleBrands).set({ ...data, updatedAt: dbNow() }).where(eq(vehicleBrands.id, id))
 }
 
 export async function deleteVehicleBrand(id: number) {
   const db = await getDb()
-  await db.update(vehicleBrands).set({ isActive: false, updatedAt: new Date() }).where(eq(vehicleBrands.id, id))
+  await db.update(vehicleBrands).set({ isActive: false, updatedAt: dbNow() }).where(eq(vehicleBrands.id, id))
 }
 
 export async function createVehicleModel(data: typeof vehicleModels.$inferInsert) {
@@ -53,12 +54,12 @@ export async function createVehicleModel(data: typeof vehicleModels.$inferInsert
 
 export async function updateVehicleModel(id: number, data: Partial<typeof vehicleModels.$inferInsert>) {
   const db = await getDb()
-  await db.update(vehicleModels).set({ ...data, updatedAt: new Date() }).where(eq(vehicleModels.id, id))
+  await db.update(vehicleModels).set({ ...data, updatedAt: dbNow() }).where(eq(vehicleModels.id, id))
 }
 
 export async function deleteVehicleModel(id: number) {
   const db = await getDb()
-  await db.update(vehicleModels).set({ isActive: false, updatedAt: new Date() }).where(eq(vehicleModels.id, id))
+  await db.update(vehicleModels).set({ isActive: false, updatedAt: dbNow() }).where(eq(vehicleModels.id, id))
 }
 
 export async function getVehicleBrandsWithModels() {

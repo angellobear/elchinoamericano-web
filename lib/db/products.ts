@@ -3,7 +3,8 @@ import {
   products, productImages, productSpecs, productAlternateCodes,
   productEquivalencies, productCompatibilities, stockMovements,
 } from './schema'
-import { eq, desc, like, and, sql } from 'drizzle-orm'
+import { eq, desc, and, sql } from 'drizzle-orm'
+import { dbNow } from './db-now'
 
 // DECIMAL columns come back as string from the driver — convert for arithmetic
 function offerPrice(price: string, pct?: string | null, until?: Date | null): number | undefined {
@@ -117,12 +118,12 @@ export async function createProduct(data: typeof products.$inferInsert) {
 
 export async function updateProduct(id: number, data: Partial<typeof products.$inferInsert>) {
   const db = await getDb()
-  await db.update(products).set({ ...data, updatedAt: new Date() }).where(eq(products.id, id))
+  await db.update(products).set({ ...data, updatedAt: dbNow() }).where(eq(products.id, id))
 }
 
 export async function deleteProduct(id: number) {
   const db = await getDb()
-  await db.update(products).set({ isActive: false, updatedAt: new Date() }).where(eq(products.id, id))
+  await db.update(products).set({ isActive: false, updatedAt: dbNow() }).where(eq(products.id, id))
 }
 
 // ─── Relations (replace-all pattern) ─────────────────────────────────────────
@@ -176,7 +177,7 @@ export async function updateStock(productId: number, newStock: number, userId: s
     where: eq(products.id, productId),
     columns: { stock: true },
   })
-  await db.update(products).set({ stock: newStock, updatedAt: new Date() }).where(eq(products.id, productId))
+  await db.update(products).set({ stock: newStock, updatedAt: dbNow() }).where(eq(products.id, productId))
   await db.insert(stockMovements).values({
     productId,
     quantity:     newStock - (current?.stock ?? 0),

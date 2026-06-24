@@ -1,26 +1,9 @@
-import { getUsers, deactivateUser, activateUser } from '@/lib/db/users'
+import { getUsers } from '@/lib/db/users'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
 import Link from 'next/link'
-import { Users, Crown, Shield, User, Plus, Pencil, ToggleLeft, ToggleRight } from 'lucide-react'
-import { logger } from '@/lib/logger'
-
-async function handleToggle(id: string, currentlyActive: boolean, currentUserId: string) {
-  'use server'
-  if (id === currentUserId) return // no auto-desactivar
-  try {
-    if (currentlyActive) {
-      await deactivateUser(id)
-    } else {
-      await activateUser(id)
-    }
-    logger.info({ id, action: currentlyActive ? 'deactivate' : 'activate' }, 'User toggled')
-    revalidatePath('/admin/users')
-  } catch (err) {
-    logger.error({ err }, 'Error toggling user')
-  }
-}
+import { Users, Crown, Shield, User, Plus, Pencil } from 'lucide-react'
+import { UserStatusToggle } from '@/modules/admin/users/components/UserStatusToggle'
 
 export default async function UsersPage() {
   const payload = await getJwtPayload()
@@ -115,17 +98,7 @@ export default async function UsersPage() {
                         </Link>
                       )}
                       {isSuperAdmin && !isSelf && (
-                        <form action={handleToggle.bind(null, u.id, u.isActive ?? true, payload.userId)}>
-                          <button
-                            type="submit"
-                            className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors cursor-pointer"
-                            title={u.isActive ? 'Desactivar' : 'Activar'}
-                          >
-                            {u.isActive
-                              ? <ToggleRight size={13} className="text-emerald-500" />
-                              : <ToggleLeft size={13} />}
-                          </button>
-                        </form>
+                        <UserStatusToggle id={u.id} isActive={u.isActive ?? true} />
                       )}
                     </div>
                   </td>

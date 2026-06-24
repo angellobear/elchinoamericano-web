@@ -1,6 +1,7 @@
 import { getDb } from './client'
 import { categories } from './schema'
 import { eq, asc } from 'drizzle-orm'
+import { dbNow } from './db-now'
 
 export async function getCategories(includeInactive = false) {
   const db = await getDb()
@@ -17,10 +18,10 @@ export async function createCategory(data: typeof categories.$inferInsert) {
 
 export async function updateCategory(id: number, data: Partial<typeof categories.$inferInsert>) {
   const db = await getDb()
-  await db.update(categories).set({ ...data, updatedAt: new Date() }).where(eq(categories.id, id))
+  await db.update(categories).set({ ...data, updatedAt: dbNow() }).where(eq(categories.id, id))
 }
 
 export async function deleteCategory(id: number) {
   const db = await getDb()
-  await db.update(categories).set({ isActive: false, updatedAt: new Date() }).where(eq(categories.id, id))
+  await db.update(categories).set({ isActive: false, updatedAt: dbNow() }).where(eq(categories.id, id))
 }

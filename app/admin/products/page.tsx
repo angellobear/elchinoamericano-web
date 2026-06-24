@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getProductList, deleteProduct } from '@/lib/db/products'
 import { revalidatePath } from 'next/cache'
 import { Plus, Search, Pencil, Trash2, Package } from 'lucide-react'
+import { ProductStatusToggle } from '@/modules/admin/products/components/ProductStatusToggle'
 
 async function handleDelete(id: number) {
   'use server'
@@ -103,6 +104,7 @@ export default async function ProductsPage({
                 </td>
                 <td className="px-4 py-3.5">
                   <div className="flex items-center justify-end gap-1">
+                    <ProductStatusToggle id={p.id} isActive={p.isActive ?? true} />
                     <Link
                       href={`/admin/products/${p.id}`}
                       className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-navy transition-colors"

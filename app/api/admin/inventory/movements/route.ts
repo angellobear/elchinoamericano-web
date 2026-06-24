@@ -4,6 +4,7 @@ import { products, stockMovements } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { logger } from '@/lib/logger'
+import { dbNow } from '@/lib/db/db-now'
 
 export async function POST(req: NextRequest) {
   const payload = await getJwtPayload()
@@ -33,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     await db.update(products)
-      .set({ stock: newStock, updatedAt: new Date() })
+      .set({ stock: newStock, updatedAt: dbNow() })
       .where(eq(products.id, product.id))
 
     await db.insert(stockMovements).values({
