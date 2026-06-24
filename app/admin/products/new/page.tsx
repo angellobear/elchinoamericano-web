@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { uploadImage } from '@/lib/cloudinary'
+import { parseImagesFormData } from '@/app/admin/products/_components/ProductImagesSection'
 import {
   createProduct,
   setAlternateCodes,
@@ -91,11 +92,8 @@ async function create(formData: FormData) {
       isActive,
     })
 
-    const imageFile = formData.get('image') as File | null
-    if (imageFile && imageFile.size > 0) {
-      const { url, publicId } = await uploadImage(imageFile)
-      await setImages(id, [{ url, cloudinaryPublicId: publicId, isPrimary: true, sortOrder: 0 }])
-    }
+    const { finalImages } = await parseImagesFormData(formData)
+    if (finalImages.length) await setImages(id, finalImages)
 
     const specs = parseIndexedFormData(formData, 'specs', ['label', 'value'])
       .flatMap((row) => (row.label && row.value ? [{ label: row.label, value: row.value }] : []))

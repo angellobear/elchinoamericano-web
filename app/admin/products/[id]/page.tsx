@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getJwtPayload } from '@/lib/auth/check-permission'
-import { handleImageReplace } from '@/lib/cloudinary'
+import { parseImagesFormData } from '@/app/admin/products/_components/ProductImagesSection'
 import { getCategories } from '@/lib/db/categories'
 import {
   getProductById,
@@ -80,22 +80,8 @@ async function save(productId: number, formData: FormData) {
       isActive,
     })
 
-    const imageFile = formData.get('image') as File | null
-    const imageRemoved = formData.get('image_removed') === '1'
-    const currentUrl = String(formData.get('image_current_url') ?? '') || null
-    const currentPublicId = String(formData.get('image_public_id') ?? '') || null
-
-    const { url, publicId } = await handleImageReplace(
-      imageFile && imageFile.size > 0 ? imageFile : null,
-      imageRemoved,
-      currentPublicId,
-      currentUrl,
-    )
-
-    await setImages(
-      productId,
-      url ? [{ url, cloudinaryPublicId: publicId, isPrimary: true, sortOrder: 0 }] : [],
-    )
+    const { finalImages } = await parseImagesFormData(formData)
+    await setImages(productId, finalImages)
 
     const specs = parseIndexedFormData(formData, 'specs', ['label', 'value'])
       .flatMap((row) => (row.label && row.value ? [{ label: row.label, value: row.value }] : []))
@@ -147,7 +133,6 @@ export default async function EditProductPage({
 
   if (!product) notFound()
 
-  const primaryImage = product.images?.find((image) => image.isPrimary) ?? product.images?.[0] ?? null
   const saveWithId = save.bind(null, product.id)
 
   return (
@@ -196,8 +181,12 @@ export default async function EditProductPage({
               metaDescription: product.metaDescription ?? undefined,
               isFeatured: product.isFeatured ?? undefined,
               isActive: product.isActive ?? undefined,
-              imageUrl: primaryImage?.url ?? null,
-              imagePublicId: primaryImage?.cloudinaryPublicId ?? null,
+              images: (product.images ?? []).map((img, i) => ({
+                url: img.url,
+                cloudinaryPublicId: img.cloudinaryPublicId ?? null,
+                isPrimary: img.isPrimary ?? (i === 0),
+                sortOrder: img.sortOrder ?? i,
+              })),
               specs: product.specs?.map((spec) => ({ label: spec.label, value: spec.value })) ?? [],
               alternateCodes: product.alternateCodes?.map((code) => ({
                 code: code.code,

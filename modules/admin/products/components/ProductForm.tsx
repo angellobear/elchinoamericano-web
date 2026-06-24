@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { SubmitButton } from '@/app/admin/_components/SubmitButton'
-import { ImageUploadField } from '@/app/admin/_components/ImageUploadField'
+import { ProductImagesSection } from '@/app/admin/products/_components/ProductImagesSection'
 import { routes } from '@/lib/routes'
 import { DynamicRows } from '@/app/admin/products/_components/DynamicRows'
 import { CompatSection } from '@/app/admin/products/_components/CompatSection'
@@ -52,8 +52,7 @@ interface ProductFormProps {
     metaDescription?: string | null
     isFeatured?: boolean
     isActive?: boolean
-    imageUrl?: string | null
-    imagePublicId?: string | null
+    images?: { url: string; cloudinaryPublicId?: string | null; isPrimary: boolean; sortOrder: number }[]
     specs?: { label: string; value: string }[]
     alternateCodes?: { code: string; source?: string | null }[]
     compatibilities?: { vehicleModelId: number; yearStart?: number | null; yearEnd?: number | null }[]
@@ -184,13 +183,8 @@ export function ProductForm({
         </div>
       </Section>
 
-      <Section title="Imagen principal">
-        <ImageUploadField
-          name="image"
-          label="Imagen del producto"
-          currentUrl={defaults?.imageUrl ?? null}
-          currentPublicId={defaults?.imagePublicId ?? null}
-        />
+      <Section title="Imágenes del producto">
+        <ProductImagesSection existingImages={defaults?.images ?? []} />
       </Section>
 
       <Section title="Descripción y SEO">
