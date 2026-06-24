@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getSuppliers, deleteSupplier } from '@/lib/db/suppliers'
 import { revalidatePath } from 'next/cache'
 import { Plus, Pencil, Trash2, Truck, ToggleLeft, ToggleRight } from 'lucide-react'
@@ -6,14 +7,24 @@ import { updateSupplier } from '@/lib/db/suppliers'
 
 async function handleDelete(id: number) {
   'use server'
-  await deleteSupplier(id)
-  revalidatePath('/admin/suppliers')
+  try {
+    await deleteSupplier(id)
+    revalidatePath('/admin/suppliers')
+  } catch (err) {
+    console.error('handleDelete supplier', err)
+    redirect('/admin/suppliers?error=' + encodeURIComponent('Error al eliminar proveedor'))
+  }
 }
 
 async function toggleActive(id: number, current: boolean) {
   'use server'
-  await updateSupplier(id, { isActive: !current })
-  revalidatePath('/admin/suppliers')
+  try {
+    await updateSupplier(id, { isActive: !current })
+    revalidatePath('/admin/suppliers')
+  } catch (err) {
+    console.error('toggleActive supplier', err)
+    redirect('/admin/suppliers?error=' + encodeURIComponent('Error al cambiar estado'))
+  }
 }
 
 export default async function SuppliersPage() {

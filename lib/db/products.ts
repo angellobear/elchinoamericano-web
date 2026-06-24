@@ -59,13 +59,11 @@ export async function getProductById(id: number) {
   const db = await getDb()
   const row = await db.query.products.findFirst({
     where: eq(products.id, id),
-    with:  {
-      category: true, partBrand: true, images: true, specs: true, alternateCodes: true,
-      compatibilities: { with: { vehicleModel: { with: { brand: true } } } },
-    },
+    with:  { category: true, partBrand: true, images: true, specs: true, alternateCodes: true, compatibilities: true },
   })
   if (!row) return null
-  return { ...row, offerPrice: offerPrice(row.price, row.discountPct, row.discountUntil) }
+  // Object.assign preserves Drizzle's inferred relation types (spread loses them)
+  return Object.assign(row, { offerPrice: offerPrice(row.price, row.discountPct, row.discountUntil) })
 }
 
 // For admin inventory page

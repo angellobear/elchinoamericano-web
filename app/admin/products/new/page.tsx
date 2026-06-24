@@ -278,7 +278,7 @@ export default async function NewProductPage() {
 
         {/* ── Compatibilidades ─────────────────────────── */}
         <Section title="Compatibilidad con vehículos">
-          <CompatSection brands={brands as { id: number; name: string; models: { id: number; name: string }[] }[]} />
+          <CompatSection brands={brands as unknown as { id: number; name: string; models: { id: number; name: string }[] }[]} />
         </Section>
 
         {/* ── Submit ──────────────────────────────────── */}

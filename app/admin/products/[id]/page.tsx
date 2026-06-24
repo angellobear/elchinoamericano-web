@@ -294,12 +294,14 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
         {/* ── Compatibilidades ─────────────────────────── */}
         <Section title="Compatibilidad con vehículos">
           <CompatSection
-            brands={brands as { id: number; name: string; models: { id: number; name: string }[] }[]}
-            initialCompat={product.compatibilities?.map(c => ({
-              vehicleModelId: c.vehicleModelId,
-              yearStart: c.yearStart ?? null,
-              yearEnd:   c.yearEnd   ?? null,
-            })) ?? []}
+            brands={brands as unknown as { id: number; name: string; models: { id: number; name: string }[] }[]}
+            initialCompat={(product.compatibilities ?? [])
+              .filter(c => c.vehicleModelId != null)
+              .map(c => ({
+                vehicleModelId: c.vehicleModelId as number,
+                yearStart: c.yearStart ?? null,
+                yearEnd:   c.yearEnd   ?? null,
+              }))}
           />
         </Section>
 

@@ -1,12 +1,18 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getCategories, deleteCategory } from '@/lib/db/categories'
 import { revalidatePath } from 'next/cache'
 import { Plus, Pencil, Trash2, Tag } from 'lucide-react'
 
 async function handleDelete(id: number) {
   'use server'
-  await deleteCategory(id)
-  revalidatePath('/admin/categories')
+  try {
+    await deleteCategory(id)
+    revalidatePath('/admin/categories')
+  } catch (err) {
+    console.error('handleDelete category', err)
+    redirect('/admin/categories?error=' + encodeURIComponent('Error al eliminar categoría'))
+  }
 }
 
 export default async function CategoriesPage() {

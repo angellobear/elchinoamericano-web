@@ -1,12 +1,18 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getPartBrands, updatePartBrand } from '@/lib/db/part-brands'
 import { revalidatePath } from 'next/cache'
 import { Plus, Pencil, ToggleLeft, ToggleRight, Wrench } from 'lucide-react'
 
 async function toggleActive(id: number, current: boolean) {
   'use server'
-  await updatePartBrand(id, { isActive: !current })
-  revalidatePath('/admin/part-brands')
+  try {
+    await updatePartBrand(id, { isActive: !current })
+    revalidatePath('/admin/part-brands')
+  } catch (err) {
+    console.error('toggleActive part-brand', err)
+    redirect('/admin/part-brands?error=' + encodeURIComponent('Error al cambiar estado'))
+  }
 }
 
 export default async function PartBrandsPage() {

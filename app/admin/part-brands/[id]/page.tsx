@@ -45,7 +45,7 @@ export default async function EditPartBrandPage({ params }: { params: Promise<{ 
   const saveWithId = save.bind(null, brand.id)
 
   return (
-    <div className="p-8 max-w-xl">
+    <div className="p-8">
       <div className="mb-6">
         <Link href="/admin/part-brands" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-[#0d1f3c] transition-colors mb-3">
           <ArrowLeft size={14} />

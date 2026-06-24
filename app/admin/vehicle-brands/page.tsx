@@ -1,12 +1,18 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getVehicleBrandsWithModels, updateVehicleBrand } from '@/lib/db/vehicle-brands'
 import { revalidatePath } from 'next/cache'
 import { Plus, Car, ChevronRight, ToggleLeft, ToggleRight } from 'lucide-react'
 
 async function toggleActive(id: number, current: boolean) {
   'use server'
-  await updateVehicleBrand(id, { isActive: !current })
-  revalidatePath('/admin/vehicle-brands')
+  try {
+    await updateVehicleBrand(id, { isActive: !current })
+    revalidatePath('/admin/vehicle-brands')
+  } catch (err) {
+    console.error('toggleActive vehicle-brand', err)
+    redirect('/admin/vehicle-brands?error=' + encodeURIComponent('Error al cambiar estado'))
+  }
 }
 
 export default async function VehicleBrandsPage() {
