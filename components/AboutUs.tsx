@@ -49,7 +49,7 @@ export default function AboutUs() {
               </h2>
               <p className="text-slate-600 text-base leading-relaxed">
                 Nuestro nombre lo dice todo. En Ecuador conviven dos mundos automotrices:
-                los <strong className="text-navy">vehículos chinos</strong> — Chery, Great Wall, BYD, DFSK, MG —
+                los <strong className="text-navy">vehículos chinos</strong> — Chery, Great Wall, SWM, DFSK, Shineray —
                 y los <strong className="text-navy">americanos</strong> — Ford, Chevrolet —.
                 Somos especialistas en ambos.
               </p>

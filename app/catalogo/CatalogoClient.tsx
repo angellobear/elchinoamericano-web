@@ -240,28 +240,31 @@ export default function CatalogoClient({
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-16">
+    <main className="min-h-screen bg-[#f6f8fb] pt-16">
+      {/* Header band */}
+      <div className="bg-navy px-4 sm:px-6 lg:px-8 py-8">
+        <div className="max-w-7xl mx-auto">
+          <p className="text-[13px] text-[#9fb0c8]">
+            Inicio <span className="text-[#5f7090]">/</span> <span className="text-white">Catálogo</span>
+          </p>
+          <div className="flex items-end justify-between mt-3 gap-4 flex-wrap">
+            <div>
+              <h1 className="font-display font-bold text-[#f4f7fb] uppercase leading-none text-[clamp(2rem,5vw,3.25rem)]">
+                Catálogo de repuestos
+              </h1>
+              <p className="text-[#9fb0c8] text-[15px] mt-2">
+                <b className="text-white">{filteredProducts.length}</b>{" "}
+                {filteredProducts.length === 1 ? "repuesto encontrado" : "repuestos encontrados"}
+                {totalPages > 1 && <span className="text-[#5f7090]"> · Página {safePage} de {totalPages}</span>}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="bg-white border-b border-slate-200 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-            <div>
-              <h1 className="font-display font-bold text-navy text-2xl leading-none">
-                Catálogo
-              </h1>
-              <p className="text-slate-500 text-xs mt-1">
-                {filteredProducts.length}{" "}
-                {filteredProducts.length === 1
-                  ? "repuesto encontrado"
-                  : "repuestos encontrados"}
-                {totalPages > 1 && (
-                  <span className="text-slate-400">
-                    {" "}
-                    · Página {safePage} de {totalPages}
-                  </span>
-                )}
-              </p>
-            </div>
-
             <div className="flex items-center gap-2">
               <div className="relative flex-1 sm:w-64 sm:flex-none">
                 <Search

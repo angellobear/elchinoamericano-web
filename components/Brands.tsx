@@ -1,98 +1,96 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { chineseBrands, americanBrands } from "@/data/brands"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 32 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } },
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
 }
 
-function BrandGroup({
-  title,
-  label,
-  brands,
-}: {
-  title: string
-  label: string
-  brands: { id: string; name: string }[]
-}) {
+function BrandCard({ brand }: { brand: { id: string; name: string } }) {
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex items-center gap-3">
-        <div className="h-px flex-1 bg-white/10" />
-        <h3 className="font-display font-bold text-white/50 text-xs uppercase tracking-widest shrink-0">
-          {title}
-        </h3>
-        <span className="bg-white/8 border border-white/12 text-white/50 text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0">
-          {label}
-        </span>
-        <div className="h-px flex-1 bg-white/10" />
-      </div>
-      <div className="flex flex-wrap gap-2">
-        {brands.map((brand) => (
-          <a
-            key={brand.id}
-            href={`/catalogo?marca=${brand.id}`}
-            className="min-h-[44px] flex items-center border border-white/15 hover:border-brand hover:text-brand hover:bg-brand/5 text-white/75 text-sm font-semibold px-4 py-2.5 rounded-lg transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-          >
-            {brand.name}
-          </a>
-        ))}
-      </div>
+    <a
+      href={`/catalogo?marca=${brand.id}`}
+      className="h-28 rounded-[14px] bg-[#13294a] border border-white/[.10] flex items-center justify-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+    >
+      <span className="font-display font-bold text-[1.75rem] text-white leading-none tracking-[.04em]">
+        {brand.name.toUpperCase()}
+      </span>
+    </a>
+  )
+}
+
+function Divider({ label }: { label: string }) {
+  return (
+    <div className="flex items-center gap-3 mt-8 mb-4">
+      <span className="font-display font-bold text-[16px] uppercase tracking-[.14em] text-[#9fb0c8] shrink-0">
+        {label}
+      </span>
+      <span className="flex-1 h-px bg-white/[.10]" />
     </div>
   )
 }
 
 export default function Brands() {
-  return (
-    <section id="marcas" className="bg-navy py-20 lg:py-28 relative overflow-hidden">
-      {/* Subtle background pattern */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="brands-grid" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.03" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#brands-grid)" />
-        </svg>
-      </div>
+  const reduce = useReducedMotion()
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  return (
+    <section id="marcas" className="bg-[#0a1628] py-20 lg:py-28">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.25 }}
-          variants={{ visible: { transition: { staggerChildren: 0.15 } } }}
-          className="flex flex-col gap-12"
+          viewport={{ once: true, amount: 0.15 }}
+          variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.1 } } }}
         >
-          <motion.div variants={fadeUp} className="flex flex-col gap-3">
-            <span className="text-brand text-xs font-bold uppercase tracking-widest">
-              Catálogo de marcas
-            </span>
-            <h2 className="font-display font-bold text-white text-4xl lg:text-5xl leading-none">
-              Marcas que trabajamos
+          {/* Header */}
+          <motion.div variants={fadeUp} className="text-center">
+            <div className="flex items-center gap-2 justify-center mb-4">
+              <span className="w-[7px] h-[7px] rounded-full bg-brand" />
+              <span className="text-[11px] font-semibold uppercase tracking-[.16em] text-brand">Marcas</span>
+            </div>
+            <h2 className="font-display font-bold text-[#f4f7fb] uppercase leading-none text-[clamp(2rem,4.5vw,3.25rem)]">
+              Especialistas en marcas chinas y americanas
             </h2>
-            <p className="text-white/55 text-base max-w-lg">
-              Repuestos para los vehículos más populares del Ecuador.
-              Haz clic en una marca para ver el catálogo filtrado.
-            </p>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="flex flex-col gap-10">
-            <BrandGroup
-              title="Marcas Chinas"
-              label={`${chineseBrands.length} marcas`}
-              brands={chineseBrands}
-            />
-            <BrandGroup
-              title="Marcas Americanas"
-              label={`${americanBrands.length} marcas`}
-              brands={americanBrands}
-            />
+          {/* Chinese brands */}
+          <motion.div variants={fadeUp}>
+            <Divider label="Marcas chinas" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {chineseBrands.map((brand) => (
+                <BrandCard key={brand.id} brand={brand} />
+              ))}
+              <div className="h-28 rounded-[14px] bg-[#13294a] border border-white/[.10] flex items-center justify-center">
+                <span className="font-display font-bold text-[17px] text-[#9fb0c8] text-center leading-snug">
+                  y más<br />marcas
+                </span>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* American brands */}
+          <motion.div variants={fadeUp}>
+            <Divider label="Marcas americanas" />
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {americanBrands.map((brand) => (
+                <BrandCard key={brand.id} brand={brand} />
+              ))}
+              <div className="h-28 rounded-[14px] bg-[#13294a] border border-white/[.10] flex items-center justify-center">
+                <span className="font-display font-bold text-[17px] text-[#9fb0c8] text-center leading-snug">
+                  y más<br />marcas
+                </span>
+              </div>
+              <div className="h-28 rounded-[14px] border border-dashed border-brand/45 bg-gradient-to-br from-brand/[.16] to-brand/[.04] flex flex-col items-center justify-center gap-1.5 p-3 text-center">
+                <span className="font-display font-bold text-[17px] uppercase text-white leading-tight">
+                  ¿Otra marca?
+                </span>
+                <span className="text-[12px] text-[#9fb0c8]">Consúltanos por WhatsApp</span>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       </div>

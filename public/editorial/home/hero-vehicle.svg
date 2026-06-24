@@ -1,0 +1,73 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#081426"/>
+  <rect width="1600" height="1200" fill="url(#bg)"/>
+  <g opacity="0.18">
+    <path d="M0 980L1600 420" stroke="#DCE8F5" stroke-width="2"/>
+    <path d="M0 1060L1600 500" stroke="#DCE8F5" stroke-width="2"/>
+    <path d="M0 1140L1600 580" stroke="#DCE8F5" stroke-width="2"/>
+  </g>
+  <ellipse cx="1120" cy="230" rx="330" ry="220" fill="url(#glow)"/>
+  <ellipse cx="805" cy="860" rx="470" ry="98" fill="#02070F"/>
+  <ellipse cx="805" cy="845" rx="410" ry="56" fill="url(#ground)"/>
+
+  <g opacity="0.96">
+    <path d="M388 706C461 607 589 531 760 510H1003C1105 513 1188 542 1260 606L1325 706L1360 779H329L388 706Z" fill="url(#body)"/>
+    <path d="M463 673C531 587 628 536 768 524H986C1077 529 1154 555 1213 605L1243 665L1122 666L1007 560H797L656 673H463Z" fill="url(#roof)"/>
+    <path d="M744 556H993L1107 665H667L744 556Z" fill="url(#glass)"/>
+    <path d="M595 705H731L673 777H510L595 705Z" fill="#D53132"/>
+    <path d="M1170 699H1290L1329 777H1092L1170 699Z" fill="#F3F8FF"/>
+    <path d="M1018 566L1117 665" stroke="#F06B63" stroke-width="8" stroke-linecap="round" opacity="0.9"/>
+    <path d="M690 569L642 665" stroke="#B8D3EA" stroke-width="5" stroke-linecap="round" opacity="0.7"/>
+    <path d="M405 781H1336" stroke="#A11F24" stroke-width="5" opacity="0.65"/>
+    <path d="M412 764H1336" stroke="#EFF6FF" stroke-width="2" opacity="0.22"/>
+  </g>
+
+  <g>
+    <circle cx="569" cy="814" r="126" fill="#0A111B"/>
+    <circle cx="569" cy="814" r="96" fill="#131E2B"/>
+    <circle cx="569" cy="814" r="62" fill="#C9D7E6"/>
+    <circle cx="569" cy="814" r="34" fill="#77889D"/>
+    <circle cx="1171" cy="814" r="126" fill="#0A111B"/>
+    <circle cx="1171" cy="814" r="96" fill="#131E2B"/>
+    <circle cx="1171" cy="814" r="62" fill="#C9D7E6"/>
+    <circle cx="1171" cy="814" r="34" fill="#77889D"/>
+  </g>
+
+  <g opacity="0.7">
+    <rect x="286" y="274" width="112" height="12" rx="6" fill="#DAE8F5"/>
+    <rect x="286" y="304" width="170" height="3" rx="1.5" fill="#6E829D"/>
+    <rect x="1194" y="287" width="144" height="12" rx="6" fill="#DF3940"/>
+    <rect x="1194" y="317" width="170" height="3" rx="1.5" fill="#8A99AC"/>
+    <text x="286" y="350" fill="#91A3B9" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">STUDIO FRONT / 3-4 PROFILE</text>
+    <text x="1194" y="366" fill="#91A3B9" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">SERIES 01 / VEHICLE LIGHT STUDY</text>
+  </g>
+
+  <defs>
+    <linearGradient id="bg" x1="800" y1="0" x2="800" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0D1D35"/>
+      <stop offset="0.55" stop-color="#091321"/>
+      <stop offset="1" stop-color="#040B14"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1120 230) rotate(90) scale(220 330)">
+      <stop stop-color="#E03030" stop-opacity="0.44"/>
+      <stop offset="1" stop-color="#E03030" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ground" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(805 845) rotate(90) scale(56 410)">
+      <stop stop-color="#1B2531" stop-opacity="0.86"/>
+      <stop offset="1" stop-color="#1B2531" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="body" x1="329" y1="644" x2="1360" y2="779" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#A51C25"/>
+      <stop offset="0.42" stop-color="#B62D33"/>
+      <stop offset="1" stop-color="#D54447"/>
+    </linearGradient>
+    <linearGradient id="roof" x1="463" y1="562" x2="1243" y2="659" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18273C"/>
+      <stop offset="1" stop-color="#26384F"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="887" y1="556" x2="887" y2="665" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#B9DBF4" stop-opacity="0.65"/>
+      <stop offset="1" stop-color="#40627E" stop-opacity="0.25"/>
+    </linearGradient>
+  </defs>
+</svg>

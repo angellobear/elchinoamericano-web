@@ -1,8 +1,7 @@
 import Navbar from "@/components/Navbar"
 import Hero from "@/components/Hero"
 import WhyUs from "@/components/WhyUs"
-import AboutUs from "@/components/AboutUs"
-import FindPart from "@/components/FindPart"
+import CtaBand from "@/components/CtaBand"
 import Brands from "@/components/Brands"
 import Footer from "@/components/Footer"
 
@@ -13,8 +12,7 @@ export default function Home() {
       <main>
         <Hero />
         <WhyUs />
-        <AboutUs />
-        <FindPart />
+        <CtaBand />
         <Brands />
       </main>
       <Footer />

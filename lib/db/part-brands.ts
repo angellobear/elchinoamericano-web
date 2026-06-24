@@ -2,6 +2,7 @@ import { getDb } from './client'
 import { partBrands } from './schema'
 import { eq, asc } from 'drizzle-orm'
 import { dbNow } from './db-now'
+import { withAudit } from '@/lib/audit'
 
 export async function getPartBrands(includeInactive = false) {
   const db = await getDb()
@@ -12,16 +13,19 @@ export async function getPartBrands(includeInactive = false) {
 }
 
 export async function createPartBrand(data: typeof partBrands.$inferInsert) {
-  const db = await getDb()
-  await db.insert(partBrands).values(data)
+  await withAudit(async (tx) => {
+    await tx.insert(partBrands).values(data)
+  })
 }
 
 export async function updatePartBrand(id: number, data: Partial<typeof partBrands.$inferInsert>) {
-  const db = await getDb()
-  await db.update(partBrands).set({ ...data, updatedAt: dbNow() }).where(eq(partBrands.id, id))
+  await withAudit(async (tx) => {
+    await tx.update(partBrands).set({ ...data, updatedAt: dbNow() }).where(eq(partBrands.id, id))
+  })
 }
 
 export async function deletePartBrand(id: number) {
-  const db = await getDb()
-  await db.update(partBrands).set({ isActive: false, updatedAt: dbNow() }).where(eq(partBrands.id, id))
+  await withAudit(async (tx) => {
+    await tx.update(partBrands).set({ isActive: false, updatedAt: dbNow() }).where(eq(partBrands.id, id))
+  })
 }

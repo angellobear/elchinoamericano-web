@@ -2,6 +2,7 @@ import { getDb } from './client'
 import { suppliers } from './schema'
 import { eq, asc } from 'drizzle-orm'
 import { dbNow } from './db-now'
+import { withAudit } from '@/lib/audit'
 
 export async function getSuppliers(includeInactive = false) {
   const db = await getDb()
@@ -12,16 +13,19 @@ export async function getSuppliers(includeInactive = false) {
 }
 
 export async function createSupplier(data: typeof suppliers.$inferInsert) {
-  const db = await getDb()
-  await db.insert(suppliers).values(data)
+  await withAudit(async (tx) => {
+    await tx.insert(suppliers).values(data)
+  })
 }
 
 export async function updateSupplier(id: number, data: Partial<typeof suppliers.$inferInsert>) {
-  const db = await getDb()
-  await db.update(suppliers).set({ ...data, updatedAt: dbNow() }).where(eq(suppliers.id, id))
+  await withAudit(async (tx) => {
+    await tx.update(suppliers).set({ ...data, updatedAt: dbNow() }).where(eq(suppliers.id, id))
+  })
 }
 
 export async function deleteSupplier(id: number) {
-  const db = await getDb()
-  await db.update(suppliers).set({ isActive: false, updatedAt: dbNow() }).where(eq(suppliers.id, id))
+  await withAudit(async (tx) => {
+    await tx.update(suppliers).set({ isActive: false, updatedAt: dbNow() }).where(eq(suppliers.id, id))
+  })
 }

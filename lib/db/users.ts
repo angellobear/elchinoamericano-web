@@ -4,6 +4,7 @@ import { eq, desc, asc } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
 import { dbNow } from './db-now'
+import { withAudit } from '@/lib/audit'
 
 export async function getUsers() {
   const db = await getDb()
@@ -35,20 +36,22 @@ export async function getRoles() {
 }
 
 export async function createUser(data: { email: string; fullName?: string; password: string; roleId: number }) {
-  const db = await getDb()
   const passwordHash = await bcrypt.hash(data.password, 12)
-  await db.insert(users).values({
-    id:           randomUUID(),
-    email:        data.email,
-    fullName:     data.fullName,
-    passwordHash,
-    roleId:       data.roleId,
+  await withAudit(async (tx) => {
+    await tx.insert(users).values({
+      id:           randomUUID(),
+      email:        data.email,
+      fullName:     data.fullName,
+      passwordHash,
+      roleId:       data.roleId,
+    })
   })
 }
 
 export async function updateUser(id: string, data: { fullName?: string; roleId?: number; isActive?: boolean; passwordHash?: string }) {
-  const db = await getDb()
-  await db.update(users).set({ ...data, updatedAt: dbNow() }).where(eq(users.id, id))
+  await withAudit(async (tx) => {
+    await tx.update(users).set({ ...data, updatedAt: dbNow() }).where(eq(users.id, id))
+  })
 }
 
 export async function deactivateUser(id: string) {

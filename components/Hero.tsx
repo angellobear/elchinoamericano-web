@@ -1,175 +1,241 @@
 "use client"
 
+import Image from "next/image"
+import { useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
-import { ArrowRight, MessageCircle } from "lucide-react"
+import { Layers, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
+import { useRouter } from "next/navigation"
 
 const BRAND_CHIPS = [
-  { name: "Chery", tag: "China" },
-  { name: "Great Wall", tag: "China" },
-  { name: "BYD", tag: "China" },
-  { name: "Ford", tag: "EE.UU." },
-  { name: "Chevrolet", tag: "EE.UU." },
-  { name: "DFSK", tag: "China" },
-  { name: "MG", tag: "China" },
-  { name: "JAC", tag: "China" },
-  { name: "Jetour", tag: "China" },
+  { label: "CHERY", key: "chery" },
+  { label: "SWM", key: "swm" },
+  { label: "GREAT WALL", key: "great_wall" },
+  { label: "DFSK", key: "dfsk" },
+  { label: "SHINERAY", key: "shineray" },
+  { label: "JAC", key: "jac" },
+  { label: "JETOUR", key: "jetour" },
+  { label: "FORD", key: "ford" },
+  { label: "CHEVROLET", key: "chevrolet" },
+]
+
+const CAR_BRANDS = ["Chery", "SWM", "Great Wall", "DFSK", "Shineray", "JAC", "Jetour", "Ford", "Chevrolet"]
+
+const STAT_STRIP = [
+  { icon: Truck, iconColor: "text-brand", iconBg: "bg-brand/[.14]", title: "Envíos a todo Ecuador", sub: "Entrega 24–72 h" },
+  { icon: MessageCircle, iconColor: "text-wa", iconBg: "bg-wa/[.14]", title: "Asesoría por WhatsApp", sub: "Respuesta en < 24 h" },
+  { icon: ShieldCheck, iconColor: "text-brand", iconBg: "bg-brand/[.14]", title: "Calidad garantizada", sub: "Originales y OEM" },
+  { icon: Layers, iconColor: "text-brand", iconBg: "bg-brand/[.14]", title: "Original · OEM · Alterno", sub: "3 líneas de precio" },
 ]
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
+function HeroSearch() {
+  const router = useRouter()
+  const [marca, setMarca] = useState("")
+
+  return (
+    <div className="mt-12 bg-[#13294a] border border-white/[.12] rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
+      <div className="hidden sm:flex items-center gap-2 shrink-0 pr-1">
+        <Search size={18} className="text-brand" />
+        <span className="font-display font-bold text-lg text-[#f4f7fb] whitespace-nowrap leading-none">
+          Encuentra tu repuesto
+        </span>
+      </div>
+      <select
+        value={marca}
+        onChange={(e) => setMarca(e.target.value)}
+        className="flex-1 w-full bg-[#0a1628] border border-white/[.12] rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
+      >
+        <option value="">Marca</option>
+        {CAR_BRANDS.map((b) => (
+          <option key={b} value={b.toLowerCase().replace(/ /g, "_")}>{b}</option>
+        ))}
+      </select>
+      <select className="flex-1 w-full bg-[#0a1628] border border-white/[.12] rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
+        <option>Modelo</option>
+      </select>
+      <select className="w-full sm:w-28 bg-[#0a1628] border border-white/[.12] rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
+        <option>Año</option>
+      </select>
+      <button
+        onClick={() => {
+          const params = new URLSearchParams()
+          if (marca) params.set("marca", marca)
+          router.push(`/catalogo${params.size ? `?${params}` : ""}`)
+        }}
+        className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-sm px-6 py-3 rounded-xl whitespace-nowrap transition-colors"
+      >
+        <Search size={16} />
+        Buscar
+      </button>
+    </div>
+  )
+}
+
 export default function Hero() {
   const reduce = useReducedMotion()
 
-  const container = {
-    hidden: {},
-    visible: {
-      transition: {
-        delayChildren: reduce ? 0 : 0.35,
-        staggerChildren: reduce ? 0 : 0.14,
-      },
-    },
-  }
-
-  const item = {
-    hidden: reduce ? {} : { opacity: 0, y: 48 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.7, ease: EASE },
-    },
-  }
-
-  const chipContainer = {
-    hidden: {},
-    visible: {
-      transition: {
-        delayChildren: reduce ? 0 : 0.6,
-        staggerChildren: reduce ? 0 : 0.07,
-      },
-    },
-  }
-
-  const chipItem = {
-    hidden: reduce ? {} : { opacity: 0, scale: 0.88 },
-    visible: {
-      opacity: 1,
-      scale: 1,
-      transition: { duration: 0.4, ease: EASE },
-    },
+  const fadeUp = {
+    hidden: reduce ? {} : { opacity: 0, y: 24 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } },
   }
 
   return (
-    <section className="relative bg-navy min-h-[100dvh] flex items-center pt-16 overflow-hidden">
-      {/* SVG diagonal grid */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="grid" x="0" y="0" width="48" height="48" patternUnits="userSpaceOnUse">
-              <path d="M 48 0 L 0 0 0 48" fill="none" stroke="white" strokeWidth="0.5" strokeOpacity="0.05" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-      </div>
-
-      {/* Red accent glow top-right */}
+    <section className="relative bg-navy overflow-hidden pt-16">
+      {/* diagonal grid */}
       <div
-        className="absolute -top-32 -right-32 w-96 h-96 rounded-full pointer-events-none"
-        style={{ background: "radial-gradient(circle, rgba(224,48,48,0.12) 0%, transparent 70%)" }}
+        className="absolute inset-0 opacity-[.05] pointer-events-none"
+        style={{ backgroundImage: "repeating-linear-gradient(118deg,transparent 0 26px,#fff 26px 27px)" }}
+        aria-hidden="true"
+      />
+      {/* red glow */}
+      <div
+        className="absolute -right-32 -top-24 w-[720px] h-[720px] rounded-full pointer-events-none"
+        style={{ background: "radial-gradient(circle,rgba(224,48,48,.28) 0%,rgba(224,48,48,0) 66%)", filter: "blur(8px)" }}
         aria-hidden="true"
       />
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-center">
-
-          {/* Left — text content */}
+      <div className="relative z-[2] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-11 items-center">
+          {/* Left — text */}
           <motion.div
-            variants={container}
             initial="hidden"
             animate="visible"
-            className="flex flex-col gap-7"
+            variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.11 } } }}
           >
-            <motion.div variants={item}>
-              <span className="inline-flex items-center gap-2 bg-brand/15 border border-brand/25 text-brand text-xs font-semibold px-3 py-1.5 rounded-full uppercase tracking-wider">
-                Repuestos originales y alternos
+            <motion.div variants={fadeUp} className="flex items-center gap-2 mb-5">
+              <span className="w-[7px] h-[7px] rounded-full bg-brand shrink-0" />
+              <span className="text-[11px] font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
+                Santo Domingo · Ecuador — Repuestos chinos y americanos
               </span>
             </motion.div>
 
-            <motion.div variants={item}>
-              <h1 className="font-display font-bold text-white leading-[1.04] text-[clamp(2.5rem,6vw,4.5rem)]">
-                Tu vehículo merece
-                <br className="hidden sm:block" />
-                {" "}lo mejor.
-                <br />
-                <span className="text-brand">Nosotros lo tenemos.</span>
-              </h1>
-            </motion.div>
+            <motion.h1
+              variants={fadeUp}
+              className="font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
+            >
+              Repuestos que
+              <br />
+              <span className="text-brand">sí encajan.</span>
+            </motion.h1>
 
-            <motion.p variants={item} className="text-white/60 text-base leading-relaxed max-w-[480px]">
-              Motor · Frenos · Suspensión · Filtros · Carrocería · Enfriamiento.
-              Marcas chinas y americanas con envío a todo Ecuador.
+            <motion.p variants={fadeUp} className="mt-5 max-w-lg text-[#9fb0c8] text-[1.125rem] leading-[1.55]">
+              Originales, OEM y alternos para Chery, SWM, Great Wall, Ford, Chevrolet y más.
+              Asesoría experta y envíos a todo el Ecuador.
             </motion.p>
 
-            <motion.div variants={item} className="flex flex-wrap gap-3 pt-1">
+            <motion.div variants={fadeUp} className="flex flex-wrap gap-3 mt-8">
               <a
                 href="/catalogo"
-                className="group inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-all duration-150 active:scale-[0.97] shadow-lg shadow-brand/30 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-navy"
+                className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-6 py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
-                Ver catálogo
-                <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform duration-150" />
+                <Search size={18} />
+                Buscar mi repuesto
               </a>
               <a
                 href="https://wa.me/593984878153"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-white/25 hover:border-white/50 hover:bg-white/5 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-all duration-150 active:scale-[0.97] min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                className="inline-flex items-center gap-2 border border-wa text-[#f4f7fb] hover:bg-wa/[.14] font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
               >
-                <MessageCircle size={16} />
-                WhatsApp
+                <MessageCircle size={18} className="text-wa" />
+                Escríbenos por WhatsApp
               </a>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="mt-10">
+              <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-[#5f7090] mb-3">
+                Trabajamos con
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {BRAND_CHIPS.map(({ label, key }) => (
+                  <a
+                    key={key}
+                    href={`/catalogo?marca=${key}`}
+                    className="font-display font-bold text-sm text-[#9fb0c8] border border-white/[.14] hover:border-brand hover:text-white px-3.5 py-2 rounded-full transition-colors duration-150"
+                  >
+                    {label}
+                  </a>
+                ))}
+              </div>
             </motion.div>
           </motion.div>
 
-          {/* Right — brand chips grid */}
           <motion.div
-            variants={chipContainer}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-3 gap-3"
+            initial={reduce ? false : { opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
+            className="relative hidden lg:block"
           >
-            {BRAND_CHIPS.map((brand) => (
-              <motion.a
-                key={brand.name}
-                href={`/catalogo?marca=${brand.name.toLowerCase().replace(" ", "_")}`}
-                variants={chipItem}
-                className="flex flex-col items-center justify-center border border-white/12 hover:border-brand hover:bg-brand/5 rounded-xl p-4 min-h-[72px] transition-all duration-200 gap-1 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
-              >
-                <span className="font-display font-bold text-white text-base leading-tight text-center group-hover:text-brand transition-colors duration-200">
-                  {brand.name}
-                </span>
-                <span className="text-white/40 text-[10px] font-semibold uppercase tracking-widest">
-                  {brand.tag}
-                </span>
-              </motion.a>
-            ))}
+            <div
+              className="relative h-[470px] rounded-[20px] overflow-hidden border border-white/[.12] shadow-[0_30px_60px_rgba(0,0,0,.4)] bg-[#0a1628]"
+            >
+              <Image
+                src="/editorial/home/hero-vehicle.png"
+                alt="Vehículo en estudio con iluminación dramática"
+                fill
+                className="object-cover"
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                priority
+              />
+              <div
+                className="absolute inset-0"
+                style={{ backgroundImage: "repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 14px,transparent 14px 28px)" }}
+                aria-hidden="true"
+              />
+              <div className="absolute bottom-0 left-0 right-0 p-6 text-right bg-gradient-to-t from-[rgba(10,22,40,.92)] to-transparent">
+                <p className="font-bold text-[13px] tracking-[.12em] uppercase text-brand">Stock disponible</p>
+                <p className="font-display font-bold text-white text-3xl mt-1.5 leading-tight">
+                  +5.000 referencias listas para enviar
+                </p>
+              </div>
+            </div>
+            {/* bottom-left float */}
+            <div
+              className="absolute -bottom-7 -left-7 w-56 h-36 rounded-[16px] overflow-hidden border border-white/[.14] shadow-[0_18px_36px_rgba(0,0,0,.45)] bg-[#13294a] flex items-end p-3"
+            >
+              <Image
+                src="/editorial/home/part-detail.png"
+                alt="Detalle técnico de repuesto en primer plano"
+                fill
+                className="object-cover"
+                sizes="224px"
+              />
+              <div
+                className="absolute inset-0"
+                style={{ backgroundImage: "repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 12px,transparent 12px 24px)" }}
+                aria-hidden="true"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(19,41,74,.88)] via-[rgba(19,41,74,.22)] to-transparent" aria-hidden="true" />
+              <p className="font-semibold text-sm text-white">Calidad garantizada</p>
+            </div>
+            {/* top-right badge */}
+            <div className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-[8px] border border-white/[.16] rounded-[14px] p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]">
+              <p className="font-display font-bold text-white text-[1.875rem] leading-none">&lt; 24 h</p>
+              <p className="text-[12px] text-[#9fb0c8] mt-1.5">Asesoría por WhatsApp</p>
+            </div>
           </motion.div>
         </div>
 
-        {/* Bottom stat strip */}
+        {/* Search bar */}
+        <HeroSearch />
+
+        {/* Stats strip */}
         <motion.div
-          initial={reduce ? false : { opacity: 0, y: 20 }}
+          initial={reduce ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2, duration: 0.5, ease: "easeOut" }}
-          className="mt-16 lg:mt-20 pt-8 border-t border-white/10 grid grid-cols-3 gap-6 max-w-md"
+          transition={{ delay: 0.9, duration: 0.5 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-6 pb-8 mt-8 border-t border-white/[.08]"
         >
-          {[
-            { value: "12+", label: "Marcas" },
-            { value: "500+", label: "Repuestos" },
-            { value: "24h", label: "Respuesta" },
-          ].map(({ value, label }) => (
-            <div key={label} className="flex flex-col gap-1">
-              <span className="font-display font-bold text-white text-2xl">{value}</span>
-              <span className="text-white/40 text-xs font-medium">{label}</span>
+          {STAT_STRIP.map(({ icon: Icon, iconColor, iconBg, title, sub }) => (
+            <div key={title} className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
+                <Icon size={20} className={iconColor} strokeWidth={2} />
+              </div>
+              <div>
+                <p className="font-bold text-[15px] text-white leading-tight">{title}</p>
+                <p className="text-[13px] text-[#7e8ca3] mt-0.5">{sub}</p>
+              </div>
             </div>
           ))}
         </motion.div>

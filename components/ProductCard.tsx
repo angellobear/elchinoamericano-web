@@ -3,15 +3,25 @@
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { Package } from "lucide-react"
-import { useCart } from "@/context/CartContext"
+import { MessageCircle, Package } from "lucide-react"
 import { Product } from "@/types"
 
-export default function ProductCard({ product }: { product: Product }) {
-  const { dispatch } = useCart()
-  const primaryImage = product.images?.find(i => i.is_primary)?.url ?? product.images?.[0]?.url
+const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
+  original: { label: "Original", cls: "bg-navy text-white" },
+  oem:      { label: "OEM",      cls: "bg-emerald-700 text-white" },
+  aftermarket: { label: "Alterno", cls: "bg-brand text-white" },
+}
 
+export default function ProductCard({ product }: { product: Product }) {
+  const primaryImage = product.images?.find(i => i.is_primary)?.url ?? product.images?.[0]?.url
   const effectivePrice = product.offer_price ?? product.price
+  const badge = TYPE_BADGE[product.type] ?? TYPE_BADGE.aftermarket
+  const discountPct = product.offer_price
+    ? Math.round((1 - product.offer_price / product.price) * 100)
+    : 0
+  const waMsg = encodeURIComponent(
+    `Hola! Me interesa: ${product.title} (Cód: ${product.code}). ¿Está disponible?`
+  )
 
   return (
     <motion.article
@@ -20,71 +30,71 @@ export default function ProductCard({ product }: { product: Product }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
-      className="group relative flex flex-col border border-slate-200 rounded-xl overflow-hidden bg-white hover:border-brand hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
+      className="group relative flex flex-col border border-[#e6e9ef] rounded-[16px] overflow-hidden bg-white hover:border-brand hover:shadow-[0_22px_44px_rgba(13,31,60,.16)] hover:-translate-y-1 transition-all duration-200 cursor-pointer"
     >
-      {/* Full-card link (behind everything) */}
+      {/* Full-card link */}
       <Link
         href={`/catalogo/${product.slug}`}
         className="absolute inset-0 z-0"
         aria-label={`Ver ${product.title}`}
       />
 
-      {/* Image area */}
-      <div className="h-36 bg-slate-50 flex items-center justify-center relative overflow-hidden">
+      {/* Image 4:3 */}
+      <div className="relative aspect-[4/3] overflow-hidden">
         {primaryImage ? (
           <Image
             src={primaryImage}
             alt={product.title}
             fill
-            className="object-contain p-3"
-            sizes="(max-width: 640px) 50vw, 25vw"
+            className="object-contain p-3 bg-[#f3f5f9]"
+            sizes="(max-width: 640px) 50vw, 33vw"
           />
         ) : (
-          <Package
-            size={44}
-            className="text-slate-300 group-hover:text-navy/25 transition-colors duration-200"
-            strokeWidth={1.25}
-          />
+          <div className="absolute inset-0 bg-navy flex flex-col items-center justify-center gap-2">
+            <Package size={44} className="text-white/20" strokeWidth={1.25} />
+            <span className="text-[10px] text-[#5f7090] font-mono">{product.category?.name}</span>
+          </div>
         )}
         {/* Type badge */}
-        <span className={`absolute top-2 left-2 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wide ${
-          product.type === 'original' ? 'bg-navy text-white' :
-          product.type === 'oem'      ? 'bg-blue-600 text-white' :
-                                        'bg-brand text-white'
-        }`}>
-          {product.type === 'aftermarket' ? 'Alterno' : product.type}
+        <span className={`absolute top-3 left-3 px-2 py-1 rounded-[6px] text-[10px] font-bold uppercase tracking-[.06em] z-[1] ${badge.cls}`}>
+          {badge.label}
         </span>
+        {/* Discount badge */}
+        {discountPct > 0 && (
+          <span className="absolute top-3 right-3 bg-brand text-white px-2 py-1 rounded-[6px] text-[10px] font-bold uppercase tracking-[.05em] z-[1]">
+            -{discountPct}%
+          </span>
+        )}
       </div>
 
       {/* Info */}
-      <div className="flex flex-col flex-1 p-4 gap-2.5">
-        <div>
-          <p className="text-[10px] text-slate-400 font-semibold mb-0.5 uppercase tracking-wide">
-            {product.part_brand?.name}
-          </p>
-          <h3 className="text-sm font-semibold text-slate-900 leading-snug">{product.title}</h3>
-          <p className="text-[11px] text-slate-400 mt-1 leading-tight">{product.short_description}</p>
-        </div>
+      <div className="flex flex-col flex-1 p-[15px_17px_17px]">
+        <p className="text-[11px] font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
+          {product.part_brand?.name}
+        </p>
+        <h3 className="font-display font-bold text-[19px] uppercase text-navy leading-[1.12] mt-1">
+          {product.title}
+        </h3>
 
-        <div className="mt-auto pt-3 flex items-end justify-between gap-2">
-          <div className="flex flex-col">
+        <div className="flex items-end justify-between mt-auto pt-4">
+          <div>
             {product.offer_price && (
-              <span className="text-xs text-slate-400 line-through leading-none">${product.price.toFixed(2)}</span>
+              <p className="text-[12px] text-[#9aa3b2] line-through leading-none">${product.price.toFixed(2)}</p>
             )}
-            <span className={`font-display font-bold text-xl leading-none relative z-10 ${product.offer_price ? 'text-brand' : 'text-navy'}`}>
+            <span className="font-display font-bold text-[27px] text-navy leading-none">
               ${effectivePrice.toFixed(2)}
             </span>
           </div>
-          <button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-              dispatch({ type: "ADD", product })
-            }}
-            className="relative z-10 shrink-0 bg-navy hover:bg-brand text-white text-xs font-bold px-3 py-2 rounded-md transition-colors duration-150 active:scale-[0.97]"
+          <a
+            href={`https://wa.me/593984878153?text=${waMsg}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="relative z-10 flex items-center gap-1.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-[12px] px-3 py-2.5 rounded-[9px] transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
           >
-            Agregar
-          </button>
+            <MessageCircle size={14} />
+            Consultar
+          </a>
         </div>
       </div>
     </motion.article>

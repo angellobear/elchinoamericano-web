@@ -1,23 +1,31 @@
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
-import Link from "next/link"
 import Image from "next/image"
-import { ChevronRight, MessageCircle, Tag, Layers, Car, Package } from "lucide-react"
-import Navbar from "@/components/Navbar"
-import Footer from "@/components/Footer"
-import ProductCarousel from "@/components/ProductCarousel"
-import AddToCartButton from "@/components/AddToCartButton"
-import { products } from "@/data/products"
-import { Product, ProductType } from "@/types"
+import Link from "next/link"
 import {
+  ChevronRight,
+  MessageCircle,
+  Package,
+  ShieldCheck,
+  ShoppingCart,
+  Truck,
+} from "lucide-react"
+import AddToCartButton from "@/components/AddToCartButton"
+import Footer from "@/components/Footer"
+import Navbar from "@/components/Navbar"
+import ProductCarousel from "@/components/ProductCarousel"
+import { products } from "@/data/products"
+import {
+  SITE_NAME,
+  SITE_URL,
   getProductSeoDescription,
   getProductSeoTitle,
   getProductShareImage,
   getProductShareImageAlt,
   getProductUrl,
-  SITE_NAME,
-  SITE_URL,
 } from "@/lib/seo"
+import type { Product, ProductType } from "@/types"
+import ProductStickyBar from "./ProductStickyBar"
 
 export async function generateStaticParams() {
   return products.map((p) => ({ id: p.slug }))
@@ -33,9 +41,11 @@ export async function generateMetadata({
   if (!product) return {}
 
   const typeLabel =
-    product.type === "original" ? "Original de fábrica"
-    : product.type === "oem"   ? "Genuino OEM"
-                                : "Alterno / Aftermarket"
+    product.type === "original"
+      ? "Original de fabrica"
+      : product.type === "oem"
+        ? "Genuino OEM"
+        : "Alterno / Aftermarket"
 
   const title = getProductSeoTitle(product)
   const description = getProductSeoDescription(product, typeLabel)
@@ -62,12 +72,7 @@ export async function generateMetadata({
       siteName: SITE_NAME,
       locale: "es_EC",
       url: canonicalUrl,
-      images: [
-        {
-          url: imageUrl,
-          alt: imageAlt,
-        },
-      ],
+      images: [{ url: imageUrl, alt: imageAlt }],
     },
     twitter: {
       card: "summary_large_image",
@@ -78,21 +83,44 @@ export async function generateMetadata({
   }
 }
 
-const TYPE_CONFIG: Record<ProductType, { label: string; description: string; color: string }> = {
+const TYPE_CONFIG: Record<
+  ProductType,
+  {
+    label: string
+    description: string
+    badgeCls: string
+    stripBg: string
+    stripBorder: string
+    stripText: string
+    stripSub: string
+  }
+> = {
   original: {
-    label: "Original de fábrica",
-    description: "Fabricado por el proveedor oficial del armador. Máxima garantía de compatibilidad.",
-    color: "bg-navy text-white",
+    label: "Original",
+    description: "Fabricado por el proveedor oficial del armador. Maxima garantia de compatibilidad.",
+    badgeCls: "bg-navy text-white",
+    stripBg: "bg-[#e7ebf1]",
+    stripBorder: "border-[#d1d8e2]",
+    stripText: "text-navy",
+    stripSub: "text-[#566071]",
   },
   oem: {
     label: "Genuino OEM",
-    description: "Calidad equivalente al original, fabricado bajo especificaciones del armador.",
-    color: "bg-emerald-700 text-white",
+    description: "Misma especificacion que el original, fabricado por el proveedor de la marca.",
+    badgeCls: "bg-emerald-700 text-white",
+    stripBg: "bg-[#eef4ef]",
+    stripBorder: "border-[#cfe6d8]",
+    stripText: "text-[#13693c]",
+    stripSub: "text-[#3f7a56]",
   },
   aftermarket: {
-    label: "Alterno / Aftermarket",
-    description: "Repuesto de mercado libre de alta calidad con excelente relación precio-durabilidad.",
-    color: "bg-brand text-white",
+    label: "Alterno",
+    description: "Repuesto de mercado libre de alta calidad con excelente relacion precio-durabilidad.",
+    badgeCls: "bg-brand text-white",
+    stripBg: "bg-brand/[.06]",
+    stripBorder: "border-brand/20",
+    stripText: "text-brand",
+    stripSub: "text-[#566071]",
   },
 }
 
@@ -111,23 +139,18 @@ function buildJsonLd(product: Product) {
     mpn: product.code,
     brand: { "@type": "Brand", name: product.part_brand?.name },
     category: product.category?.name,
-    itemCondition:
-      product.condition === "used"
-        ? "https://schema.org/UsedCondition"
-        : product.condition === "refurbished"
-          ? "https://schema.org/RefurbishedCondition"
-          : "https://schema.org/NewCondition",
+    itemCondition: "https://schema.org/NewCondition",
     offers: {
       "@type": "Offer",
       url: productUrl,
       price: (product.offer_price ?? product.price).toFixed(2),
       priceCurrency: "USD",
-      availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      availability:
+        product.stock > 0
+          ? "https://schema.org/InStock"
+          : "https://schema.org/OutOfStock",
       seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
-      areaServed: {
-        "@type": "Country",
-        name: "Ecuador",
-      },
+      areaServed: { "@type": "Country", name: "Ecuador" },
     },
     additionalProperty:
       product.specs?.map((spec) => ({
@@ -144,7 +167,7 @@ function buildBreadcrumbJsonLd(product: Product) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
+      { "@type": "ListItem", position: 2, name: "Catalogo", item: `${SITE_URL}/catalogo` },
       { "@type": "ListItem", position: 3, name: product.title, item: getProductUrl(product) },
     ],
   }
@@ -157,17 +180,17 @@ function buildFaqJsonLd(product: Product, typeLabel: string) {
     mainEntity: [
       {
         "@type": "Question",
-        name: "¿Con qué vehículos es compatible este repuesto?",
+        name: "Con que vehiculos es compatible este repuesto?",
         acceptedAnswer: {
           "@type": "Answer",
           text:
             product.short_description ??
-            "La compatibilidad exacta se confirma según marca, modelo, año y versión del vehículo.",
+            "La compatibilidad exacta se confirma segun marca, modelo, ano y version del vehiculo.",
         },
       },
       {
         "@type": "Question",
-        name: "¿Qué tipo de repuesto es?",
+        name: "Que tipo de repuesto es?",
         acceptedAnswer: {
           "@type": "Answer",
           text: `${product.title} corresponde al tipo ${typeLabel}.`,
@@ -175,353 +198,565 @@ function buildFaqJsonLd(product: Product, typeLabel: string) {
       },
       {
         "@type": "Question",
-        name: "¿Se puede pedir por WhatsApp y enviar en Ecuador?",
+        name: "Se puede pedir por WhatsApp y enviar en Ecuador?",
         acceptedAnswer: {
           "@type": "Answer",
-          text:
-            "Sí. El producto puede consultarse por WhatsApp y la tienda coordina envíos a diferentes ciudades de Ecuador.",
+          text: "Si. El producto puede consultarse por WhatsApp y la tienda coordina envios a diferentes ciudades de Ecuador.",
         },
       },
     ],
   }
 }
 
-export default async function ProductDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = await params
-  // Support both slug-based URLs (new) and numeric IDs (legacy)
   const product = products.find((p) => p.slug === id) ?? products.find((p) => String(p.id) === id)
   if (!product) notFound()
 
   const typeConfig = TYPE_CONFIG[product.type]
-  const categoryName = product.category?.name ?? ''
+  const categoryName = product.category?.name ?? ""
   const effectivePrice = product.offer_price ?? product.price
-  const productUrl = getProductUrl(product)
-
+  const discountPct = product.offer_price
+    ? Math.round((1 - product.offer_price / product.price) * 100)
+    : 0
   const related = products
     .filter((p) => p.category?.key === product.category?.key && p.id !== product.id)
     .slice(0, 4)
 
+  const whatsappMsg = encodeURIComponent(
+    `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (Cod: ${product.code}). Esta disponible? Cuanto es el envio?`
+  )
+  const whatsappHref = `https://wa.me/593984878153?text=${whatsappMsg}`
+  const ctaTargetId = "product-whatsapp-cta"
+  const hasDescription = Boolean(product.description || product.alternate_codes?.length)
+  const hasSpecs = Boolean(product.specs?.length)
+  const specs = product.specs ?? []
+  const offerDeadline = product.discount_until
+    ? new Intl.DateTimeFormat("es-EC", {
+        day: "numeric",
+        month: "long",
+      }).format(new Date(product.discount_until))
+    : null
+
   const carouselFallback = (
-    <div className="flex flex-col items-center gap-5 px-8 text-center">
-      <Package size={88} className="text-navy/15" strokeWidth={0.75} />
-      <div className="flex flex-col items-center gap-1">
-        <span className="font-display font-bold text-slate-400 text-lg leading-tight">{product.part_brand?.name}</span>
-        <span className="text-xs text-slate-400">{categoryName}</span>
+    <div className="flex flex-col items-center gap-4 p-8 text-center">
+      <Package size={80} className="text-navy/15" strokeWidth={0.75} />
+      <div>
+        <p className="font-display text-lg font-bold leading-tight text-slate-400">
+          {product.part_brand?.name}
+        </p>
+        <p className="mt-1 text-xs text-slate-400">{categoryName}</p>
       </div>
     </div>
   )
 
-  const whatsappMsg = encodeURIComponent(
-    `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ''} (Cód: ${product.code}). ¿Está disponible? ¿Cuánto es el envío?`
-  )
-  const typeLabel = typeConfig.label
-  const faqJsonLd = buildFaqJsonLd(product, typeLabel)
+  const faqJsonLd = buildFaqJsonLd(product, typeConfig.label)
 
   return (
     <>
       <Navbar />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(product)) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(product)) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(product)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(product)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
 
-      <main className="min-h-screen bg-white pt-16">
-        {/* Breadcrumb */}
-        <div className="bg-slate-50 border-b border-slate-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-slate-500">
-              <Link href="/" className="hover:text-navy transition-colors">Inicio</Link>
+      <main className="min-h-screen bg-white pb-24 pt-16 md:pb-0">
+        <div className="border-b border-[#e6e9ef] bg-white">
+          <div className="mx-auto max-w-7xl px-4 py-3.5 sm:px-6 lg:px-8">
+            <nav
+              aria-label="Breadcrumb"
+              className="flex items-center gap-1.5 text-[13px] text-[#8a93a3]"
+            >
+              <Link href="/" className="transition-colors hover:text-navy">
+                Inicio
+              </Link>
               <ChevronRight size={12} className="shrink-0" />
-              <Link href="/catalogo" className="hover:text-navy transition-colors">Catálogo</Link>
-              <ChevronRight size={12} className="shrink-0" />
+              <Link href="/catalogo" className="transition-colors hover:text-navy">
+                Catalogo
+              </Link>
               {product.category && (
                 <>
-                  <Link href={`/catalogo?categoria=${product.category.key}`} className="hover:text-navy transition-colors">
+                  <ChevronRight size={12} className="shrink-0" />
+                  <Link
+                    href={`/catalogo?categoria=${product.category.key}`}
+                    className="transition-colors hover:text-navy"
+                  >
                     {categoryName}
                   </Link>
-                  <ChevronRight size={12} className="shrink-0" />
                 </>
               )}
-              <span className="text-slate-800 font-medium truncate max-w-[200px]">{product.title}</span>
+              <ChevronRight size={12} className="shrink-0" />
+              <span className="max-w-[200px] truncate font-medium text-navy">
+                {product.title}
+              </span>
             </nav>
           </div>
         </div>
 
-        {/* Product hero */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-            {/* Carousel */}
-            <div className="w-full max-w-md mx-auto lg:max-w-none">
-              <ProductCarousel
-                images={product.images?.map(img => img.url)}
-                fallback={carouselFallback}
-                productName={`${product.title} ${product.part_brand?.name ?? ''}`}
-              />
-            </div>
-
-            {/* Info panel */}
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-wrap items-center gap-2">
-                {product.category && (
-                  <Link
-                    href={`/catalogo?categoria=${product.category.key}`}
-                    className="inline-flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-[11px] font-semibold uppercase tracking-wide px-2.5 py-1 rounded-full transition-colors"
-                  >
-                    <Layers size={11} />
-                    {categoryName}
-                  </Link>
-                )}
-                <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide px-2.5 py-1 rounded-full ${typeConfig.color}`}>
-                  <Tag size={11} />
-                  {typeConfig.label}
-                </span>
-              </div>
-
-              <div>
-                <p className="text-sm text-slate-500 font-semibold uppercase tracking-wide mb-1">{product.part_brand?.name}</p>
-                <h1 className="font-display font-bold text-navy text-4xl lg:text-5xl leading-none">{product.title}</h1>
-                <p className="text-xs text-slate-400 mt-1 font-mono">Cód. {product.code}{product.sku && ` · SKU ${product.sku}`}</p>
-              </div>
-
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col gap-2">
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                  Enlace compartible
-                </p>
-                <p className="text-sm text-slate-700 break-all">{productUrl}</p>
-                <p className="text-xs text-slate-500">
-                  Al compartir esta URL, las redes tomarán la imagen principal del producto. Si no existe, se usará la imagen institucional del sitio.
-                </p>
-              </div>
-
-              {/* Price */}
-              <div className="flex items-baseline gap-3">
-                {product.offer_price && (
-                  <span className="text-slate-400 line-through text-2xl">${product.price.toFixed(2)}</span>
-                )}
-                <span className={`font-display font-bold text-5xl ${product.offer_price ? 'text-brand' : 'text-navy'}`}>
-                  ${effectivePrice.toFixed(2)}
-                </span>
-                <span className="text-slate-400 text-sm">USD · precio referencial</span>
-              </div>
-
-              {/* Stock indicator */}
-              <div className="flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-sm text-slate-600">
-                  {product.stock > 0 ? `En stock (${product.stock} disponibles)` : 'Sin stock'}
-                </span>
-              </div>
-
-              {/* Type explanation */}
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 flex gap-3">
-                <Tag size={16} className="text-slate-400 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">{typeConfig.label}</p>
-                  <p className="text-xs text-slate-500 mt-0.5">{typeConfig.description}</p>
+        <section className="bg-[#f6f8fb]">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+            <div className="grid grid-cols-1 gap-11 lg:grid-cols-2 lg:gap-14">
+              <div className="mx-auto w-full max-w-md lg:max-w-none">
+                <div className="relative overflow-hidden rounded-[18px] border border-[#e6e9ef] bg-white">
+                  {discountPct > 0 && (
+                    <span className="absolute left-4 top-4 z-10 rounded-[7px] bg-brand px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] text-white">
+                      -{discountPct}% OFF
+                    </span>
+                  )}
+                  <ProductCarousel
+                    images={product.images?.map((img) => img.url)}
+                    fallback={carouselFallback}
+                    productName={`${product.title} ${product.part_brand?.name ?? ""}`}
+                  />
                 </div>
               </div>
 
-              {/* Compatible brief */}
-              {product.short_description && (
-                <div className="flex items-start gap-3">
-                  <Car size={16} className="text-slate-400 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Compatible con</p>
-                    <p className="text-sm text-slate-700">{product.short_description}</p>
+              <div className="flex flex-col gap-5">
+                <div className="flex flex-wrap gap-2">
+                  {product.category && (
+                    <Link
+                      href={`/catalogo?categoria=${product.category.key}`}
+                      className="rounded-[7px] bg-[#e7ebf1] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] text-navy transition-colors hover:bg-[#d5dbe5]"
+                    >
+                      {categoryName}
+                    </Link>
+                  )}
+                  <span
+                    className={`rounded-[7px] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] ${typeConfig.badgeCls}`}
+                  >
+                    {typeConfig.label}
+                  </span>
+                  {product.is_featured && (
+                    <span className="rounded-[7px] bg-[#ffd23f] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] text-navy">
+                      Destacado
+                    </span>
+                  )}
+                </div>
+
+                <div>
+                  <p className="text-[13px] font-semibold uppercase tracking-[.04em] text-[#8a93a3]">
+                    {product.part_brand?.name}
+                  </p>
+                  <h1 className="mt-2 font-display text-[clamp(2rem,4.5vw,3.125rem)] font-bold uppercase leading-none text-navy">
+                    {product.title}
+                  </h1>
+                  <p className="mt-3 font-mono text-[13px] text-[#9aa3b2]">
+                    {product.code}
+                    {product.sku && ` · SKU ${product.sku}`}
+                  </p>
+                </div>
+
+                <div className="mt-1 flex items-end gap-3">
+                  <span className="font-display text-[clamp(2.5rem,5vw,3.375rem)] font-bold leading-none text-navy">
+                    ${effectivePrice.toFixed(2)}
+                  </span>
+                  {product.offer_price && (
+                    <span className="mb-1 text-[1.25rem] leading-none text-[#9aa3b2] line-through">
+                      ${product.price.toFixed(2)}
+                    </span>
+                  )}
+                  {discountPct > 0 && (
+                    <span className="mb-0.5 rounded-[8px] bg-brand px-2.5 py-1.5 text-[13px] font-bold text-white">
+                      {discountPct}% OFF
+                    </span>
+                  )}
+                </div>
+
+                {offerDeadline && discountPct > 0 && (
+                  <p className="-mt-2 text-[12.5px] text-amber-700">
+                    Oferta valida hasta el {offerDeadline}
+                  </p>
+                )}
+
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`h-[9px] w-[9px] shrink-0 rounded-full ${product.stock > 0 ? "bg-emerald-500" : "bg-red-500"}`}
+                  />
+                  <span
+                    className={`text-[14px] font-semibold ${product.stock > 0 ? "text-emerald-700" : "text-red-600"}`}
+                  >
+                    {product.stock > 0
+                      ? `En stock — ${product.stock} disponibles`
+                      : "Sin stock"}
+                  </span>
+                </div>
+
+                <a
+                  id={ctaTargetId}
+                  href={whatsappHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-3 rounded-[14px] bg-wa py-5 text-[1.125rem] font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+                >
+                  <MessageCircle size={22} />
+                  Consultar por WhatsApp
+                </a>
+
+                <div className="flex flex-col gap-3 sm:flex-row">
+                  <div className="sm:flex-1">
+                    <AddToCartButton product={product} />
                   </div>
+                  <Link
+                    href="/catalogo"
+                    className="inline-flex items-center justify-center gap-2 rounded-[12px] border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
+                  >
+                    <ShoppingCart size={16} />
+                    Seguir comprando
+                  </Link>
+                </div>
+
+                {product.short_description && (
+                  <p className="text-[15px] leading-[1.6] text-[#566071]">
+                    {product.short_description}
+                  </p>
+                )}
+
+                <div
+                  className={`flex gap-3 rounded-[13px] border p-4 ${typeConfig.stripBg} ${typeConfig.stripBorder}`}
+                >
+                  <ShieldCheck
+                    size={20}
+                    className={`mt-0.5 shrink-0 ${typeConfig.stripText}`}
+                    strokeWidth={2}
+                  />
+                  <div>
+                    <p className={`text-[14px] font-bold ${typeConfig.stripText}`}>
+                      {typeConfig.label} — calidad verificada
+                    </p>
+                    <p className={`mt-0.5 text-[13px] leading-relaxed ${typeConfig.stripSub}`}>
+                      {typeConfig.description}
+                    </p>
+                  </div>
+                </div>
+
+                <p className="text-[12px] text-slate-400">
+                  El precio final y disponibilidad son confirmados por el vendedor. Envios a todo Ecuador.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 bg-navy sm:grid-cols-3">
+          {[
+            {
+              icon: Truck,
+              title: "Envio a todo Ecuador",
+              sub: "Entrega 24–72 h",
+              iconCls: "text-brand",
+              iconBg: "bg-brand/[.14]",
+            },
+            {
+              icon: ShieldCheck,
+              title: "Garantia del proveedor",
+              sub: "Producto verificado",
+              iconCls: "text-brand",
+              iconBg: "bg-brand/[.14]",
+            },
+            {
+              icon: MessageCircle,
+              title: "Respuesta < 24 h",
+              sub: "Asesoria por WhatsApp",
+              iconCls: "text-wa",
+              iconBg: "bg-wa/[.14]",
+            },
+          ].map(({ icon: Icon, title, sub, iconCls, iconBg }, index) => (
+            <div
+              key={title}
+              className={`flex items-center gap-3.5 px-10 py-6 ${index < 2 ? "sm:border-r border-white/[.08]" : ""}`}
+            >
+              <div
+                className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${iconBg}`}
+              >
+                <Icon size={20} className={iconCls} strokeWidth={2} />
+              </div>
+              <div>
+                <p className="text-[15px] font-bold leading-tight text-white">{title}</p>
+                <p className="mt-0.5 text-[13px] text-[#7e8ca3]">{sub}</p>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {(hasDescription || hasSpecs) && (
+          <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[1.1fr_.9fr]">
+              {hasDescription && (
+                <div>
+                  <h2 className="mb-4 font-display text-[1.875rem] font-bold uppercase leading-none text-navy">
+                    Descripcion
+                  </h2>
+                  {product.description && (
+                    <p className="text-[15.5px] leading-[1.65] text-[#566071]">
+                      {product.description}
+                    </p>
+                  )}
+                  {product.alternate_codes && product.alternate_codes.length > 0 && (
+                    <div className="mt-6">
+                      <p className="mb-3 text-[14px] font-bold uppercase tracking-[.06em] text-navy">
+                        Codigos alternos / cruzados
+                      </p>
+                      <div className="flex flex-wrap gap-2">
+                        {product.alternate_codes.map((altCode) => (
+                          <span
+                            key={altCode.id}
+                            className="rounded-[8px] border border-[#e0e5ec] bg-[#f3f5f9] px-3 py-2 font-mono text-[13px] text-[#566071]"
+                          >
+                            {altCode.code}
+                            {altCode.source ? ` · ${altCode.source}` : ""}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
-              {/* CTA */}
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <AddToCartButton product={product} />
-                <a
-                  href={`https://wa.me/593984878153?text=${whatsappMsg}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-colors duration-150 active:scale-[0.98]"
-                >
-                  <MessageCircle size={16} />
-                  Consultar por WhatsApp
-                </a>
-              </div>
-
-              <p className="text-xs text-slate-400">
-                El precio final y disponibilidad son confirmados por el vendedor. Envíos a todo Ecuador.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="border-t border-slate-100 bg-slate-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-xl border border-slate-200 bg-white p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
-                  Compatibilidad
-                </p>
-                <p className="text-sm text-slate-700">
-                  {product.short_description ??
-                    "Confirma la compatibilidad con marca, modelo, año y versión antes de comprar."}
-                </p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
-                  Tipo de repuesto
-                </p>
-                <p className="text-sm text-slate-700">{typeLabel}</p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-5">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">
-                  Cobertura
-                </p>
-                <p className="text-sm text-slate-700">
-                  Atención por WhatsApp y coordinación de envíos a diferentes ciudades de Ecuador.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Description + Specs */}
-        {(product.description || (product.specs && product.specs.length > 0)) && (
-          <div className="border-t border-slate-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-                {product.description && (
+              {hasSpecs && specs.length > 0 && (
+                <div>
+                  <h2 className="mb-4 font-display text-[1.875rem] font-bold uppercase leading-none text-navy">
+                    Especificaciones
+                  </h2>
                   <div>
-                    <h2 className="font-display font-bold text-navy text-2xl mb-4">Descripción</h2>
-                    <p className="text-slate-600 leading-relaxed text-base">{product.description}</p>
-                  </div>
-                )}
-                {product.specs && product.specs.length > 0 && (
-                  <div>
-                    <h2 className="font-display font-bold text-navy text-2xl mb-4">Especificaciones</h2>
-                    <dl className="border border-slate-200 rounded-xl overflow-hidden">
-                      {product.specs.map((spec, i) => (
-                        <div
-                          key={spec.label}
-                          className={`flex items-start gap-4 px-4 py-3 ${i % 2 === 0 ? 'bg-white' : 'bg-slate-50'} ${i < product.specs!.length - 1 ? 'border-b border-slate-100' : ''}`}
-                        >
-                          <dt className="text-xs font-bold text-slate-500 uppercase tracking-wide min-w-[120px] shrink-0 pt-0.5">{spec.label}</dt>
-                          <dd className="text-sm text-slate-800 font-medium">{spec.value}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Compatible vehicles — structured table */}
-        {product.compatibilities && product.compatibilities.length > 0 && (
-          <div className="border-t border-slate-100 bg-slate-50">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-              <h2 className="font-display font-bold text-navy text-2xl mb-6">Vehículos compatibles</h2>
-              <div className="overflow-hidden border border-slate-200 rounded-xl bg-white">
-                <table className="w-full text-sm">
-                  <thead className="bg-slate-50 border-b border-slate-200">
-                    <tr>
-                      <th className="text-left px-4 py-3 font-semibold text-slate-600">Marca</th>
-                      <th className="text-left px-4 py-3 font-semibold text-slate-600">Modelo</th>
-                      <th className="text-left px-4 py-3 font-semibold text-slate-600">Cilindraje</th>
-                      <th className="text-left px-4 py-3 font-semibold text-slate-600">Años</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {product.compatibilities.map((c) => (
-                      <tr key={c.vehicle_model_id} className="hover:bg-slate-50">
-                        <td className="px-4 py-3 font-medium text-slate-800">{c.model?.brand?.name ?? '—'}</td>
-                        <td className="px-4 py-3 text-slate-600">{c.model?.name ?? '—'}</td>
-                        <td className="px-4 py-3 text-slate-500">{c.model?.displacement ?? '—'}</td>
-                        <td className="px-4 py-3 text-slate-500">
-                          {c.model?.year_start}{c.model?.year_end ? `–${c.model.year_end}` : c.model?.year_start ? '–actual' : ''}
-                          {c.notes && <span className="text-slate-400 ml-2 text-xs">({c.notes})</span>}
-                        </td>
-                      </tr>
+                    {specs.map((spec, index) => (
+                      <div
+                        key={`${spec.label}-${index}`}
+                        className={`flex justify-between py-3.5 ${index < specs.length - 1 ? "border-b border-[#ebeef3]" : ""}`}
+                      >
+                        <span className="text-[14px] text-[#8a93a3]">{spec.label}</span>
+                        <span className="text-[14px] font-semibold text-navy">{spec.value}</span>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+                </div>
+              )}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Equivalencies */}
-        {product.equivalencies && product.equivalencies.length > 0 && (
-          <div className="border-t border-slate-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-              <h2 className="font-display font-bold text-navy text-2xl mb-6">Equivalencias</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {product.equivalencies.map((eq) => {
-                  const eqImage = eq.images?.find(i => i.is_primary)?.url ?? eq.images?.[0]?.url
-                  return (
-                    <Link
-                      key={eq.id}
-                      href={`/catalogo/${eq.slug}`}
-                      className="group flex flex-col border border-slate-200 rounded-xl overflow-hidden bg-white hover:border-brand hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
-                    >
-                      <div className="h-28 bg-slate-50 flex items-center justify-center relative overflow-hidden">
-                        {eqImage ? (
-                          <Image src={eqImage} alt={eq.title} fill className="object-contain p-2" sizes="200px" />
-                        ) : (
-                          <Package size={36} className="text-slate-300 group-hover:text-navy/30 transition-colors" strokeWidth={1.5} />
+        {product.compatibilities && product.compatibilities.length > 0 && (
+          <section className="border-t border-[#e6e9ef] bg-[#f6f8fb]">
+            <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+              <div className="mb-2 flex items-center gap-3">
+                <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] bg-brand/[.12]">
+                  <Truck size={21} className="text-brand" strokeWidth={2} />
+                </div>
+                <h2 className="font-display text-[2.25rem] font-bold uppercase leading-none text-navy">
+                  Sirve para mi vehiculo?
+                </h2>
+              </div>
+              <p className="mb-6 text-[15px] text-[#566071]">
+                Confirma el modelo y ano de tu auto. Si tienes dudas, escribenos la placa por WhatsApp y lo verificamos.
+              </p>
+              {(() => {
+                const byBrand = product.compatibilities.reduce<
+                  Record<string, NonNullable<Product["compatibilities"]>>
+                >((acc, compatibility) => {
+                  const brand = compatibility.model?.brand?.name ?? "Otros"
+                  ;(acc[brand] ??= []).push(compatibility)
+                  return acc
+                }, {})
+
+                return Object.entries(byBrand).map(([brandName, compatibilities]) => (
+                  <div
+                    key={brandName}
+                    className="mb-4 overflow-hidden rounded-[16px] border border-[#e6e9ef] bg-white"
+                  >
+                    <div className="flex items-center gap-3 bg-navy px-5 py-4">
+                      <span className="flex h-[30px] w-[30px] items-center justify-center rounded-[7px] bg-white/[.14] text-[11px] font-bold text-white">
+                        {brandName.slice(0, 2).toUpperCase()}
+                      </span>
+                      <span className="font-display text-[1.125rem] font-bold uppercase tracking-[.04em] text-white">
+                        {brandName}
+                      </span>
+                    </div>
+                    {compatibilities.map((compatibility, index) => (
+                      <div
+                        key={`${compatibility.vehicle_model_id}-${index}`}
+                        className={`flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${index < compatibilities.length - 1 ? "border-b border-[#ebeef3]" : ""}`}
+                      >
+                        <div>
+                          <span className="text-[16px] font-bold text-navy">
+                            {compatibility.model?.name}
+                          </span>
+                          {compatibility.model?.displacement && (
+                            <span className="text-[14px] text-[#8a93a3]">
+                              {" "}
+                              · {compatibility.model.displacement}
+                            </span>
+                          )}
+                          {compatibility.notes && (
+                            <span className="ml-2 text-[13px] text-[#8a93a3]">
+                              ({compatibility.notes})
+                            </span>
+                          )}
+                        </div>
+                        {(compatibility.model?.year_start || compatibility.model?.year_end) && (
+                          <span className="shrink-0 rounded-[7px] bg-[#e7ebf1] px-3 py-1.5 text-[12px] font-semibold text-navy">
+                            {compatibility.model?.year_start}
+                            {compatibility.model?.year_end
+                              ? `–${compatibility.model.year_end}`
+                              : "–actual"}
+                          </span>
                         )}
                       </div>
-                      <div className="p-3">
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wide mb-0.5">{eq.part_brand?.name}</p>
-                        <h3 className="text-xs font-semibold text-slate-900 leading-snug line-clamp-2">{eq.title}</h3>
-                        <p className="font-display font-bold text-navy text-base mt-2">${(eq.offer_price ?? eq.price).toFixed(2)}</p>
-                      </div>
-                    </Link>
-                  )
-                })}
-              </div>
+                    ))}
+                  </div>
+                ))
+              })()}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Related products */}
+        {product.equivalencies && product.equivalencies.length > 0 && (
+          <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+            <h2 className="mb-2 font-display text-[2rem] font-bold uppercase leading-none text-navy">
+              Mismo repuesto, otra marca
+            </h2>
+            <p className="mb-6 text-[14px] text-[#8a93a3]">
+              Equivalencias verificadas — misma pieza, distinta linea o fabricante.
+            </p>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              {product.equivalencies.map((equivalency) => {
+                const equivalencyImage =
+                  equivalency.images?.find((img) => img.is_primary)?.url ??
+                  equivalency.images?.[0]?.url
+                const equivalencyBadge =
+                  TYPE_CONFIG[equivalency.type as ProductType] ?? TYPE_CONFIG.aftermarket
+
+                return (
+                  <Link
+                    key={equivalency.id}
+                    href={`/catalogo/${equivalency.slug}`}
+                    className="group flex flex-col rounded-[15px] border border-[#e6e9ef] bg-white p-[18px] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
+                  >
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <span
+                        className={`rounded-[6px] px-2 py-1 text-[10px] font-bold uppercase tracking-[.05em] ${equivalencyBadge.badgeCls}`}
+                      >
+                        {equivalencyBadge.label}
+                      </span>
+                      <span className="font-mono text-[11px] text-[#9aa3b2]">
+                        {equivalency.code}
+                      </span>
+                    </div>
+                    {equivalencyImage && (
+                      <div className="relative mb-3 h-20">
+                        <Image
+                          src={equivalencyImage}
+                          alt={equivalency.title}
+                          fill
+                          className="object-contain"
+                          sizes="180px"
+                        />
+                      </div>
+                    )}
+                    <h3 className="mt-1 font-display text-[19px] font-bold uppercase leading-tight text-navy">
+                      {equivalency.title}
+                    </h3>
+                    <div className="mt-3 flex items-end justify-between">
+                      <span className="font-display text-[25px] font-bold leading-none text-navy">
+                        ${(equivalency.offer_price ?? equivalency.price).toFixed(2)}
+                      </span>
+                      {equivalency.stock > 0 && (
+                        <span className="text-[12px] font-semibold text-emerald-700">
+                          En stock
+                        </span>
+                      )}
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </section>
+        )}
+
         {related.length > 0 && (
-          <div className="border-t border-slate-100">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-              <div className="flex items-center justify-between mb-8">
-                <h2 className="font-display font-bold text-navy text-2xl">Repuestos relacionados</h2>
+          <section className="border-t border-[#e6e9ef]">
+            <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+              <div className="mb-6 flex items-center justify-between gap-4">
+                <h2 className="font-display text-[2rem] font-bold uppercase leading-none text-navy">
+                  Tambien de {categoryName || "esta categoria"}
+                </h2>
                 {product.category && (
-                  <Link href={`/catalogo?categoria=${product.category.key}`} className="text-sm text-brand font-semibold hover:text-brand/75 transition-colors">
-                    Ver todos en {categoryName}
+                  <Link
+                    href={`/catalogo?categoria=${product.category.key}`}
+                    className="text-[14px] font-semibold text-brand transition-colors hover:text-brand/75"
+                  >
+                    Ver todos →
                   </Link>
                 )}
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {related.map((rp) => {
-                  const rpImage = rp.images?.find(i => i.is_primary)?.url ?? rp.images?.[0]?.url
+              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+                {related.map((relatedProduct) => {
+                  const relatedImage =
+                    relatedProduct.images?.find((img) => img.is_primary)?.url ??
+                    relatedProduct.images?.[0]?.url
+
                   return (
                     <Link
-                      key={rp.id}
-                      href={`/catalogo/${rp.slug}`}
-                      className="group flex flex-col border border-slate-200 rounded-xl overflow-hidden bg-white hover:border-brand hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                      key={relatedProduct.id}
+                      href={`/catalogo/${relatedProduct.slug}`}
+                      className="group flex flex-col overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                     >
-                      <div className="h-28 bg-slate-50 flex items-center justify-center relative overflow-hidden">
-                        {rpImage ? (
-                          <Image src={rpImage} alt={rp.title} fill className="object-contain p-2" sizes="200px" />
+                      <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#f3f5f9]">
+                        {relatedImage ? (
+                          <Image
+                            src={relatedImage}
+                            alt={relatedProduct.title}
+                            fill
+                            className="object-contain p-2"
+                            sizes="200px"
+                          />
                         ) : (
-                          <Package size={36} className="text-slate-300 group-hover:text-navy/30 transition-colors" strokeWidth={1.5} />
+                          <div className="absolute inset-0 flex items-center justify-center bg-navy">
+                            <Image
+                              src="/logo-ca.png"
+                              alt=""
+                              width={80}
+                              height={27}
+                              className="object-contain opacity-[.55]"
+                            />
+                          </div>
                         )}
                       </div>
-                      <div className="p-3">
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wide mb-0.5">{rp.part_brand?.name}</p>
-                        <h3 className="text-xs font-semibold text-slate-900 leading-snug line-clamp-2">{rp.title}</h3>
-                        <p className="font-display font-bold text-navy text-base mt-2">${(rp.offer_price ?? rp.price).toFixed(2)}</p>
+                      <div className="p-[13px_14px]">
+                        <p className="text-[10px] font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
+                          {relatedProduct.part_brand?.name}
+                        </p>
+                        <h3 className="mt-1 font-display text-[16px] font-bold uppercase leading-tight text-navy">
+                          {relatedProduct.title}
+                        </h3>
+                        <p className="mt-2 font-display text-[20px] font-bold text-navy">
+                          ${(relatedProduct.offer_price ?? relatedProduct.price).toFixed(2)}
+                        </p>
                       </div>
                     </Link>
                   )
                 })}
               </div>
             </div>
-          </div>
+          </section>
         )}
+
+        <ProductStickyBar
+          ctaTargetId={ctaTargetId}
+          currentPrice={effectivePrice}
+          originalPrice={product.offer_price ? product.price : undefined}
+          whatsappHref={whatsappHref}
+        />
       </main>
       <Footer />
     </>

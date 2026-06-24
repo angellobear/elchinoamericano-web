@@ -1,0 +1,63 @@
+<svg width="1600" height="1200" viewBox="0 0 1600 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1200" fill="#E9EEF4"/>
+  <rect width="1600" height="1200" fill="url(#room)"/>
+  <rect x="0" y="874" width="1600" height="326" fill="#D8E0E9"/>
+  <rect x="90" y="186" width="370" height="618" rx="14" fill="#192A40"/>
+  <rect x="1140" y="186" width="370" height="618" rx="14" fill="#192A40"/>
+  <rect x="528" y="146" width="544" height="698" rx="18" fill="#F7FAFD"/>
+  <rect x="560" y="188" width="480" height="84" rx="12" fill="#DDE6EF"/>
+  <rect x="560" y="304" width="480" height="84" rx="12" fill="#DDE6EF"/>
+  <rect x="560" y="420" width="480" height="84" rx="12" fill="#DDE6EF"/>
+  <rect x="560" y="536" width="480" height="84" rx="12" fill="#DDE6EF"/>
+  <rect x="560" y="652" width="480" height="84" rx="12" fill="#DDE6EF"/>
+
+  <g opacity="0.94">
+    <rect x="132" y="230" width="286" height="86" rx="10" fill="#2B415D"/>
+    <rect x="132" y="344" width="286" height="86" rx="10" fill="#E03030"/>
+    <rect x="132" y="458" width="286" height="86" rx="10" fill="#8598AD"/>
+    <rect x="132" y="572" width="286" height="86" rx="10" fill="#DCE5EE"/>
+    <rect x="132" y="686" width="286" height="86" rx="10" fill="#314962"/>
+    <rect x="1182" y="230" width="286" height="86" rx="10" fill="#DCE5EE"/>
+    <rect x="1182" y="344" width="286" height="86" rx="10" fill="#2E4056"/>
+    <rect x="1182" y="458" width="286" height="86" rx="10" fill="#E03030"/>
+    <rect x="1182" y="572" width="286" height="86" rx="10" fill="#8397AA"/>
+    <rect x="1182" y="686" width="286" height="86" rx="10" fill="#2E4056"/>
+  </g>
+
+  <g opacity="0.98">
+    <path d="M804 560C846 560 888 582 920 621L970 682L962 860H650L640 699L692 626C723 586 763 560 804 560Z" fill="#1E2F45"/>
+    <path d="M768 563C797 588 805 632 805 674V860H650L640 699L692 626C714 598 741 575 768 563Z" fill="#D4363B"/>
+    <rect x="725" y="642" width="163" height="32" rx="16" fill="#DCE7F2"/>
+    <circle cx="746" cy="913" r="70" fill="#101A27"/>
+    <circle cx="746" cy="913" r="43" fill="#C8D4E0"/>
+    <circle cx="906" cy="913" r="70" fill="#101A27"/>
+    <circle cx="906" cy="913" r="43" fill="#C8D4E0"/>
+  </g>
+
+  <g opacity="0.7">
+    <rect x="684" y="98" width="182" height="12" rx="6" fill="#24384E"/>
+    <rect x="684" y="126" width="142" height="4" rx="2" fill="#8C9DAF"/>
+    <text x="684" y="170" fill="#6A7E93" font-family="Arial, sans-serif" font-size="18" letter-spacing="3">SERVICE FLOOR / VERIFIED STOCK</text>
+    <text x="684" y="196" fill="#C52B2F" font-family="Arial, sans-serif" font-size="16" letter-spacing="6">FRAME 03</text>
+  </g>
+
+  <ellipse cx="798" cy="242" rx="254" ry="132" fill="url(#light)"/>
+  <ellipse cx="390" cy="960" rx="244" ry="84" fill="url(#shadow)"/>
+  <ellipse cx="1248" cy="960" rx="244" ry="84" fill="url(#shadow)"/>
+
+  <defs>
+    <linearGradient id="room" x1="800" y1="0" x2="800" y2="1200" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F4F7FB"/>
+      <stop offset="0.62" stop-color="#E7EDF4"/>
+      <stop offset="1" stop-color="#DDE5EE"/>
+    </linearGradient>
+    <radialGradient id="light" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(798 242) rotate(90) scale(132 254)">
+      <stop stop-color="#FFFFFF" stop-opacity="0.92"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="shadow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(390 960) rotate(90) scale(84 244)">
+      <stop stop-color="#41586D" stop-opacity="0.23"/>
+      <stop offset="1" stop-color="#41586D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>
