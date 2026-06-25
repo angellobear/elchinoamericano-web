@@ -15,6 +15,13 @@
       "when": 1782405514826,
       "tag": "0001_audit_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1782428868710,
+      "tag": "0002_thick_loa",
+      "breakpoints": true
     }
   ]
 }

@@ -3,6 +3,11 @@ export interface PublicVehicleBrand {
   key: string
   name: string
   origin: string
+  logoUrl: string | null
+  sortOrder: number
+  image: {
+    url: string | null
+  }
 }
 
 export const LEGACY_VISIBLE_VEHICLE_BRAND_NAMES = [

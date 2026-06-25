@@ -3,11 +3,12 @@ import { partBrands } from './schema'
 import { eq, asc } from 'drizzle-orm'
 import { dbNow } from './db-now'
 import { withAudit } from '@/lib/audit'
+import { buildVisibilityWhere, type ActiveQueryOptions } from '@/lib/db/soft-delete'
 
-export async function getPartBrands(includeInactive = false) {
+export async function getPartBrands(includeInactiveOrOptions: boolean | ActiveQueryOptions = false) {
   const db = await getDb()
   return db.query.partBrands.findMany({
-    where: includeInactive ? undefined : eq(partBrands.isActive, true),
+    where: buildVisibilityWhere(partBrands.isActive, partBrands.deletedAt, includeInactiveOrOptions),
     orderBy: asc(partBrands.name),
   })
 }
@@ -26,6 +27,6 @@ export async function updatePartBrand(id: number, data: Partial<typeof partBrand
 
 export async function deletePartBrand(id: number) {
   await withAudit(async (tx) => {
-    await tx.update(partBrands).set({ isActive: false, updatedAt: dbNow() }).where(eq(partBrands.id, id))
+    await tx.update(partBrands).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(partBrands.id, id))
   })
 }

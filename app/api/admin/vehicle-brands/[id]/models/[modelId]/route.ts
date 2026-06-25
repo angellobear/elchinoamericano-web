@@ -24,6 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       fuelType:     data.fuelType ?? null,
       transmission: data.transmission ?? null,
       bodyType:     data.bodyType ?? null,
+      isActive:     data.isActive,
     })
     logger.info({ modelId }, 'Vehicle model updated')
     return NextResponse.json({ ok: true })

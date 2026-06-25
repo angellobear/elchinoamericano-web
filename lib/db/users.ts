@@ -1,31 +1,33 @@
 import { getDb } from './client'
 import { users, roles } from './schema'
-import { eq, desc, asc } from 'drizzle-orm'
+import { and, eq, desc, asc } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
 import { dbNow } from './db-now'
 import { withAudit } from '@/lib/audit'
+import { buildNotDeletedWhere, type SoftDeleteQueryOptions } from '@/lib/db/soft-delete'
 
-export async function getUsers() {
+export async function getUsers(options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   return db.query.users.findMany({
+    where: buildNotDeletedWhere(users.deletedAt, options),
     with: { role: true },
     orderBy: desc(users.createdAt),
   })
 }
 
-export async function getUserByEmail(email: string) {
+export async function getUserByEmail(email: string, options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   return db.query.users.findFirst({
-    where: eq(users.email, email),
+    where: and(eq(users.email, email), buildNotDeletedWhere(users.deletedAt, options)),
     with: { role: true },
   })
 }
 
-export async function getUserById(id: string) {
+export async function getUserById(id: string, options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   return db.query.users.findFirst({
-    where: eq(users.id, id),
+    where: and(eq(users.id, id), buildNotDeletedWhere(users.deletedAt, options)),
     with: { role: true },
   })
 }
@@ -48,7 +50,7 @@ export async function createUser(data: { email: string; fullName?: string; passw
   })
 }
 
-export async function updateUser(id: string, data: { fullName?: string; roleId?: number; isActive?: boolean; passwordHash?: string }) {
+export async function updateUser(id: string, data: { fullName?: string; roleId?: number; isActive?: boolean; passwordHash?: string; deletedAt?: Date | null | ReturnType<typeof dbNow> }) {
   await withAudit(async (tx) => {
     await tx.update(users).set({ ...data, updatedAt: dbNow() }).where(eq(users.id, id))
   })
@@ -60,4 +62,8 @@ export async function deactivateUser(id: string) {
 
 export async function activateUser(id: string) {
   return updateUser(id, { isActive: true })
+}
+
+export async function deleteUser(id: string) {
+  return updateUser(id, { isActive: false, deletedAt: dbNow() })
 }

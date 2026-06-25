@@ -1,15 +1,16 @@
 import { deleteSupplier, getSuppliers, updateSupplier } from '@/lib/db/suppliers'
+import type { ActiveQueryOptions } from '@/lib/db/soft-delete'
 import type { SupplierListItem } from '@/modules/admin/suppliers/types'
 
 export interface SupplierRepository {
-  listForAdmin(): Promise<SupplierListItem[]>
+  listForAdmin(options?: ActiveQueryOptions): Promise<SupplierListItem[]>
   updateStatus(id: number, isActive: boolean): Promise<void>
   softDelete(id: number): Promise<void>
 }
 
 export const supplierRepository: SupplierRepository = {
-  async listForAdmin() {
-    const suppliers = await getSuppliers(true)
+  async listForAdmin(options) {
+    const suppliers = await getSuppliers({ includeInactive: true, withTrashed: options?.withTrashed })
 
     return suppliers.map((supplier) => ({
       id: supplier.id,

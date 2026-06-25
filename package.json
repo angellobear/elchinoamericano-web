@@ -23,7 +23,8 @@
     "db:seed:local": "APP_ENV=local npx tsx lib/db/seed.ts",
     "db:seed:mysql": "APP_ENV=local npx tsx lib/db/seed.ts",
     "db:seed:pg": "APP_ENV=prod npx tsx lib/db/seed.ts",
-    "db:patch:vehicle-brands-web": "npx tsx lib/db/scripts/apply-vehicle-brand-web-visibility.ts"
+    "db:patch:vehicle-brands-web": "npx tsx lib/db/scripts/apply-vehicle-brand-web-visibility.ts",
+    "db:patch:soft-delete:mysql": "npx tsx lib/db/scripts/apply-soft-delete-columns.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.108.2",

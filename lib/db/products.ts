@@ -6,6 +6,10 @@ import {
 import { eq, desc, and, sql } from 'drizzle-orm'
 import { dbNow } from './db-now'
 import { withAudit } from '@/lib/audit'
+import {
+  buildNotDeletedWhere,
+  type SoftDeleteQueryOptions,
+} from '@/lib/db/soft-delete'
 
 // DECIMAL columns come back as string from the driver — convert for arithmetic
 function offerPrice(price: string, pct?: string | null, until?: Date | null): number | undefined {
@@ -22,11 +26,13 @@ export async function getProducts(filters?: {
   isActive?:   boolean
   limit?:      number
   offset?:     number
+  withTrashed?: boolean
 }) {
   const db = await getDb()
   const rows = await db.query.products.findMany({
     where: and(
       eq(products.isActive, filters?.isActive ?? true),
+      buildNotDeletedWhere(products.deletedAt, { withTrashed: filters?.withTrashed }),
       filters?.isFeatured !== undefined ? eq(products.isFeatured, filters.isFeatured) : undefined,
       filters?.type   ? eq(products.type, filters.type) : undefined,
       // LOWER()+LIKE portable across MySQL (utf8mb4_unicode_ci) and PostgreSQL
@@ -43,7 +49,7 @@ export async function getProducts(filters?: {
 export async function getProductBySlug(slug: string) {
   const db = await getDb()
   const row = await db.query.products.findFirst({
-    where: and(eq(products.slug, slug), eq(products.isActive, true)),
+    where: and(eq(products.slug, slug), eq(products.isActive, true), buildNotDeletedWhere(products.deletedAt)),
     with:  { category: true, partBrand: true, supplier: true, images: true, specs: true, alternateCodes: true, compatibilities: { with: { model: { with: { brand: true } } } } },
   })
   if (!row) return null
@@ -57,10 +63,10 @@ export async function getProductBySlug(slug: string) {
   return { ...row, offerPrice: offerPrice(row.price, row.discountPct, row.discountUntil), equivalencies: eqRows.map(e => e.equivalent) }
 }
 
-export async function getProductById(id: number) {
+export async function getProductById(id: number, options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   const row = await db.query.products.findFirst({
-    where: eq(products.id, id),
+    where: and(eq(products.id, id), buildNotDeletedWhere(products.deletedAt, options)),
     with:  { category: true, partBrand: true, images: true, specs: true, alternateCodes: true, compatibilities: true },
   })
   if (!row) return null
@@ -69,10 +75,10 @@ export async function getProductById(id: number) {
 }
 
 // For admin inventory page
-export async function getInventory() {
+export async function getInventory(options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   return db.query.products.findMany({
-    where: eq(products.isActive, true),
+    where: and(eq(products.isActive, true), buildNotDeletedWhere(products.deletedAt, options)),
     columns: { id: true, code: true, title: true, stock: true, minStockAlert: true, isActive: true },
     with: { category: { columns: { name: true } } },
     orderBy: products.stock,
@@ -80,12 +86,13 @@ export async function getInventory() {
 }
 
 // For admin product list
-export async function getProductList(search?: string) {
+export async function getProductList(search?: string, options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   return db.query.products.findMany({
-    where: search
-      ? sql`lower(${products.title}) like lower(${'%' + search + '%'})`
-      : undefined,
+    where: and(
+      buildNotDeletedWhere(products.deletedAt, options),
+      search ? sql`lower(${products.title}) like lower(${'%' + search + '%'})` : undefined,
+    ),
     with: { category: true, partBrand: true },
     orderBy: desc(products.createdAt),
     limit: 100,
@@ -93,12 +100,12 @@ export async function getProductList(search?: string) {
 }
 
 // For admin dashboard stats
-export async function getProductStats() {
+export async function getProductStats(options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   const [all, outOfStock, lowStock] = await Promise.all([
-    db.select({ count: sql<number>`count(*)` }).from(products).where(eq(products.isActive, true)),
-    db.select({ count: sql<number>`count(*)` }).from(products).where(and(eq(products.isActive, true), eq(products.stock, 0))),
-    db.select({ count: sql<number>`count(*)` }).from(products).where(and(eq(products.isActive, true), sql`${products.stock} <= ${products.minStockAlert}`, sql`${products.stock} > 0`)),
+    db.select({ count: sql<number>`count(*)` }).from(products).where(and(eq(products.isActive, true), buildNotDeletedWhere(products.deletedAt, options))),
+    db.select({ count: sql<number>`count(*)` }).from(products).where(and(eq(products.isActive, true), eq(products.stock, 0), buildNotDeletedWhere(products.deletedAt, options))),
+    db.select({ count: sql<number>`count(*)` }).from(products).where(and(eq(products.isActive, true), sql`${products.stock} <= ${products.minStockAlert}`, sql`${products.stock} > 0`, buildNotDeletedWhere(products.deletedAt, options))),
   ])
   return {
     total:      Number(all[0]?.count ?? 0),
@@ -126,7 +133,7 @@ export async function updateProduct(id: number, data: Partial<typeof products.$i
 
 export async function deleteProduct(id: number) {
   await withAudit(async (tx) => {
-    await tx.update(products).set({ isActive: false, updatedAt: dbNow() }).where(eq(products.id, id))
+    await tx.update(products).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(products.id, id))
   })
 }
 

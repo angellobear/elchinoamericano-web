@@ -1,15 +1,16 @@
 import { getVehicleBrandsForAdmin, updateVehicleBrand } from '@/lib/db/vehicle-brands'
 import { normalizeBoolean } from '@/lib/normalize-boolean'
+import type { ActiveQueryOptions } from '@/lib/db/soft-delete'
 import type { VehicleBrandListItem } from '@/modules/admin/vehicle-brands/types'
 
 export interface VehicleBrandRepository {
-  listForAdmin(): Promise<VehicleBrandListItem[]>
+  listForAdmin(options?: ActiveQueryOptions): Promise<VehicleBrandListItem[]>
   updateStatus(id: number, isActive: boolean): Promise<void>
 }
 
 export const vehicleBrandRepository: VehicleBrandRepository = {
-  async listForAdmin() {
-    const brands = await getVehicleBrandsForAdmin()
+  async listForAdmin(options) {
+    const brands = await getVehicleBrandsForAdmin(options)
 
     return brands.map((brand) => ({
       id: brand.id,

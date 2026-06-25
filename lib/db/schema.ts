@@ -34,6 +34,7 @@ export const users = pgTable('users', {
   fullName:     varchar('full_name', { length: 100 }),
   roleId:       integer('role_id').references(() => roles.id),
   isActive:     boolean('is_active').default(true),
+  deletedAt:    timestamp('deleted_at'),
   lastLoginAt:  timestamp('last_login_at'),
   createdAt:    timestamp('created_at').defaultNow(),
   updatedAt:    timestamp('updated_at').defaultNow(),
@@ -50,6 +51,7 @@ export const vehicleBrands = pgTable('vehicle_brands', {
   sortOrder:     integer('sort_order').default(0),
   isActive:      boolean('is_active').default(true),
   isVisibleOnWeb: boolean('is_visible_on_web').default(false),
+  deletedAt:     timestamp('deleted_at'),
   createdAt:     timestamp('created_at').defaultNow(),
   updatedAt:     timestamp('updated_at').defaultNow(),
 })
@@ -63,6 +65,7 @@ export const vehicleModels = pgTable('vehicle_models', {
   transmission: varchar('transmission', { length: 20 }),
   bodyType:     varchar('body_type', { length: 30 }),
   isActive:     boolean('is_active').default(true),
+  deletedAt:    timestamp('deleted_at'),
   createdAt:    timestamp('created_at').defaultNow(),
   updatedAt:    timestamp('updated_at').defaultNow(),
 })
@@ -79,6 +82,7 @@ export const categories = pgTable('categories', {
   imagePublicId:  varchar('image_public_id', { length: 200 }),
   sortOrder:      integer('sort_order').default(0),
   isActive:       boolean('is_active').default(true),
+  deletedAt:      timestamp('deleted_at'),
   createdAt:      timestamp('created_at').defaultNow(),
   updatedAt:      timestamp('updated_at').defaultNow(),
 })
@@ -90,6 +94,7 @@ export const partBrands = pgTable('part_brands', {
   logoPublicId:  varchar('logo_public_id', { length: 200 }),
   originCountry: varchar('origin_country', { length: 100 }),
   isActive:      boolean('is_active').default(true),
+  deletedAt:     timestamp('deleted_at'),
   createdAt:     timestamp('created_at').defaultNow(),
   updatedAt:     timestamp('updated_at').defaultNow(),
 })
@@ -102,6 +107,7 @@ export const suppliers = pgTable('suppliers', {
   phone:       varchar('phone', { length: 30 }),
   address:     text('address'),
   isActive:    boolean('is_active').default(true),
+  deletedAt:   timestamp('deleted_at'),
   createdAt:   timestamp('created_at').defaultNow(),
   updatedAt:   timestamp('updated_at').defaultNow(),
 })
@@ -133,6 +139,7 @@ export const products = pgTable('products', {
   metaDescription:  varchar('meta_description', { length: 500 }),
   isFeatured:       boolean('is_featured').default(false),
   isActive:         boolean('is_active').default(true),
+  deletedAt:        timestamp('deleted_at'),
   createdAt:        timestamp('created_at').defaultNow(),
   updatedAt:        timestamp('updated_at').defaultNow(),
 })

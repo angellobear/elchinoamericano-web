@@ -17,6 +17,7 @@ export const vehicleModelFormSchema = z.object({
   fuelType: z.string().max(20, 'El combustible es demasiado largo.').optional(),
   transmission: z.string().max(20, 'La transmisión es demasiado larga.').optional(),
   bodyType: z.string().max(30, 'El tipo es demasiado largo.').optional(),
+  isActive: z.boolean().optional(),
 })
 
 export type VehicleBrandFormValues = z.infer<typeof vehicleBrandFormSchema>

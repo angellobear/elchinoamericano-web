@@ -14,9 +14,14 @@ function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
   return (
     <a
       href={`/catalogo?marca=${brand.key}`}
-      className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 grid place-items-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
     >
-      <span className="font-display font-bold text-7 text-white leading-none tracking-[.04em]">
+      <img
+        src={brand.image.url ?? ""}
+        alt={brand.name}
+        className="size-20 object-cover "
+      />
+      <span className="font-display font-bold text-5 -mt-11 text-white leading-none tracking-[.04em]">
         {brand.name.toUpperCase()}
       </span>
     </a>

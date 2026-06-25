@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Pencil, Trash2, Check, X } from 'lucide-react'
+import { Pencil, Trash2, Check, X, ToggleLeft, ToggleRight } from 'lucide-react'
 import { routes } from '@/lib/routes'
 import { vehicleModelFormSchema } from '@/modules/admin/vehicle-brands/form-schema'
 
@@ -74,7 +74,7 @@ async function getResponseErrorMessage(res: Response, fallback: string) {
 }
 
 export function VehicleModelsEditor({ brand }: { brand: Brand }) {
-  const [models, setModels] = useState<Model[]>((brand.models ?? []).filter((model) => model.isActive !== false))
+  const [models, setModels] = useState<Model[]>(brand.models ?? [])
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
@@ -156,6 +156,44 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
     }
   }
 
+  async function toggleModelStatus(model: Model) {
+    const payload = {
+      name: model.name,
+      displacement: model.displacement || undefined,
+      fuelType: model.fuelType || undefined,
+      transmission: model.transmission || undefined,
+      bodyType: model.bodyType || undefined,
+      isActive: model.isActive === false,
+    }
+
+    const parsed = vehicleModelFormSchema.safeParse(payload)
+    if (!parsed.success) {
+      toast.error(getPayloadErrorMessage())
+      return
+    }
+
+    setSaving(true)
+    try {
+      const res = await fetch(routes.admin.vehicleBrands.model(brand.id, model.id), {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(parsed.data),
+      })
+      if (!res.ok) throw new Error(await getResponseErrorMessage(res, 'Error al cambiar el estado del modelo'))
+
+      setModels((current) =>
+        current.map((item) => (
+          item.id === model.id ? { ...item, isActive: parsed.data.isActive } : item
+        )),
+      )
+      toast.success(model.isActive === false ? 'Modelo activado' : 'Modelo desactivado')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error al cambiar el estado del modelo')
+    } finally {
+      setSaving(false)
+    }
+  }
+
   async function removeModel(id: number) {
     try {
       const res = await fetch(routes.admin.vehicleBrands.model(brand.id, id), { method: 'DELETE' })
@@ -181,12 +219,13 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Combustible</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Transmisión</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Tipo</th>
-              <th className="px-4 py-2 w-20"></th>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Estado</th>
+              <th className="px-4 py-2 w-28"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
             {models.map((model) => (
-              <tr key={model.id} className="hover:bg-gray-50">
+              <tr key={model.id} className={`hover:bg-gray-50 ${model.isActive === false ? 'bg-gray-50/60' : ''}`}>
                 {editingId === model.id ? (
                   <>
                     <td className="px-2 py-2">
@@ -241,6 +280,15 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                         ))}
                       </select>
                     </td>
+                    <td className="px-4 py-2.5 text-gray-500">
+                      {editForm.name ? (
+                        <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${
+                          model.isActive === false ? 'bg-gray-100 text-gray-500' : 'bg-emerald-100 text-emerald-700'
+                        }`}>
+                          {model.isActive === false ? 'Inactivo' : 'Activo'}
+                        </span>
+                      ) : null}
+                    </td>
                     <td className="px-2 py-2">
                       <div className="flex gap-1 justify-end">
                         <button
@@ -267,7 +315,22 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                     <td className="px-4 py-2.5 text-gray-500">{model.transmission ?? '—'}</td>
                     <td className="px-4 py-2.5 text-gray-500">{getBodyTypeLabel(model.bodyType)}</td>
                     <td className="px-4 py-2.5">
+                      <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${
+                        model.isActive === false ? 'bg-gray-100 text-gray-500' : 'bg-emerald-100 text-emerald-700'
+                      }`}>
+                        {model.isActive === false ? 'Inactivo' : 'Activo'}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2.5">
                       <div className="flex gap-1 justify-end">
+                        <button
+                          onClick={() => toggleModelStatus(model)}
+                          disabled={saving}
+                          className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-amber-600 disabled:opacity-40"
+                          title={model.isActive === false ? 'Activar' : 'Desactivar'}
+                        >
+                          {model.isActive === false ? <ToggleLeft size={12} /> : <ToggleRight size={12} />}
+                        </button>
                         <button
                           onClick={() => startEdit(model)}
                           className="p-1.5 rounded hover:bg-gray-100 text-gray-400 hover:text-navy"
@@ -288,7 +351,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
             ))}
             {models.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center text-gray-400 py-8 text-sm">
+                <td colSpan={7} className="text-center text-gray-400 py-8 text-sm">
                   Sin modelos registrados
                 </td>
               </tr>

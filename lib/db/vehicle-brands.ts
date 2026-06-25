@@ -8,19 +8,28 @@ import {
   toVehicleBrandKey,
   type PublicVehicleBrand,
 } from '@/lib/vehicle-brands-public'
+import {
+  buildNotDeletedWhere,
+  buildVisibilityWhere,
+  type ActiveQueryOptions,
+  type SoftDeleteQueryOptions,
+} from '@/lib/db/soft-delete'
 
-export async function getVehicleBrands(includeInactive = false) {
+export async function getVehicleBrands(includeInactiveOrOptions: boolean | ActiveQueryOptions = false) {
   const db = await getDb()
   return db.query.vehicleBrands.findMany({
-    where: includeInactive ? undefined : eq(vehicleBrands.isActive, true),
+    where: buildVisibilityWhere(vehicleBrands.isActive, vehicleBrands.deletedAt, includeInactiveOrOptions),
     orderBy: asc(vehicleBrands.sortOrder),
   })
 }
 
-export async function getVehicleBrandWithModels(brandId: number) {
+export async function getVehicleBrandWithModels(brandId: number, options?: ActiveQueryOptions) {
   const db = await getDb()
   return db.query.vehicleBrands.findFirst({
-    where: eq(vehicleBrands.id, brandId),
+    where: and(
+      eq(vehicleBrands.id, brandId),
+      buildVisibilityWhere(vehicleBrands.isActive, vehicleBrands.deletedAt, options),
+    ),
     columns: {
       id: true,
       name: true,
@@ -31,11 +40,16 @@ export async function getVehicleBrandWithModels(brandId: number) {
       isActive: true,
       isVisibleOnWeb: true,
     },
-    with: { models: { orderBy: asc(vehicleModels.name) } },
+    with: {
+      models: {
+        where: buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, options),
+        orderBy: asc(vehicleModels.name),
+      },
+    },
   })
 }
 
-export async function getVehicleBrandById(brandId: number) {
+export async function getVehicleBrandById(brandId: number, options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   const rows = await db
     .select({
@@ -49,18 +63,19 @@ export async function getVehicleBrandById(brandId: number) {
       isVisibleOnWeb: vehicleBrands.isVisibleOnWeb,
     })
     .from(vehicleBrands)
-    .where(eq(vehicleBrands.id, brandId))
+    .where(and(eq(vehicleBrands.id, brandId), buildNotDeletedWhere(vehicleBrands.deletedAt, options)))
     .limit(1)
 
   return rows[0] ?? null
 }
 
-export async function getVehicleModels(brandId?: number, includeInactive = false) {
+export async function getVehicleModels(brandId?: number, includeInactiveOrOptions: boolean | ActiveQueryOptions = false) {
   const db = await getDb()
   return db.query.vehicleModels.findMany({
-    where: brandId
-      ? eq(vehicleModels.brandId, brandId)
-      : includeInactive ? undefined : eq(vehicleModels.isActive, true),
+    where: and(
+      brandId ? eq(vehicleModels.brandId, brandId) : undefined,
+      buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, includeInactiveOrOptions),
+    ),
     with: { brand: true },
     orderBy: asc(vehicleModels.name),
   })
@@ -94,7 +109,7 @@ export async function updateVehicleBrand(id: number, data: Partial<typeof vehicl
 
 export async function deleteVehicleBrand(id: number) {
   await withAudit(async (tx) => {
-    await tx.update(vehicleBrands).set({ isActive: false, updatedAt: dbNow() }).where(eq(vehicleBrands.id, id))
+    await tx.update(vehicleBrands).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(vehicleBrands.id, id))
   })
 }
 
@@ -126,13 +141,14 @@ export async function updateVehicleModel(id: number, data: Partial<typeof vehicl
 
 export async function deleteVehicleModel(id: number) {
   await withAudit(async (tx) => {
-    await tx.update(vehicleModels).set({ isActive: false, updatedAt: dbNow() }).where(eq(vehicleModels.id, id))
+    await tx.update(vehicleModels).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(vehicleModels.id, id))
   })
 }
 
-export async function getVehicleBrandsWithModels() {
+export async function getVehicleBrandsWithModels(options?: ActiveQueryOptions) {
   const db = await getDb()
   return db.query.vehicleBrands.findMany({
+    where: buildVisibilityWhere(vehicleBrands.isActive, vehicleBrands.deletedAt, options),
     orderBy: asc(vehicleBrands.sortOrder),
     columns: {
       id: true,
@@ -142,11 +158,16 @@ export async function getVehicleBrandsWithModels() {
       isActive: true,
       isVisibleOnWeb: true,
     },
-    with: { models: { columns: { id: true, name: true } } },
+    with: {
+      models: {
+        where: buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, options),
+        columns: { id: true, name: true },
+      },
+    },
   })
 }
 
-export async function getVehicleBrandsForAdmin() {
+export async function getVehicleBrandsForAdmin(options?: ActiveQueryOptions) {
   const db = await getDb()
   const [brands, models] = await Promise.all([
     db
@@ -159,13 +180,15 @@ export async function getVehicleBrandsForAdmin() {
         isVisibleOnWeb: vehicleBrands.isVisibleOnWeb,
       })
       .from(vehicleBrands)
+      .where(buildVisibilityWhere(vehicleBrands.isActive, vehicleBrands.deletedAt, options))
       .orderBy(asc(vehicleBrands.sortOrder)),
     db
       .select({
         id: vehicleModels.id,
         brandId: vehicleModels.brandId,
       })
-      .from(vehicleModels),
+      .from(vehicleModels)
+      .where(buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, options)),
   ])
 
   return brands.map((brand) => ({
@@ -181,12 +204,15 @@ export async function getVisibleVehicleBrands(): Promise<PublicVehicleBrand[]> {
       where: and(
         eq(vehicleBrands.isActive, true),
         eq(vehicleBrands.isVisibleOnWeb, true),
+        buildNotDeletedWhere(vehicleBrands.deletedAt),
       ),
       orderBy: asc(vehicleBrands.sortOrder),
       columns: {
         id: true,
         name: true,
         origin: true,
+        logoUrl: true,
+        sortOrder: true,
       },
     })
 
@@ -195,6 +221,11 @@ export async function getVisibleVehicleBrands(): Promise<PublicVehicleBrand[]> {
       key: toVehicleBrandKey(brand.name),
       name: brand.name,
       origin: brand.origin,
+      logoUrl: brand.logoUrl ?? null,
+      sortOrder: brand.sortOrder ?? 0,
+      image: {
+        url: brand.logoUrl ?? null,
+      },
     }))
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
@@ -205,12 +236,14 @@ export async function getVisibleVehicleBrands(): Promise<PublicVehicleBrand[]> {
     if (!missingVisibilityColumn) throw error
 
     const brands = await db.query.vehicleBrands.findMany({
-      where: eq(vehicleBrands.isActive, true),
+      where: and(eq(vehicleBrands.isActive, true), buildNotDeletedWhere(vehicleBrands.deletedAt)),
       orderBy: asc(vehicleBrands.sortOrder),
       columns: {
         id: true,
         name: true,
         origin: true,
+        logoUrl: true,
+        sortOrder: true,
       },
     })
 
@@ -221,6 +254,11 @@ export async function getVisibleVehicleBrands(): Promise<PublicVehicleBrand[]> {
         key: toVehicleBrandKey(brand.name),
         name: brand.name,
         origin: brand.origin,
+        logoUrl: brand.logoUrl ?? null,
+        sortOrder: brand.sortOrder ?? 0,
+        image: {
+          url: brand.logoUrl ?? null,
+        },
       }))
   }
 }

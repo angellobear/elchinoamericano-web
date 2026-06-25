@@ -1,14 +1,15 @@
 import { getPartBrands, updatePartBrand } from '@/lib/db/part-brands'
+import type { ActiveQueryOptions } from '@/lib/db/soft-delete'
 import type { PartBrandListItem } from '@/modules/admin/part-brands/types'
 
 export interface PartBrandRepository {
-  listForAdmin(): Promise<PartBrandListItem[]>
+  listForAdmin(options?: ActiveQueryOptions): Promise<PartBrandListItem[]>
   updateStatus(id: number, isActive: boolean): Promise<void>
 }
 
 export const partBrandRepository: PartBrandRepository = {
-  async listForAdmin() {
-    const brands = await getPartBrands(true)
+  async listForAdmin(options) {
+    const brands = await getPartBrands({ includeInactive: true, withTrashed: options?.withTrashed })
 
     return brands.map((brand) => ({
       id: brand.id,
