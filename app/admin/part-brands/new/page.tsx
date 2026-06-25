@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createPartBrand } from '@/lib/db/part-brands'
 import { handleImageReplace } from '@/lib/cloudinary'

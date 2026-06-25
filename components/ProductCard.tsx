@@ -9,7 +9,7 @@ import { getWhatsAppUrl } from "@/lib/constants"
 
 const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   original: { label: "Original", cls: "bg-navy text-white" },
-  oem:      { label: "OEM",      cls: "bg-emerald-700 text-white" },
+  oem:      { label: "OEM",      cls: "bg-[#1f9d57] text-white" },
   aftermarket: { label: "Alterno", cls: "bg-brand text-white" },
 }
 
@@ -40,7 +40,7 @@ export default function ProductCard({ product }: { product: Product }) {
       />
 
       {/* Image 4:3 */}
-      <div className="relative aspect-[4/3] overflow-hidden pointer-events-none">
+      <div className="relative aspect-4/3 overflow-hidden pointer-events-none">
         {primaryImage ? (
           <Image
             src={primaryImage}
@@ -56,12 +56,12 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         {/* Type badge */}
-        <span className={`absolute top-3 left-3 px-2 py-1 rounded-md text-2.5 font-bold uppercase tracking-[.06em] z-1 ${badge.cls}`}>
+        <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-tiny font-bold uppercase tracking-[.06em] z-1 ${badge.cls}`}>
           {badge.label}
         </span>
         {/* Discount badge */}
         {discountPct > 0 && (
-          <span className="absolute top-3 right-3 bg-brand text-white px-2 py-1 rounded-md text-2.5 font-bold uppercase tracking-[.05em] z-1">
+          <span className="absolute top-3 right-3 bg-brand text-white px-2 py-1 rounded-md text-2.5 font-bold uppercase tracking-wider z-1">
             -{discountPct}%
           </span>
         )}
@@ -72,7 +72,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="text-2.75 font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
           {product.part_brand?.name}
         </p>
-        <h3 className="font-display font-bold text-4.75 uppercase text-navy leading-[1.12] mt-1">
+        <h3 className="font-display font-bold text-4.75 uppercase text-navy leading-[1.12] mt-[5px]">
           {product.title}
         </h3>
 
@@ -90,7 +90,7 @@ export default function ProductCard({ product }: { product: Product }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="relative z-10 pointer-events-auto flex items-center gap-1.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-3 px-3 py-2.5 rounded-[9px] transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+            className="relative z-10 pointer-events-auto flex items-center gap-1.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-3 px-[13px] py-2.5 rounded-[9px] transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
           >
             <MessageCircle size={14} />
             Consultar

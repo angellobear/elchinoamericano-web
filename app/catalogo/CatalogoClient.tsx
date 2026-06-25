@@ -126,7 +126,7 @@ function ActiveFilterChips({
 
 function Chip({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
-    <span className="inline-flex items-center gap-1.5 bg-navy text-white text-xs font-semibold px-2.5 py-1.5 rounded-full">
+    <span className="inline-flex items-center gap-1.5 bg-white text-navy border border-[#d6dde6] text-xs font-semibold px-3 py-2 rounded-full">
       {label}
       <button
         onClick={onRemove}
@@ -158,7 +158,7 @@ function Pagination({
         onClick={() => onPage(page - 1)}
         disabled={page === 1}
         aria-label="Página anterior"
-        className="w-9 h-9 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:border-navy hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="w-9.5 h-9.5 flex items-center justify-center rounded-md border border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         <ChevronLeft size={16} />
       </button>
@@ -168,10 +168,10 @@ function Pagination({
           key={currentPage}
           onClick={() => onPage(currentPage)}
           aria-current={currentPage === page ? "page" : undefined}
-          className={`w-9 h-9 flex items-center justify-center rounded-md text-sm font-semibold transition-colors border ${
+          className={`w-9.5 h-9.5 flex items-center justify-center rounded-[9px] text-sm font-semibold transition-colors border ${
             currentPage === page
-              ? "bg-navy border-navy text-white"
-              : "border-slate-200 text-slate-600 hover:border-navy hover:text-navy"
+              ? "bg-brand border-brand text-white"
+              : "border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy"
           }`}
         >
           {currentPage}
@@ -182,7 +182,7 @@ function Pagination({
         onClick={() => onPage(page + 1)}
         disabled={page === totalPages}
         aria-label="Página siguiente"
-        className="w-9 h-9 flex items-center justify-center rounded-md border border-slate-200 text-slate-600 hover:border-navy hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+        className="w-9.5 h-9.5 flex items-center justify-center rounded-md border border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
       >
         <ChevronRight size={16} />
       </button>
@@ -248,9 +248,9 @@ export default function CatalogoClient({
   return (
     <main className="min-h-screen bg-[#f6f8fb] pt-16">
       {/* Header band */}
-      <div className="bg-navy px-4 sm:px-6 lg:px-8 py-8">
+      <div className="bg-navy px-4 sm:px-6 lg:px-8 pt-[30px] pb-[38px]">
         <div className="max-w-7xl mx-auto">
-          <p className="text-3.25 text-[#9fb0c8]">
+          <p className="text-3.25 font-medium text-[#9fb0c8]">
             Inicio <span className="text-[#5f7090]">/</span> <span className="text-white">Catálogo</span>
           </p>
           <div className="flex items-end justify-between mt-3 gap-4 flex-wrap">
@@ -324,8 +324,8 @@ export default function CatalogoClient({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
-          <aside className="hidden lg:block w-60 shrink-0">
-            <div className="sticky top-30 bg-white rounded-xl border border-slate-200 p-5">
+          <aside className="hidden lg:block w-[266px] shrink-0">
+            <div className="sticky top-30 bg-white rounded-[14px] border border-slate-200 p-5">
               <CatalogFilters
                 brands={brands}
                 filters={filters}

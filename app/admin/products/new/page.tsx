@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getJwtPayload } from '@/lib/auth/check-permission'
-import { uploadImage } from '@/lib/cloudinary'
 import { parseImagesFormData } from '@/app/admin/products/_components/ProductImagesSection'
 import {
   createProduct,

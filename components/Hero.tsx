@@ -60,7 +60,7 @@ function HeroSearch() {
   const [marca, setMarca] = useState("")
 
   return (
-    <div className="mt-12 bg-[#13294a] border border-white/12 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
+    <div className="mt-[50px] bg-[#13294a] border border-white/12 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
       <div className="hidden sm:flex items-center gap-2 shrink-0 pr-1">
         <Search size={18} className="text-brand" />
         <span className="font-display font-bold text-lg text-[#f4f7fb] whitespace-nowrap leading-none">
@@ -70,7 +70,7 @@ function HeroSearch() {
       <select
         value={marca}
         onChange={(e) => setMarca(e.target.value)}
-        className="flex-1 w-full bg-navy-dark border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
+        className="flex-1 w-full bg-navy-dark border border-white/12 rounded-[10px] px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
       >
         <option value="">Marca</option>
         {CAR_BRANDS.map((b) => (
@@ -131,7 +131,7 @@ export default function Hero() {
           >
             <motion.div variants={fadeUp} className="flex items-center gap-2 mb-5">
               <span className="h-1.75 w-1.75 rounded-full bg-brand shrink-0" />
-                <span className="text-2.75 font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
+                <span className="text-3.25 font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
                 {siteConfig.contact.address.city} · {siteConfig.contact.address.country} — Repuestos chinos y americanos
                 </span>
             </motion.div>
@@ -153,7 +153,7 @@ export default function Hero() {
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3 mt-8">
               <Link
                 href="/catalogo"
-                className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-6 py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-[26px] py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <Search size={18} />
                 Buscar mi repuesto
@@ -162,7 +162,7 @@ export default function Hero() {
                 href={getWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-wa text-[#f4f7fb] hover:bg-wa/14 font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+                className="inline-flex items-center gap-2 border-[1.5px] border-wa text-[#f4f7fb] hover:bg-wa/14 font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
               >
                 <MessageCircle size={18} className="text-wa" />
                 Escríbenos por WhatsApp
@@ -170,7 +170,7 @@ export default function Hero() {
             </motion.div>
 
             <motion.div variants={fadeUp} className="mt-10">
-              <p className="text-2.5 font-semibold uppercase tracking-[.16em] text-[#5f7090] mb-3">
+              <p className="text-3 font-semibold uppercase tracking-[.16em] text-[#5f7090] mb-3">
                 Trabajamos con
               </p>
               <div className="flex flex-wrap gap-2">
@@ -178,7 +178,7 @@ export default function Hero() {
                   <a
                     key={key}
                     href={`/catalogo?marca=${key}`}
-                    className="font-display font-bold text-sm text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-3.5 py-2 rounded-full transition-colors duration-150"
+                    className="font-display font-bold text-4 text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-[15px] py-2 rounded-full transition-colors duration-150"
                   >
                     {label}
                   </a>
@@ -272,7 +272,7 @@ export default function Hero() {
         >
           {STAT_STRIP.map(({ icon: Icon, iconColor, iconBg, title, sub }) => (
             <div key={title} className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center shrink-0`}>
+              <div className={`w-10 h-10 rounded-[10px] ${iconBg} flex items-center justify-center shrink-0`}>
                 <Icon size={20} className={iconColor} strokeWidth={2} />
               </div>
               <div>

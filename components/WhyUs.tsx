@@ -45,13 +45,13 @@ export default function WhyUs() {
   }
 
   return (
-    <section id="nosotros" className="bg-[#f6f8fb] py-20 lg:py-28">
+    <section id="nosotros" className="bg-[#f6f8fb] py-[84px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="flex flex-col items-center text-center gap-3 mb-14">
           <div className="flex items-center gap-2">
             <span className="w-1.75 h-1.75 rounded-full bg-brand" />
-            <span className="text-2.75 font-semibold uppercase tracking-[.16em] text-brand">
+            <span className="text-3.25 font-semibold uppercase tracking-[.16em] text-brand">
               Por qué El Chino Americano
             </span>
           </div>
@@ -94,13 +94,13 @@ export default function WhyUs() {
           {/* Right — feature rows */}
           <motion.div
             variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.1 } } }}
-            className="flex flex-col gap-3"
+            className="flex flex-col gap-3.5"
           >
             {FEATURES.map(({ icon: Icon, title, description }) => (
               <motion.div
                 key={title}
                 variants={fadeUp}
-                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-[14px] p-5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-all duration-200"
+                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-[14px] py-5 px-5.5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-all duration-200"
               >
                 <div className="w-11.5 h-11.5 rounded-[11px] bg-brand/10 flex items-center justify-center shrink-0">
                   <Icon size={22} className="text-brand" strokeWidth={2} />
@@ -125,9 +125,9 @@ export default function WhyUs() {
           className="grid grid-cols-3 gap-6 mt-12"
         >
           {STATS.map(({ value, label }) => (
-            <motion.div key={label} variants={fadeUp} className="bg-navy rounded-2xl p-7 text-center">
-              <p className="font-display font-bold text-brand text-16 leading-none">{value}</p>
-              <p className="text-[#cdd6e4] text-3.75 leading-snug mt-2">{label}</p>
+            <motion.div key={label} variants={fadeUp} className="bg-navy rounded-2xl py-[30px] px-5 text-center">
+              <p className="font-display font-bold text-brand text-5xl leading-none">{value}</p>
+              <p className="text-[#cdd6e4] capitalize text-3.75 font-medium leading-snug mt-1.5">{label}</p>
             </motion.div>
           ))}
         </motion.div>

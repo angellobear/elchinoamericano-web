@@ -24,15 +24,45 @@
   }
 }
 
+@theme {
+  /* Custom numeric font-size scale (1 unit = 0.25rem = 4px).
+     Native named classes (text-xs, text-sm, text-base … text-9xl) are untouched. */
+}
+
 @theme inline {
   /* Radius scale — base = 8px (var(--radius) = 0.5rem) */
-  --radius-xs:  calc(var(--radius) - 6px);  /* 2px  */
-  --radius-sm:  calc(var(--radius) - 4px);  /* 4px  */
-  --radius-md:  calc(var(--radius) - 2px);  /* 6px  — small badges */
-  --radius-lg:  var(--radius);              /* 8px  — code tags */
-  --radius-xl:  calc(var(--radius) + 4px);  /* 12px — buttons */
-  --radius-2xl: calc(var(--radius) + 8px);  /* 16px — cards, containers */
+  --radius-xs: calc(var(--radius) - 6px); /* 2px  */
+  --radius-sm: calc(var(--radius) - 4px); /* 4px  */
+  --radius-md: calc(var(--radius) - 2px); /* 6px  — small badges */
+  --radius-lg: var(--radius); /* 8px  — code tags */
+  --radius-xl: calc(var(--radius) + 4px); /* 12px — buttons */
+  --radius-2xl: calc(var(--radius) + 8px); /* 16px — cards, containers */
   --radius-3xl: calc(var(--radius) + 16px); /* 2x4px — shadcn default 3xl */
+
+  --text-tiny: 0.625rem; /* 10px */
+
+  --text-2: 0.5rem; /* 8px  */
+  --text-2\.25: 0.5625rem; /* 9px  */
+  --text-2\.5: 0.625rem; /* 10px */
+  --text-2\.75: 0.6875rem; /* 11px */
+  --text-3: 0.75rem; /* 12px */
+  --text-3\.25: 0.8125rem; /* 13px */
+  --text-3\.5: 0.875rem; /* 14px */
+  --text-3\.75: 0.9375rem; /* 15px */
+  --text-4: 1rem; /* 16px */
+  --text-4\.25: 1.0625rem; /* 17px */
+  --text-4\.5: 1.125rem; /* 18px */
+  --text-4\.75: 1.1875rem; /* 19px */
+  --text-5: 1.25rem; /* 20px */
+  --text-5\.5: 1.375rem; /* 22px */
+  --text-6\.25: 1.5625rem; /* 25px */
+  --text-6\.5: 1.625rem; /* 26px */
+  --text-6\.75: 1.6875rem; /* 27px */
+  --text-7: 1.75rem; /* 28px */
+  --text-7\.5: 1.875rem; /* 30px */
+  --text-8: 2rem; /* 32px */
+  --text-9: 2.25rem; /* 36px */
+  --text-16: 4rem; /* 64px — stat values */
 
   /* Brand tokens (non-negotiable) */
   --color-navy: #0d1f3c;
@@ -86,19 +116,49 @@ body {
 }
 
 @keyframes heroVeh {
-  0%    { opacity: 0; transform: translateX(112%); }
-  3.3%  { opacity: 1; transform: translateX(0); }
-  11.1% { opacity: 1; transform: translateX(0); }
-  14.4% { opacity: 0; transform: translateX(-112%); }
-  100%  { opacity: 0; transform: translateX(-112%); }
+  0% {
+    opacity: 0;
+    transform: translateX(112%);
+  }
+  3.3% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  11.1% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  14.4% {
+    opacity: 0;
+    transform: translateX(-112%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-112%);
+  }
 }
 
 @keyframes heroPart {
-  0%    { opacity: 0; transform: translateX(118%); }
-  3.3%  { opacity: 1; transform: translateX(0); }
-  11.1% { opacity: 1; transform: translateX(0); }
-  14.4% { opacity: 0; transform: translateX(-118%); }
-  100%  { opacity: 0; transform: translateX(-118%); }
+  0% {
+    opacity: 0;
+    transform: translateX(118%);
+  }
+  3.3% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  11.1% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  14.4% {
+    opacity: 0;
+    transform: translateX(-118%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-118%);
+  }
 }
 
 .hero-vlayer {

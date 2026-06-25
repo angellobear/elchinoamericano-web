@@ -52,7 +52,7 @@ export default function Navbar() {
     <>
       <header
         className={cn(
-          "fixed top-0 inset-x-0 z-50 bg-navy transition-shadow duration-300",
+          "fixed top-0 inset-x-0 z-50 bg-navy border-b border-white/10 transition-shadow duration-300",
           scrolled && "shadow-xl shadow-navy/40"
         )}
       >
@@ -66,9 +66,9 @@ export default function Navbar() {
               src="/logo-ca.png"
               alt="El Chino Americano"
               width={120}
-              height={40}
-              className="h-10 w-auto object-contain"
-              style={{ width: "auto", height: "40px" }}
+              height={50}
+              className="h-[50px] w-auto object-contain"
+              style={{ width: "auto", height: "50px" }}
               priority
             />
           </Link>
@@ -80,10 +80,10 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "px-4 py-2 text-sm font-semibold rounded-md transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
+                  "px-4 py-2 text-[15px] font-semibold rounded-md transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand",
                   isActive(link.href)
                     ? "text-brand bg-brand/10"
-                    : "text-white/70 hover:text-white hover:bg-white/8"
+                    : "text-[#9fb0c8] hover:text-white hover:bg-white/8"
                 )}
               >
                 {link.label}
@@ -98,9 +98,9 @@ export default function Navbar() {
               href={getWhatsAppUrl()}
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden sm:inline-flex items-center gap-2 bg-wa hover:brightness-105 text-[#062b15] text-sm font-bold px-4 py-2 rounded-xl transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+              className="hidden sm:inline-flex items-center gap-2 bg-wa hover:brightness-105 text-[#062b15] text-sm font-bold px-[18px] py-[11px] rounded-xl transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
             >
-              <MessageCircle size={15} />
+              <MessageCircle size={17} />
               WhatsApp
             </a>
 

@@ -56,7 +56,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-[#081120]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-7">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[60px] pb-7">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10 pb-12 border-b border-white/8">
           {/* Brand + social */}
           <div className="flex flex-col gap-5">
@@ -65,17 +65,18 @@ export default function Footer() {
                 src="/logo-ca.png"
                 alt="El Chino Americano"
                 width={160}
-                height={54}
-                className="h-14 w-auto object-contain"
-                style={{ width: "auto", height: "56px" }}
+                height={64}
+                className="h-16 w-auto object-contain"
+                style={{ width: "auto", height: "64px" }}
               />
             </Link>
             <p className="text-[#7e8ca3] text-sm leading-relaxed max-w-70">
               Repuestos originales, OEM y alternos para autos chinos y americanos. {siteConfig.contact.address.full}
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               {socialLinks.map(({ href, label, icon, cls }) => {
                 const external = href !== "#"
+                const isWa = label === "WhatsApp"
 
                 return (
                 <a
@@ -84,7 +85,7 @@ export default function Footer() {
                   aria-label={label}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                  className={`w-9.5 h-9.5 rounded-[10px] bg-[#13294a] flex items-center justify-center transition-all duration-150 ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand`}
+                  className={`w-9.5 h-9.5 rounded-[10px] flex items-center justify-center transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isWa ? "bg-wa text-[#062b15] hover:brightness-105" : `bg-[#13294a] ${cls}`}`}
                 >
                   {icon}
                 </a>
@@ -98,7 +99,7 @@ export default function Footer() {
             <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Catálogo
             </h4>
-            <ul className="flex flex-col gap-2.5">
+            <ul className="flex flex-col gap-[11px]">
               {CATALOG_LINKS.map(({ label, href }) => (
                 <li key={label}>
                   <a
@@ -117,7 +118,7 @@ export default function Footer() {
             <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Marcas
             </h4>
-            <ul className="flex flex-col gap-2.5">
+            <ul className="flex flex-col gap-[11px]">
               {BRAND_LINKS.map(({ label, href }) => (
                 <li key={label}>
                   <a
@@ -156,7 +157,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="pt-[22px] flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[#5f7090] text-3.25">
             © {new Date().getFullYear()} El Chino Americano. Todos los derechos reservados.
           </p>
