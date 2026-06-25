@@ -8,6 +8,7 @@ import { routes } from '@/lib/routes'
 import { DynamicRows } from '@/app/admin/products/_components/DynamicRows'
 import { CompatSection } from '@/app/admin/products/_components/CompatSection'
 import { ValidatedForm } from '@/modules/admin/shared/components/ValidatedForm'
+import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { parseProductFormData } from '@/modules/admin/products/form-schema'
 
@@ -23,7 +24,7 @@ interface ProductBrandOption {
 }
 
 interface ProductFormProps {
-  action: (formData: FormData) => void | Promise<void>
+  action: ActionFormHandler
   mode: 'create' | 'edit'
   categories: SelectOption[]
   partBrands: SelectOption[]

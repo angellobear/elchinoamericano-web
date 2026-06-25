@@ -28,14 +28,14 @@ export default function CtaBand() {
             href={getWhatsAppUrl()}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-base px-8 py-4 rounded-3.25 shadow-[0_16px_34px_rgba(0,0,0,.18)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#062b15]"
+            className="inline-flex items-center justify-center gap-2.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-base px-8 py-4 rounded-[13px] shadow-[0_16px_34px_rgba(0,0,0,.18)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#062b15]"
           >
             <MessageCircle size={20} />
             Escríbenos por WhatsApp
           </a>
           <a
             href="/catalogo"
-            className="inline-flex items-center justify-center border border-white/60 hover:bg-white/10 text-white font-bold text-base px-8 py-4 rounded-3.25 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            className="inline-flex items-center justify-center border border-white/60 hover:bg-white/10 text-white font-bold text-base px-8 py-4 rounded-[13px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
           >
             Ver catálogo completo
           </a>

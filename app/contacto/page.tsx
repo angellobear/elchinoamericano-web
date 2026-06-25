@@ -56,7 +56,7 @@ export default function ContactoPage() {
         <div className="bg-[#f6f8fb] px-4 sm:px-6 lg:px-8 py-12 lg:py-14">
           <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[1.15fr_.85fr] gap-8">
             {/* Form card */}
-            <div className="bg-white border border-[#e6e9ef] rounded-4.5 p-8 shadow-[0_10px_30px_rgba(13,31,60,.06)]">
+            <div className="bg-white border border-[#e6e9ef] rounded-[18px] p-8 shadow-[0_10px_30px_rgba(13,31,60,.06)]">
               <h2 className="font-display font-bold text-6.5 uppercase text-navy">
                 Solicita tu repuesto
               </h2>
@@ -69,13 +69,13 @@ export default function ContactoPage() {
             {/* Info + map */}
             <div className="flex flex-col gap-5">
               {/* Contact info card */}
-              <div className="bg-navy rounded-4.5 p-7">
+              <div className="bg-navy rounded-[18px] p-7">
                 <h3 className="font-display font-bold text-5.5 uppercase text-white mb-5">
                   Datos de contacto
                 </h3>
                 <ul className="flex flex-col gap-5">
                   <li className="flex gap-3.5 items-start">
-                    <div className="w-10.5 h-10.5 rounded-2.75 bg-wa/16 flex items-center justify-center shrink-0">
+                    <div className="w-10.5 h-10.5 rounded-[11px] bg-wa/16 flex items-center justify-center shrink-0">
                       <MessageCircle size={20} className="text-wa" />
                     </div>
                     <div>
@@ -86,7 +86,7 @@ export default function ContactoPage() {
                     </div>
                   </li>
                   <li className="flex gap-3.5 items-start">
-                    <div className="w-10.5 h-10.5 rounded-2.75 bg-brand/14 flex items-center justify-center shrink-0">
+                    <div className="w-10.5 h-10.5 rounded-[11px] bg-brand/14 flex items-center justify-center shrink-0">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
                     </div>
                     <div>
@@ -97,7 +97,7 @@ export default function ContactoPage() {
                     </div>
                   </li>
                   <li className="flex gap-3.5 items-start">
-                    <div className="w-10.5 h-10.5 rounded-2.75 bg-brand/14 flex items-center justify-center shrink-0">
+                    <div className="w-10.5 h-10.5 rounded-[11px] bg-brand/14 flex items-center justify-center shrink-0">
                       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                     </div>
                     <div>
@@ -109,7 +109,7 @@ export default function ContactoPage() {
               </div>
 
               {/* Map */}
-              <div className="flex-1 min-h-50 rounded-4.5 overflow-hidden border border-[#e6e9ef]">
+              <div className="flex-1 min-h-50 rounded-[18px] overflow-hidden border border-[#e6e9ef]">
                 <iframe
                   src={siteConfig.contact.map.embedUrl}
                   width="100%"

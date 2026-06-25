@@ -22,6 +22,7 @@ import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/prod
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
+import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 
 function buildProductSlug(value: string) {
   return value
@@ -33,7 +34,7 @@ function buildProductSlug(value: string) {
     .replace(/-+/g, '-')
 }
 
-async function create(formData: FormData) {
+async function create(_: ActionState, formData: FormData) {
   'use server'
 
   const payload = await getJwtPayload()
@@ -42,7 +43,7 @@ async function create(formData: FormData) {
   try {
     const parsed = parseProductFormData(formData, { isActive: true, stockInitial: 0 })
     if (!parsed.success) {
-      redirect(`${routes.admin.products.create}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
+      return errorResult(getZodErrorMessage(parsed.error))
     }
 
     const {
@@ -122,10 +123,10 @@ async function create(formData: FormData) {
     revalidatePath(routes.admin.inventory.index)
   } catch (error) {
     logger.error({ error }, 'Error creating product')
-    redirect(`${routes.admin.products.index}?error=${encodeURIComponent('Error al crear el producto')}`)
+    return errorResult('Error al crear el producto')
   }
 
-  redirect(`${routes.admin.products.index}?success=${encodeURIComponent('Producto creado')}`)
+  return successResult('Producto creado', undefined, { redirectTo: routes.admin.products.index })
 }
 
 export default async function NewProductPage() {

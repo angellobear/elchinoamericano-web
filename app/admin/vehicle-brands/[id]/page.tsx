@@ -1,24 +1,24 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getVehicleBrandById, getVehicleModels, updateVehicleBrand } from '@/lib/db/vehicle-brands'
 import { handleImageReplace } from '@/lib/cloudinary'
 import { logger } from '@/lib/logger'
 import { normalizeBoolean } from '@/lib/normalize-boolean'
-import { SubmitButton } from '@/app/admin/_components/SubmitButton'
 import { routes } from '@/lib/routes'
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
-import { FormActions, FormCard } from '@/modules/admin/shared/components/AdminFormControls'
+import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
+import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { VehicleBrandForm } from '@/modules/admin/vehicle-brands/components/VehicleBrandForm'
 import { parseVehicleBrandFormData } from '@/modules/admin/vehicle-brands/form-schema'
-import { VehicleBrandFormFields } from '@/modules/admin/vehicle-brands/components/VehicleBrandFormFields'
 import { VehicleModelsEditor } from '@/modules/admin/vehicle-brands/components/VehicleModelsEditor'
 
-async function save(id: number, formData: FormData) {
+async function save(id: number, _: ActionState, formData: FormData) {
   'use server'
   try {
     const parsed = parseVehicleBrandFormData(formData, { isActive: true, isVisibleOnWeb: false })
     if (!parsed.success) {
-      redirect(`${routes.admin.vehicleBrands.edit(id)}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
+      return errorResult(getZodErrorMessage(parsed.error))
     }
 
     const { name, origin, sortOrder, isActive, isVisibleOnWeb } = parsed.data
@@ -48,9 +48,10 @@ async function save(id: number, formData: FormData) {
     revalidatePath('/catalogo')
   } catch (err) {
     logger.error({ err }, 'Error updating vehicle brand')
-    redirect(`${routes.admin.vehicleBrands.index}?error=` + encodeURIComponent('Error al guardar marca'))
+    return errorResult('Error al guardar marca')
   }
-  redirect(`${routes.admin.vehicleBrands.index}?success=` + encodeURIComponent('Marca guardada'))
+
+  return successResult('Marca guardada', undefined, { redirectTo: routes.admin.vehicleBrands.index })
 }
 
 export default async function VehicleBrandPage({ params }: { params: Promise<{ id: string }> }) {
@@ -93,25 +94,20 @@ export default async function VehicleBrandPage({ params }: { params: Promise<{ i
         <div className="xl:col-span-1">
           <FormCard>
             <h2 className="text-sm font-semibold text-gray-700 mb-4">Datos de la marca</h2>
-            <form action={saveWithId} className="space-y-4">
-              <VehicleBrandFormFields
-                defaults={{
-                  name: brand.name,
-                  origin: brand.origin as 'chinese' | 'american' | 'foreign',
-                  sortOrder: brand.sortOrder ?? 0,
-                  isActive,
-                  isVisibleOnWeb,
-                  logoUrl: brand.logoUrl,
-                  logoPublicId: (brand as { logoPublicId?: string | null }).logoPublicId,
-                }}
-                includeIsActive
-              />
-              <FormActions>
-                <SubmitButton className="w-full px-5 py-2 bg-navy text-white text-sm rounded-lg hover:bg-navy-dark transition-colors font-medium disabled:opacity-60">
-                  Guardar cambios
-                </SubmitButton>
-              </FormActions>
-            </form>
+            <VehicleBrandForm
+              action={saveWithId}
+              mode="edit"
+              compact
+              defaults={{
+                name: brand.name,
+                origin: brand.origin as 'chinese' | 'american' | 'foreign',
+                sortOrder: brand.sortOrder ?? 0,
+                isActive,
+                isVisibleOnWeb,
+                logoUrl: brand.logoUrl,
+                logoPublicId: (brand as { logoPublicId?: string | null }).logoPublicId,
+              }}
+            />
           </FormCard>
         </div>
 

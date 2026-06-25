@@ -9,9 +9,10 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { parseUserEditFormData } from '@/modules/admin/users/form-schema'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
+import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 import { UserForm } from '@/modules/admin/users/components/UserForm'
 
-async function save(id: string, formData: FormData) {
+async function save(id: string, _: ActionState, formData: FormData) {
   'use server'
   const payload = await getJwtPayload()
   if (payload?.role !== 'superadmin') redirect(routes.admin.forbidden)
@@ -19,7 +20,7 @@ async function save(id: string, formData: FormData) {
   try {
     const parsed = parseUserEditFormData(formData, { isSelf: id === payload.userId, defaultIsActive: true })
     if (!parsed.success) {
-      redirect(`${routes.admin.users.edit(id)}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
+      return errorResult(getZodErrorMessage(parsed.error))
     }
 
     const { fullName, roleId, isActive, password: newPassword } = parsed.data
@@ -40,9 +41,10 @@ async function save(id: string, formData: FormData) {
     revalidatePath(routes.admin.users.index)
   } catch (err) {
     logger.error({ err }, 'Error updating user')
-    redirect(`${routes.admin.users.index}?error=` + encodeURIComponent('Error al guardar usuario'))
+    return errorResult('Error al guardar usuario')
   }
-  redirect(`${routes.admin.users.index}?success=` + encodeURIComponent('Usuario guardado'))
+
+  return successResult('Usuario guardado', undefined, { redirectTo: routes.admin.users.index })
 }
 
 export default async function EditUserPage({ params }: { params: Promise<{ id: string }> }) {

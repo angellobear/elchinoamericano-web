@@ -1,4 +1,3 @@
-import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createCategory } from '@/lib/db/categories'
 import { handleImageReplace } from '@/lib/cloudinary'
@@ -7,15 +6,16 @@ import { routes } from '@/lib/routes'
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
+import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 import { parseCategoryFormData } from '@/modules/admin/categories/form-schema'
 import { CategoryForm } from '@/modules/admin/categories/components/CategoryForm'
 
-async function create(formData: FormData) {
+async function create(_: ActionState, formData: FormData) {
   'use server'
   try {
     const parsed = parseCategoryFormData(formData, { isActive: true })
     if (!parsed.success) {
-      redirect(`${routes.admin.categories.create}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
+      return errorResult(getZodErrorMessage(parsed.error))
     }
 
     const { key, name, description, sortOrder } = parsed.data
@@ -31,9 +31,10 @@ async function create(formData: FormData) {
     revalidatePath(routes.admin.categories.index)
   } catch (err) {
     logger.error({ err }, 'Error creating category')
-    redirect(`${routes.admin.categories.index}?error=` + encodeURIComponent('Error al crear categoría'))
+    return errorResult('Error al crear categoría')
   }
-  redirect(`${routes.admin.categories.index}?success=` + encodeURIComponent('Categoría creada'))
+
+  return successResult('Categoría creada', undefined, { redirectTo: routes.admin.categories.index })
 }
 
 export default function NewCategoryPage() {

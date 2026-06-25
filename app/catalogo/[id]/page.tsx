@@ -309,9 +309,9 @@ export default async function ProductDetailPage({
           <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
             <div className="grid grid-cols-1 gap-11 lg:grid-cols-2 lg:gap-14">
               <div className="mx-auto w-full max-w-md lg:max-w-none">
-                <div className="relative overflow-hidden rounded-4.5 border border-[#e6e9ef] bg-white">
+                <div className="relative overflow-hidden rounded-[18px] border border-[#e6e9ef] bg-white">
                   {discountPct > 0 && (
-                    <span className="absolute left-4 top-4 z-10 rounded-1.75 bg-brand px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-white">
+                    <span className="absolute left-4 top-4 z-10 rounded-[7px] bg-brand px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-white">
                       -{discountPct}% OFF
                     </span>
                   )}
@@ -328,18 +328,18 @@ export default async function ProductDetailPage({
                   {product.category && (
                     <Link
                       href={`/catalogo?categoria=${product.category.key}`}
-                      className="rounded-1.75 bg-[#e7ebf1] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy transition-colors hover:bg-[#d5dbe5]"
+                      className="rounded-[7px] bg-[#e7ebf1] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy transition-colors hover:bg-[#d5dbe5]"
                     >
                       {categoryName}
                     </Link>
                   )}
                   <span
-                    className={`rounded-1.75 px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] ${typeConfig.badgeCls}`}
+                    className={`rounded-[7px] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] ${typeConfig.badgeCls}`}
                   >
                     {typeConfig.label}
                   </span>
                   {product.is_featured && (
-                    <span className="rounded-1.75 bg-[#ffd23f] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy">
+                    <span className="rounded-[7px] bg-[#ffd23f] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy">
                       Destacado
                     </span>
                   )}
@@ -368,7 +368,7 @@ export default async function ProductDetailPage({
                     </span>
                   )}
                   {discountPct > 0 && (
-                    <span className="mb-0.5 rounded-2 bg-brand px-2.5 py-1.5 text-3.25 font-bold text-white">
+                    <span className="mb-0.5 rounded-lg bg-brand px-2.5 py-1.5 text-3.25 font-bold text-white">
                       {discountPct}% OFF
                     </span>
                   )}
@@ -398,7 +398,7 @@ export default async function ProductDetailPage({
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-3 rounded-3.5 bg-wa py-5 text-4.5 font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+                  className="inline-flex items-center justify-center gap-3 rounded-[14px] bg-wa py-5 text-4.5 font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
                 >
                   <MessageCircle size={22} />
                   Consultar por WhatsApp
@@ -410,7 +410,7 @@ export default async function ProductDetailPage({
                   </div>
                   <Link
                     href="/catalogo"
-                    className="inline-flex items-center justify-center gap-2 rounded-3 border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
                   >
                     <ShoppingCart size={16} />
                     Seguir comprando
@@ -424,7 +424,7 @@ export default async function ProductDetailPage({
                 )}
 
                 <div
-                  className={`flex gap-3 rounded-3.25 border p-4 ${typeConfig.stripBg} ${typeConfig.stripBorder}`}
+                  className={`flex gap-3 rounded-[13px] border p-4 ${typeConfig.stripBg} ${typeConfig.stripBorder}`}
                 >
                   <ShieldCheck
                     size={20}
@@ -478,7 +478,7 @@ export default async function ProductDetailPage({
               className={`flex items-center gap-3.5 px-10 py-6 ${index < 2 ? "sm:border-r border-white/8" : ""}`}
             >
               <div
-                className={`flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-2.75 ${iconBg}`}
+                className={`flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-[11px] ${iconBg}`}
               >
                 <Icon size={20} className={iconCls} strokeWidth={2} />
               </div>
@@ -512,7 +512,7 @@ export default async function ProductDetailPage({
                         {product.alternate_codes.map((altCode) => (
                           <span
                             key={altCode.id}
-                            className="rounded-2 border border-[#e0e5ec] bg-[#f3f5f9] px-3 py-2 font-mono text-3.25 text-[#566071]"
+                            className="rounded-lg border border-[#e0e5ec] bg-[#f3f5f9] px-3 py-2 font-mono text-3.25 text-[#566071]"
                           >
                             {altCode.code}
                             {altCode.source ? ` · ${altCode.source}` : ""}
@@ -550,7 +550,7 @@ export default async function ProductDetailPage({
           <section className="border-t border-[#e6e9ef] bg-[#f6f8fb]">
             <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
               <div className="mb-2 flex items-center gap-3">
-                <div className="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-2.75 bg-brand/12">
+                <div className="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-[11px] bg-brand/12">
                   <Truck size={21} className="text-brand" strokeWidth={2} />
                 </div>
                 <h2 className="font-display text-9 font-bold uppercase leading-none text-navy">
@@ -572,10 +572,10 @@ export default async function ProductDetailPage({
                 return Object.entries(byBrand).map(([brandName, compatibilities]) => (
                   <div
                     key={brandName}
-                    className="mb-4 overflow-hidden rounded-4 border border-[#e6e9ef] bg-white"
+                    className="mb-4 overflow-hidden rounded-2xl border border-[#e6e9ef] bg-white"
                   >
                     <div className="flex items-center gap-3 bg-navy px-5 py-4">
-                      <span className="flex h-7.5 w-7.5 items-center justify-center rounded-1.75 bg-white/14 text-2.75 font-bold text-white">
+                      <span className="flex h-7.5 w-7.5 items-center justify-center rounded-[7px] bg-white/14 text-2.75 font-bold text-white">
                         {brandName.slice(0, 2).toUpperCase()}
                       </span>
                       <span className="font-display text-4.5 font-bold uppercase tracking-[.04em] text-white">
@@ -604,7 +604,7 @@ export default async function ProductDetailPage({
                           )}
                         </div>
                         {(compatibility.model?.year_start || compatibility.model?.year_end) && (
-                          <span className="shrink-0 rounded-1.75 bg-[#e7ebf1] px-3 py-1.5 text-3 font-semibold text-navy">
+                          <span className="shrink-0 rounded-[7px] bg-[#e7ebf1] px-3 py-1.5 text-3 font-semibold text-navy">
                             {compatibility.model?.year_start}
                             {compatibility.model?.year_end
                               ? `–${compatibility.model.year_end}`
@@ -640,11 +640,11 @@ export default async function ProductDetailPage({
                   <Link
                     key={equivalency.id}
                     href={`/catalogo/${equivalency.slug}`}
-                    className="group flex flex-col rounded-3.75 border border-[#e6e9ef] bg-white p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
+                    className="group flex flex-col rounded-[15px] border border-[#e6e9ef] bg-white p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                   >
                     <div className="mb-3 flex items-start justify-between gap-3">
                       <span
-                        className={`rounded-1.5 px-2 py-1 text-2.5 font-bold uppercase tracking-[.05em] ${equivalencyBadge.badgeCls}`}
+                        className={`rounded-md px-2 py-1 text-2.5 font-bold uppercase tracking-[.05em] ${equivalencyBadge.badgeCls}`}
                       >
                         {equivalencyBadge.label}
                       </span>
@@ -709,7 +709,7 @@ export default async function ProductDetailPage({
                     <Link
                       key={relatedProduct.id}
                       href={`/catalogo/${relatedProduct.slug}`}
-                      className="group flex flex-col overflow-hidden rounded-3.5 border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
+                      className="group flex flex-col overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                     >
                       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#f3f5f9]">
                         {relatedImage ? (

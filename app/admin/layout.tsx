@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation'
 import { Toaster } from 'sonner'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { SidebarNav } from './_components/SidebarNav'
-import { ToastOnMount } from './_components/ToastOnMount'
 
 export default async function AdminLayout({
   children,
@@ -38,7 +37,6 @@ export default async function AdminLayout({
         </aside>
 
         <main className="flex-1 overflow-auto">
-          <ToastOnMount />
           {children}
         </main>
       </div>

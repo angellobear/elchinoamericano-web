@@ -21,8 +21,9 @@ import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/prod
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
+import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 
-async function save(productId: number, formData: FormData) {
+async function save(productId: number, _: ActionState, formData: FormData) {
   'use server'
 
   const payload = await getJwtPayload()
@@ -31,7 +32,7 @@ async function save(productId: number, formData: FormData) {
   try {
     const parsed = parseProductFormData(formData, { isActive: true })
     if (!parsed.success) {
-      redirect(`${routes.admin.products.edit(productId)}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
+      return errorResult(getZodErrorMessage(parsed.error))
     }
 
     const {
@@ -106,10 +107,10 @@ async function save(productId: number, formData: FormData) {
     revalidatePath(routes.admin.inventory.index)
   } catch (error) {
     logger.error({ error }, 'Error updating product')
-    redirect(`${routes.admin.products.index}?error=${encodeURIComponent('Error al guardar el producto')}`)
+    return errorResult('Error al guardar el producto')
   }
 
-  redirect(`${routes.admin.products.index}?success=${encodeURIComponent('Producto guardado')}`)
+  return successResult('Producto guardado', undefined, { redirectTo: routes.admin.products.index })
 }
 
 export default async function EditProductPage({

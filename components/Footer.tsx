@@ -84,7 +84,7 @@ export default function Footer() {
                   aria-label={label}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                  className={`w-9.5 h-9.5 rounded-2.5 bg-[#13294a] flex items-center justify-center transition-all duration-150 ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand`}
+                  className={`w-9.5 h-9.5 rounded-[10px] bg-[#13294a] flex items-center justify-center transition-all duration-150 ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand`}
                 >
                   {icon}
                 </a>

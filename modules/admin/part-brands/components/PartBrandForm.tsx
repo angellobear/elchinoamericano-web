@@ -1,50 +1,45 @@
 'use client'
 
 import Link from 'next/link'
-import type { Role } from '@/types'
 import { SubmitButton } from '@/app/admin/_components/SubmitButton'
 import { routes } from '@/lib/routes'
+import { PartBrandFormFields } from '@/modules/admin/part-brands/components/PartBrandFormFields'
+import { parsePartBrandFormData, type PartBrandFormValues } from '@/modules/admin/part-brands/form-schema'
 import { FormActions } from '@/modules/admin/shared/components/AdminFormControls'
 import { ValidatedForm } from '@/modules/admin/shared/components/ValidatedForm'
-import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
-import { parseUserCreateFormData, parseUserEditFormData } from '@/modules/admin/users/form-schema'
-import { UserFormFields } from '@/modules/admin/users/components/UserFormFields'
+import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 
-interface UserFormProps {
+interface PartBrandFormProps {
   action: ActionFormHandler
   mode: 'create' | 'edit'
-  roles: Role[]
-  defaults?: {
-    fullName?: string
-    email?: string
-    roleId?: number | null
-    isActive?: boolean
+  defaults?: Partial<PartBrandFormValues> & {
+    logoUrl?: string | null
+    logoPublicId?: string | null
   }
-  isSelf?: boolean
 }
 
-export function UserForm({ action, mode, roles, defaults, isSelf = false }: UserFormProps) {
+export function PartBrandForm({ action, mode, defaults }: PartBrandFormProps) {
   return (
     <ValidatedForm
       action={action}
       className="space-y-4"
       validate={(formData) => {
-        const parsed = mode === 'create'
-          ? parseUserCreateFormData(formData)
-          : parseUserEditFormData(formData, { isSelf, defaultIsActive: defaults?.isActive })
-
+        const parsed = parsePartBrandFormData(formData, { isActive: defaults?.isActive ?? true })
         if (parsed.success) return null
         return getZodErrorMessage(parsed.error)
       }}
     >
-      <UserFormFields mode={mode} roles={roles} defaults={defaults} isSelf={isSelf} />
+      <PartBrandFormFields
+        defaults={defaults}
+        includeIsActive={mode === 'edit'}
+      />
       <FormActions>
         <SubmitButton className="px-5 py-2 bg-navy text-white text-sm rounded-lg hover:bg-navy-dark transition-colors font-medium disabled:opacity-60">
-          {mode === 'create' ? 'Crear usuario' : 'Guardar cambios'}
+          {mode === 'create' ? 'Crear marca' : 'Guardar cambios'}
         </SubmitButton>
         <Link
-          href={routes.admin.users.index}
+          href={routes.admin.partBrands.index}
           className="px-5 py-2 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50 transition-colors"
         >
           Cancelar

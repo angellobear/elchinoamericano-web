@@ -1,20 +1,8 @@
 import Link from 'next/link'
-import { redirect } from 'next/navigation'
-import { getCategories, deleteCategory } from '@/lib/db/categories'
-import { revalidatePath } from 'next/cache'
-import { Plus, Pencil, Trash2, Tag } from 'lucide-react'
+import { getCategories } from '@/lib/db/categories'
+import { Plus, Pencil, Tag } from 'lucide-react'
 import { CategoryStatusToggle } from '@/modules/admin/categories/components/CategoryStatusToggle'
-
-async function handleDelete(id: number) {
-  'use server'
-  try {
-    await deleteCategory(id)
-    revalidatePath('/admin/categories')
-  } catch (err) {
-    console.error('handleDelete category', err)
-    redirect('/admin/categories?error=' + encodeURIComponent('Error al eliminar categoría'))
-  }
-}
+import { CategoryDeleteButton } from '@/modules/admin/categories/components/CategoryDeleteButton'
 
 export default async function CategoriesPage() {
   const categories = await getCategories(true)
@@ -75,15 +63,7 @@ export default async function CategoriesPage() {
                     >
                       <Pencil size={13} />
                     </Link>
-                    <form action={handleDelete.bind(null, c.id)}>
-                      <button
-                        type="submit"
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-gray-400 hover:text-brand transition-colors cursor-pointer"
-                        title="Eliminar"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </form>
+                    <CategoryDeleteButton id={c.id} />
                   </div>
                 </td>
               </tr>

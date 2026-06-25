@@ -14,7 +14,7 @@ function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
   return (
     <a
       href={`/catalogo?marca=${brand.key}`}
-      className="h-28 rounded-3.5 bg-[#13294a] border border-white/10 flex items-center justify-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
     >
       <span className="font-display font-bold text-7 text-white leading-none tracking-[.04em]">
         {brand.name.toUpperCase()}
@@ -70,7 +70,7 @@ export default function Brands({ brands }: BrandsProps) {
               {chineseBrands.map((brand) => (
                 <BrandCard key={brand.id} brand={brand} />
               ))}
-              <div className="h-28 rounded-3.5 bg-[#13294a] border border-white/10 flex items-center justify-center">
+              <div className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center">
                 <span className="font-display font-bold text-4.25 text-[#9fb0c8] text-center leading-snug">
                   y más<br />marcas
                 </span>
@@ -85,12 +85,12 @@ export default function Brands({ brands }: BrandsProps) {
               {americanBrands.map((brand) => (
                 <BrandCard key={brand.id} brand={brand} />
               ))}
-              <div className="h-28 rounded-3.5 bg-[#13294a] border border-white/10 flex items-center justify-center">
+              <div className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center">
                 <span className="font-display font-bold text-4.25 text-[#9fb0c8] text-center leading-snug">
                   y más<br />marcas
                 </span>
               </div>
-              <div className="h-28 rounded-3.5 border border-dashed border-brand/45 bg-gradient-to-br from-brand/16 to-brand/4 flex flex-col items-center justify-center gap-1.5 p-3 text-center">
+              <div className="h-28 rounded-[14px] border border-dashed border-brand/45 bg-gradient-to-br from-brand/16 to-brand/4 flex flex-col items-center justify-center gap-1.5 p-3 text-center">
                 <span className="font-display font-bold text-4.25 uppercase text-white leading-tight">
                   ¿Otra marca?
                 </span>

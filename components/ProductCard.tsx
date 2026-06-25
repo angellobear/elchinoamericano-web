@@ -30,7 +30,7 @@ export default function ProductCard({ product }: { product: Product }) {
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
-      className="group relative flex flex-col border border-[#e6e9ef] rounded-4 overflow-hidden bg-white hover:border-brand hover:shadow-[0_22px_44px_rgba(13,31,60,.16)] hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+      className="group relative flex flex-col border border-[#e6e9ef] rounded-2xl overflow-hidden bg-white hover:border-brand hover:shadow-[0_22px_44px_rgba(13,31,60,.16)] hover:-translate-y-1 transition-all duration-200 cursor-pointer"
     >
       {/* Full-card link */}
       <Link
@@ -40,7 +40,7 @@ export default function ProductCard({ product }: { product: Product }) {
       />
 
       {/* Image 4:3 */}
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden pointer-events-none">
         {primaryImage ? (
           <Image
             src={primaryImage}
@@ -56,19 +56,19 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         {/* Type badge */}
-        <span className={`absolute top-3 left-3 px-2 py-1 rounded-1.5 text-2.5 font-bold uppercase tracking-[.06em] z-1 ${badge.cls}`}>
+        <span className={`absolute top-3 left-3 px-2 py-1 rounded-md text-2.5 font-bold uppercase tracking-[.06em] z-1 ${badge.cls}`}>
           {badge.label}
         </span>
         {/* Discount badge */}
         {discountPct > 0 && (
-          <span className="absolute top-3 right-3 bg-brand text-white px-2 py-1 rounded-1.5 text-2.5 font-bold uppercase tracking-[.05em] z-1">
+          <span className="absolute top-3 right-3 bg-brand text-white px-2 py-1 rounded-md text-2.5 font-bold uppercase tracking-[.05em] z-1">
             -{discountPct}%
           </span>
         )}
       </div>
 
       {/* Info */}
-      <div className="flex flex-col flex-1 p-[15px_17px_17px]">
+      <div className="flex flex-col flex-1 p-[15px_17px_17px] pointer-events-none">
         <p className="text-2.75 font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
           {product.part_brand?.name}
         </p>
@@ -90,7 +90,7 @@ export default function ProductCard({ product }: { product: Product }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="relative z-10 flex items-center gap-1.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-3 px-3 py-2.5 rounded-2.25 transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+            className="relative z-10 pointer-events-auto flex items-center gap-1.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-3 px-3 py-2.5 rounded-[9px] transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
           >
             <MessageCircle size={14} />
             Consultar

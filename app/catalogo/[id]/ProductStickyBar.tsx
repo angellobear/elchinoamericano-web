@@ -61,7 +61,7 @@ export default function ProductStickyBar({
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex flex-1 items-center justify-center gap-2 rounded-3 bg-wa px-4 py-3 text-3.75 font-bold text-[#062b15]"
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-wa px-4 py-3 text-3.75 font-bold text-[#062b15]"
             >
               <MessageCircle size={19} />
               Consultar

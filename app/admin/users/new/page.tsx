@@ -8,9 +8,10 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { parseUserCreateFormData } from '@/modules/admin/users/form-schema'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
+import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 import { UserForm } from '@/modules/admin/users/components/UserForm'
 
-async function create(formData: FormData) {
+async function create(_: ActionState, formData: FormData) {
   'use server'
   const payload = await getJwtPayload()
   if (payload?.role !== 'superadmin') redirect(routes.admin.forbidden)
@@ -18,7 +19,7 @@ async function create(formData: FormData) {
   try {
     const parsed = parseUserCreateFormData(formData)
     if (!parsed.success) {
-      redirect(`${routes.admin.users.create}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
+      return errorResult(getZodErrorMessage(parsed.error))
     }
 
     const { email, fullName, password, roleId } = parsed.data
@@ -27,9 +28,10 @@ async function create(formData: FormData) {
     revalidatePath(routes.admin.users.index)
   } catch (err) {
     logger.error({ err }, 'Error creating user')
-    redirect(`${routes.admin.users.index}?error=` + encodeURIComponent('Error al crear usuario'))
+    return errorResult('Error al crear usuario')
   }
-  redirect(`${routes.admin.users.index}?success=` + encodeURIComponent('Usuario creado'))
+
+  return successResult('Usuario creado', undefined, { redirectTo: routes.admin.users.index })
 }
 
 export default async function NewUserPage() {

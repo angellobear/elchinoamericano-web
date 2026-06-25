@@ -49,6 +49,11 @@ export function StatusToggleButton({
 
           toast.success(result.message)
 
+          if (result.redirectTo) {
+            router.push(result.redirectTo)
+            return
+          }
+
           if (successBehavior === 'refresh') {
             router.refresh()
           }

@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getCategories, updateCategory } from '@/lib/db/categories'
 import { handleImageReplace } from '@/lib/cloudinary'
@@ -7,15 +7,16 @@ import { routes } from '@/lib/routes'
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
+import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 import { parseCategoryFormData } from '@/modules/admin/categories/form-schema'
 import { CategoryForm } from '@/modules/admin/categories/components/CategoryForm'
 
-async function save(id: number, formData: FormData) {
+async function save(id: number, _: ActionState, formData: FormData) {
   'use server'
   try {
     const parsed = parseCategoryFormData(formData, { isActive: true })
     if (!parsed.success) {
-      redirect(`${routes.admin.categories.edit(id)}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
+      return errorResult(getZodErrorMessage(parsed.error))
     }
 
     const { name, description, sortOrder, isActive } = parsed.data
@@ -36,9 +37,10 @@ async function save(id: number, formData: FormData) {
     revalidatePath(routes.admin.categories.index)
   } catch (err) {
     logger.error({ err }, 'Error updating category')
-    redirect(`${routes.admin.categories.index}?error=` + encodeURIComponent('Error al guardar categoría'))
+    return errorResult('Error al guardar categoría')
   }
-  redirect(`${routes.admin.categories.index}?success=` + encodeURIComponent('Categoría guardada'))
+
+  return successResult('Categoría guardada', undefined, { redirectTo: routes.admin.categories.index })
 }
 
 export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {

@@ -74,7 +74,7 @@ export default function WhyUs() {
         >
           <motion.div
             variants={fadeUp}
-            className="relative h-110 rounded-5 overflow-hidden border border-[#e6e9ef] shadow-[0_24px_50px_rgba(13,31,60,.12)] bg-[#eef1f6]"
+            className="relative h-110 rounded-[20px] overflow-hidden border border-[#e6e9ef] shadow-[0_24px_50px_rgba(13,31,60,.12)] bg-[#eef1f6]"
           >
             <Image
               src="/about-us.png"
@@ -100,9 +100,9 @@ export default function WhyUs() {
               <motion.div
                 key={title}
                 variants={fadeUp}
-                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-3.5 p-5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-all duration-200"
+                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-[14px] p-5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-all duration-200"
               >
-                <div className="w-11.5 h-11.5 rounded-2.75 bg-brand/10 flex items-center justify-center shrink-0">
+                <div className="w-11.5 h-11.5 rounded-[11px] bg-brand/10 flex items-center justify-center shrink-0">
                   <Icon size={22} className="text-brand" strokeWidth={2} />
                 </div>
                 <div>

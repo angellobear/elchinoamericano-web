@@ -5,12 +5,13 @@ import { SubmitButton } from '@/app/admin/_components/SubmitButton'
 import { routes } from '@/lib/routes'
 import { FormActions } from '@/modules/admin/shared/components/AdminFormControls'
 import { ValidatedForm } from '@/modules/admin/shared/components/ValidatedForm'
+import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 import { CategoryFormFields } from '@/modules/admin/categories/components/CategoryFormFields'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { parseCategoryFormData, type CategoryFormValues } from '@/modules/admin/categories/form-schema'
 
 interface CategoryFormProps {
-  action: (formData: FormData) => void | Promise<void>
+  action: ActionFormHandler
   defaults?: Partial<CategoryFormValues> & {
     imageUrl?: string | null
     imagePublicId?: string | null
