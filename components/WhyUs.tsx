@@ -49,15 +49,15 @@ export default function WhyUs() {
         {/* Section header */}
         <div className="flex flex-col items-center text-center gap-3 mb-14">
           <div className="flex items-center gap-2">
-            <span className="w-[7px] h-[7px] rounded-full bg-brand" />
-            <span className="text-[11px] font-semibold uppercase tracking-[.16em] text-brand">
+            <span className="w-1.75 h-1.75 rounded-full bg-brand" />
+            <span className="text-2.75 font-semibold uppercase tracking-[.16em] text-brand">
               Por qué El Chino Americano
             </span>
           </div>
-          <h2 className="font-display font-bold text-navy uppercase leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-[760px]">
+          <h2 className="font-display font-bold text-navy uppercase leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-190">
             El repuesto correcto, sin vueltas ni sorpresas
           </h2>
-          <p className="max-w-[620px] text-[#566071] text-[1.0625rem] leading-[1.6]">
+          <p className="max-w-155 text-[#566071] text-4.25 leading-[1.6]">
             Somos especialistas en marcas chinas y americanas. Te asesoramos pieza por pieza y
             te lo enviamos a cualquier ciudad del Ecuador.
           </p>
@@ -73,10 +73,10 @@ export default function WhyUs() {
         >
           <motion.div
             variants={fadeUp}
-            className="relative h-[440px] rounded-[20px] overflow-hidden border border-[#e6e9ef] shadow-[0_24px_50px_rgba(13,31,60,.12)] bg-[#eef1f6]"
+            className="relative h-110 rounded-5 overflow-hidden border border-[#e6e9ef] shadow-[0_24px_50px_rgba(13,31,60,.12)] bg-[#eef1f6]"
           >
             <Image
-              src="/editorial/home/warehouse-service.png"
+              src="/about-us.png"
               alt="Bodega ordenada y zona de servicio automotriz"
               fill
               className="object-cover"
@@ -99,13 +99,13 @@ export default function WhyUs() {
               <motion.div
                 key={title}
                 variants={fadeUp}
-                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-[14px] p-5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-all duration-200"
+                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-3.5 p-5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-all duration-200"
               >
-                <div className="w-[46px] h-[46px] rounded-[11px] bg-brand/[.10] flex items-center justify-center shrink-0">
+                <div className="w-11.5 h-11.5 rounded-2.75 bg-brand/10 flex items-center justify-center shrink-0">
                   <Icon size={22} className="text-brand" strokeWidth={2} />
                 </div>
                 <div>
-                  <h3 className="font-display font-bold text-[1.1875rem] uppercase text-navy leading-tight tracking-[.02em]">
+                  <h3 className="font-display font-bold text-4.75 uppercase text-navy leading-tight tracking-[.02em]">
                     {title}
                   </h3>
                   <p className="text-[#566071] text-[14.5px] leading-[1.55] mt-1.5">{description}</p>
@@ -125,8 +125,8 @@ export default function WhyUs() {
         >
           {STATS.map(({ value, label }) => (
             <motion.div key={label} variants={fadeUp} className="bg-navy rounded-2xl p-7 text-center">
-              <p className="font-display font-bold text-brand text-[4rem] leading-none">{value}</p>
-              <p className="text-[#cdd6e4] text-[15px] leading-snug mt-2">{label}</p>
+              <p className="font-display font-bold text-brand text-16 leading-none">{value}</p>
+              <p className="text-[#cdd6e4] text-3.75 leading-snug mt-2">{label}</p>
             </motion.div>
           ))}
         </motion.div>

@@ -244,7 +244,7 @@ export default function CatalogoClient({
       {/* Header band */}
       <div className="bg-navy px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-7xl mx-auto">
-          <p className="text-[13px] text-[#9fb0c8]">
+          <p className="text-3.25 text-[#9fb0c8]">
             Inicio <span className="text-[#5f7090]">/</span> <span className="text-white">Catálogo</span>
           </p>
           <div className="flex items-end justify-between mt-3 gap-4 flex-wrap">
@@ -252,7 +252,7 @@ export default function CatalogoClient({
               <h1 className="font-display font-bold text-[#f4f7fb] uppercase leading-none text-[clamp(2rem,5vw,3.25rem)]">
                 Catálogo de repuestos
               </h1>
-              <p className="text-[#9fb0c8] text-[15px] mt-2">
+              <p className="text-[#9fb0c8] text-3.75 mt-2">
                 <b className="text-white">{filteredProducts.length}</b>{" "}
                 {filteredProducts.length === 1 ? "repuesto encontrado" : "repuestos encontrados"}
                 {totalPages > 1 && <span className="text-[#5f7090]"> · Página {safePage} de {totalPages}</span>}
@@ -291,11 +291,11 @@ export default function CatalogoClient({
 
               <Sheet>
                 <SheetTrigger asChild>
-                  <button className="lg:hidden relative inline-flex items-center gap-1.5 border border-slate-200 bg-white text-slate-700 text-sm font-medium px-3 py-2 rounded-md hover:border-navy/30 transition-colors shrink-0 min-h-[36px]">
+                  <button className="lg:hidden relative inline-flex items-center gap-1.5 border border-slate-200 bg-white text-slate-700 text-sm font-medium px-3 py-2 rounded-md hover:border-navy/30 transition-colors shrink-0 min-h-9">
                     <SlidersHorizontal size={14} />
                     Filtros
                     {activeCount > 0 && (
-                      <span className="bg-brand text-white text-[9px] font-bold rounded-full min-w-[16px] min-h-[16px] flex items-center justify-center px-1 leading-none">
+                      <span className="bg-brand text-white text-2.25 font-bold rounded-full min-w-4 min-h-4 flex items-center justify-center px-1 leading-none">
                         {activeCount}
                       </span>
                     )}
@@ -318,7 +318,7 @@ export default function CatalogoClient({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex gap-8">
           <aside className="hidden lg:block w-60 shrink-0">
-            <div className="sticky top-[120px] bg-white rounded-xl border border-slate-200 p-5">
+            <div className="sticky top-30 bg-white rounded-xl border border-slate-200 p-5">
               <CatalogFilters
                 filters={filters}
                 onChange={handleFiltersChange}

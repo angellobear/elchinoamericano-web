@@ -113,7 +113,7 @@ export default function Navbar() {
               {itemCount > 0 && (
                 <span
                   className={cn(
-                    "absolute top-1.5 right-1.5 bg-brand text-white text-[9px] font-bold rounded-full min-w-[16px] min-h-[16px] flex items-center justify-center px-1 leading-none",
+                    "absolute top-1.5 right-1.5 bg-brand text-white text-2.25 font-bold rounded-full min-w-4 min-h-4 flex items-center justify-center px-1 leading-none",
                     badgeBounce && "animate-bounce-badge"
                   )}
                 >
@@ -151,7 +151,7 @@ export default function Navbar() {
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
                         className={cn(
-                          "flex items-center px-3 py-3 rounded-md text-base font-semibold transition-colors duration-150 min-h-[44px]",
+                          "flex items-center px-3 py-3 rounded-md text-base font-semibold transition-colors duration-150 min-h-11",
                           isActive(link.href)
                             ? "text-brand bg-brand/10"
                             : "text-white/80 hover:text-white hover:bg-white/8"
@@ -165,7 +165,7 @@ export default function Navbar() {
                     href="https://wa.me/593984878153"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-wa text-[#062b15] text-sm font-bold px-4 py-3 rounded-xl transition-colors min-h-[44px]"
+                    className="inline-flex items-center gap-2 bg-wa text-[#062b15] text-sm font-bold px-4 py-3 rounded-xl transition-colors min-h-11"
                   >
                     <MessageCircle size={15} />
                     WhatsApp

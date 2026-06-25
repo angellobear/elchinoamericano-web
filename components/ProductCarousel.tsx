@@ -28,7 +28,7 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
     return (
       <div className="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square flex items-center justify-center">
         {fallback}
-        <span className="absolute bottom-3 right-3 text-[10px] text-slate-400 bg-white/80 px-2 py-0.5 rounded-full font-semibold">
+        <span className="absolute bottom-3 right-3 text-2.5 text-slate-400 bg-white/80 px-2 py-0.5 rounded-full font-semibold">
           Imagen referencial
         </span>
       </div>
@@ -103,7 +103,7 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
           </button>
 
           {/* Counter */}
-          <span className="absolute top-3 right-3 z-20 bg-black/30 text-white text-[10px] font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
+          <span className="absolute top-3 right-3 z-20 bg-black/30 text-white text-2.5 font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
             {current + 1} / {count}
           </span>
 
@@ -169,7 +169,7 @@ function LightBox({
   const multi = images.length > 1
   return (
     <div
-      className="fixed inset-0 z-[999] bg-black/90 flex items-center justify-center p-4"
+      className="fixed inset-0 z-999 bg-black/90 flex items-center justify-center p-4"
       onClick={onClose}
     >
       <img

@@ -19,7 +19,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent side="right" className="w-[380px] sm:w-[380px] p-0 flex flex-col">
+      <SheetContent side="right" className="w-95 sm:w-95 p-0 flex flex-col">
         {/* Header */}
         <SheetHeader className="bg-navy px-6 py-4 shrink-0">
           <div className="flex items-center gap-3">
@@ -48,7 +48,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-slate-900 truncate">{item.title}</p>
-                      <p className="text-[11px] text-slate-400 mt-0.5 font-mono">{item.code}</p>
+                      <p className="text-2.75 text-slate-400 mt-0.5 font-mono">{item.code}</p>
                     </div>
                     <button
                       onClick={() => dispatch({ type: "REMOVE", id: item.id })}
@@ -96,7 +96,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
                 ${total.toFixed(2)}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 leading-relaxed">
+            <p className="text-2.75 text-slate-400 leading-relaxed">
               El precio final y costo de envío son confirmados por el vendedor.
             </p>
             <a

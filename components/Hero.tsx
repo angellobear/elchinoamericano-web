@@ -19,13 +19,37 @@ const BRAND_CHIPS = [
   { label: "CHEVROLET", key: "chevrolet" },
 ]
 
+const VEHICLES = [
+  { src: "/hero/jetour.png", alt: "Jetour X70", delay: 0 },
+  { src: "/hero/chevrolet.png", alt: "Chevrolet Silverado", delay: 3 },
+  { src: "/hero/chery.png", alt: "Chery Tiggo 7 Pro", delay: 6 },
+  { src: "/hero/ford.png", alt: "Ford Explorer", delay: 9 },
+  { src: "/hero/dfsk.png", alt: "DFSK Glory 560", delay: 12 },
+  { src: "/hero/swm.png", alt: "SWM G01", delay: 15 },
+  { src: "/hero/great_wall.png", alt: "Great Wall Voleex C30", delay: 18 },
+  { src: "/hero/jac.png", alt: "JAC T8", delay: 21 },
+  { src: "/hero/shineray.png", alt: "Shineray X30L", delay: 24 },
+]
+
+const PARTS = [
+  { src: "/hero/rep_jetour.png", alt: "Repuestos Jetour", delay: 0 },
+  { src: "/hero/rep_chevrolet.png", alt: "Repuestos Chevrolet", delay: 3 },
+  { src: "/hero/rep_chery.png", alt: "Repuestos Chery", delay: 6 },
+  { src: "/hero/rep_ford.png", alt: "Repuestos Ford", delay: 9 },
+  { src: "/hero/rep_dfsk.png", alt: "Repuestos DFSK", delay: 12 },
+  { src: "/hero/rep_swm.png", alt: "Repuestos SWM", delay: 15 },
+  { src: "/hero/rep_great_wall.png", alt: "Repuestos Great Wall", delay: 18 },
+  { src: "/hero/rep_jac.png", alt: "Repuestos JAC", delay: 21 },
+  { src: "/hero/rep_shineray.png", alt: "Repuestos Shineray", delay: 24 }
+]
+
 const CAR_BRANDS = ["Chery", "SWM", "Great Wall", "DFSK", "Shineray", "JAC", "Jetour", "Ford", "Chevrolet"]
 
 const STAT_STRIP = [
-  { icon: Truck, iconColor: "text-brand", iconBg: "bg-brand/[.14]", title: "Envíos a todo Ecuador", sub: "Entrega 24–72 h" },
-  { icon: MessageCircle, iconColor: "text-wa", iconBg: "bg-wa/[.14]", title: "Asesoría por WhatsApp", sub: "Respuesta en < 24 h" },
-  { icon: ShieldCheck, iconColor: "text-brand", iconBg: "bg-brand/[.14]", title: "Calidad garantizada", sub: "Originales y OEM" },
-  { icon: Layers, iconColor: "text-brand", iconBg: "bg-brand/[.14]", title: "Original · OEM · Alterno", sub: "3 líneas de precio" },
+  { icon: Truck, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Envíos a todo Ecuador", sub: "Entrega 24–72 h" },
+  { icon: MessageCircle, iconColor: "text-wa", iconBg: "bg-wa/14", title: "Asesoría por WhatsApp", sub: "Respuesta en < 24 h" },
+  { icon: ShieldCheck, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Calidad garantizada", sub: "Originales y OEM" },
+  { icon: Layers, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Original · OEM · Alterno", sub: "3 líneas de precio" },
 ]
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -35,7 +59,7 @@ function HeroSearch() {
   const [marca, setMarca] = useState("")
 
   return (
-    <div className="mt-12 bg-[#13294a] border border-white/[.12] rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
+    <div className="mt-12 bg-[#13294a] border border-white/12 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
       <div className="hidden sm:flex items-center gap-2 shrink-0 pr-1">
         <Search size={18} className="text-brand" />
         <span className="font-display font-bold text-lg text-[#f4f7fb] whitespace-nowrap leading-none">
@@ -45,17 +69,17 @@ function HeroSearch() {
       <select
         value={marca}
         onChange={(e) => setMarca(e.target.value)}
-        className="flex-1 w-full bg-[#0a1628] border border-white/[.12] rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
+        className="flex-1 w-full bg-[#0a1628] border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
       >
         <option value="">Marca</option>
         {CAR_BRANDS.map((b) => (
           <option key={b} value={b.toLowerCase().replace(/ /g, "_")}>{b}</option>
         ))}
       </select>
-      <select className="flex-1 w-full bg-[#0a1628] border border-white/[.12] rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
+      <select className="flex-1 w-full bg-[#0a1628] border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
         <option>Modelo</option>
       </select>
-      <select className="w-full sm:w-28 bg-[#0a1628] border border-white/[.12] rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
+      <select className="w-full sm:w-28 bg-[#0a1628] border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
         <option>Año</option>
       </select>
       <button
@@ -91,12 +115,12 @@ export default function Hero() {
       />
       {/* red glow */}
       <div
-        className="absolute -right-32 -top-24 w-[720px] h-[720px] rounded-full pointer-events-none"
+        className="absolute -right-32 -top-24 w-180 h-180 rounded-full pointer-events-none"
         style={{ background: "radial-gradient(circle,rgba(224,48,48,.28) 0%,rgba(224,48,48,0) 66%)", filter: "blur(8px)" }}
         aria-hidden="true"
       />
 
-      <div className="relative z-[2] max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14">
+      <div className="relative z-2 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14">
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-11 items-center">
           {/* Left — text */}
           <motion.div
@@ -105,8 +129,8 @@ export default function Hero() {
             variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.11 } } }}
           >
             <motion.div variants={fadeUp} className="flex items-center gap-2 mb-5">
-              <span className="w-[7px] h-[7px] rounded-full bg-brand shrink-0" />
-              <span className="text-[11px] font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
+              <span className="h-1.75 w-1.75 rounded-full bg-brand shrink-0" />
+              <span className="text-2.75 font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
                 Santo Domingo · Ecuador — Repuestos chinos y americanos
               </span>
             </motion.div>
@@ -120,7 +144,7 @@ export default function Hero() {
               <span className="text-brand">sí encajan.</span>
             </motion.h1>
 
-            <motion.p variants={fadeUp} className="mt-5 max-w-lg text-[#9fb0c8] text-[1.125rem] leading-[1.55]">
+            <motion.p variants={fadeUp} className="mt-5 max-w-lg text-[#9fb0c8] text-4.5 leading-[1.55]">
               Originales, OEM y alternos para Chery, SWM, Great Wall, Ford, Chevrolet y más.
               Asesoría experta y envíos a todo el Ecuador.
             </motion.p>
@@ -137,7 +161,7 @@ export default function Hero() {
                 href="https://wa.me/593984878153"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 border border-wa text-[#f4f7fb] hover:bg-wa/[.14] font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+                className="inline-flex items-center gap-2 border border-wa text-[#f4f7fb] hover:bg-wa/14 font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
               >
                 <MessageCircle size={18} className="text-wa" />
                 Escríbenos por WhatsApp
@@ -145,7 +169,7 @@ export default function Hero() {
             </motion.div>
 
             <motion.div variants={fadeUp} className="mt-10">
-              <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-[#5f7090] mb-3">
+              <p className="text-2.5 font-semibold uppercase tracking-[.16em] text-[#5f7090] mb-3">
                 Trabajamos con
               </p>
               <div className="flex flex-wrap gap-2">
@@ -153,7 +177,7 @@ export default function Hero() {
                   <a
                     key={key}
                     href={`/catalogo?marca=${key}`}
-                    className="font-display font-bold text-sm text-[#9fb0c8] border border-white/[.14] hover:border-brand hover:text-white px-3.5 py-2 rounded-full transition-colors duration-150"
+                    className="font-display font-bold text-sm text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-3.5 py-2 rounded-full transition-colors duration-150"
                   >
                     {label}
                   </a>
@@ -168,52 +192,69 @@ export default function Hero() {
             transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
             className="relative hidden lg:block"
           >
+            {/* Vehicle showcase */}
             <div
-              className="relative h-[470px] rounded-[20px] overflow-hidden border border-white/[.12] shadow-[0_30px_60px_rgba(0,0,0,.4)] bg-[#0a1628]"
+              className="relative h-117.5 rounded-5 overflow-hidden border border-white/12 shadow-[0_30px_60px_rgba(0,0,0,.4)]"
+              style={{
+                background: "#0a1628",
+                backgroundImage: "radial-gradient(120% 95% at 50% 22%,rgba(40,68,112,.55),rgba(10,22,40,0) 70%),repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 14px,transparent 14px 28px)",
+              }}
             >
-              <Image
-                src="/editorial/home/hero-vehicle.png"
-                alt="Vehículo en estudio con iluminación dramática"
-                fill
-                className="object-cover"
-                sizes="(min-width: 1024px) 40vw, 100vw"
-                priority
-              />
-              <div
-                className="absolute inset-0"
-                style={{ backgroundImage: "repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 14px,transparent 14px 28px)" }}
-                aria-hidden="true"
-              />
-              <div className="absolute bottom-0 left-0 right-0 p-6 text-right bg-gradient-to-t from-[rgba(10,22,40,.92)] to-transparent">
-                <p className="font-bold text-[13px] tracking-[.12em] uppercase text-brand">Stock disponible</p>
-                <p className="font-display font-bold text-white text-3xl mt-1.5 leading-tight">
-                  +5.000 referencias listas para enviar
-                </p>
+              {VEHICLES.map(({ src, alt, delay }) => (
+                <div
+                  key={src}
+                  className="hero-vlayer absolute inset-0"
+                  style={reduce ? { animationDuration: "0.01ms" } : { animationDelay: `${delay}s` }}
+                >
+                  <Image
+                    src={src}
+                    alt={alt}
+                    fill
+                    className="object-contain"
+                    style={{ objectPosition: "center 56%" }}
+                    sizes="(min-width: 1024px) 40vw, 100vw"
+                    priority={delay === 0}
+                  />
+                </div>
+              ))}
+
+              {/* stock pill */}
+              <div className="absolute top-4 left-4 flex items-center gap-2 bg-[rgba(13,31,60,.92)] px-3 py-2 rounded-full shadow-[0_6px_16px_rgba(0,0,0,.22)]">
+                <span className="h-1.75 w-1.75 rounded-full bg-wa shadow-[0_0_0_4px_rgba(37,211,102,.22)]" />
+                <span className="font-bold text-2.75 tracking-[.12em] uppercase text-white">+5.000 referencias en stock</span>
               </div>
             </div>
-            {/* bottom-left float */}
+
+            {/* Parts float card */}
             <div
-              className="absolute -bottom-7 -left-7 w-56 h-36 rounded-[16px] overflow-hidden border border-white/[.14] shadow-[0_18px_36px_rgba(0,0,0,.45)] bg-[#13294a] flex items-end p-3"
+              className="absolute -bottom-7 -left-7 w-56.5 h-38 rounded-4 overflow-hidden border border-white/14 shadow-[0_18px_36px_rgba(0,0,0,.45)]"
+              style={{
+                background: "#13294a",
+                backgroundImage: "radial-gradient(120% 100% at 50% 25%,rgba(40,68,112,.5),rgba(19,41,74,0) 72%),repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 12px,transparent 12px 24px)",
+              }}
             >
-              <Image
-                src="/editorial/home/part-detail.png"
-                alt="Detalle técnico de repuesto en primer plano"
-                fill
-                className="object-cover"
-                sizes="224px"
-              />
-              <div
-                className="absolute inset-0"
-                style={{ backgroundImage: "repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 12px,transparent 12px 24px)" }}
-                aria-hidden="true"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[rgba(19,41,74,.88)] via-[rgba(19,41,74,.22)] to-transparent" aria-hidden="true" />
-              <p className="font-semibold text-sm text-white">Calidad garantizada</p>
+              {PARTS.map(({ src, alt, delay }) => (
+                <div
+                  key={src}
+                  className="hero-player absolute inset-3"
+                  style={reduce ? { animationDuration: "0.01ms" } : { animationDelay: `${delay}s` }}
+                >
+                  <Image
+                    src={src}
+                    alt={alt}
+                    fill
+                    className="object-contain"
+                    style={{ objectPosition: "center 56%" }}
+                    sizes="200px"
+                  />
+                </div>
+              ))}
             </div>
+
             {/* top-right badge */}
-            <div className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-[8px] border border-white/[.16] rounded-[14px] p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]">
-              <p className="font-display font-bold text-white text-[1.875rem] leading-none">&lt; 24 h</p>
-              <p className="text-[12px] text-[#9fb0c8] mt-1.5">Asesoría por WhatsApp</p>
+            <div className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-[8px] border border-white/16 rounded-3.5 p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]">
+              <p className="font-display font-bold text-white text-7.5 leading-none">&lt; 24 h</p>
+              <p className="text-3 text-[#9fb0c8] mt-1.5">Asesoría por WhatsApp</p>
             </div>
           </motion.div>
         </div>
@@ -226,7 +267,7 @@ export default function Hero() {
           initial={reduce ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.5 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-6 pb-8 mt-8 border-t border-white/[.08]"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-6 pb-8 mt-8 border-t border-white/8"
         >
           {STAT_STRIP.map(({ icon: Icon, iconColor, iconBg, title, sub }) => (
             <div key={title} className="flex items-center gap-3">
@@ -234,8 +275,8 @@ export default function Hero() {
                 <Icon size={20} className={iconColor} strokeWidth={2} />
               </div>
               <div>
-                <p className="font-bold text-[15px] text-white leading-tight">{title}</p>
-                <p className="text-[13px] text-[#7e8ca3] mt-0.5">{sub}</p>
+                <p className="font-bold text-3.75 text-white leading-tight">{title}</p>
+                <p className="text-3.25 text-[#7e8ca3] mt-0.5">{sub}</p>
               </div>
             </div>
           ))}

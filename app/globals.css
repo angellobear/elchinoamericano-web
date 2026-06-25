@@ -75,6 +75,34 @@ body {
   animation: bounce-badge 0.3s ease-in-out;
 }
 
+@keyframes heroVeh {
+  0%    { opacity: 0; transform: translateX(112%); }
+  3.3%  { opacity: 1; transform: translateX(0); }
+  11.1% { opacity: 1; transform: translateX(0); }
+  14.4% { opacity: 0; transform: translateX(-112%); }
+  100%  { opacity: 0; transform: translateX(-112%); }
+}
+
+@keyframes heroPart {
+  0%    { opacity: 0; transform: translateX(118%); }
+  3.3%  { opacity: 1; transform: translateX(0); }
+  11.1% { opacity: 1; transform: translateX(0); }
+  14.4% { opacity: 0; transform: translateX(-118%); }
+  100%  { opacity: 0; transform: translateX(-118%); }
+}
+
+.hero-vlayer {
+  opacity: 0;
+  animation: heroVeh 27s cubic-bezier(0.66, 0, 0.2, 1) infinite;
+  animation-fill-mode: both;
+}
+
+.hero-player {
+  opacity: 0;
+  animation: heroPart 27s cubic-bezier(0.66, 0, 0.2, 1) infinite;
+  animation-fill-mode: both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

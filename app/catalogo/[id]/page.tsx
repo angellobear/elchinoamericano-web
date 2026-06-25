@@ -117,7 +117,7 @@ const TYPE_CONFIG: Record<
     label: "Alterno",
     description: "Repuesto de mercado libre de alta calidad con excelente relacion precio-durabilidad.",
     badgeCls: "bg-brand text-white",
-    stripBg: "bg-brand/[.06]",
+    stripBg: "bg-brand/6",
     stripBorder: "border-brand/20",
     stripText: "text-brand",
     stripSub: "text-[#566071]",
@@ -277,7 +277,7 @@ export default async function ProductDetailPage({
           <div className="mx-auto max-w-7xl px-4 py-3.5 sm:px-6 lg:px-8">
             <nav
               aria-label="Breadcrumb"
-              className="flex items-center gap-1.5 text-[13px] text-[#8a93a3]"
+              className="flex items-center gap-1.5 text-3.25 text-[#8a93a3]"
             >
               <Link href="/" className="transition-colors hover:text-navy">
                 Inicio
@@ -298,7 +298,7 @@ export default async function ProductDetailPage({
                 </>
               )}
               <ChevronRight size={12} className="shrink-0" />
-              <span className="max-w-[200px] truncate font-medium text-navy">
+              <span className="max-w-50 truncate font-medium text-navy">
                 {product.title}
               </span>
             </nav>
@@ -309,9 +309,9 @@ export default async function ProductDetailPage({
           <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
             <div className="grid grid-cols-1 gap-11 lg:grid-cols-2 lg:gap-14">
               <div className="mx-auto w-full max-w-md lg:max-w-none">
-                <div className="relative overflow-hidden rounded-[18px] border border-[#e6e9ef] bg-white">
+                <div className="relative overflow-hidden rounded-4.5 border border-[#e6e9ef] bg-white">
                   {discountPct > 0 && (
-                    <span className="absolute left-4 top-4 z-10 rounded-[7px] bg-brand px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] text-white">
+                    <span className="absolute left-4 top-4 z-10 rounded-1.75 bg-brand px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-white">
                       -{discountPct}% OFF
                     </span>
                   )}
@@ -328,31 +328,31 @@ export default async function ProductDetailPage({
                   {product.category && (
                     <Link
                       href={`/catalogo?categoria=${product.category.key}`}
-                      className="rounded-[7px] bg-[#e7ebf1] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] text-navy transition-colors hover:bg-[#d5dbe5]"
+                      className="rounded-1.75 bg-[#e7ebf1] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy transition-colors hover:bg-[#d5dbe5]"
                     >
                       {categoryName}
                     </Link>
                   )}
                   <span
-                    className={`rounded-[7px] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] ${typeConfig.badgeCls}`}
+                    className={`rounded-1.75 px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] ${typeConfig.badgeCls}`}
                   >
                     {typeConfig.label}
                   </span>
                   {product.is_featured && (
-                    <span className="rounded-[7px] bg-[#ffd23f] px-2.5 py-1.5 text-[11px] font-bold uppercase tracking-[.05em] text-navy">
+                    <span className="rounded-1.75 bg-[#ffd23f] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy">
                       Destacado
                     </span>
                   )}
                 </div>
 
                 <div>
-                  <p className="text-[13px] font-semibold uppercase tracking-[.04em] text-[#8a93a3]">
+                  <p className="text-3.25 font-semibold uppercase tracking-[.04em] text-[#8a93a3]">
                     {product.part_brand?.name}
                   </p>
                   <h1 className="mt-2 font-display text-[clamp(2rem,4.5vw,3.125rem)] font-bold uppercase leading-none text-navy">
                     {product.title}
                   </h1>
-                  <p className="mt-3 font-mono text-[13px] text-[#9aa3b2]">
+                  <p className="mt-3 font-mono text-3.25 text-[#9aa3b2]">
                     {product.code}
                     {product.sku && ` · SKU ${product.sku}`}
                   </p>
@@ -363,12 +363,12 @@ export default async function ProductDetailPage({
                     ${effectivePrice.toFixed(2)}
                   </span>
                   {product.offer_price && (
-                    <span className="mb-1 text-[1.25rem] leading-none text-[#9aa3b2] line-through">
+                    <span className="mb-1 text-5 leading-none text-[#9aa3b2] line-through">
                       ${product.price.toFixed(2)}
                     </span>
                   )}
                   {discountPct > 0 && (
-                    <span className="mb-0.5 rounded-[8px] bg-brand px-2.5 py-1.5 text-[13px] font-bold text-white">
+                    <span className="mb-0.5 rounded-2 bg-brand px-2.5 py-1.5 text-3.25 font-bold text-white">
                       {discountPct}% OFF
                     </span>
                   )}
@@ -382,10 +382,10 @@ export default async function ProductDetailPage({
 
                 <div className="flex items-center gap-2">
                   <span
-                    className={`h-[9px] w-[9px] shrink-0 rounded-full ${product.stock > 0 ? "bg-emerald-500" : "bg-red-500"}`}
+                    className={`h-2.25 w-2.25 shrink-0 rounded-full ${product.stock > 0 ? "bg-emerald-500" : "bg-red-500"}`}
                   />
                   <span
-                    className={`text-[14px] font-semibold ${product.stock > 0 ? "text-emerald-700" : "text-red-600"}`}
+                    className={`text-3.5 font-semibold ${product.stock > 0 ? "text-emerald-700" : "text-red-600"}`}
                   >
                     {product.stock > 0
                       ? `En stock — ${product.stock} disponibles`
@@ -398,7 +398,7 @@ export default async function ProductDetailPage({
                   href={whatsappHref}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-3 rounded-[14px] bg-wa py-5 text-[1.125rem] font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+                  className="inline-flex items-center justify-center gap-3 rounded-3.5 bg-wa py-5 text-4.5 font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
                 >
                   <MessageCircle size={22} />
                   Consultar por WhatsApp
@@ -410,7 +410,7 @@ export default async function ProductDetailPage({
                   </div>
                   <Link
                     href="/catalogo"
-                    className="inline-flex items-center justify-center gap-2 rounded-[12px] border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
+                    className="inline-flex items-center justify-center gap-2 rounded-3 border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
                   >
                     <ShoppingCart size={16} />
                     Seguir comprando
@@ -418,13 +418,13 @@ export default async function ProductDetailPage({
                 </div>
 
                 {product.short_description && (
-                  <p className="text-[15px] leading-[1.6] text-[#566071]">
+                  <p className="text-3.75 leading-[1.6] text-[#566071]">
                     {product.short_description}
                   </p>
                 )}
 
                 <div
-                  className={`flex gap-3 rounded-[13px] border p-4 ${typeConfig.stripBg} ${typeConfig.stripBorder}`}
+                  className={`flex gap-3 rounded-3.25 border p-4 ${typeConfig.stripBg} ${typeConfig.stripBorder}`}
                 >
                   <ShieldCheck
                     size={20}
@@ -432,16 +432,16 @@ export default async function ProductDetailPage({
                     strokeWidth={2}
                   />
                   <div>
-                    <p className={`text-[14px] font-bold ${typeConfig.stripText}`}>
+                    <p className={`text-3.5 font-bold ${typeConfig.stripText}`}>
                       {typeConfig.label} — calidad verificada
                     </p>
-                    <p className={`mt-0.5 text-[13px] leading-relaxed ${typeConfig.stripSub}`}>
+                    <p className={`mt-0.5 text-3.25 leading-relaxed ${typeConfig.stripSub}`}>
                       {typeConfig.description}
                     </p>
                   </div>
                 </div>
 
-                <p className="text-[12px] text-slate-400">
+                <p className="text-3 text-slate-400">
                   El precio final y disponibilidad son confirmados por el vendedor. Envios a todo Ecuador.
                 </p>
               </div>
@@ -456,35 +456,35 @@ export default async function ProductDetailPage({
               title: "Envio a todo Ecuador",
               sub: "Entrega 24–72 h",
               iconCls: "text-brand",
-              iconBg: "bg-brand/[.14]",
+              iconBg: "bg-brand/14",
             },
             {
               icon: ShieldCheck,
               title: "Garantia del proveedor",
               sub: "Producto verificado",
               iconCls: "text-brand",
-              iconBg: "bg-brand/[.14]",
+              iconBg: "bg-brand/14",
             },
             {
               icon: MessageCircle,
               title: "Respuesta < 24 h",
               sub: "Asesoria por WhatsApp",
               iconCls: "text-wa",
-              iconBg: "bg-wa/[.14]",
+              iconBg: "bg-wa/14",
             },
           ].map(({ icon: Icon, title, sub, iconCls, iconBg }, index) => (
             <div
               key={title}
-              className={`flex items-center gap-3.5 px-10 py-6 ${index < 2 ? "sm:border-r border-white/[.08]" : ""}`}
+              className={`flex items-center gap-3.5 px-10 py-6 ${index < 2 ? "sm:border-r border-white/8" : ""}`}
             >
               <div
-                className={`flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] ${iconBg}`}
+                className={`flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-2.75 ${iconBg}`}
               >
                 <Icon size={20} className={iconCls} strokeWidth={2} />
               </div>
               <div>
-                <p className="text-[15px] font-bold leading-tight text-white">{title}</p>
-                <p className="mt-0.5 text-[13px] text-[#7e8ca3]">{sub}</p>
+                <p className="text-3.75 font-bold leading-tight text-white">{title}</p>
+                <p className="mt-0.5 text-3.25 text-[#7e8ca3]">{sub}</p>
               </div>
             </div>
           ))}
@@ -495,7 +495,7 @@ export default async function ProductDetailPage({
             <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-[1.1fr_.9fr]">
               {hasDescription && (
                 <div>
-                  <h2 className="mb-4 font-display text-[1.875rem] font-bold uppercase leading-none text-navy">
+                  <h2 className="mb-4 font-display text-7.5 font-bold uppercase leading-none text-navy">
                     Descripcion
                   </h2>
                   {product.description && (
@@ -505,14 +505,14 @@ export default async function ProductDetailPage({
                   )}
                   {product.alternate_codes && product.alternate_codes.length > 0 && (
                     <div className="mt-6">
-                      <p className="mb-3 text-[14px] font-bold uppercase tracking-[.06em] text-navy">
+                      <p className="mb-3 text-3.5 font-bold uppercase tracking-[.06em] text-navy">
                         Codigos alternos / cruzados
                       </p>
                       <div className="flex flex-wrap gap-2">
                         {product.alternate_codes.map((altCode) => (
                           <span
                             key={altCode.id}
-                            className="rounded-[8px] border border-[#e0e5ec] bg-[#f3f5f9] px-3 py-2 font-mono text-[13px] text-[#566071]"
+                            className="rounded-2 border border-[#e0e5ec] bg-[#f3f5f9] px-3 py-2 font-mono text-3.25 text-[#566071]"
                           >
                             {altCode.code}
                             {altCode.source ? ` · ${altCode.source}` : ""}
@@ -526,7 +526,7 @@ export default async function ProductDetailPage({
 
               {hasSpecs && specs.length > 0 && (
                 <div>
-                  <h2 className="mb-4 font-display text-[1.875rem] font-bold uppercase leading-none text-navy">
+                  <h2 className="mb-4 font-display text-7.5 font-bold uppercase leading-none text-navy">
                     Especificaciones
                   </h2>
                   <div>
@@ -535,8 +535,8 @@ export default async function ProductDetailPage({
                         key={`${spec.label}-${index}`}
                         className={`flex justify-between py-3.5 ${index < specs.length - 1 ? "border-b border-[#ebeef3]" : ""}`}
                       >
-                        <span className="text-[14px] text-[#8a93a3]">{spec.label}</span>
-                        <span className="text-[14px] font-semibold text-navy">{spec.value}</span>
+                        <span className="text-3.5 text-[#8a93a3]">{spec.label}</span>
+                        <span className="text-3.5 font-semibold text-navy">{spec.value}</span>
                       </div>
                     ))}
                   </div>
@@ -550,14 +550,14 @@ export default async function ProductDetailPage({
           <section className="border-t border-[#e6e9ef] bg-[#f6f8fb]">
             <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
               <div className="mb-2 flex items-center gap-3">
-                <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[11px] bg-brand/[.12]">
+                <div className="flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-2.75 bg-brand/12">
                   <Truck size={21} className="text-brand" strokeWidth={2} />
                 </div>
-                <h2 className="font-display text-[2.25rem] font-bold uppercase leading-none text-navy">
+                <h2 className="font-display text-9 font-bold uppercase leading-none text-navy">
                   Sirve para mi vehiculo?
                 </h2>
               </div>
-              <p className="mb-6 text-[15px] text-[#566071]">
+              <p className="mb-6 text-3.75 text-[#566071]">
                 Confirma el modelo y ano de tu auto. Si tienes dudas, escribenos la placa por WhatsApp y lo verificamos.
               </p>
               {(() => {
@@ -572,13 +572,13 @@ export default async function ProductDetailPage({
                 return Object.entries(byBrand).map(([brandName, compatibilities]) => (
                   <div
                     key={brandName}
-                    className="mb-4 overflow-hidden rounded-[16px] border border-[#e6e9ef] bg-white"
+                    className="mb-4 overflow-hidden rounded-4 border border-[#e6e9ef] bg-white"
                   >
                     <div className="flex items-center gap-3 bg-navy px-5 py-4">
-                      <span className="flex h-[30px] w-[30px] items-center justify-center rounded-[7px] bg-white/[.14] text-[11px] font-bold text-white">
+                      <span className="flex h-7.5 w-7.5 items-center justify-center rounded-1.75 bg-white/14 text-2.75 font-bold text-white">
                         {brandName.slice(0, 2).toUpperCase()}
                       </span>
-                      <span className="font-display text-[1.125rem] font-bold uppercase tracking-[.04em] text-white">
+                      <span className="font-display text-4.5 font-bold uppercase tracking-[.04em] text-white">
                         {brandName}
                       </span>
                     </div>
@@ -588,23 +588,23 @@ export default async function ProductDetailPage({
                         className={`flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${index < compatibilities.length - 1 ? "border-b border-[#ebeef3]" : ""}`}
                       >
                         <div>
-                          <span className="text-[16px] font-bold text-navy">
+                          <span className="text-4 font-bold text-navy">
                             {compatibility.model?.name}
                           </span>
                           {compatibility.model?.displacement && (
-                            <span className="text-[14px] text-[#8a93a3]">
+                            <span className="text-3.5 text-[#8a93a3]">
                               {" "}
                               · {compatibility.model.displacement}
                             </span>
                           )}
                           {compatibility.notes && (
-                            <span className="ml-2 text-[13px] text-[#8a93a3]">
+                            <span className="ml-2 text-3.25 text-[#8a93a3]">
                               ({compatibility.notes})
                             </span>
                           )}
                         </div>
                         {(compatibility.model?.year_start || compatibility.model?.year_end) && (
-                          <span className="shrink-0 rounded-[7px] bg-[#e7ebf1] px-3 py-1.5 text-[12px] font-semibold text-navy">
+                          <span className="shrink-0 rounded-1.75 bg-[#e7ebf1] px-3 py-1.5 text-3 font-semibold text-navy">
                             {compatibility.model?.year_start}
                             {compatibility.model?.year_end
                               ? `–${compatibility.model.year_end}`
@@ -622,10 +622,10 @@ export default async function ProductDetailPage({
 
         {product.equivalencies && product.equivalencies.length > 0 && (
           <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
-            <h2 className="mb-2 font-display text-[2rem] font-bold uppercase leading-none text-navy">
+            <h2 className="mb-2 font-display text-8 font-bold uppercase leading-none text-navy">
               Mismo repuesto, otra marca
             </h2>
-            <p className="mb-6 text-[14px] text-[#8a93a3]">
+            <p className="mb-6 text-3.5 text-[#8a93a3]">
               Equivalencias verificadas — misma pieza, distinta linea o fabricante.
             </p>
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -640,15 +640,15 @@ export default async function ProductDetailPage({
                   <Link
                     key={equivalency.id}
                     href={`/catalogo/${equivalency.slug}`}
-                    className="group flex flex-col rounded-[15px] border border-[#e6e9ef] bg-white p-[18px] transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
+                    className="group flex flex-col rounded-3.75 border border-[#e6e9ef] bg-white p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                   >
                     <div className="mb-3 flex items-start justify-between gap-3">
                       <span
-                        className={`rounded-[6px] px-2 py-1 text-[10px] font-bold uppercase tracking-[.05em] ${equivalencyBadge.badgeCls}`}
+                        className={`rounded-1.5 px-2 py-1 text-2.5 font-bold uppercase tracking-[.05em] ${equivalencyBadge.badgeCls}`}
                       >
                         {equivalencyBadge.label}
                       </span>
-                      <span className="font-mono text-[11px] text-[#9aa3b2]">
+                      <span className="font-mono text-2.75 text-[#9aa3b2]">
                         {equivalency.code}
                       </span>
                     </div>
@@ -663,15 +663,15 @@ export default async function ProductDetailPage({
                         />
                       </div>
                     )}
-                    <h3 className="mt-1 font-display text-[19px] font-bold uppercase leading-tight text-navy">
+                    <h3 className="mt-1 font-display text-4.75 font-bold uppercase leading-tight text-navy">
                       {equivalency.title}
                     </h3>
                     <div className="mt-3 flex items-end justify-between">
-                      <span className="font-display text-[25px] font-bold leading-none text-navy">
+                      <span className="font-display text-6.25 font-bold leading-none text-navy">
                         ${(equivalency.offer_price ?? equivalency.price).toFixed(2)}
                       </span>
                       {equivalency.stock > 0 && (
-                        <span className="text-[12px] font-semibold text-emerald-700">
+                        <span className="text-3 font-semibold text-emerald-700">
                           En stock
                         </span>
                       )}
@@ -687,13 +687,13 @@ export default async function ProductDetailPage({
           <section className="border-t border-[#e6e9ef]">
             <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
               <div className="mb-6 flex items-center justify-between gap-4">
-                <h2 className="font-display text-[2rem] font-bold uppercase leading-none text-navy">
+                <h2 className="font-display text-8 font-bold uppercase leading-none text-navy">
                   Tambien de {categoryName || "esta categoria"}
                 </h2>
                 {product.category && (
                   <Link
                     href={`/catalogo?categoria=${product.category.key}`}
-                    className="text-[14px] font-semibold text-brand transition-colors hover:text-brand/75"
+                    className="text-3.5 font-semibold text-brand transition-colors hover:text-brand/75"
                   >
                     Ver todos →
                   </Link>
@@ -709,7 +709,7 @@ export default async function ProductDetailPage({
                     <Link
                       key={relatedProduct.id}
                       href={`/catalogo/${relatedProduct.slug}`}
-                      className="group flex flex-col overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
+                      className="group flex flex-col overflow-hidden rounded-3.5 border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                     >
                       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#f3f5f9]">
                         {relatedImage ? (
@@ -733,13 +733,13 @@ export default async function ProductDetailPage({
                         )}
                       </div>
                       <div className="p-[13px_14px]">
-                        <p className="text-[10px] font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
+                        <p className="text-2.5 font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
                           {relatedProduct.part_brand?.name}
                         </p>
-                        <h3 className="mt-1 font-display text-[16px] font-bold uppercase leading-tight text-navy">
+                        <h3 className="mt-1 font-display text-4 font-bold uppercase leading-tight text-navy">
                           {relatedProduct.title}
                         </h3>
-                        <p className="mt-2 font-display text-[20px] font-bold text-navy">
+                        <p className="mt-2 font-display text-5 font-bold text-navy">
                           ${(relatedProduct.offer_price ?? relatedProduct.price).toFixed(2)}
                         </p>
                       </div>

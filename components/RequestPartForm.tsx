@@ -278,7 +278,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
         <button
           type="submit"
           disabled={!isValid}
-          className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm px-6 py-3.5 rounded-lg transition-colors duration-150 active:scale-[0.97] min-h-[48px] w-full sm:w-auto"
+          className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm px-6 py-3.5 rounded-lg transition-colors duration-150 active:scale-[0.97] min-h-12 w-full sm:w-auto"
         >
           <Send size={16} />
           Solicitar por WhatsApp

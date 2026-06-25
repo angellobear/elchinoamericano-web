@@ -78,7 +78,7 @@ export default function AboutUs() {
             <motion.div variants={fadeUp}>
               <Link
                 href="/catalogo"
-                className="inline-flex items-center gap-2 bg-navy hover:bg-brand text-white font-bold text-sm px-6 py-3.5 rounded-md transition-colors duration-150 active:scale-[0.97] min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy"
+                className="inline-flex items-center gap-2 bg-navy hover:bg-brand text-white font-bold text-sm px-6 py-3.5 rounded-md transition-colors duration-150 active:scale-[0.97] min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy"
               >
                 Ver nuestro catálogo
               </Link>
@@ -132,7 +132,7 @@ export default function AboutUs() {
               </div>
               <a
                 href="/contacto#mapa"
-                className="shrink-0 border border-navy/20 hover:border-navy/50 hover:bg-navy/5 text-navy text-sm font-semibold px-4 py-2.5 rounded-lg transition-all duration-150 min-h-[44px] flex items-center"
+                className="shrink-0 border border-navy/20 hover:border-navy/50 hover:bg-navy/5 text-navy text-sm font-semibold px-4 py-2.5 rounded-lg transition-all duration-150 min-h-11 flex items-center"
               >
                 Ver mapa
               </a>

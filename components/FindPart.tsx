@@ -81,14 +81,14 @@ export default function FindPart() {
                   href={`https://wa.me/593984878153?text=${encodeURIComponent("Hola! Necesito un repuesto que no encuentro en el catálogo. Mi vehículo es: ")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-all duration-150 active:scale-[0.97] shadow-lg shadow-wa/20 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+                  className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-all duration-150 active:scale-[0.97] shadow-lg shadow-wa/20 min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
                 >
                   <MessageCircle size={18} />
                   Escríbenos por WhatsApp
                 </a>
                 <a
                   href="/contacto"
-                  className="inline-flex items-center justify-center gap-2 border border-white/20 hover:border-white/45 hover:bg-white/5 text-white/80 hover:text-white font-semibold text-sm px-6 py-3.5 rounded-md transition-all duration-150 min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
+                  className="inline-flex items-center justify-center gap-2 border border-white/20 hover:border-white/45 hover:bg-white/5 text-white/80 hover:text-white font-semibold text-sm px-6 py-3.5 rounded-md transition-all duration-150 min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
                 >
                   Ver formulario de contacto
                   <ArrowRight size={15} />

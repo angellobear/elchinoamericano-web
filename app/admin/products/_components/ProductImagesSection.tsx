@@ -191,7 +191,7 @@ export function ProductImagesSection({ existingImages = [] }: Props) {
             className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-[#0d1f3c] hover:text-[#0d1f3c] transition-colors"
           >
             <Upload size={18} />
-            <span className="text-[10px] font-medium leading-none">Agregar</span>
+            <span className="text-2.5 font-medium leading-none">Agregar</span>
           </button>
         )}
       </div>
@@ -230,7 +230,7 @@ function Thumb({ url, isPrimary, onSelect, onRemove }: {
       <img src={url} alt="" className="w-full h-full object-cover" />
 
       {isPrimary && (
-        <div className="absolute bottom-0 inset-x-0 bg-[#0d1f3c] text-white text-[9px] font-semibold text-center py-0.5 leading-tight">
+        <div className="absolute bottom-0 inset-x-0 bg-[#0d1f3c] text-white text-2.25 font-semibold text-center py-0.5 leading-tight">
           Principal
         </div>
       )}

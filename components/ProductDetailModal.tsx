@@ -48,7 +48,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
                 <div className="flex items-center gap-2">
                   <span className={cn(
-                    "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm text-white",
+                    "text-2.5 font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm text-white",
                     product.type === "original" ? "bg-navy" : product.type === "oem" ? "bg-blue-600" : "bg-brand"
                   )}>
                     {product.type === 'aftermarket' ? 'Alterno' : product.type}

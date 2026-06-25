@@ -7,7 +7,7 @@ import { Product } from "@/types"
 
 export default function ProductGrid({ products }: { products: Product[] }) {
   return (
-    <div className="min-h-[400px]">
+    <div className="min-h-100">
       <AnimatePresence mode="popLayout">
         {products.length === 0 ? (
           <motion.div

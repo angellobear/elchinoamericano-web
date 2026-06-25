@@ -49,7 +49,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#081120]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-7">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10 pb-12 border-b border-white/[.08]">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10 pb-12 border-b border-white/8">
           {/* Brand + social */}
           <div className="flex flex-col gap-5">
             <Link href="/">
@@ -62,7 +62,7 @@ export default function Footer() {
                 style={{ width: "auto", height: "56px" }}
               />
             </Link>
-            <p className="text-[#7e8ca3] text-sm leading-relaxed max-w-[280px]">
+            <p className="text-[#7e8ca3] text-sm leading-relaxed max-w-70">
               Repuestos originales, OEM y alternos para autos chinos y americanos. Santo Domingo, Ecuador.
             </p>
             <div className="flex gap-2">
@@ -78,7 +78,7 @@ export default function Footer() {
                   aria-label={label}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
-                  className={`w-[38px] h-[38px] rounded-[10px] bg-[#13294a] flex items-center justify-center transition-all duration-150 ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand`}
+                  className={`w-9.5 h-9.5 rounded-2.5 bg-[#13294a] flex items-center justify-center transition-all duration-150 ${cls} focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand`}
                 >
                   {icon}
                 </a>
@@ -88,7 +88,7 @@ export default function Footer() {
 
           {/* Catálogo */}
           <div>
-            <h4 className="font-display font-bold text-white text-[15px] tracking-[.12em] uppercase mb-[18px]">
+            <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Catálogo
             </h4>
             <ul className="flex flex-col gap-2.5">
@@ -107,7 +107,7 @@ export default function Footer() {
 
           {/* Marcas */}
           <div>
-            <h4 className="font-display font-bold text-white text-[15px] tracking-[.12em] uppercase mb-[18px]">
+            <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Marcas
             </h4>
             <ul className="flex flex-col gap-2.5">
@@ -126,23 +126,23 @@ export default function Footer() {
 
           {/* Contacto */}
           <div>
-            <h4 className="font-display font-bold text-white text-[15px] tracking-[.12em] uppercase mb-[18px]">
+            <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Contacto
             </h4>
             <ul className="flex flex-col gap-3.5">
               <li className="flex gap-2.5 items-start">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span className="text-[#9fb0c8] text-[14px] leading-snug">Santo Domingo de los Tsáchilas, Ecuador</span>
+                <span className="text-[#9fb0c8] text-3.5 leading-snug">Santo Domingo de los Tsáchilas, Ecuador</span>
               </li>
               <li className="flex gap-2.5 items-center">
                 <MessageCircle size={17} className="text-wa shrink-0" />
-                <a href="https://wa.me/593984878153" target="_blank" rel="noopener noreferrer" className="text-white font-semibold text-[14px] hover:text-wa transition-colors">
+                <a href="https://wa.me/593984878153" target="_blank" rel="noopener noreferrer" className="text-white font-semibold text-3.5 hover:text-wa transition-colors">
                   +593 984 878 153
                 </a>
               </li>
               <li className="flex gap-2.5 items-center">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                <span className="text-[#9fb0c8] text-[14px]">Lun–Sáb · 8:00–18:00</span>
+                <span className="text-[#9fb0c8] text-3.5">Lun–Sáb · 8:00–18:00</span>
               </li>
             </ul>
           </div>
@@ -150,10 +150,10 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="pt-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[#5f7090] text-[13px]">
+          <p className="text-[#5f7090] text-3.25">
             © {new Date().getFullYear()} El Chino Americano. Todos los derechos reservados.
           </p>
-          <p className="text-[#5f7090] text-[13px]">Repuestos chinos y americanos · Ecuador</p>
+          <p className="text-[#5f7090] text-3.25">Repuestos chinos y americanos · Ecuador</p>
         </div>
       </div>
     </footer>
