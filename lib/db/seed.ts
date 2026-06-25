@@ -6,14 +6,15 @@
  *   npm run db:seed:local   (APP_ENV=local → mysql)
  *   npm run db:seed         (APP_ENV=prod  → postgresql)
  */
-import { config } from 'dotenv'
-config({ path: '.env.local' })
-config({ path: '.env' })
+import { loadDatabaseUrl } from './config-env'
+
+const target = process.env.APP_ENV === 'local' ? 'local' : 'prod'
+loadDatabaseUrl(target)
 
 import { sql, inArray } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
-import { getDb } from './client'
+import { closeDb, getDb } from './client'
 import {
   roles, modules, rolePermissions, users,
   categories, vehicleBrands, partBrands, suppliers,
@@ -181,4 +182,13 @@ async function seed() {
   console.log('\n✅ Seed completado exitosamente\n')
 }
 
-seed().catch(err => { console.error('❌ Seed falló:', err); process.exit(1) })
+seed()
+  .then(async () => {
+    await closeDb()
+    process.exit(0)
+  })
+  .catch(async (err) => {
+    console.error('❌ Seed falló:', err)
+    await closeDb().catch(() => {})
+    process.exit(1)
+  })

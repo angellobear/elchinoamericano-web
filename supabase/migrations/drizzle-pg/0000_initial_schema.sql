@@ -16,9 +16,11 @@ CREATE TABLE "categories" (
 	"name" varchar(100) NOT NULL,
 	"description" text,
 	"image_url" varchar(500),
+	"image_public_id" varchar(200),
 	"sort_order" integer DEFAULT 0,
 	"is_active" boolean DEFAULT true,
 	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "categories_key_unique" UNIQUE("key")
 );
 --> statement-breakpoint
@@ -33,9 +35,11 @@ CREATE TABLE "part_brands" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(100) NOT NULL,
 	"logo_url" varchar(500),
+	"logo_public_id" varchar(200),
 	"origin_country" varchar(100),
 	"is_active" boolean DEFAULT true,
-	"created_at" timestamp DEFAULT now()
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "product_alternate_codes" (
@@ -145,7 +149,8 @@ CREATE TABLE "suppliers" (
 	"phone" varchar(30),
 	"address" text,
 	"is_active" boolean DEFAULT true,
-	"created_at" timestamp DEFAULT now()
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
@@ -166,9 +171,12 @@ CREATE TABLE "vehicle_brands" (
 	"name" varchar(100) NOT NULL,
 	"origin" varchar(20) NOT NULL,
 	"logo_url" varchar(500),
+	"logo_public_id" varchar(200),
 	"sort_order" integer DEFAULT 0,
 	"is_active" boolean DEFAULT true,
-	"created_at" timestamp DEFAULT now()
+	"is_visible_on_web" boolean DEFAULT false,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "vehicle_models" (
@@ -180,7 +188,8 @@ CREATE TABLE "vehicle_models" (
 	"transmission" varchar(20),
 	"body_type" varchar(30),
 	"is_active" boolean DEFAULT true,
-	"created_at" timestamp DEFAULT now()
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 ALTER TABLE "product_alternate_codes" ADD CONSTRAINT "product_alternate_codes_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

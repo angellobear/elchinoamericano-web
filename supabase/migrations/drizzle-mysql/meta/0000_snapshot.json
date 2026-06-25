@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "a510e247-3899-47a5-842b-ee9257fc82a0",
+  "id": "ad9944ea-a091-43f0-bb46-53ab36903275",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "audit_log": {
@@ -123,6 +123,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "image_public_id": {
+          "name": "image_public_id",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "sort_order": {
           "name": "sort_order",
           "type": "int",
@@ -141,6 +148,14 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -237,6 +252,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "logo_public_id": {
+          "name": "logo_public_id",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "origin_country": {
           "name": "origin_country",
           "type": "varchar(100)",
@@ -254,6 +276,14 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -1166,6 +1196,14 @@
           "notNull": false,
           "autoincrement": false,
           "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
         }
       },
       "indexes": {},
@@ -1316,6 +1354,13 @@
           "notNull": false,
           "autoincrement": false
         },
+        "logo_public_id": {
+          "name": "logo_public_id",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "sort_order": {
           "name": "sort_order",
           "type": "int",
@@ -1332,8 +1377,24 @@
           "autoincrement": false,
           "default": true
         },
+        "is_visible_on_web": {
+          "name": "is_visible_on_web",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -1416,6 +1477,14 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false,
+          "default": "(now())"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,

@@ -17,9 +17,11 @@ CREATE TABLE `categories` (
 	`name` varchar(100) NOT NULL,
 	`description` text,
 	`image_url` varchar(500),
+	`image_public_id` varchar(200),
 	`sort_order` int DEFAULT 0,
 	`is_active` boolean DEFAULT true,
 	`created_at` timestamp DEFAULT (now()),
+	`updated_at` timestamp DEFAULT (now()),
 	CONSTRAINT `categories_id` PRIMARY KEY(`id`),
 	CONSTRAINT `categories_key_unique` UNIQUE(`key`)
 );
@@ -36,9 +38,11 @@ CREATE TABLE `part_brands` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(100) NOT NULL,
 	`logo_url` varchar(500),
+	`logo_public_id` varchar(200),
 	`origin_country` varchar(100),
 	`is_active` boolean DEFAULT true,
 	`created_at` timestamp DEFAULT (now()),
+	`updated_at` timestamp DEFAULT (now()),
 	CONSTRAINT `part_brands_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -156,6 +160,7 @@ CREATE TABLE `suppliers` (
 	`address` text,
 	`is_active` boolean DEFAULT true,
 	`created_at` timestamp DEFAULT (now()),
+	`updated_at` timestamp DEFAULT (now()),
 	CONSTRAINT `suppliers_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -178,9 +183,12 @@ CREATE TABLE `vehicle_brands` (
 	`name` varchar(100) NOT NULL,
 	`origin` varchar(20) NOT NULL,
 	`logo_url` varchar(500),
+	`logo_public_id` varchar(200),
 	`sort_order` int DEFAULT 0,
 	`is_active` boolean DEFAULT true,
+	`is_visible_on_web` boolean DEFAULT false,
 	`created_at` timestamp DEFAULT (now()),
+	`updated_at` timestamp DEFAULT (now()),
 	CONSTRAINT `vehicle_brands_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -194,6 +202,7 @@ CREATE TABLE `vehicle_models` (
 	`body_type` varchar(30),
 	`is_active` boolean DEFAULT true,
 	`created_at` timestamp DEFAULT (now()),
+	`updated_at` timestamp DEFAULT (now()),
 	CONSTRAINT `vehicle_models_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint

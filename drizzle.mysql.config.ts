@@ -1,14 +1,18 @@
 import type { Config } from 'drizzle-kit'
+import { loadOptionalDatabaseUrl, parseMysqlUrl } from './lib/db/config-env'
+
+const { envFile, url } = loadOptionalDatabaseUrl('local')
+const isGenerateCommand = process.argv.includes('generate')
+
+if (!url && !isGenerateCommand) {
+  throw new Error(
+    `DATABASE_URL no está definido en ${envFile}. Los comandos MySQL usan solo ese archivo.`,
+  )
+}
 
 export default {
   schema:  './lib/db/schema.mysql.ts',
   out:     './supabase/migrations/drizzle-mysql',
   dialect: 'mysql',
-  dbCredentials: {
-    host:     process.env.DB_HOST     ?? 'localhost',
-    port:     Number(process.env.DB_PORT) || 3306,
-    user:     process.env.DB_USER     ?? 'root',
-    password: process.env.DB_PASSWORD ?? 'root',
-    database: process.env.DB_NAME     ?? 'elchinoamericano',
-  },
+  ...(url ? { dbCredentials: parseMysqlUrl(url) } : {}),
 } satisfies Config

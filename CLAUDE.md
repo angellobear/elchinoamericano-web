@@ -30,6 +30,18 @@
 - Framer Motion
 - Lucide React
 
+## Tailwind Rules
+
+- Prefer existing canonical Tailwind utility classes over arbitrary values whenever an equivalent already exists.
+- Before writing classes like `h-[12px]`, `w-[720px]`, `text-[15px]`, `rounded-[16px]`, `z-[2]`, or opacity forms like `border-white/[.12]`, first check whether a built-in utility already matches the same value.
+- Examples:
+  - Prefer `h-3` over `h-[12px]` when they are equivalent.
+  - Prefer `w-180` over `w-[720px]` when they are equivalent.
+  - Prefer `rounded-4` over `rounded-[16px]` when they are equivalent.
+  - Prefer `z-2` over `z-[2]` when they are equivalent.
+  - Prefer `border-white/12` over `border-white/[.12]` when they are equivalent.
+- Use arbitrary values only when there is no true Tailwind utility equivalent, or when preserving an intentional pixel-perfect design choice is more important than canonicalization.
+
 ## Current App Structure
 
 ```text

@@ -1,5 +1,5 @@
 {
-  "id": "a1c2c5ae-64b9-4c46-99a2-9efcccae65ce",
+  "id": "720d73c5-dce5-4dae-91fe-15a5d9077e17",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -106,6 +106,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "image_public_id": {
+          "name": "image_public_id",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "sort_order": {
           "name": "sort_order",
           "type": "integer",
@@ -122,6 +128,13 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -205,6 +218,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "logo_public_id": {
+          "name": "logo_public_id",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "origin_country": {
           "name": "origin_country",
           "type": "varchar(100)",
@@ -220,6 +239,13 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -1041,6 +1067,13 @@
           "primaryKey": false,
           "notNull": false,
           "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
         }
       },
       "indexes": {},
@@ -1171,6 +1204,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "logo_public_id": {
+          "name": "logo_public_id",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": false
+        },
         "sort_order": {
           "name": "sort_order",
           "type": "integer",
@@ -1185,8 +1224,22 @@
           "notNull": false,
           "default": true
         },
+        "is_visible_on_web": {
+          "name": "is_visible_on_web",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,
@@ -1256,6 +1309,13 @@
         },
         "created_at": {
           "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": false,

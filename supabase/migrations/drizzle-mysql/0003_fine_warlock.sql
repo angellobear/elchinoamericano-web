@@ -1,1 +1,0 @@
-ALTER TABLE `vehicle_brands` ADD `is_visible_on_web` boolean DEFAULT false;

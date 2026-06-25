@@ -5,29 +5,15 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1782247696527,
-      "tag": "0000_smiling_black_panther",
+      "when": 1782405514825,
+      "tag": "0000_initial_schema",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "5",
-      "when": 1782262190815,
-      "tag": "0001_sparkling_baron_zemo",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "5",
-      "when": 1782334800000,
-      "tag": "0002_audit_triggers",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "5",
-      "when": 1782404582160,
-      "tag": "0003_fine_warlock",
+      "when": 1782405514826,
+      "tag": "0001_audit_triggers",
       "breakpoints": true
     }
   ]

@@ -1,7 +1,7 @@
-import { config } from 'dotenv'
 import mysql from 'mysql2/promise'
+import { loadDatabaseUrl } from '../config-env'
 
-config({ path: '.env.local' })
+const { url: databaseUrl } = loadDatabaseUrl('local')
 
 const statements = [
   'ALTER TABLE vehicle_brands ADD COLUMN IF NOT EXISTS is_visible_on_web BOOLEAN DEFAULT FALSE',
@@ -22,12 +22,6 @@ const statements = [
 ] as const
 
 async function main() {
-  const databaseUrl = process.env.DATABASE_URL
-
-  if (!databaseUrl) {
-    throw new Error('DATABASE_URL no está definido en .env.local')
-  }
-
   const connection = await mysql.createConnection(databaseUrl)
 
   try {
