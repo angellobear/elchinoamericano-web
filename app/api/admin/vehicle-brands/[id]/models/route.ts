@@ -6,7 +6,7 @@ import { vehicleModelFormSchema } from '@/modules/admin/vehicle-brands/form-sche
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const payload = await getJwtPayload()
-  if (!payload?.permissions['vehicle_brands']?.can_create) {
+  if (!payload?.permissions['vehicle-brands']?.can_edit) {
     return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
   }
   try {

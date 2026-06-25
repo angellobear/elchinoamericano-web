@@ -68,6 +68,19 @@ export async function getVehicleModels(brandId?: number, includeInactive = false
 
 export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert) {
   return withAudit(async (tx) => {
+    if (process.env.APP_ENV === 'local') {
+      const result = await tx.insert(vehicleBrands).values(data)
+      const insertId = Array.isArray(result)
+        ? (result[0] as { insertId?: number } | undefined)?.insertId
+        : (result as { insertId?: number }).insertId
+
+      if (!insertId) {
+        throw new Error('No se pudo obtener el ID de la marca creada.')
+      }
+
+      return Number(insertId)
+    }
+
     const [row] = await tx.insert(vehicleBrands).values(data).returning({ id: vehicleBrands.id })
     return row.id
   })
@@ -87,6 +100,19 @@ export async function deleteVehicleBrand(id: number) {
 
 export async function createVehicleModel(data: typeof vehicleModels.$inferInsert) {
   return withAudit(async (tx) => {
+    if (process.env.APP_ENV === 'local') {
+      const result = await tx.insert(vehicleModels).values(data)
+      const insertId = Array.isArray(result)
+        ? (result[0] as { insertId?: number } | undefined)?.insertId
+        : (result as { insertId?: number }).insertId
+
+      if (!insertId) {
+        throw new Error('No se pudo obtener el ID del modelo creado.')
+      }
+
+      return Number(insertId)
+    }
+
     const [row] = await tx.insert(vehicleModels).values(data).returning({ id: vehicleModels.id })
     return row.id
   })

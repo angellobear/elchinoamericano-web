@@ -30,6 +30,7 @@ async function save(id: number, _: ActionState, formData: FormData) {
       removed,
       currentPublicId || null,
       currentUrl || null,
+      'part-brands',
     )
 
     await updatePartBrand(id, {

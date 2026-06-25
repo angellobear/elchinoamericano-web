@@ -30,6 +30,7 @@ async function save(id: number, _: ActionState, formData: FormData) {
       removed,
       currentPublicId || null,
       currentUrl || null,
+      'categories',
     )
 
     await updateCategory(id, { name, description, sortOrder, isActive, imageUrl: imageUrl ?? undefined, imagePublicId: imagePublicId ?? undefined })

@@ -6,7 +6,7 @@ import { vehicleModelFormSchema } from '@/modules/admin/vehicle-brands/form-sche
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string; modelId: string }> }) {
   const payload = await getJwtPayload()
-  if (!payload?.permissions['vehicle_brands']?.can_edit) {
+  if (!payload?.permissions['vehicle-brands']?.can_edit) {
     return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
   }
   try {
@@ -35,7 +35,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string; modelId: string }> }) {
   const payload = await getJwtPayload()
-  if (!payload?.permissions['vehicle_brands']?.can_delete) {
+  if (!payload?.permissions['vehicle-brands']?.can_delete) {
     return NextResponse.json({ error: 'Permission denied' }, { status: 403 })
   }
   try {

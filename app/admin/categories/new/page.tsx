@@ -23,7 +23,7 @@ async function create(_: ActionState, formData: FormData) {
     const removed     = formData.get('image_removed') === '1'
 
     const { url: imageUrl, publicId: imagePublicId } = await handleImageReplace(
-      file && file.size > 0 ? file : null, removed, null, null
+      file && file.size > 0 ? file : null, removed, null, null, 'categories'
     )
 
     await createCategory({ key, name, description, sortOrder, imageUrl: imageUrl ?? undefined, imagePublicId: imagePublicId ?? undefined })

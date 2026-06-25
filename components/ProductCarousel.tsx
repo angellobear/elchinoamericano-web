@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -43,10 +44,12 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
           className="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square cursor-zoom-in group"
           onClick={() => setLightbox(true)}
         >
-          <img
+          <Image
+            fill
             src={images[0]}
             alt={productName ?? "Imagen del producto"}
-            className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
+            className="object-contain transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, 50vw"
           />
           <div className="absolute bottom-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
             <ZoomIn size={14} className="text-slate-700" />
@@ -75,14 +78,16 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
           onClick={() => setLightbox(true)}
         >
           {images.map((src, i) => (
-            <img
+            <Image
               key={i}
+              fill
               src={src}
               alt={`${productName ?? "Producto"} — imagen ${i + 1}`}
               className={cn(
-                "absolute inset-0 w-full h-full object-contain transition-all duration-300",
+                "object-contain transition-all duration-300",
                 i === current ? "opacity-100 z-10" : "opacity-0 z-0"
               )}
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
           ))}
 
@@ -121,16 +126,18 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
               onClick={() => setCurrent(i)}
               aria-label={`Ver imagen ${i + 1}`}
               className={cn(
-                "shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-150",
+                "relative shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all duration-150",
                 i === current
                   ? "border-navy shadow-md"
                   : "border-transparent hover:border-slate-300"
               )}
             >
-              <img
+              <Image
+                fill
                 src={src}
                 alt={`Miniatura ${i + 1}`}
-                className="w-full h-full object-contain bg-slate-100"
+                className="object-contain bg-slate-100"
+                sizes="64px"
               />
             </button>
           ))}
@@ -172,6 +179,7 @@ function LightBox({
       className="fixed inset-0 z-999 bg-black/90 flex items-center justify-center p-4"
       onClick={onClose}
     >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={images[current]}
         alt={productName ?? "Imagen ampliada"}

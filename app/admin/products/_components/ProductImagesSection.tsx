@@ -41,7 +41,7 @@ export async function parseImagesFormData(formData: FormData) {
   const uploaded = await Promise.all(
     newFiles
       .filter(f => f instanceof File && f.size > 0)
-      .map(f => uploadImage(f))
+      .map(f => uploadImage(f, 'products'))
   )
 
   const newImages = uploaded.map((u, j) => ({
@@ -188,7 +188,7 @@ export function ProductImagesSection({ existingImages = [] }: Props) {
           <button
             type="button"
             onClick={() => triggerRef.current?.click()}
-            className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-[#0d1f3c] hover:text-[#0d1f3c] transition-colors"
+            className="aspect-square rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-1.5 text-gray-400 hover:border-navy hover:text-navy transition-colors"
           >
             <Upload size={18} />
             <span className="text-2.5 font-medium leading-none">Agregar</span>
@@ -223,14 +223,14 @@ function Thumb({ url, isPrimary, onSelect, onRemove }: {
     <div
       onClick={onSelect}
       className={`relative group aspect-square rounded-xl overflow-hidden border-2 cursor-pointer transition-all ${
-        isPrimary ? 'border-[#0d1f3c] shadow-sm' : 'border-gray-200 hover:border-gray-400'
+        isPrimary ? 'border-navy shadow-sm' : 'border-gray-200 hover:border-gray-400'
       }`}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={url} alt="" className="w-full h-full object-cover" />
 
       {isPrimary && (
-        <div className="absolute bottom-0 inset-x-0 bg-[#0d1f3c] text-white text-2.25 font-semibold text-center py-0.5 leading-tight">
+        <div className="absolute bottom-0 inset-x-0 bg-navy text-white text-2.25 font-semibold text-center py-0.5 leading-tight">
           Principal
         </div>
       )}

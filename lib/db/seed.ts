@@ -26,6 +26,7 @@ const isMySQL = process.env.APP_ENV === 'local'
 // mysqlSet keys must be camelCase (Drizzle schema names); values are the SQL expressions.
 // sql.raw('col_name') produces `ON DUPLICATE KEY UPDATE col_name = col_name` (no-op self-ref).
 // ponytail: as any — getDb() tipos como PG pero runtime puede ser MySQL
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function upsert(q: any, mysqlSet: Record<string, unknown>) {
   return isMySQL
     ? q.onDuplicateKeyUpdate({ set: mysqlSet })
@@ -61,7 +62,8 @@ async function seed() {
     { key: 'suppliers',      label: 'Proveedores',         name: 'Proveedores' },
     { key: 'users',          label: 'Usuarios',            name: 'Usuarios' },
   ]
-  await upsert(db.insert(modules).values(moduleValues.map(({ name: _n, ...m }) => m)), { label: sql.raw('label') })
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  await upsert(db.insert(modules).values(moduleValues.map(({ name: _, ...m }) => m)), { label: sql.raw('label') })
   log('módulos', moduleValues)
 
   const moduleRows = await db.select().from(modules)
@@ -106,11 +108,10 @@ async function seed() {
     { name: 'Chery',      origin: 'chinese',  sortOrder: 3 },
     { name: 'Great Wall', origin: 'chinese',  sortOrder: 4 },
     { name: 'DFSK',       origin: 'chinese',  sortOrder: 5 },
-    { name: 'BYD',        origin: 'chinese',  sortOrder: 6 },
+    { name: 'SWM',        origin: 'chinese',  sortOrder: 6 },
     { name: 'Jetour',     origin: 'chinese',  sortOrder: 7 },
-    { name: 'MG',         origin: 'chinese',  sortOrder: 8 },
-    { name: 'JAC',        origin: 'chinese',  sortOrder: 9 },
-    { name: 'Shineray',   origin: 'chinese',  sortOrder: 10 },
+    { name: 'JAC',        origin: 'chinese',  sortOrder: 8 },
+    { name: 'Shineray',   origin: 'chinese',  sortOrder: 9 },
   ]
   {
     const existing = new Set((await db.select({ name: vehicleBrands.name }).from(vehicleBrands)).map(r => r.name))
@@ -122,20 +123,12 @@ async function seed() {
   // ─── Part brands ─────────────────────────────────────────────────────────────
   const partBrandValues = [
     { name: 'Bosch',      originCountry: 'Germany' },
-    { name: 'NGK',        originCountry: 'Japan' },
     { name: 'Brembo',     originCountry: 'Italy' },
     { name: 'Monroe',     originCountry: 'USA' },
     { name: 'Gates',      originCountry: 'USA' },
-    { name: 'Denso',      originCountry: 'Japan' },
-    { name: 'Ferodo',     originCountry: 'UK' },
-    { name: 'SKF',        originCountry: 'Sweden' },
-    { name: 'Mann',       originCountry: 'Germany' },
-    { name: 'Sakura',     originCountry: 'Japan' },
     { name: 'ACDelco',    originCountry: 'USA' },
     { name: 'Motorcraft', originCountry: 'USA' },
     { name: 'Moog',       originCountry: 'USA' },
-    { name: 'Aisin',      originCountry: 'Japan' },
-    { name: 'Valeo',      originCountry: 'France' },
   ]
   {
     const existing = new Set((await db.select({ name: partBrands.name }).from(partBrands)).map(r => r.name))
@@ -146,10 +139,7 @@ async function seed() {
 
   // ─── Suppliers ───────────────────────────────────────────────────────────────
   const supplierValues = [
-    { name: 'Distribuidora AutoPartes Ecuador', contactName: 'Carlos Mendoza', phone: '+593998001001' },
-    { name: 'Importadora China Parts Quito',    contactName: 'Liu Wei',        phone: '+593998002002' },
-    { name: 'MegaRepuestos Guayaquil',          contactName: 'María Torres',   phone: '+593998003003' },
-    { name: 'TecniAuto Cuenca',                 contactName: 'Pedro Vásquez',  phone: '+593998004004' },
+    { name: 'Distribuidora Test', contactName: 'Jhon Doe', phone: '+593998001001' },
   ]
   {
     const existing = new Set((await db.select({ name: suppliers.name }).from(suppliers)).map(r => r.name))

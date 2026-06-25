@@ -32,8 +32,45 @@ const emptyForm = {
   bodyType: '',
 }
 
+const BODY_TYPE_OPTIONS = [
+  { value: '', label: '—' },
+  { value: 'sedan', label: 'Sedán' },
+  { value: 'hatchback', label: 'Hatchback' },
+  { value: 'suv', label: 'SUV' },
+  { value: 'crossover', label: 'Crossover' },
+  { value: 'pickup', label: 'Pickup' },
+  { value: 'coupe', label: 'Coupé' },
+  { value: 'wagon', label: 'Wagon' },
+  { value: 'van', label: 'Van' },
+  { value: 'bus', label: 'Bus' },
+  { value: 'camion', label: 'Camión' },
+] as const
+
+function getBodyTypeLabel(value?: string | null) {
+  if (!value) return '—'
+  return BODY_TYPE_OPTIONS.find((option) => option.value === value)?.label ?? value
+}
+
+function getBodyTypeOptions(currentValue?: string | null) {
+  if (!currentValue || BODY_TYPE_OPTIONS.some((option) => option.value === currentValue)) {
+    return BODY_TYPE_OPTIONS
+  }
+
+  return [...BODY_TYPE_OPTIONS, { value: currentValue, label: currentValue }]
+}
+
 function getPayloadErrorMessage() {
   return 'Revisa los datos del modelo antes de guardar.'
+}
+
+async function getResponseErrorMessage(res: Response, fallback: string) {
+  try {
+    const data = await res.json() as { error?: string }
+    if (res.status === 403) return 'No tienes permisos para administrar modelos de esta marca.'
+    return data.error || fallback
+  } catch {
+    return res.status === 403 ? 'No tienes permisos para administrar modelos de esta marca.' : fallback
+  }
 }
 
 export function VehicleModelsEditor({ brand }: { brand: Brand }) {
@@ -64,13 +101,13 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(parsed.data),
       })
-      if (!res.ok) throw new Error(await res.text())
+      if (!res.ok) throw new Error(await getResponseErrorMessage(res, 'Error al agregar modelo'))
       const { model } = await res.json()
       setModels((current) => [...current, { ...model, isActive: true }])
       setForm(emptyForm)
       toast.success('Modelo agregado')
-    } catch {
-      toast.error('Error al agregar modelo')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error al agregar modelo')
     } finally {
       setSaving(false)
     }
@@ -108,12 +145,12 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(parsed.data),
       })
-      if (!res.ok) throw new Error(await res.text())
+      if (!res.ok) throw new Error(await getResponseErrorMessage(res, 'Error al actualizar modelo'))
       setModels((current) => current.map((model) => (model.id === id ? { ...model, ...parsed.data } : model)))
       setEditingId(null)
       toast.success('Modelo actualizado')
-    } catch {
-      toast.error('Error al actualizar modelo')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Error al actualizar modelo')
     } finally {
       setSaving(false)
     }
@@ -143,7 +180,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Cilindraje</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Combustible</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Transmisión</th>
-              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Carrocería</th>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Tipo</th>
               <th className="px-4 py-2 w-20"></th>
             </tr>
           </thead>
@@ -192,12 +229,17 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                       </select>
                     </td>
                     <td className="px-2 py-2">
-                      <input
+                      <select
                         value={editForm.bodyType}
                         onChange={(event) => setEditForm((current) => ({ ...current, bodyType: event.target.value }))}
-                        placeholder="SUV, sedan..."
-                        className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
-                      />
+                        className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy bg-white"
+                      >
+                        {getBodyTypeOptions(editForm.bodyType).map((option) => (
+                          <option key={option.value || 'empty'} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
                     </td>
                     <td className="px-2 py-2">
                       <div className="flex gap-1 justify-end">
@@ -223,7 +265,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                     <td className="px-4 py-2.5 text-gray-500">{model.displacement ?? '—'}</td>
                     <td className="px-4 py-2.5 text-gray-500">{model.fuelType ?? '—'}</td>
                     <td className="px-4 py-2.5 text-gray-500">{model.transmission ?? '—'}</td>
-                    <td className="px-4 py-2.5 text-gray-500">{model.bodyType ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{getBodyTypeLabel(model.bodyType)}</td>
                     <td className="px-4 py-2.5">
                       <div className="flex gap-1 justify-end">
                         <button
@@ -303,13 +345,18 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
             </select>
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Carrocería</label>
-            <input
+            <label className="block text-xs text-gray-500 mb-1">Tipo</label>
+            <select
               value={form.bodyType}
               onChange={(event) => setForm((current) => ({ ...current, bodyType: event.target.value }))}
-              placeholder="SUV, sedan, pickup..."
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
-            />
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
+            >
+              {BODY_TYPE_OPTIONS.map((option) => (
+                <option key={option.value || 'empty'} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
         <button

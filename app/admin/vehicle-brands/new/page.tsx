@@ -23,7 +23,7 @@ async function create(_: ActionState, formData: FormData) {
     const removed   = formData.get('logo_removed') === '1'
 
     const { url: logoUrl, publicId: logoPublicId } = await handleImageReplace(
-      file && file.size > 0 ? file : null, removed, null, null
+      file && file.size > 0 ? file : null, removed, null, null, 'vehicle-brands'
     )
 
     await createVehicleBrand({

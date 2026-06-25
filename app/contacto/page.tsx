@@ -1,6 +1,5 @@
 import type { Metadata } from "next"
 import { MessageCircle } from "lucide-react"
-import Image from "next/image"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
