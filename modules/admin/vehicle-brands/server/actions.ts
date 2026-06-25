@@ -22,6 +22,8 @@ export async function toggleVehicleBrandStatusAction(id: number, current: boolea
   try {
     await vehicleBrandRepository.updateStatus(id, !current)
     revalidatePath('/admin/vehicle-brands')
+    revalidatePath('/')
+    revalidatePath('/catalogo')
 
     return successResult(current ? 'Marca desactivada.' : 'Marca activada.')
   } catch (err) {

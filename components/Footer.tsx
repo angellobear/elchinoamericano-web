@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { MessageCircle } from "lucide-react"
+import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 
 const CATALOG_LINKS = [
   { label: "Motor", href: "/catalogo?categoria=motor" },
@@ -46,6 +47,13 @@ function TikTokIcon() {
 }
 
 export default function Footer() {
+  const socialLinks = [
+    { href: siteConfig.social.facebook, label: "Facebook", icon: <FacebookIcon />, cls: "text-[#9fb0c8] hover:text-white" },
+    { href: siteConfig.social.instagram, label: "Instagram", icon: <InstagramIcon />, cls: "text-[#9fb0c8] hover:text-white" },
+    { href: siteConfig.social.tiktok, label: "TikTok", icon: <TikTokIcon />, cls: "text-[#9fb0c8] hover:text-white" },
+    { href: getWhatsAppUrl(), label: "WhatsApp", icon: <MessageCircle size={18} />, cls: "text-wa hover:brightness-105" },
+  ]
+
   return (
     <footer className="bg-[#081120]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-7">
@@ -63,15 +71,13 @@ export default function Footer() {
               />
             </Link>
             <p className="text-[#7e8ca3] text-sm leading-relaxed max-w-70">
-              Repuestos originales, OEM y alternos para autos chinos y americanos. Santo Domingo, Ecuador.
+              Repuestos originales, OEM y alternos para autos chinos y americanos. {siteConfig.contact.address.full}
             </p>
             <div className="flex gap-2">
-              {[
-                { href: "#", label: "Facebook", icon: <FacebookIcon />, cls: "text-[#9fb0c8] hover:text-white" },
-                { href: "#", label: "Instagram", icon: <InstagramIcon />, cls: "text-[#9fb0c8] hover:text-white" },
-                { href: "#", label: "TikTok", icon: <TikTokIcon />, cls: "text-[#9fb0c8] hover:text-white" },
-                { href: "https://wa.me/593984878153", label: "WhatsApp", icon: <MessageCircle size={18} />, cls: "text-wa hover:brightness-105", external: true },
-              ].map(({ href, label, icon, cls, external }) => (
+              {socialLinks.map(({ href, label, icon, cls }) => {
+                const external = href !== "#"
+
+                return (
                 <a
                   key={label}
                   href={href}
@@ -82,7 +88,8 @@ export default function Footer() {
                 >
                   {icon}
                 </a>
-              ))}
+                )
+              })}
             </div>
           </div>
 
@@ -132,17 +139,17 @@ export default function Footer() {
             <ul className="flex flex-col gap-3.5">
               <li className="flex gap-2.5 items-start">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
-                <span className="text-[#9fb0c8] text-3.5 leading-snug">Santo Domingo de los Tsáchilas, Ecuador</span>
+                <span className="text-[#9fb0c8] text-3.5 leading-snug">{siteConfig.contact.address.full}</span>
               </li>
               <li className="flex gap-2.5 items-center">
                 <MessageCircle size={17} className="text-wa shrink-0" />
-                <a href="https://wa.me/593984878153" target="_blank" rel="noopener noreferrer" className="text-white font-semibold text-3.5 hover:text-wa transition-colors">
-                  +593 984 878 153
+                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="text-white font-semibold text-3.5 hover:text-wa transition-colors">
+                  {siteConfig.contact.whatsappDisplay}
                 </a>
               </li>
               <li className="flex gap-2.5 items-center">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                <span className="text-[#9fb0c8] text-3.5">Lun–Sáb · 8:00–18:00</span>
+                <span className="text-[#9fb0c8] text-3.5">{siteConfig.contact.hours.display}</span>
               </li>
             </ul>
           </div>

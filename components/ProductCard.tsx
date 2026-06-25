@@ -5,6 +5,7 @@ import Image from "next/image"
 import { motion } from "framer-motion"
 import { MessageCircle, Package } from "lucide-react"
 import { Product } from "@/types"
+import { getWhatsAppUrl } from "@/lib/constants"
 
 const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   original: { label: "Original", cls: "bg-navy text-white" },
@@ -19,9 +20,8 @@ export default function ProductCard({ product }: { product: Product }) {
   const discountPct = product.offer_price
     ? Math.round((1 - product.offer_price / product.price) * 100)
     : 0
-  const waMsg = encodeURIComponent(
+  const waMsg =
     `Hola! Me interesa: ${product.title} (Cód: ${product.code}). ¿Está disponible?`
-  )
 
   return (
     <motion.article
@@ -86,7 +86,7 @@ export default function ProductCard({ product }: { product: Product }) {
             </span>
           </div>
           <a
-            href={`https://wa.me/593984878153?text=${waMsg}`}
+            href={getWhatsAppUrl(waMsg)}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}

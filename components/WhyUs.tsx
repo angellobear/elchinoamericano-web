@@ -3,6 +3,7 @@
 import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
 import { Layers, MessageCircle, ShieldCheck, Truck } from "lucide-react"
+import { siteConfig } from "@/lib/constants"
 
 const FEATURES = [
   {
@@ -18,7 +19,7 @@ const FEATURES = [
   {
     icon: Truck,
     title: "Envíos a todo el Ecuador",
-    description: "Desde Santo Domingo a cualquier ciudad, con seguimiento y entrega en 24–72 horas.",
+    description: `Desde ${siteConfig.contact.address.city} a cualquier ciudad, con seguimiento y entrega en 24–72 horas.`,
   },
   {
     icon: Layers,

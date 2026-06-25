@@ -1,4 +1,5 @@
 import { MessageCircle } from "lucide-react"
+import { getWhatsAppUrl } from "@/lib/constants"
 
 export default function CtaBand() {
   return (
@@ -24,7 +25,7 @@ export default function CtaBand() {
         </div>
         <div className="flex flex-col gap-3 shrink-0">
           <a
-            href="https://wa.me/593984878153"
+            href={getWhatsAppUrl()}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-base px-8 py-4 rounded-3.25 shadow-[0_16px_34px_rgba(0,0,0,.18)] transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#062b15]"

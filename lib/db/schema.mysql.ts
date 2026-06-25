@@ -51,6 +51,7 @@ export const vehicleBrands = mysqlTable('vehicle_brands', {
   logoPublicId: varchar('logo_public_id', { length: 200 }),
   sortOrder:    int('sort_order').default(0),
   isActive:     boolean('is_active').default(true),
+  isVisibleOnWeb: boolean('is_visible_on_web').default(false),
   createdAt:    timestamp('created_at').defaultNow(),
   updatedAt:    timestamp('updated_at').defaultNow(),
 })

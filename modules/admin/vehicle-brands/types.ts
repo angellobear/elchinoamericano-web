@@ -9,5 +9,6 @@ export interface VehicleBrandListItem {
   name: string
   origin: string
   isActive: boolean | null
+  isVisibleOnWeb: boolean | null
   models: VehicleBrandModelCountItem[]
 }

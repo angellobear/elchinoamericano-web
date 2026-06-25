@@ -1,8 +1,9 @@
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-import { getVehicleBrandWithModels, updateVehicleBrand } from '@/lib/db/vehicle-brands'
+import { getVehicleBrandById, getVehicleModels, updateVehicleBrand } from '@/lib/db/vehicle-brands'
 import { handleImageReplace } from '@/lib/cloudinary'
 import { logger } from '@/lib/logger'
+import { normalizeBoolean } from '@/lib/normalize-boolean'
 import { SubmitButton } from '@/app/admin/_components/SubmitButton'
 import { routes } from '@/lib/routes'
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
@@ -15,12 +16,12 @@ import { VehicleModelsEditor } from '@/modules/admin/vehicle-brands/components/V
 async function save(id: number, formData: FormData) {
   'use server'
   try {
-    const parsed = parseVehicleBrandFormData(formData, { isActive: true })
+    const parsed = parseVehicleBrandFormData(formData, { isActive: true, isVisibleOnWeb: false })
     if (!parsed.success) {
       redirect(`${routes.admin.vehicleBrands.edit(id)}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
     }
 
-    const { name, origin, sortOrder, isActive } = parsed.data
+    const { name, origin, sortOrder, isActive, isVisibleOnWeb } = parsed.data
     const file           = formData.get('logo') as File | null
     const currentUrl     = formData.get('logo_current_url') as string
     const currentPublicId = formData.get('logo_public_id') as string
@@ -32,10 +33,19 @@ async function save(id: number, formData: FormData) {
       currentPublicId || null,
       currentUrl || null,
     )
-
-    await updateVehicleBrand(id, { name, origin, sortOrder, isActive, logoUrl: logoUrl ?? undefined, logoPublicId: logoPublicId ?? undefined })
+    await updateVehicleBrand(id, {
+      name,
+      origin,
+      sortOrder,
+      isActive,
+      isVisibleOnWeb,
+      logoUrl: logoUrl ?? undefined,
+      logoPublicId: logoPublicId ?? undefined,
+    })
     logger.info({ id, name }, 'Vehicle brand updated')
     revalidatePath(routes.admin.vehicleBrands.index)
+    revalidatePath('/')
+    revalidatePath('/catalogo')
   } catch (err) {
     logger.error({ err }, 'Error updating vehicle brand')
     redirect(`${routes.admin.vehicleBrands.index}?error=` + encodeURIComponent('Error al guardar marca'))
@@ -45,10 +55,30 @@ async function save(id: number, formData: FormData) {
 
 export default async function VehicleBrandPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const brand = await getVehicleBrandWithModels(Number(id))
+  const brandId = Number(id)
+  const [brand, models] = await Promise.all([
+    getVehicleBrandById(brandId),
+    getVehicleModels(brandId, true),
+  ])
   if (!brand) notFound()
+  const isActive = normalizeBoolean(
+    (brand as { isActive?: unknown; is_active?: unknown }).isActive
+    ?? (brand as { isActive?: unknown; is_active?: unknown }).is_active,
+    true,
+  )
+  const isVisibleOnWeb = normalizeBoolean(
+    (brand as { isVisibleOnWeb?: unknown; is_visible_on_web?: unknown }).isVisibleOnWeb
+    ?? (brand as { isVisibleOnWeb?: unknown; is_visible_on_web?: unknown }).is_visible_on_web,
+    false,
+  )
 
   const saveWithId = save.bind(null, brand.id)
+  const brandWithModels = {
+    ...brand,
+    isActive,
+    isVisibleOnWeb,
+    models,
+  }
 
   return (
     <div className="p-8">
@@ -69,7 +99,8 @@ export default async function VehicleBrandPage({ params }: { params: Promise<{ i
                   name: brand.name,
                   origin: brand.origin as 'chinese' | 'american' | 'foreign',
                   sortOrder: brand.sortOrder ?? 0,
-                  isActive: brand.isActive ?? true,
+                  isActive,
+                  isVisibleOnWeb,
                   logoUrl: brand.logoUrl,
                   logoPublicId: (brand as { logoPublicId?: string | null }).logoPublicId,
                 }}
@@ -86,7 +117,7 @@ export default async function VehicleBrandPage({ params }: { params: Promise<{ i
 
         {/* Right: models editor */}
         <div className="xl:col-span-2">
-          <VehicleModelsEditor brand={brand as Parameters<typeof VehicleModelsEditor>[0]['brand']} />
+          <VehicleModelsEditor brand={brandWithModels as Parameters<typeof VehicleModelsEditor>[0]['brand']} />
         </div>
       </div>
     </div>

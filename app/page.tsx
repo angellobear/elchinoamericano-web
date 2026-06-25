@@ -4,8 +4,13 @@ import WhyUs from "@/components/WhyUs"
 import CtaBand from "@/components/CtaBand"
 import Brands from "@/components/Brands"
 import Footer from "@/components/Footer"
+import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 
-export default function Home() {
+export const dynamic = "force-dynamic"
+
+export default async function Home() {
+  const brands = await getVisibleVehicleBrands()
+
   return (
     <>
       <Navbar />
@@ -13,7 +18,7 @@ export default function Home() {
         <Hero />
         <WhyUs />
         <CtaBand />
-        <Brands />
+        <Brands brands={brands} />
       </main>
       <Footer />
     </>

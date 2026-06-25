@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { MessageCircle, Search, ArrowRight } from "lucide-react"
+import { getWhatsAppUrl } from "@/lib/constants"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -78,7 +79,7 @@ export default function FindPart() {
               {/* Right CTAs */}
               <div className="shrink-0 flex flex-col gap-3 w-full lg:w-auto">
                 <a
-                  href={`https://wa.me/593984878153?text=${encodeURIComponent("Hola! Necesito un repuesto que no encuentro en el catálogo. Mi vehículo es: ")}`}
+                  href={getWhatsAppUrl("Hola! Necesito un repuesto que no encuentro en el catálogo. Mi vehículo es: ")}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-bold text-sm px-6 py-3.5 rounded-md transition-all duration-150 active:scale-[0.97] shadow-lg shadow-wa/20 min-h-12 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"

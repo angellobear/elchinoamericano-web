@@ -1,7 +1,7 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
-import { chineseBrands, americanBrands } from "@/data/brands"
+import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -10,10 +10,10 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
 }
 
-function BrandCard({ brand }: { brand: { id: string; name: string } }) {
+function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
   return (
     <a
-      href={`/catalogo?marca=${brand.id}`}
+      href={`/catalogo?marca=${brand.key}`}
       className="h-28 rounded-3.5 bg-[#13294a] border border-white/10 flex items-center justify-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
     >
       <span className="font-display font-bold text-7 text-white leading-none tracking-[.04em]">
@@ -34,8 +34,14 @@ function Divider({ label }: { label: string }) {
   )
 }
 
-export default function Brands() {
+interface BrandsProps {
+  brands: PublicVehicleBrand[]
+}
+
+export default function Brands({ brands }: BrandsProps) {
   const reduce = useReducedMotion()
+  const chineseBrands = brands.filter((brand) => brand.origin === "chinese")
+  const americanBrands = brands.filter((brand) => brand.origin === "american")
 
   return (
     <section id="marcas" className="bg-[#0a1628] py-20 lg:py-28">

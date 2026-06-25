@@ -9,6 +9,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useCart } from "@/context/CartContext"
 import CartDrawer from "@/components/CartDrawer"
 import { cn } from "@/lib/utils"
+import { getWhatsAppUrl } from "@/lib/constants"
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
@@ -94,7 +95,7 @@ export default function Navbar() {
           <div className="flex items-center gap-1">
             {/* WhatsApp — desktop */}
             <a
-              href="https://wa.me/593984878153"
+              href={getWhatsAppUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="hidden sm:inline-flex items-center gap-2 bg-wa hover:brightness-105 text-[#062b15] text-sm font-bold px-4 py-2 rounded-xl transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
@@ -162,7 +163,7 @@ export default function Navbar() {
                     ))}
                   </nav>
                   <a
-                    href="https://wa.me/593984878153"
+                    href={getWhatsAppUrl()}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 bg-wa text-[#062b15] text-sm font-bold px-4 py-3 rounded-xl transition-colors min-h-11"

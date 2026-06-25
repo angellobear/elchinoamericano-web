@@ -3,6 +3,7 @@ import { MessageCircle } from "lucide-react"
 import Image from "next/image"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
+import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 import ContactoForm from "./ContactoForm"
 
 export const metadata: Metadata = {
@@ -79,8 +80,8 @@ export default function ContactoPage() {
                     </div>
                     <div>
                       <p className="text-3 text-[#9fb0c8]">WhatsApp / Ventas</p>
-                      <a href="https://wa.me/593984878153" target="_blank" rel="noopener noreferrer" className="font-bold text-4.25 text-white hover:text-wa transition-colors mt-1 block">
-                        +593 984 878 153
+                      <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="font-bold text-4.25 text-white hover:text-wa transition-colors mt-1 block">
+                        {siteConfig.contact.whatsappDisplay}
                       </a>
                     </div>
                   </li>
@@ -91,7 +92,7 @@ export default function ContactoPage() {
                     <div>
                       <p className="text-3 text-[#9fb0c8]">Local</p>
                       <p className="font-bold text-4 text-white leading-snug mt-1">
-                        Santo Domingo de los Tsáchilas, Ecuador
+                        {siteConfig.contact.address.full}
                       </p>
                     </div>
                   </li>
@@ -101,7 +102,7 @@ export default function ContactoPage() {
                     </div>
                     <div>
                       <p className="text-3 text-[#9fb0c8]">Horario</p>
-                      <p className="font-bold text-4 text-white mt-1">Lun–Sáb · 8:00–18:00</p>
+                      <p className="font-bold text-4 text-white mt-1">{siteConfig.contact.hours.display}</p>
                     </div>
                   </li>
                 </ul>
@@ -110,14 +111,14 @@ export default function ContactoPage() {
               {/* Map */}
               <div className="flex-1 min-h-50 rounded-4.5 overflow-hidden border border-[#e6e9ef]">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63920.12895556985!2d-79.20380!3d-0.24986!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d584d74820e3f3%3A0x1d25fcb87a7e06e!2sSanto%20Domingo%20de%20los%20Ts%C3%A1chilas%2C%20Ecuador!5e0!3m2!1ses!2sec!4v1750620000000!5m2!1ses!2sec"
+                  src={siteConfig.contact.map.embedUrl}
                   width="100%"
                   height="100%"
                   style={{ border: 0, minHeight: 200 }}
                   allowFullScreen
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  title="Ubicación El Chino Americano — Santo Domingo de los Tsáchilas, Ecuador"
+                  title={siteConfig.contact.map.title}
                 />
               </div>
             </div>

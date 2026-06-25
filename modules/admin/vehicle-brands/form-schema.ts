@@ -8,6 +8,7 @@ export const vehicleBrandFormSchema = z.object({
   origin: vehicleBrandOriginSchema,
   sortOrder: z.number().int().min(0, 'El orden no puede ser negativo.'),
   isActive: z.boolean().default(true),
+  isVisibleOnWeb: z.boolean().default(false),
 })
 
 export const vehicleModelFormSchema = z.object({
@@ -21,11 +22,17 @@ export const vehicleModelFormSchema = z.object({
 export type VehicleBrandFormValues = z.infer<typeof vehicleBrandFormSchema>
 export type VehicleModelFormValues = z.infer<typeof vehicleModelFormSchema>
 
-export function parseVehicleBrandFormData(formData: FormData, defaults?: { isActive?: boolean }) {
+export function parseVehicleBrandFormData(
+  formData: FormData,
+  defaults?: { isActive?: boolean, isVisibleOnWeb?: boolean },
+) {
   return vehicleBrandFormSchema.safeParse({
     name: getRequiredString(formData, 'name'),
     origin: getRequiredString(formData, 'origin'),
     sortOrder: getNumber(formData, 'sortOrder', 0),
     isActive: formData.has('isActive') ? getBoolean(formData, 'isActive') : (defaults?.isActive ?? true),
+    isVisibleOnWeb: formData.has('isVisibleOnWeb')
+      ? getBoolean(formData, 'isVisibleOnWeb')
+      : (defaults?.isVisibleOnWeb ?? false),
   })
 }

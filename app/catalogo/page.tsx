@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import CatalogoClient from "./CatalogoClient"
 import { products } from "@/data/products"
+import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 import {
   CATALOG_PAGE_SIZE,
   CATALOG_PRICE_RANGES,
@@ -15,6 +16,7 @@ import {
   SITE_URL,
   toAbsoluteUrl,
 } from "@/lib/seo"
+import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
 
 export const metadata: Metadata = {
   title: "Catálogo de Repuestos | El Chino Americano",
@@ -70,7 +72,7 @@ function filterProducts(search: string, priceRangeId: string, categories: string
       categories.length === 0 || categories.includes(product.category?.key ?? "")
     const vehicleBrandKeys =
       product.compatibilities?.map((compatibility) =>
-        compatibility.model?.brand?.name.toLowerCase().replace(/ /g, "_") ?? ""
+        compatibility.model?.brand?.name ? toVehicleBrandKey(compatibility.model.brand.name) : ""
       ) ?? []
     const matchesBrand =
       carBrands.length === 0 ||
@@ -82,12 +84,18 @@ function filterProducts(search: string, priceRangeId: string, categories: string
 
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   const resolvedSearchParams = await props.searchParams
+  const brands = await getVisibleVehicleBrands()
   const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
+  const visibleBrandKeys = new Set(brands.map((brand) => brand.key))
+  const sanitizedFilters = {
+    ...filters,
+    carBrands: filters.carBrands.filter((brand) => visibleBrandKeys.has(brand)),
+  }
   const filteredProducts = filterProducts(
     search,
-    filters.priceRange,
-    filters.categories,
-    filters.carBrands
+    sanitizedFilters.priceRange,
+    sanitizedFilters.categories,
+    sanitizedFilters.carBrands,
   )
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / CATALOG_PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
@@ -134,8 +142,9 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
         }
       >
         <CatalogoClient
-          key={`${search}-${filters.priceRange}-${filters.categories.join(",")}-${filters.carBrands.join(",")}-${safePage}`}
-          initialFilters={filters}
+          key={`${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${sanitizedFilters.carBrands.join(",")}-${safePage}`}
+          brands={brands}
+          initialFilters={sanitizedFilters}
           initialPage={safePage}
           initialSearch={search}
         />

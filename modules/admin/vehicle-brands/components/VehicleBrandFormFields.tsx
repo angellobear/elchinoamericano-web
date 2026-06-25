@@ -54,6 +54,12 @@ export function VehicleBrandFormFields({
         currentPublicId={defaults?.logoPublicId}
       />
 
+      <CheckboxField
+        name="isVisibleOnWeb"
+        defaultChecked={defaults?.isVisibleOnWeb ?? false}
+        label="Visible en la web para clientes"
+      />
+
       {includeIsActive ? (
         <CheckboxField
           name="isActive"

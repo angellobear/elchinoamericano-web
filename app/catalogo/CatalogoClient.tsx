@@ -23,8 +23,10 @@ import {
   DEFAULT_CATALOG_FILTERS,
   type FilterState,
 } from "@/lib/catalog"
+import { toVehicleBrandKey, type PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
 interface CatalogoClientProps {
+  brands: PublicVehicleBrand[]
   initialFilters: FilterState
   initialPage: number
   initialSearch: string
@@ -54,7 +56,7 @@ function getFilteredProducts(search: string, filters: FilterState) {
       filters.categories.includes(product.category?.key ?? "")
     const vehicleBrandKeys =
       product.compatibilities?.map((compatibility) =>
-        compatibility.model?.brand?.name.toLowerCase().replace(/ /g, "_") ?? ""
+        compatibility.model?.brand?.name ? toVehicleBrandKey(compatibility.model.brand.name) : ""
       ) ?? []
     const matchesBrand =
       filters.carBrands.length === 0 ||
@@ -65,6 +67,7 @@ function getFilteredProducts(search: string, filters: FilterState) {
 }
 
 function ActiveFilterChips({
+  brands,
   filters,
   search,
   onRemoveCategory,
@@ -72,6 +75,7 @@ function ActiveFilterChips({
   onRemovePrice,
   onClear,
 }: {
+  brands: PublicVehicleBrand[]
   filters: FilterState
   search: string
   onRemoveCategory: (category: string) => void
@@ -81,6 +85,7 @@ function ActiveFilterChips({
 }) {
   const activeCount = countActiveFilters(filters) + (search ? 1 : 0)
   if (activeCount === 0) return null
+  const brandLabels = new Map(brands.map((brand) => [brand.key, brand.name]))
 
   return (
     <div className="flex flex-wrap items-center gap-2 mb-5">
@@ -105,7 +110,7 @@ function ActiveFilterChips({
       {filters.carBrands.map((brand) => (
         <Chip
           key={brand}
-          label={brand.replace(/_/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())}
+          label={brandLabels.get(brand) ?? brand}
           onRemove={() => onRemoveBrand(brand)}
         />
       ))}
@@ -186,6 +191,7 @@ function Pagination({
 }
 
 export default function CatalogoClient({
+  brands,
   initialFilters,
   initialPage,
   initialSearch,
@@ -303,6 +309,7 @@ export default function CatalogoClient({
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72 px-6 pt-10 overflow-y-auto">
                   <CatalogFilters
+                    brands={brands}
                     filters={filters}
                     onChange={handleFiltersChange}
                     activeCount={activeCount}
@@ -320,6 +327,7 @@ export default function CatalogoClient({
           <aside className="hidden lg:block w-60 shrink-0">
             <div className="sticky top-30 bg-white rounded-xl border border-slate-200 p-5">
               <CatalogFilters
+                brands={brands}
                 filters={filters}
                 onChange={handleFiltersChange}
                 activeCount={activeCount}
@@ -338,6 +346,7 @@ export default function CatalogoClient({
                   transition={{ duration: 0.2 }}
                 >
                   <ActiveFilterChips
+                    brands={brands}
                     filters={filters}
                     search={search}
                     onRemoveCategory={(category) =>

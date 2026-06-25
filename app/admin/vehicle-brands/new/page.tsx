@@ -15,12 +15,12 @@ import { VehicleBrandFormFields } from '@/modules/admin/vehicle-brands/component
 async function create(formData: FormData) {
   'use server'
   try {
-    const parsed = parseVehicleBrandFormData(formData, { isActive: true })
+    const parsed = parseVehicleBrandFormData(formData, { isActive: true, isVisibleOnWeb: false })
     if (!parsed.success) {
       redirect(`${routes.admin.vehicleBrands.create}?error=${encodeURIComponent(getZodErrorMessage(parsed.error))}`)
     }
 
-    const { name, origin, sortOrder } = parsed.data
+    const { name, origin, sortOrder, isVisibleOnWeb } = parsed.data
     const file      = formData.get('logo') as File | null
     const removed   = formData.get('logo_removed') === '1'
 
@@ -28,9 +28,18 @@ async function create(formData: FormData) {
       file && file.size > 0 ? file : null, removed, null, null
     )
 
-    await createVehicleBrand({ name, origin, sortOrder, logoUrl: logoUrl ?? undefined, logoPublicId: logoPublicId ?? undefined })
+    await createVehicleBrand({
+      name,
+      origin,
+      sortOrder,
+      isVisibleOnWeb,
+      logoUrl: logoUrl ?? undefined,
+      logoPublicId: logoPublicId ?? undefined,
+    })
     logger.info({ name, origin }, 'Vehicle brand created')
     revalidatePath(routes.admin.vehicleBrands.index)
+    revalidatePath('/')
+    revalidatePath('/catalogo')
   } catch (err) {
     logger.error({ err }, 'Error creating vehicle brand')
     redirect(`${routes.admin.vehicleBrands.index}?error=` + encodeURIComponent('Error al crear marca'))

@@ -6,6 +6,7 @@ import { useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Layers, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 
 const BRAND_CHIPS = [
   { label: "CHERY", key: "chery" },
@@ -69,17 +70,17 @@ function HeroSearch() {
       <select
         value={marca}
         onChange={(e) => setMarca(e.target.value)}
-        className="flex-1 w-full bg-[#0a1628] border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
+        className="flex-1 w-full bg-navy-dark border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
       >
         <option value="">Marca</option>
         {CAR_BRANDS.map((b) => (
           <option key={b} value={b.toLowerCase().replace(/ /g, "_")}>{b}</option>
         ))}
       </select>
-      <select className="flex-1 w-full bg-[#0a1628] border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
+      <select className="flex-1 w-full bg-navy-dark border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
         <option>Modelo</option>
       </select>
-      <select className="w-full sm:w-28 bg-[#0a1628] border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
+      <select className="w-full sm:w-28 bg-navy-dark border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
         <option>Año</option>
       </select>
       <button
@@ -130,9 +131,9 @@ export default function Hero() {
           >
             <motion.div variants={fadeUp} className="flex items-center gap-2 mb-5">
               <span className="h-1.75 w-1.75 rounded-full bg-brand shrink-0" />
-              <span className="text-2.75 font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
-                Santo Domingo · Ecuador — Repuestos chinos y americanos
-              </span>
+                <span className="text-2.75 font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
+                {siteConfig.contact.address.city} · {siteConfig.contact.address.country} — Repuestos chinos y americanos
+                </span>
             </motion.div>
 
             <motion.h1
@@ -158,7 +159,7 @@ export default function Hero() {
                 Buscar mi repuesto
               </Link>
               <a
-                href="https://wa.me/593984878153"
+                href={getWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 border border-wa text-[#f4f7fb] hover:bg-wa/14 font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
@@ -194,7 +195,7 @@ export default function Hero() {
           >
             {/* Vehicle showcase */}
             <div
-              className="relative h-117.5 rounded-5 overflow-hidden border border-white/12 shadow-[0_30px_60px_rgba(0,0,0,.4)]"
+              className="relative h-117.5 rounded-[20px] overflow-hidden border border-white/12 shadow-[0_30px_60px_rgba(0,0,0,.4)]"
               style={{
                 background: "#0a1628",
                 backgroundImage: "radial-gradient(120% 95% at 50% 22%,rgba(40,68,112,.55),rgba(10,22,40,0) 70%),repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 14px,transparent 14px 28px)",
@@ -227,7 +228,7 @@ export default function Hero() {
 
             {/* Parts float card */}
             <div
-              className="absolute -bottom-7 -left-7 w-56.5 h-38 rounded-4 overflow-hidden border border-white/14 shadow-[0_18px_36px_rgba(0,0,0,.45)]"
+              className="absolute -bottom-7 -left-7 w-56.5 h-38 rounded-2xl overflow-hidden border border-white/14 shadow-[0_18px_36px_rgba(0,0,0,.45)]"
               style={{
                 background: "#13294a",
                 backgroundImage: "radial-gradient(120% 100% at 50% 25%,rgba(40,68,112,.5),rgba(19,41,74,0) 72%),repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 12px,transparent 12px 24px)",
@@ -252,7 +253,7 @@ export default function Hero() {
             </div>
 
             {/* top-right badge */}
-            <div className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-[8px] border border-white/16 rounded-3.5 p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]">
+            <div className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-sm border border-white/16 rounded-[14px] p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]">
               <p className="font-display font-bold text-white text-7.5 leading-none">&lt; 24 h</p>
               <p className="text-3 text-[#9fb0c8] mt-1.5">Asesoría por WhatsApp</p>
             </div>

@@ -19,6 +19,7 @@ export interface VehicleBrand {
   logo_url?: string
   sort_order: number
   is_active: boolean
+  is_visible_on_web?: boolean
 }
 
 export interface VehicleModel {

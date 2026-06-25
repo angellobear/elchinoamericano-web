@@ -16,6 +16,7 @@ export function VehicleBrandsTable({ brands }: VehicleBrandsTableProps) {
             <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Marca</th>
             <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Origen</th>
             <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Modelos</th>
+            <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Web</th>
             <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Estado</th>
             <th className="px-4 py-3.5 w-28"></th>
           </tr>
@@ -45,6 +46,13 @@ export function VehicleBrandsTable({ brands }: VehicleBrandsTableProps) {
                 </span>
               </td>
               <td className="px-4 py-3.5 text-center">
+                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${
+                  brand.isVisibleOnWeb ? 'bg-sky-100 text-sky-700' : 'bg-gray-100 text-gray-500'
+                }`}>
+                  {brand.isVisibleOnWeb ? 'Visible' : 'Oculta'}
+                </span>
+              </td>
+              <td className="px-4 py-3.5 text-center">
                 <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${brand.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
                   }`}>
                   {brand.isActive ? 'Activa' : 'Inactiva'}
@@ -66,7 +74,7 @@ export function VehicleBrandsTable({ brands }: VehicleBrandsTableProps) {
           ))}
           {brands.length === 0 && (
             <tr>
-              <td colSpan={5} className="py-16 text-center">
+              <td colSpan={6} className="py-16 text-center">
                 <Car size={32} className="mx-auto mb-3 text-gray-300" />
                 <p className="text-gray-400">No hay marcas registradas</p>
               </td>

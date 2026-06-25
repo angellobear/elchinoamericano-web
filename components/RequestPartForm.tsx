@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { PackageSearch, Send, CheckCircle, MessageCircle, ChevronDown } from "lucide-react"
+import { getWhatsAppUrl } from "@/lib/constants"
 
 interface RequestPartFormProps {
   searchQuery?: string
@@ -61,10 +62,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
     ]
       .join("\n")
 
-    window.open(
-      `https://wa.me/593984878153?text=${encodeURIComponent(lines)}`,
-      "_blank"
-    )
+    window.open(getWhatsAppUrl(lines), "_blank")
     setSent(true)
     setTimeout(() => setSent(false), 5000)
   }

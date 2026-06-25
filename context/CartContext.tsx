@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useReducer, ReactNode } from "react"
 import { CartItem, Product } from "@/types"
+import { getWhatsAppUrl } from "@/lib/constants"
 
 type Action =
   | { type: "ADD"; product: Product }
@@ -72,7 +73,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       )
       .join("\n")
     const msg = `Hola! Quiero hacer el siguiente pedido:\n\n${lines}\n\nTotal estimado: $${total.toFixed(2)}\n\nPueden confirmarme disponibilidad y costo de envio?`
-    return `https://wa.me/593984878153?text=${encodeURIComponent(msg)}`
+    return getWhatsAppUrl(msg)
   }
 
   return (

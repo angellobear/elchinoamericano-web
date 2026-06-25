@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { motion } from "framer-motion"
 import { CheckCircle2 } from "lucide-react"
+import { siteConfig } from "@/lib/constants"
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
@@ -16,7 +17,7 @@ const STATS = [
 const VALUES = [
   "Repuestos originales, OEM y alternos con garantía del proveedor",
   "Asesoría personalizada por WhatsApp sin costo adicional",
-  "Envíos seguros a todo Ecuador desde Santo Domingo",
+  `Envíos seguros a todo Ecuador desde ${siteConfig.contact.address.city}`,
   "Precios transparentes, sin sorpresas al momento de la entrega",
 ]
 
@@ -55,7 +56,7 @@ export default function AboutUs() {
                 Somos especialistas en ambos.
               </p>
               <p className="text-slate-500 text-base leading-relaxed">
-                Nacimos en Santo Domingo de los Tsáchilas con una misión clara: que encontrar
+                Nacimos en {siteConfig.contact.address.city} con una misión clara: que encontrar
                 un repuesto de calidad no sea una odisea. Trabajamos directamente con distribuidores
                 verificados para ofrecerte el mejor precio sin sacrificar confiabilidad.
               </p>
@@ -126,7 +127,7 @@ export default function AboutUs() {
             <div className="col-span-2 bg-slate-50 border border-slate-100 rounded-2xl p-6 flex items-center justify-between gap-4">
               <div>
                 <p className="font-display font-bold text-navy text-lg leading-tight">
-                  Santo Domingo,<br />Ecuador
+                  {siteConfig.contact.address.city},<br />{siteConfig.contact.address.country}
                 </p>
                 <p className="text-slate-500 text-sm mt-1">Envíos a nivel nacional</p>
               </div>

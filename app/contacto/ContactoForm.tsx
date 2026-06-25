@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { MessageCircle } from "lucide-react"
+import { getWhatsAppUrl } from "@/lib/constants"
 
 const CAR_BRANDS = ["Chery", "SWM", "Great Wall", "DFSK", "Shineray", "JAC", "Jetour", "Ford", "Chevrolet"]
 const CURRENT_YEAR = new Date().getFullYear()
@@ -41,8 +42,7 @@ export default function ContactoForm() {
       `Repuesto que necesito: ${form.repuesto}.`,
       form.whatsapp ? `Mi WhatsApp: ${form.whatsapp}.` : null,
     ].filter(Boolean)
-    const msg = encodeURIComponent(parts.join(" "))
-    window.open(`https://wa.me/593984878153?text=${msg}`, "_blank", "noopener,noreferrer")
+    window.open(getWhatsAppUrl(parts.join(" ")), "_blank", "noopener,noreferrer")
   }
 
   const isValid = form.nombre.trim() && form.repuesto.trim()

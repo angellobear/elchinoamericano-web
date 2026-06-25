@@ -1,4 +1,5 @@
-import { getVehicleBrandsWithModels, updateVehicleBrand } from '@/lib/db/vehicle-brands'
+import { getVehicleBrandsForAdmin, updateVehicleBrand } from '@/lib/db/vehicle-brands'
+import { normalizeBoolean } from '@/lib/normalize-boolean'
 import type { VehicleBrandListItem } from '@/modules/admin/vehicle-brands/types'
 
 export interface VehicleBrandRepository {
@@ -8,13 +9,22 @@ export interface VehicleBrandRepository {
 
 export const vehicleBrandRepository: VehicleBrandRepository = {
   async listForAdmin() {
-    const brands = await getVehicleBrandsWithModels()
+    const brands = await getVehicleBrandsForAdmin()
 
     return brands.map((brand) => ({
       id: brand.id,
       name: brand.name,
       origin: brand.origin,
-      isActive: brand.isActive ?? true,
+      isActive: normalizeBoolean(
+        (brand as { isActive?: unknown; is_active?: unknown }).isActive
+        ?? (brand as { isActive?: unknown; is_active?: unknown }).is_active,
+        true,
+      ),
+      isVisibleOnWeb: normalizeBoolean(
+        (brand as { isVisibleOnWeb?: unknown; is_visible_on_web?: unknown }).isVisibleOnWeb
+        ?? (brand as { isVisibleOnWeb?: unknown; is_visible_on_web?: unknown }).is_visible_on_web,
+        false,
+      ),
       models: brand.models.map((model) => ({ id: model.id })),
     }))
   },

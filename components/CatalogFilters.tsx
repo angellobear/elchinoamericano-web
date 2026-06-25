@@ -2,13 +2,11 @@
 
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { brands } from "@/data/brands"
 import {
   CATALOG_PRICE_RANGES,
   type FilterState,
 } from "@/lib/catalog"
-
-const CAR_BRANDS = brands.map((b) => ({ id: b.id, label: b.name }))
+import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
 const CATEGORIES = [
   { id: "motor", label: "Motor" },
@@ -20,6 +18,7 @@ const CATEGORIES = [
 ]
 
 interface CatalogFiltersProps {
+  brands: PublicVehicleBrand[]
   filters: FilterState
   onChange: (f: FilterState) => void
   activeCount: number
@@ -79,6 +78,7 @@ function toggle(arr: string[], val: string): string[] {
 }
 
 export default function CatalogFilters({
+  brands,
   filters,
   onChange,
   activeCount,
@@ -133,14 +133,14 @@ export default function CatalogFilters({
       {/* Marca de vehículo */}
       <FilterSection title="Marca de vehículo">
         <div className="flex flex-col gap-2">
-          {CAR_BRANDS.map((brand) => (
+          {brands.map((brand) => (
             <Checkbox
               key={brand.id}
-              checked={filters.carBrands.includes(brand.id)}
+              checked={filters.carBrands.includes(brand.key)}
               onChange={() =>
-                onChange({ ...filters, carBrands: toggle(filters.carBrands, brand.id) })
+                onChange({ ...filters, carBrands: toggle(filters.carBrands, brand.key) })
               }
-              label={brand.label}
+              label={brand.name}
             />
           ))}
         </div>

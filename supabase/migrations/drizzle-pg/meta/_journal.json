@@ -15,6 +15,13 @@
       "when": 1782334800000,
       "tag": "0001_audit_triggers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782404582193,
+      "tag": "0002_complete_hawkeye",
+      "breakpoints": true
     }
   ]
 }

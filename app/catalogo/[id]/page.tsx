@@ -24,6 +24,7 @@ import {
   getProductShareImageAlt,
   getProductUrl,
 } from "@/lib/seo"
+import { getWhatsAppUrl } from "@/lib/constants"
 import type { Product, ProductType } from "@/types"
 import ProductStickyBar from "./ProductStickyBar"
 
@@ -227,10 +228,9 @@ export default async function ProductDetailPage({
     .filter((p) => p.category?.key === product.category?.key && p.id !== product.id)
     .slice(0, 4)
 
-  const whatsappMsg = encodeURIComponent(
+  const whatsappMsg =
     `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (Cod: ${product.code}). Esta disponible? Cuanto es el envio?`
-  )
-  const whatsappHref = `https://wa.me/593984878153?text=${whatsappMsg}`
+  const whatsappHref = getWhatsAppUrl(whatsappMsg)
   const ctaTargetId = "product-whatsapp-cta"
   const hasDescription = Boolean(product.description || product.alternate_codes?.length)
   const hasSpecs = Boolean(product.specs?.length)
