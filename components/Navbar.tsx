@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { ShoppingCart, MessageCircle, Menu, X } from "lucide-react"
@@ -56,7 +57,7 @@ export default function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           {/* Logo */}
-          <a
+          <Link
             href="/"
             className="flex items-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-navy rounded-sm"
           >
@@ -66,14 +67,15 @@ export default function Navbar() {
               width={120}
               height={40}
               className="h-10 w-auto object-contain"
+              style={{ width: "auto", height: "40px" }}
               priority
             />
-          </a>
+          </Link>
 
           {/* Desktop nav */}
           <nav className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => (
-              <a
+              <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
@@ -84,7 +86,7 @@ export default function Navbar() {
                 )}
               >
                 {link.label}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -132,12 +134,19 @@ export default function Navbar() {
               </SheetTrigger>
               <SheetContent side="left" className="bg-navy border-r border-white/10 w-64 px-6 pt-10">
                 <div className="flex flex-col gap-8">
-                  <a href="/">
-                    <Image src="/logo-ca.png" alt="El Chino Americano" width={120} height={40} className="h-10 w-auto object-contain" />
-                  </a>
+                  <Link href="/">
+                    <Image
+                      src="/logo-ca.png"
+                      alt="El Chino Americano"
+                      width={120}
+                      height={40}
+                      className="h-10 w-auto object-contain"
+                      style={{ width: "auto", height: "40px" }}
+                    />
+                  </Link>
                   <nav className="flex flex-col gap-1">
                     {NAV_LINKS.map((link) => (
-                      <a
+                      <Link
                         key={link.href}
                         href={link.href}
                         onClick={() => setMobileOpen(false)}
@@ -149,7 +158,7 @@ export default function Navbar() {
                         )}
                       >
                         {link.label}
-                      </a>
+                      </Link>
                     ))}
                   </nav>
                   <a

@@ -1,6 +1,7 @@
 "use client"
 
 import Image from "next/image"
+import Link from "next/link"
 import { useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { Layers, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
@@ -125,13 +126,13 @@ export default function Hero() {
             </motion.p>
 
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3 mt-8">
-              <a
+              <Link
                 href="/catalogo"
                 className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-6 py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <Search size={18} />
                 Buscar mi repuesto
-              </a>
+              </Link>
               <a
                 href="https://wa.me/593984878153"
                 target="_blank"

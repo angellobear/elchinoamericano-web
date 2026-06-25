@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { MessageCircle } from "lucide-react"
 
-const CAR_BRANDS = ["Chery", "BYD", "Great Wall", "DFSK", "MG", "JAC", "Jetour", "Ford", "Chevrolet"]
+const CAR_BRANDS = ["Chery", "SWM", "Great Wall", "DFSK", "Shineray", "JAC", "Jetour", "Ford", "Chevrolet"]
 const CURRENT_YEAR = new Date().getFullYear()
 const YEARS = Array.from({ length: 20 }, (_, i) => String(CURRENT_YEAR - i))
 

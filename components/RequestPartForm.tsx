@@ -164,7 +164,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
                 required
                 value={form.marcaVehiculo}
                 onChange={handleChange}
-                placeholder="Ej: Chery, Ford, BYD..."
+                placeholder="Ej: Chery, Ford, SWM..."
                 className="px-3 py-2.5 text-sm border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors"
               />
             </div>

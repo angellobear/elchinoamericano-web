@@ -1,4 +1,5 @@
 import Image from "next/image"
+import Link from "next/link"
 import { MessageCircle } from "lucide-react"
 
 const CATALOG_LINKS = [
@@ -51,15 +52,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10 pb-12 border-b border-white/[.08]">
           {/* Brand + social */}
           <div className="flex flex-col gap-5">
-            <a href="/">
+            <Link href="/">
               <Image
                 src="/logo-ca.png"
                 alt="El Chino Americano"
                 width={160}
                 height={54}
                 className="h-14 w-auto object-contain"
+                style={{ width: "auto", height: "56px" }}
               />
-            </a>
+            </Link>
             <p className="text-[#7e8ca3] text-sm leading-relaxed max-w-[280px]">
               Repuestos originales, OEM y alternos para autos chinos y americanos. Santo Domingo, Ecuador.
             </p>

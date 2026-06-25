@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { CheckCircle2 } from "lucide-react"
 
@@ -75,12 +76,12 @@ export default function AboutUs() {
             </motion.ul>
 
             <motion.div variants={fadeUp}>
-              <a
+              <Link
                 href="/catalogo"
                 className="inline-flex items-center gap-2 bg-navy hover:bg-brand text-white font-bold text-sm px-6 py-3.5 rounded-md transition-colors duration-150 active:scale-[0.97] min-h-[48px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy"
               >
                 Ver nuestro catálogo
-              </a>
+              </Link>
             </motion.div>
           </div>
 
