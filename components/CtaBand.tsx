@@ -13,15 +13,11 @@ export default function CtaBand() {
       />
       <div className="relative max-w-7xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
         <div>
-          <p className="text-3.25 font-semibold uppercase tracking-[.16em] text-white/80 mb-3">
-            ¿No lo ves en el catálogo?
-          </p>
           <h2 className="font-display font-bold text-white uppercase leading-[.96] text-[clamp(2.2rem,5vw,3.5rem)]">
             ¿No encuentras tu repuesto?
           </h2>
           <p className="mt-3.5 max-w-lg text-white/92 text-4.25 leading-[1.55]">
-            Escríbenos con la marca, modelo y año de tu vehículo. Lo buscamos por ti y te respondemos
-            en menos de 24 horas.
+            Envíanos la marca, modelo y año de tu vehículo. También puedes mandarnos una foto o número de pieza, y te ayudamos a encontrarlo.
           </p>
         </div>
         <div className="flex flex-col gap-3 shrink-0">

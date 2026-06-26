@@ -97,9 +97,9 @@ export default function Footer() {
 
           {/* Catálogo */}
           <div>
-            <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
+            <p className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Catálogo
-            </h4>
+            </p>
             <ul className="flex flex-col gap-[11px]">
               {CATALOG_LINKS.map(({ label, href }) => (
                 <li key={label}>
@@ -116,9 +116,9 @@ export default function Footer() {
 
           {/* Marcas */}
           <div>
-            <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
+            <p className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Marcas
-            </h4>
+            </p>
             <ul className="flex flex-col gap-[11px]">
               {BRAND_LINKS.map(({ label, href }) => (
                 <li key={label}>
@@ -135,9 +135,9 @@ export default function Footer() {
 
           {/* Contacto */}
           <div>
-            <h4 className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
+            <p className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Contacto
-            </h4>
+            </p>
             <ul className="flex flex-col gap-3.5">
               <li className="flex gap-2.5 items-start">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 mt-0.5" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg>
@@ -158,7 +158,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="pt-[22px] flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="pt-5.5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[#5f7090] text-3.25">
             © {new Date().getFullYear()} El Chino Americano. Todos los derechos reservados.
           </p>

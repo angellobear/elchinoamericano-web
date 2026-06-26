@@ -48,7 +48,7 @@ function HeroSearch({ brands }: { brands: PublicVehicleBrand[] }) {
   const [marca, setMarca] = useState("")
 
   return (
-    <div className="mt-[50px] bg-[#13294a] border border-white/12 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
+    <div className="mt-12.5 bg-[#13294a] border border-white/12 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
       <div className="hidden sm:flex items-center gap-2 shrink-0 pr-1">
         <Search size={18} className="text-brand" />
         <span className="font-display font-bold text-lg text-[#f4f7fb] whitespace-nowrap leading-none">
@@ -129,9 +129,9 @@ export default function Hero({ brands }: HeroProps) {
               variants={fadeUp}
               className="font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
             >
-              Repuestos de calidad para tu
+              El repuesto que tu vehículo necesita, cuando
               <br />
-              <span className="text-brand">vehículo</span>
+              <span className="text-brand"> lo necesita.</span>
             </motion.h1>
 
             <motion.p variants={fadeUp} className="mt-5 max-w-lg text-[#9fb0c8] text-4.5 leading-[1.55]">
@@ -167,7 +167,7 @@ export default function Hero({ brands }: HeroProps) {
                   <Link
                     key={brand.id}
                     href={buildCatalogBrandPath([brand.key])}
-                    className="font-display font-bold text-4 text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-[15px] py-2 rounded-full transition-colors duration-150"
+                    className="font-display font-bold text-4 text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-3.75 py-2 rounded-full transition-colors duration-150"
                   >
                     {brand.name.toUpperCase()}
                   </Link>

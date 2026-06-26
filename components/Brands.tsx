@@ -32,10 +32,10 @@ function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
 
 function Divider({ label }: { label: string }) {
   return (
-    <div className="flex items-center gap-3 mt-[34px] mb-4">
-      <span className="font-display font-semibold text-4 uppercase tracking-[.14em] text-[#9fb0c8] shrink-0">
+    <div className="flex items-center gap-3 mt-8.5 mb-4">
+      <h3 className="font-display font-semibold text-4 uppercase tracking-[.14em] text-[#9fb0c8] shrink-0">
         {label}
-      </span>
+      </h3>
       <span className="flex-1 h-px bg-white/10" />
     </div>
   )
@@ -51,7 +51,7 @@ export default function Brands({ brands }: BrandsProps) {
   const americanBrands = brands.filter((brand) => brand.origin === "american")
 
   return (
-    <section id="marcas" className="bg-[#0a1628] py-[84px]">
+    <section id="marcas" className="bg-navy-dark py-[84px]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"

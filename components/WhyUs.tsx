@@ -2,30 +2,35 @@
 
 import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
-import { Layers, MessageCircle, ShieldCheck, Truck } from "lucide-react"
+import { BadgeCheck, Layers, Layers3, PackageSearch, Truck } from "lucide-react"
 import { siteConfig } from "@/lib/constants"
 
 const FEATURES = [
   {
-    icon: MessageCircle,
-    title: "Asesoría experta por WhatsApp",
-    description: "Mándanos la placa o el número de pieza y te confirmamos compatibilidad antes de comprar.",
+    icon: BadgeCheck,
+    title: "Compatibilidad verificada",
+    description: "Confirmamos la aplicación del repuesto antes de tu compra para ayudarte a evitar errores.",
+  },
+  {
+    icon: PackageSearch,
+    title: "Miles de referencias disponibles",
+    description: "Amplio catálogo para vehículos chinos y americanos, con soluciones para las principales categorías.",
+  },
+  {
+    icon: Layers3,
+    title: "Original, OEM y alterno",
+    description: "Elige la opción que mejor se adapte a tu presupuesto, manteniendo calidad y rendimiento.",
   },
   {
     icon: Truck,
     title: "Envíos a todo el Ecuador",
-    description: `Desde ${siteConfig.contact.address.city} a cualquier ciudad, con seguimiento y entrega en 24–72 horas.`,
-  },
-  {
-    icon: Layers,
-    title: "Original, OEM o alterno",
-    description: "Tres líneas de precio para que elijas según tu presupuesto, sin perder calidad.",
+    description: "Despachamos tus pedidos a nivel nacional con seguimiento y entrega segura.",
   },
 ]
 
 const STATS = [
-  { value: "+5.000", label: "referencias en catálogo" },
-  { value: "9", label: "marcas chinas y americanas" },
+  { value: "+1.000", label: "Referencias disponibles" },
+  { value: "+8", label: "Años de experiencia" },
   { value: "< 24 h", label: "tiempo de respuesta" },
 ]
 
@@ -40,22 +45,25 @@ export default function WhyUs() {
   }
 
   return (
-    <section id="nosotros" className="bg-[#f6f8fb] py-[84px]">
+    <section id="nosotros" className="bg-[#f6f8fb] py-21">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="flex flex-col items-center text-center gap-3 mb-14">
           <div className="flex items-center gap-2">
             <span className="w-1.75 h-1.75 rounded-full bg-brand" />
             <span className="text-3.25 font-semibold uppercase tracking-[.16em] text-brand">
-              Por qué El Chino Americano
+              Sobre nosotros
             </span>
           </div>
-          <h2 className="font-display font-bold text-navy uppercase leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-190">
-            El repuesto correcto, sin vueltas ni sorpresas
+          <h2 className="font-display font-bold uppercase text-navy leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-190">
+            ¿Por qué elegir <span className="text-brand">El Chino</span> Americano?
           </h2>
-          <p className="max-w-155 text-[#566071] text-4.25 leading-[1.6]">
-            Somos especialistas en marcas chinas y americanas. Te asesoramos pieza por pieza y
-            te lo enviamos a cualquier ciudad del Ecuador.
+          <p className="max-w-155 text-[#566071] text-balance text-4.25 leading-[1.6]">
+            Somos una empresa familiar ecuatoriana con más de 8 años de experiencia en el mercado automotriz, especializada en repuestos y accesorios para vehículos <strong>chinos</strong> y <strong>americanos</strong>.
+            <br />
+            Nuestro compromiso es ayudarte a encontrar la pieza correcta con la confianza de recibir un producto de calidad. Para lograrlo, trabajamos directamente con distribuidores verificados, ofreciendo un amplio catálogo y precios competitivos.
+            <br />
+            Creemos que comprar un repuesto debe ser un proceso sencillo, transparente y seguro. Esa es la razón de ser de <strong>El Chino Americano:</strong> acercarte las mejores soluciones para tu vehículo con la atención y el respaldo que mereces.
           </p>
         </div>
 
@@ -83,7 +91,7 @@ export default function WhyUs() {
               style={{ backgroundImage: "repeating-linear-gradient(135deg,rgba(13,31,60,.05) 0 14px,transparent 14px 28px)" }}
               aria-hidden="true"
             />
-            <div className="absolute inset-0 bg-gradient-to-tr from-white/10 via-transparent to-[#0d1f3c]/8" aria-hidden="true" />
+            <div className="absolute inset-0 bg-linear-to-tr from-white/10 via-transparent to-navy/8" aria-hidden="true" />
           </motion.div>
 
           {/* Right — feature rows */}
@@ -120,9 +128,9 @@ export default function WhyUs() {
           className="grid grid-cols-3 gap-6 mt-12"
         >
           {STATS.map(({ value, label }) => (
-            <motion.div key={label} variants={fadeUp} className="bg-navy rounded-2xl py-[30px] px-5 text-center">
-              <p className="font-display font-bold text-brand text-5xl leading-none">{value}</p>
-              <p className="text-[#cdd6e4] capitalize text-3.75 font-medium leading-snug mt-1.5">{label}</p>
+            <motion.div key={label} variants={fadeUp} className="bg-navy rounded-2xl py-7.5 px-5 text-center">
+              <span className="font-display font-bold text-brand text-5xl leading-none">{value}</span>
+              <p className="text-[#cdd6e4] text-3.75 font-medium leading-snug mt-1.5">{label}</p>
             </motion.div>
           ))}
         </motion.div>
