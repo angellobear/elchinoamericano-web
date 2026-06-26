@@ -4,7 +4,7 @@ import { and, eq, desc, asc } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
 import { dbNow } from './db-now'
-import { withAudit } from '@/lib/audit'
+import { logActivitySafe, withAudit } from '@/lib/audit'
 import { buildNotDeletedWhere, type SoftDeleteQueryOptions } from '@/lib/db/soft-delete'
 
 export async function getUsers(options?: SoftDeleteQueryOptions) {
@@ -39,21 +39,30 @@ export async function getRoles() {
 
 export async function createUser(data: { email: string; fullName?: string; password: string; roleId: number }) {
   const passwordHash = await bcrypt.hash(data.password, 12)
-  await withAudit(async (tx) => {
+  const created = await withAudit(async (tx) => {
+    const id = randomUUID()
     await tx.insert(users).values({
-      id:           randomUUID(),
+      id,
       email:        data.email,
       fullName:     data.fullName,
       passwordHash,
       roleId:       data.roleId,
     })
+    return tx.query.users.findFirst({ where: eq(users.id, id) })
   })
+
+  await logActivitySafe('CREATE', 'users', created?.id, undefined, created as Record<string, unknown> | undefined)
 }
 
 export async function updateUser(id: string, data: { fullName?: string; roleId?: number; isActive?: boolean; passwordHash?: string; deletedAt?: Date | null | ReturnType<typeof dbNow> }) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.users.findFirst({ where: eq(users.id, id) })
     await tx.update(users).set({ ...data, updatedAt: dbNow() }).where(eq(users.id, id))
+    const after = await tx.query.users.findFirst({ where: eq(users.id, id) })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'users', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
 
 export async function deactivateUser(id: string) {

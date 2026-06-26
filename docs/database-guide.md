@@ -17,7 +17,7 @@ Las migraciones fueron reinicializadas desde el estado actual del schema. Eso si
 
 - la estructura actual ya está incluida en la **migración base**
 - los parches viejos de estructura ya no se usan
-- los triggers de auditoría siguen como una migración separada
+- la auditoría ahora vive en la aplicación, no en triggers de la base
 
 ## Archivos clave
 
@@ -67,7 +67,7 @@ DATABASE_URL=postgresql://postgres:password@host:5432/postgres
 ```text
 supabase/migrations/drizzle-mysql/
 ├── 0000_initial_schema.sql
-└── 0001_audit_triggers.sql
+└── 0002_soft_delete.sql
 ```
 
 ### PostgreSQL / Supabase
@@ -75,8 +75,32 @@ supabase/migrations/drizzle-mysql/
 ```text
 supabase/migrations/drizzle-pg/
 ├── 0000_initial_schema.sql
-└── 0001_audit_triggers.sql
+└── 0002_soft_delete.sql
 ```
+
+## Auditoría
+
+El proyecto ya no depende de triggers, procedures ni funciones SQL para auditar cambios.
+
+Ahora la auditoría se hace a nivel aplicación:
+
+- las operaciones de escritura pasan por `withAudit()`
+- después de confirmar la transacción, se intenta escribir en `audit_log`
+- si la auditoría falla, la operación principal **no falla**
+
+Archivos clave:
+
+```text
+lib/audit.ts            # utilidades de auditoría tolerantes a fallos
+lib/db/*.ts             # writes con auditoría explícita
+app/api/**/*.ts         # rutas críticas también registran auditoría
+```
+
+Ventajas:
+
+- funciona igual en MySQL 5.7, MySQL 8 y PostgreSQL
+- no depende de permisos especiales para triggers
+- no bloquea el flujo si el insert de auditoría falla
 
 ## Comandos y cuándo usar cada uno
 

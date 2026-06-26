@@ -5,7 +5,7 @@ import { getUserByEmail } from '@/lib/db/users'
 import { getDb } from '@/lib/db/client'
 import { rolePermissions, modules, users } from '@/lib/db/schema'
 import { eq, sql } from 'drizzle-orm'
-import { withAudit } from '@/lib/audit'
+import { logActivitySafe, withAudit } from '@/lib/audit'
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET)
 const expiresIn = process.env.JWT_EXPIRES_IN ?? '8h'
@@ -37,9 +37,20 @@ export async function POST(req: NextRequest) {
     .setExpirationTime(expiresIn)
     .sign(secret)
 
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.users.findFirst({
+      where: eq(users.id, user.id),
+      columns: { id: true, lastLoginAt: true },
+    })
     await tx.update(users).set({ lastLoginAt: sql`now()` }).where(eq(users.id, user.id))
-  }, { userId: user.id })
+    const after = await tx.query.users.findFirst({
+      where: eq(users.id, user.id),
+      columns: { id: true, lastLoginAt: true },
+    })
+    return { before, after }
+  })
+
+  await logActivitySafe('UPDATE', 'users', user.id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined, { userId: user.id })
 
   const res = NextResponse.json({ ok: true })
   res.cookies.set('admin_token', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict', path: '/', maxAge: 60 * 60 * 8 })

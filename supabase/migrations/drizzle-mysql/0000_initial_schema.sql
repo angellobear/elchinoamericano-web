@@ -6,7 +6,7 @@ CREATE TABLE `audit_log` (
 	`record_id` varchar(50),
 	`old_values` text,
 	`new_values` text,
-	`created_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `audit_log_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -20,8 +20,8 @@ CREATE TABLE `categories` (
 	`image_public_id` varchar(200),
 	`sort_order` int DEFAULT 0,
 	`is_active` boolean DEFAULT true,
-	`created_at` timestamp DEFAULT (now()),
-	`updated_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `categories_id` PRIMARY KEY(`id`),
 	CONSTRAINT `categories_key_unique` UNIQUE(`key`)
 );
@@ -41,8 +41,8 @@ CREATE TABLE `part_brands` (
 	`logo_public_id` varchar(200),
 	`origin_country` varchar(100),
 	`is_active` boolean DEFAULT true,
-	`created_at` timestamp DEFAULT (now()),
-	`updated_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `part_brands_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -77,7 +77,7 @@ CREATE TABLE `product_images` (
 	`alt_text` varchar(255),
 	`is_primary` boolean DEFAULT false,
 	`sort_order` int DEFAULT 0,
-	`created_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `product_images_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -115,8 +115,8 @@ CREATE TABLE `products` (
 	`meta_description` varchar(500),
 	`is_featured` boolean DEFAULT false,
 	`is_active` boolean DEFAULT true,
-	`created_at` timestamp DEFAULT (now()),
-	`updated_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `products_id` PRIMARY KEY(`id`),
 	CONSTRAINT `products_code_unique` UNIQUE(`code`),
 	CONSTRAINT `products_slug_unique` UNIQUE(`slug`)
@@ -135,7 +135,7 @@ CREATE TABLE `role_permissions` (
 CREATE TABLE `roles` (
 	`id` int AUTO_INCREMENT NOT NULL,
 	`name` varchar(50) NOT NULL,
-	`created_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `roles_id` PRIMARY KEY(`id`),
 	CONSTRAINT `roles_name_unique` UNIQUE(`name`)
 );
@@ -147,7 +147,7 @@ CREATE TABLE `stock_movements` (
 	`movement_type` varchar(20) NOT NULL,
 	`reason` text,
 	`user_id` char(36),
-	`created_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `stock_movements_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -159,8 +159,8 @@ CREATE TABLE `suppliers` (
 	`phone` varchar(30),
 	`address` text,
 	`is_active` boolean DEFAULT true,
-	`created_at` timestamp DEFAULT (now()),
-	`updated_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `suppliers_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -172,8 +172,8 @@ CREATE TABLE `users` (
 	`role_id` int,
 	`is_active` boolean DEFAULT true,
 	`last_login_at` timestamp,
-	`created_at` timestamp DEFAULT (now()),
-	`updated_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `users_id` PRIMARY KEY(`id`),
 	CONSTRAINT `users_email_unique` UNIQUE(`email`)
 );
@@ -187,8 +187,8 @@ CREATE TABLE `vehicle_brands` (
 	`sort_order` int DEFAULT 0,
 	`is_active` boolean DEFAULT true,
 	`is_visible_on_web` boolean DEFAULT false,
-	`created_at` timestamp DEFAULT (now()),
-	`updated_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `vehicle_brands_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
@@ -201,8 +201,8 @@ CREATE TABLE `vehicle_models` (
 	`transmission` varchar(20),
 	`body_type` varchar(30),
 	`is_active` boolean DEFAULT true,
-	`created_at` timestamp DEFAULT (now()),
-	`updated_at` timestamp DEFAULT (now()),
+	`created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+	`updated_at` timestamp DEFAULT CURRENT_TIMESTAMP,
 	CONSTRAINT `vehicle_models_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint

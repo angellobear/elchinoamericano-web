@@ -2,7 +2,7 @@ import { getDb } from './client'
 import { vehicleBrands, vehicleModels } from './schema'
 import { eq, asc, and } from 'drizzle-orm'
 import { dbNow } from './db-now'
-import { withAudit } from '@/lib/audit'
+import { logActivitySafe, withAudit } from '@/lib/audit'
 import {
   LEGACY_VISIBLE_VEHICLE_BRAND_NAMES,
   toVehicleBrandKey,
@@ -82,7 +82,7 @@ export async function getVehicleModels(brandId?: number, includeInactiveOrOption
 }
 
 export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert) {
-  return withAudit(async (tx) => {
+  const { id, created } = await withAudit(async (tx) => {
     if (process.env.APP_ENV === 'local') {
       const result = await tx.insert(vehicleBrands).values(data)
       const insertId = Array.isArray(result)
@@ -93,28 +93,44 @@ export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert
         throw new Error('No se pudo obtener el ID de la marca creada.')
       }
 
-      return Number(insertId)
+      const id = Number(insertId)
+      const created = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
+      return { id, created }
     }
 
     const [row] = await tx.insert(vehicleBrands).values(data).returning({ id: vehicleBrands.id })
-    return row.id
+    const created = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, row.id) })
+    return { id: row.id, created }
   })
+
+  await logActivitySafe('CREATE', 'vehicle_brands', id, undefined, created as Record<string, unknown> | undefined)
+  return id
 }
 
 export async function updateVehicleBrand(id: number, data: Partial<typeof vehicleBrands.$inferInsert>) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
     await tx.update(vehicleBrands).set({ ...data, updatedAt: dbNow() }).where(eq(vehicleBrands.id, id))
+    const after = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'vehicle_brands', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
 
 export async function deleteVehicleBrand(id: number) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
     await tx.update(vehicleBrands).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(vehicleBrands.id, id))
+    const after = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
+    return { before, after }
   })
+
+  await logActivitySafe('DELETE', 'vehicle_brands', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
 
 export async function createVehicleModel(data: typeof vehicleModels.$inferInsert) {
-  return withAudit(async (tx) => {
+  const { id, created } = await withAudit(async (tx) => {
     if (process.env.APP_ENV === 'local') {
       const result = await tx.insert(vehicleModels).values(data)
       const insertId = Array.isArray(result)
@@ -125,24 +141,40 @@ export async function createVehicleModel(data: typeof vehicleModels.$inferInsert
         throw new Error('No se pudo obtener el ID del modelo creado.')
       }
 
-      return Number(insertId)
+      const id = Number(insertId)
+      const created = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, id) })
+      return { id, created }
     }
 
     const [row] = await tx.insert(vehicleModels).values(data).returning({ id: vehicleModels.id })
-    return row.id
+    const created = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, row.id) })
+    return { id: row.id, created }
   })
+
+  await logActivitySafe('CREATE', 'vehicle_models', id, undefined, created as Record<string, unknown> | undefined)
+  return id
 }
 
 export async function updateVehicleModel(id: number, data: Partial<typeof vehicleModels.$inferInsert>) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, id) })
     await tx.update(vehicleModels).set({ ...data, updatedAt: dbNow() }).where(eq(vehicleModels.id, id))
+    const after = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, id) })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'vehicle_models', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
 
 export async function deleteVehicleModel(id: number) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, id) })
     await tx.update(vehicleModels).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(vehicleModels.id, id))
+    const after = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, id) })
+    return { before, after }
   })
+
+  await logActivitySafe('DELETE', 'vehicle_models', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
 
 export async function getVehicleBrandsWithModels(options?: ActiveQueryOptions) {

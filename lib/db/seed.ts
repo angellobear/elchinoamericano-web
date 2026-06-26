@@ -103,21 +103,96 @@ async function seed() {
 
   // ─── Vehicle brands ──────────────────────────────────────────────────────────
   const brandValues = [
-    { name: 'Chevrolet',  origin: 'american', sortOrder: 1 },
-    { name: 'Ford',       origin: 'american', sortOrder: 2 },
-    { name: 'Chery',      origin: 'chinese',  sortOrder: 3 },
-    { name: 'Great Wall', origin: 'chinese',  sortOrder: 4 },
-    { name: 'DFSK',       origin: 'chinese',  sortOrder: 5 },
-    { name: 'SWM',        origin: 'chinese',  sortOrder: 6 },
-    { name: 'Jetour',     origin: 'chinese',  sortOrder: 7 },
-    { name: 'JAC',        origin: 'chinese',  sortOrder: 8 },
-    { name: 'Shineray',   origin: 'chinese',  sortOrder: 9 },
+    {
+      name: 'Chevrolet',
+      origin: 'american',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427007/vehicle-brands/dg2ukrqx0ewfhiieavhy.png',
+      logoPublicId: 'vehicle-brands/dg2ukrqx0ewfhiieavhy',
+      sortOrder: 1,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'Ford',
+      origin: 'american',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427017/vehicle-brands/ynomb8x2vbfbwxw4zdld.png',
+      logoPublicId: 'vehicle-brands/ynomb8x2vbfbwxw4zdld',
+      sortOrder: 2,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'Chery',
+      origin: 'chinese',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427028/vehicle-brands/irlu1zs0f33icnydd7ex.png',
+      logoPublicId: 'vehicle-brands/irlu1zs0f33icnydd7ex',
+      sortOrder: 3,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'Great Wall',
+      origin: 'chinese',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427042/vehicle-brands/b8eu1qcq1xdtxxlr7vie.png',
+      logoPublicId: 'vehicle-brands/b8eu1qcq1xdtxxlr7vie',
+      sortOrder: 4,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'DFSK',
+      origin: 'chinese',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427056/vehicle-brands/s4cbhdqipodu4wknsx3n.png',
+      logoPublicId: 'vehicle-brands/s4cbhdqipodu4wknsx3n',
+      sortOrder: 5,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'SWM',
+      origin: 'chinese',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427079/vehicle-brands/akueuhfxj8zu2bnrwgqx.png',
+      logoPublicId: 'vehicle-brands/akueuhfxj8zu2bnrwgqx',
+      sortOrder: 6,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'Jetour',
+      origin: 'chinese',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427101/vehicle-brands/ettqutwlf7k00fsuralm.png',
+      logoPublicId: 'vehicle-brands/ettqutwlf7k00fsuralm',
+      sortOrder: 7,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'JAC',
+      origin: 'chinese',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427113/vehicle-brands/f8cf9v6mg4oemvtpbxzd.png',
+      logoPublicId: 'vehicle-brands/f8cf9v6mg4oemvtpbxzd',
+      sortOrder: 8,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
+    {
+      name: 'Shineray',
+      origin: 'chinese',
+      logoUrl: 'https://res.cloudinary.com/dtd5dfg7d/image/upload/v1782427124/vehicle-brands/j6no4aeuamd3pc539hno.png',
+      logoPublicId: 'vehicle-brands/j6no4aeuamd3pc539hno',
+      sortOrder: 9,
+      isActive: true,
+      isVisibleOnWeb: true,
+    },
   ]
-  {
-    const existing = new Set((await db.select({ name: vehicleBrands.name }).from(vehicleBrands)).map(r => r.name))
-    const toInsert = brandValues.filter(b => !existing.has(b.name))
-    if (toInsert.length) await db.insert(vehicleBrands).values(toInsert)
-  }
+  await upsert(db.insert(vehicleBrands).values(brandValues), {
+    origin: sql.raw('origin'),
+    logoUrl: sql.raw('logo_url'),
+    logoPublicId: sql.raw('logo_public_id'),
+    sortOrder: sql.raw('sort_order'),
+    isActive: sql.raw('is_active'),
+    isVisibleOnWeb: sql.raw('is_visible_on_web'),
+  })
   log('marcas vehículos', brandValues)
 
   // ─── Part brands ─────────────────────────────────────────────────────────────

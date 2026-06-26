@@ -3,7 +3,7 @@ import { config } from 'dotenv'
 type DbTarget = 'local' | 'prod'
 
 function loadEnvFile(path: string) {
-  config({ path, override: true })
+  config({ path, override: true, debug: true })
 }
 
 function validateDatabaseUrl(target: DbTarget, envFile: string, url?: string) {

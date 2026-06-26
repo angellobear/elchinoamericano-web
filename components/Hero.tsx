@@ -7,18 +7,7 @@ import { motion, useReducedMotion } from "framer-motion"
 import { Layers, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
-
-const BRAND_CHIPS = [
-  { label: "CHERY", key: "chery" },
-  { label: "SWM", key: "swm" },
-  { label: "GREAT WALL", key: "great_wall" },
-  { label: "DFSK", key: "dfsk" },
-  { label: "SHINERAY", key: "shineray" },
-  { label: "JAC", key: "jac" },
-  { label: "JETOUR", key: "jetour" },
-  { label: "FORD", key: "ford" },
-  { label: "CHEVROLET", key: "chevrolet" },
-]
+import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
 const VEHICLES = [
   { src: "/hero/jetour.png", alt: "Jetour X70", delay: 0 },
@@ -44,8 +33,6 @@ const PARTS = [
   { src: "/hero/rep_shineray.png", alt: "Repuestos Shineray", delay: 24 }
 ]
 
-const CAR_BRANDS = ["Chery", "SWM", "Great Wall", "DFSK", "Shineray", "JAC", "Jetour", "Ford", "Chevrolet"]
-
 const STAT_STRIP = [
   { icon: Truck, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Envíos a todo Ecuador", sub: "Entrega 24–72 h" },
   { icon: MessageCircle, iconColor: "text-wa", iconBg: "bg-wa/14", title: "Asesoría por WhatsApp", sub: "Respuesta en < 24 h" },
@@ -55,7 +42,7 @@ const STAT_STRIP = [
 
 const EASE = [0.22, 1, 0.36, 1] as const
 
-function HeroSearch() {
+function HeroSearch({ brands }: { brands: PublicVehicleBrand[] }) {
   const router = useRouter()
   const [marca, setMarca] = useState("")
 
@@ -73,8 +60,8 @@ function HeroSearch() {
         className="flex-1 w-full bg-navy-dark border border-white/12 rounded-[10px] px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
       >
         <option value="">Marca</option>
-        {CAR_BRANDS.map((b) => (
-          <option key={b} value={b.toLowerCase().replace(/ /g, "_")}>{b}</option>
+        {brands.map((brand) => (
+          <option key={brand.id} value={brand.key}>{brand.name}</option>
         ))}
       </select>
       <select className="flex-1 w-full bg-navy-dark border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
@@ -98,7 +85,11 @@ function HeroSearch() {
   )
 }
 
-export default function Hero() {
+interface HeroProps {
+  brands: PublicVehicleBrand[]
+}
+
+export default function Hero({ brands }: HeroProps) {
   const reduce = useReducedMotion()
 
   const fadeUp = {
@@ -146,7 +137,7 @@ export default function Hero() {
             </motion.h1>
 
             <motion.p variants={fadeUp} className="mt-5 max-w-lg text-[#9fb0c8] text-4.5 leading-[1.55]">
-              Originales, OEM y alternos para Chery, SWM, Great Wall, Ford, Chevrolet y más.
+              Originales, OEM y alternos para marcas chinas y americanas seleccionadas.
               Asesoría experta y envíos a todo el Ecuador.
             </motion.p>
 
@@ -174,13 +165,13 @@ export default function Hero() {
                 Trabajamos con
               </p>
               <div className="flex flex-wrap gap-2">
-                {BRAND_CHIPS.map(({ label, key }) => (
+                {brands.map((brand) => (
                   <a
-                    key={key}
-                    href={`/catalogo?marca=${key}`}
+                    key={brand.id}
+                    href={`/catalogo?marca=${brand.key}`}
                     className="font-display font-bold text-4 text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-[15px] py-2 rounded-full transition-colors duration-150"
                   >
-                    {label}
+                    {brand.name.toUpperCase()}
                   </a>
                 ))}
               </div>
@@ -261,7 +252,7 @@ export default function Hero() {
         </div>
 
         {/* Search bar */}
-        <HeroSearch />
+        {/* <HeroSearch brands={brands} /> */}
 
         {/* Stats strip */}
         <motion.div

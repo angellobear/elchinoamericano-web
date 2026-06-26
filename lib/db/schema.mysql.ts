@@ -4,14 +4,16 @@ import {
   mysqlTable, varchar, text, boolean, timestamp,
   int, decimal, char, primaryKey,
 } from 'drizzle-orm/mysql-core'
-import { relations } from 'drizzle-orm'
+import { relations, sql } from 'drizzle-orm'
+
+const mysqlCurrentTimestamp = sql`CURRENT_TIMESTAMP`
 
 // ─── AUTH & ROLES ────────────────────────────────────────────────────────────
 
 export const roles = mysqlTable('roles', {
   id:        int('id').autoincrement().primaryKey(),
   name:      varchar('name', { length: 50 }).unique().notNull(),
-  createdAt: timestamp('created_at').defaultNow(),
+  createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
 })
 
 export const modules = mysqlTable('modules', {
@@ -38,8 +40,8 @@ export const users = mysqlTable('users', {
   isActive:     boolean('is_active').default(true),
   deletedAt:    timestamp('deleted_at'),
   lastLoginAt:  timestamp('last_login_at'),
-  createdAt:    timestamp('created_at').defaultNow(),
-  updatedAt:    timestamp('updated_at').defaultNow(),
+  createdAt:    timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt:    timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 // ─── VEHICLES ────────────────────────────────────────────────────────────────
@@ -54,8 +56,8 @@ export const vehicleBrands = mysqlTable('vehicle_brands', {
   isActive:     boolean('is_active').default(true),
   isVisibleOnWeb: boolean('is_visible_on_web').default(false),
   deletedAt:    timestamp('deleted_at'),
-  createdAt:    timestamp('created_at').defaultNow(),
-  updatedAt:    timestamp('updated_at').defaultNow(),
+  createdAt:    timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt:    timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 export const vehicleModels = mysqlTable('vehicle_models', {
@@ -68,8 +70,8 @@ export const vehicleModels = mysqlTable('vehicle_models', {
   bodyType:     varchar('body_type', { length: 30 }),
   isActive:     boolean('is_active').default(true),
   deletedAt:    timestamp('deleted_at'),
-  createdAt:    timestamp('created_at').defaultNow(),
-  updatedAt:    timestamp('updated_at').defaultNow(),
+  createdAt:    timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt:    timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 // ─── CATALOG ─────────────────────────────────────────────────────────────────
@@ -85,8 +87,8 @@ export const categories = mysqlTable('categories', {
   sortOrder:     int('sort_order').default(0),
   isActive:      boolean('is_active').default(true),
   deletedAt:     timestamp('deleted_at'),
-  createdAt:     timestamp('created_at').defaultNow(),
-  updatedAt:     timestamp('updated_at').defaultNow(),
+  createdAt:     timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt:     timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 export const partBrands = mysqlTable('part_brands', {
@@ -97,8 +99,8 @@ export const partBrands = mysqlTable('part_brands', {
   originCountry: varchar('origin_country', { length: 100 }),
   isActive:      boolean('is_active').default(true),
   deletedAt:     timestamp('deleted_at'),
-  createdAt:     timestamp('created_at').defaultNow(),
-  updatedAt:     timestamp('updated_at').defaultNow(),
+  createdAt:     timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt:     timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 export const suppliers = mysqlTable('suppliers', {
@@ -110,8 +112,8 @@ export const suppliers = mysqlTable('suppliers', {
   address:     text('address'),
   isActive:    boolean('is_active').default(true),
   deletedAt:   timestamp('deleted_at'),
-  createdAt:   timestamp('created_at').defaultNow(),
-  updatedAt:   timestamp('updated_at').defaultNow(),
+  createdAt:   timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt:   timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 // ─── PRODUCTS ────────────────────────────────────────────────────────────────
@@ -142,8 +144,8 @@ export const products = mysqlTable('products', {
   isFeatured:       boolean('is_featured').default(false),
   isActive:         boolean('is_active').default(true),
   deletedAt:        timestamp('deleted_at'),
-  createdAt:        timestamp('created_at').defaultNow(),
-  updatedAt:        timestamp('updated_at').defaultNow(),
+  createdAt:        timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt:        timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 export const productImages = mysqlTable('product_images', {
@@ -154,7 +156,7 @@ export const productImages = mysqlTable('product_images', {
   altText:            varchar('alt_text', { length: 255 }),
   isPrimary:          boolean('is_primary').default(false),
   sortOrder:          int('sort_order').default(0),
-  createdAt:          timestamp('created_at').defaultNow(),
+  createdAt:          timestamp('created_at').default(mysqlCurrentTimestamp),
 })
 
 export const productSpecs = mysqlTable('product_specs', {
@@ -194,7 +196,7 @@ export const stockMovements = mysqlTable('stock_movements', {
   movementType: varchar('movement_type', { length: 20 }).notNull(),
   reason:       text('reason'),
   userId:       char('user_id', { length: 36 }),
-  createdAt:    timestamp('created_at').defaultNow(),
+  createdAt:    timestamp('created_at').default(mysqlCurrentTimestamp),
 })
 
 export const auditLog = mysqlTable('audit_log', {
@@ -205,7 +207,7 @@ export const auditLog = mysqlTable('audit_log', {
   recordId:  varchar('record_id', { length: 50 }),
   oldValues: text('old_values'),
   newValues: text('new_values'),
-  createdAt: timestamp('created_at').defaultNow(),
+  createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
 })
 
 // ─── RELATIONS ───────────────────────────────────────────────────────────────

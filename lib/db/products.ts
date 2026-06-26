@@ -5,7 +5,7 @@ import {
 } from './schema'
 import { eq, desc, and, sql } from 'drizzle-orm'
 import { dbNow } from './db-now'
-import { withAudit } from '@/lib/audit'
+import { logActivitySafe, withAudit } from '@/lib/audit'
 import {
   buildNotDeletedWhere,
   type SoftDeleteQueryOptions,
@@ -117,40 +117,68 @@ export async function getProductStats(options?: SoftDeleteQueryOptions) {
 // ─── Writes ──────────────────────────────────────────────────────────────────
 
 export async function createProduct(data: typeof products.$inferInsert) {
-  return withAudit(async (tx) => {
+  const { rowId, code, created } = await withAudit(async (tx) => {
     const [row] = await tx.insert(products).values(data).returning({ id: products.id })
     const code = `CA-${String(row.id).padStart(4, '0')}`
     await tx.update(products).set({ code }).where(eq(products.id, row.id))
-    return { id: row.id, code }
+    const created = await tx.query.products.findFirst({ where: eq(products.id, row.id) })
+    return { rowId: row.id, code, created }
   })
+
+  await logActivitySafe('CREATE', 'products', rowId, undefined, created as Record<string, unknown> | undefined)
+  return { id: rowId, code }
 }
 
 export async function updateProduct(id: number, data: Partial<typeof products.$inferInsert>) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.products.findFirst({ where: eq(products.id, id) })
     await tx.update(products).set({ ...data, updatedAt: dbNow() }).where(eq(products.id, id))
+    const after = await tx.query.products.findFirst({ where: eq(products.id, id) })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'products', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
 
 export async function deleteProduct(id: number) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.products.findFirst({ where: eq(products.id, id) })
     await tx.update(products).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(products.id, id))
+    const after = await tx.query.products.findFirst({ where: eq(products.id, id) })
+    return { before, after }
   })
+
+  await logActivitySafe('DELETE', 'products', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
 
 // ─── Relations (replace-all pattern) ─────────────────────────────────────────
 
 export async function setAlternateCodes(productId: number, codes: { code: string; source?: string }[]) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.productAlternateCodes.findMany({
+      where: eq(productAlternateCodes.productId, productId),
+    })
     await tx.delete(productAlternateCodes).where(eq(productAlternateCodes.productId, productId))
     if (codes.length) await tx.insert(productAlternateCodes).values(codes.map(c => ({ ...c, productId })))
+    const after = await tx.query.productAlternateCodes.findMany({
+      where: eq(productAlternateCodes.productId, productId),
+    })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'product_alternate_codes', productId, { entries: before }, { entries: after })
 }
 
 export async function setEquivalencies(productId: number, equivalentIds: number[]) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.productEquivalencies.findMany({
+      where: eq(productEquivalencies.productId, productId),
+    })
     await tx.delete(productEquivalencies).where(eq(productEquivalencies.productId, productId))
     await tx.delete(productEquivalencies).where(eq(productEquivalencies.equivalentId, productId))
-    if (!equivalentIds.length) return
+    if (!equivalentIds.length) {
+      return { before, after: [] }
+    }
     // Both directions so queries from either side work
     await tx.insert(productEquivalencies).values(
       equivalentIds.flatMap(eId => [
@@ -158,41 +186,75 @@ export async function setEquivalencies(productId: number, equivalentIds: number[
         { productId: eId, equivalentId: productId },
       ])
     )
+    const after = await tx.query.productEquivalencies.findMany({
+      where: eq(productEquivalencies.productId, productId),
+    })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'product_equivalencies', productId, { entries: before }, { entries: after ?? [] })
 }
 
 export async function setCompatibilities(productId: number, entries: { vehicleModelId: number; yearStart?: number; yearEnd?: number; notes?: string }[]) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.productCompatibilities.findMany({
+      where: eq(productCompatibilities.productId, productId),
+    })
     await tx.delete(productCompatibilities).where(eq(productCompatibilities.productId, productId))
     if (entries.length) await tx.insert(productCompatibilities).values(entries.map(e => ({ ...e, productId })))
+    const after = await tx.query.productCompatibilities.findMany({
+      where: eq(productCompatibilities.productId, productId),
+    })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'product_compatibilities', productId, { entries: before }, { entries: after })
 }
 
 export async function setSpecs(productId: number, specs: { label: string; value: string; sortOrder?: number }[]) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.productSpecs.findMany({
+      where: eq(productSpecs.productId, productId),
+    })
     await tx.delete(productSpecs).where(eq(productSpecs.productId, productId))
     if (specs.length) await tx.insert(productSpecs).values(specs.map((s, i) => ({ ...s, productId, sortOrder: s.sortOrder ?? i })))
+    const after = await tx.query.productSpecs.findMany({
+      where: eq(productSpecs.productId, productId),
+    })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'product_specs', productId, { entries: before }, { entries: after })
 }
 
 export async function setImages(
   productId: number,
   images: { url: string; cloudinaryPublicId?: string | null; altText?: string; isPrimary: boolean; sortOrder: number }[]
 ) {
-  await withAudit(async (tx) => {
+  const { before, after } = await withAudit(async (tx) => {
+    const before = await tx.query.productImages.findMany({
+      where: eq(productImages.productId, productId),
+    })
     await tx.delete(productImages).where(eq(productImages.productId, productId))
     if (images.length) await tx.insert(productImages).values(images.map(img => ({ ...img, productId })))
+    const after = await tx.query.productImages.findMany({
+      where: eq(productImages.productId, productId),
+    })
+    return { before, after }
   })
+
+  await logActivitySafe('UPDATE', 'product_images', productId, { entries: before }, { entries: after })
 }
 
 // ─── Stock ───────────────────────────────────────────────────────────────────
 
 export async function updateStock(productId: number, newStock: number, userId: string, reason?: string) {
-  await withAudit(async (tx) => {
+  const { beforeProduct, afterProduct, movement } = await withAudit(async (tx) => {
     const current = await tx.query.products.findFirst({
       where: eq(products.id, productId),
       columns: { stock: true },
     })
+    const beforeProduct = await tx.query.products.findFirst({ where: eq(products.id, productId) })
     await tx.update(products).set({ stock: newStock, updatedAt: dbNow() }).where(eq(products.id, productId))
     await tx.insert(stockMovements).values({
       productId,
@@ -201,5 +263,19 @@ export async function updateStock(productId: number, newStock: number, userId: s
       reason,
       userId,
     })
-  }, { userId })
+    const afterProduct = await tx.query.products.findFirst({ where: eq(products.id, productId) })
+    const movement = {
+      productId,
+      quantity: newStock - (current?.stock ?? 0),
+      movementType: 'adjustment',
+      reason: reason ?? null,
+      userId,
+    }
+    return { beforeProduct, afterProduct, movement }
+  })
+
+  await Promise.all([
+    logActivitySafe('UPDATE', 'products', productId, beforeProduct as Record<string, unknown> | undefined, afterProduct as Record<string, unknown> | undefined, { userId }),
+    logActivitySafe('CREATE', 'stock_movements', productId, undefined, movement as Record<string, unknown>, { userId }),
+  ])
 }

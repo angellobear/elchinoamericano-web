@@ -12,8 +12,15 @@
     {
       "idx": 1,
       "version": "7",
-      "when": 1782405514829,
-      "tag": "0001_audit_triggers",
+      "when": 1782428868710,
+      "tag": "0002_soft_delete",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1782485381846,
+      "tag": "0002_tricky_kingpin",
       "breakpoints": true
     }
   ]

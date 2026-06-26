@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { logger } from '@/lib/logger'
 import { dbNow } from '@/lib/db/db-now'
-import { withAudit } from '@/lib/audit'
+import { logActivitySafe, withAudit } from '@/lib/audit'
 
 export async function POST(req: NextRequest) {
   const payload = await getJwtPayload()
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
     }
 
-    const newStock = await withAudit(async (tx) => {
+    const result = await withAudit(async (tx) => {
       const product = await tx.query.products.findFirst({
         where: eq(products.id, Number(productId)),
         columns: { id: true, stock: true },
@@ -63,6 +63,10 @@ export async function POST(req: NextRequest) {
         throw new Error('NEGATIVE_STOCK')
       }
 
+      const beforeProduct = await tx.query.products.findFirst({
+        where: eq(products.id, product.id),
+      })
+
       await tx.update(products)
         .set({ stock: nextStock, updatedAt: dbNow() })
         .where(eq(products.id, product.id))
@@ -75,15 +79,35 @@ export async function POST(req: NextRequest) {
         userId:       payload.userId,
       })
 
-      return nextStock
-    }, { userId: payload.userId })
+      const afterProduct = await tx.query.products.findFirst({
+        where: eq(products.id, product.id),
+      })
 
-    if (newStock === null) {
+      return {
+        newStock: nextStock,
+        beforeProduct,
+        afterProduct,
+        movement: {
+          productId: product.id,
+          quantity: movementQuantity,
+          movementType: normalizedMovementType,
+          reason: reason || null,
+          userId: payload.userId,
+        },
+      }
+    })
+
+    if (result === null) {
       return NextResponse.json({ error: 'Producto no encontrado' }, { status: 404 })
     }
 
-    logger.info({ productId, quantity, movementType, newStock }, 'Stock movement recorded')
-    return NextResponse.json({ ok: true, newStock })
+    await Promise.all([
+      logActivitySafe('UPDATE', 'products', Number(productId), result.beforeProduct as Record<string, unknown> | undefined, result.afterProduct as Record<string, unknown> | undefined, { userId: payload.userId }),
+      logActivitySafe('CREATE', 'stock_movements', Number(productId), undefined, result.movement as Record<string, unknown>, { userId: payload.userId }),
+    ])
+
+    logger.info({ productId, quantity, movementType, newStock: result.newStock }, 'Stock movement recorded')
+    return NextResponse.json({ ok: true, newStock: result.newStock })
   } catch (err) {
     if (err instanceof Error && err.message === 'INVALID_QUANTITY') {
       return NextResponse.json({ error: 'La cantidad debe ser mayor que cero' }, { status: 400 })
