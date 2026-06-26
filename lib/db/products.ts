@@ -118,11 +118,20 @@ export async function getProductStats(options?: SoftDeleteQueryOptions) {
 
 export async function createProduct(data: typeof products.$inferInsert) {
   const { rowId, code, created } = await withAudit(async (tx) => {
-    const [row] = await tx.insert(products).values(data).returning({ id: products.id })
-    const code = `CA-${String(row.id).padStart(4, '0')}`
-    await tx.update(products).set({ code }).where(eq(products.id, row.id))
-    const created = await tx.query.products.findFirst({ where: eq(products.id, row.id) })
-    return { rowId: row.id, code, created }
+    const result = await tx.insert(products).values(data)
+    const insertId = Array.isArray(result)
+      ? (result[0] as { insertId?: number } | undefined)?.insertId
+      : (result as { insertId?: number }).insertId
+
+    if (!insertId) {
+      throw new Error('No se pudo obtener el ID del producto creado.')
+    }
+
+    const rowId = Number(insertId)
+    const code = `CA-${String(rowId).padStart(4, '0')}`
+    await tx.update(products).set({ code }).where(eq(products.id, rowId))
+    const created = await tx.query.products.findFirst({ where: eq(products.id, rowId) })
+    return { rowId, code, created }
   })
 
   await logActivitySafe('CREATE', 'products', rowId, undefined, created as Record<string, unknown> | undefined)

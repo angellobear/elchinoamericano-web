@@ -83,24 +83,18 @@ export async function getVehicleModels(brandId?: number, includeInactiveOrOption
 
 export async function createVehicleBrand(data: typeof vehicleBrands.$inferInsert) {
   const { id, created } = await withAudit(async (tx) => {
-    if (process.env.APP_ENV === 'local') {
-      const result = await tx.insert(vehicleBrands).values(data)
-      const insertId = Array.isArray(result)
-        ? (result[0] as { insertId?: number } | undefined)?.insertId
-        : (result as { insertId?: number }).insertId
+    const result = await tx.insert(vehicleBrands).values(data)
+    const insertId = Array.isArray(result)
+      ? (result[0] as { insertId?: number } | undefined)?.insertId
+      : (result as { insertId?: number }).insertId
 
-      if (!insertId) {
-        throw new Error('No se pudo obtener el ID de la marca creada.')
-      }
-
-      const id = Number(insertId)
-      const created = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
-      return { id, created }
+    if (!insertId) {
+      throw new Error('No se pudo obtener el ID de la marca creada.')
     }
 
-    const [row] = await tx.insert(vehicleBrands).values(data).returning({ id: vehicleBrands.id })
-    const created = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, row.id) })
-    return { id: row.id, created }
+    const id = Number(insertId)
+    const created = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
+    return { id, created }
   })
 
   await logActivitySafe('CREATE', 'vehicle_brands', id, undefined, created as Record<string, unknown> | undefined)
@@ -131,24 +125,18 @@ export async function deleteVehicleBrand(id: number) {
 
 export async function createVehicleModel(data: typeof vehicleModels.$inferInsert) {
   const { id, created } = await withAudit(async (tx) => {
-    if (process.env.APP_ENV === 'local') {
-      const result = await tx.insert(vehicleModels).values(data)
-      const insertId = Array.isArray(result)
-        ? (result[0] as { insertId?: number } | undefined)?.insertId
-        : (result as { insertId?: number }).insertId
+    const result = await tx.insert(vehicleModels).values(data)
+    const insertId = Array.isArray(result)
+      ? (result[0] as { insertId?: number } | undefined)?.insertId
+      : (result as { insertId?: number }).insertId
 
-      if (!insertId) {
-        throw new Error('No se pudo obtener el ID del modelo creado.')
-      }
-
-      const id = Number(insertId)
-      const created = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, id) })
-      return { id, created }
+    if (!insertId) {
+      throw new Error('No se pudo obtener el ID del modelo creado.')
     }
 
-    const [row] = await tx.insert(vehicleModels).values(data).returning({ id: vehicleModels.id })
-    const created = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, row.id) })
-    return { id: row.id, created }
+    const id = Number(insertId)
+    const created = await tx.query.vehicleModels.findFirst({ where: eq(vehicleModels.id, id) })
+    return { id, created }
   })
 
   await logActivitySafe('CREATE', 'vehicle_models', id, undefined, created as Record<string, unknown> | undefined)

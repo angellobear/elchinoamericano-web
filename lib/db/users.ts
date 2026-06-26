@@ -7,29 +7,65 @@ import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
 import { buildNotDeletedWhere, type SoftDeleteQueryOptions } from '@/lib/db/soft-delete'
 
+type UserWithRoleRow = {
+  user: typeof users.$inferSelect
+  role: typeof roles.$inferSelect | null
+}
+
+function mapUserWithRole(row: UserWithRoleRow) {
+  return {
+    ...row.user,
+    role: row.role,
+  }
+}
+
+function mapNullableUserWithRole(row?: UserWithRoleRow | null) {
+  return row ? mapUserWithRole(row) : undefined
+}
+
 export async function getUsers(options?: SoftDeleteQueryOptions) {
   const db = await getDb()
-  return db.query.users.findMany({
-    where: buildNotDeletedWhere(users.deletedAt, options),
-    with: { role: true },
-    orderBy: desc(users.createdAt),
-  })
+  const rows = await db
+    .select({
+      user: users,
+      role: roles,
+    })
+    .from(users)
+    .leftJoin(roles, eq(users.roleId, roles.id))
+    .where(buildNotDeletedWhere(users.deletedAt, options))
+    .orderBy(desc(users.createdAt))
+
+  return rows.map(mapUserWithRole)
 }
 
 export async function getUserByEmail(email: string, options?: SoftDeleteQueryOptions) {
   const db = await getDb()
-  return db.query.users.findFirst({
-    where: and(eq(users.email, email), buildNotDeletedWhere(users.deletedAt, options)),
-    with: { role: true },
-  })
+  const row = await db
+    .select({
+      user: users,
+      role: roles,
+    })
+    .from(users)
+    .leftJoin(roles, eq(users.roleId, roles.id))
+    .where(and(eq(users.email, email), buildNotDeletedWhere(users.deletedAt, options)))
+    .limit(1)
+
+  return mapNullableUserWithRole(row[0])
 }
 
 export async function getUserById(id: string, options?: SoftDeleteQueryOptions) {
   const db = await getDb()
-  return db.query.users.findFirst({
-    where: and(eq(users.id, id), buildNotDeletedWhere(users.deletedAt, options)),
-    with: { role: true },
-  })
+  const row = await db
+    .select({
+      user: users,
+      role: roles,
+    })
+    .from(users)
+    .leftJoin(roles, eq(users.roleId, roles.id))
+    .where(and(eq(users.id, id), buildNotDeletedWhere(users.deletedAt, options)))
+    .limit(1)
+
+  return mapNullableUserWithRole(row[0])
 }
 
 export async function getRoles() {

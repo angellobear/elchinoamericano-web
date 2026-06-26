@@ -1,15 +1,7 @@
 #!/usr/bin/env node
-/**
- * Drizzle seed — idempotente en MySQL (local) y PostgreSQL (prod).
- *
- * Usage:
- *   npm run db:seed:local   (APP_ENV=local → mysql)
- *   npm run db:seed         (APP_ENV=prod  → postgresql)
- */
 import { loadDatabaseUrl } from './config-env'
 
-const target = process.env.APP_ENV === 'local' ? 'local' : 'prod'
-loadDatabaseUrl(target)
+loadDatabaseUrl('local')
 
 import { sql, inArray } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
@@ -20,17 +12,12 @@ import {
   categories, vehicleBrands, partBrands, suppliers,
 } from './schema'
 
-const isMySQL = process.env.APP_ENV === 'local'
-
 // INSERT or update-on-duplicate (idempotent).
 // mysqlSet keys must be camelCase (Drizzle schema names); values are the SQL expressions.
 // sql.raw('col_name') produces `ON DUPLICATE KEY UPDATE col_name = col_name` (no-op self-ref).
-// ponytail: as any — getDb() tipos como PG pero runtime puede ser MySQL
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function upsert(q: any, mysqlSet: Record<string, unknown>) {
-  return isMySQL
-    ? q.onDuplicateKeyUpdate({ set: mysqlSet })
-    : q.onConflictDoNothing()
+  return q.onDuplicateKeyUpdate({ set: mysqlSet })
 }
 
 const log = (label: string, items: { name: string }[]) =>
@@ -38,7 +25,7 @@ const log = (label: string, items: { name: string }[]) =>
 
 async function seed() {
   const db = await getDb()
-  console.log(`\n🌱 Iniciando seed [${process.env.APP_ENV ?? 'prod'}]\n`)
+  console.log('\n🌱 Iniciando seed [mysql]\n')
 
   // ─── Roles ───────────────────────────────────────────────────────────────────
   const roleValues = [

@@ -19,13 +19,9 @@ function validateDatabaseUrl(target: DbTarget, envFile: string, url?: string) {
     )
   }
 
-  if (
-    target === 'prod'
-    && !trimmedUrl.startsWith('postgres://')
-    && !trimmedUrl.startsWith('postgresql://')
-  ) {
+  if (target === 'prod' && !trimmedUrl.startsWith('mysql://')) {
     throw new Error(
-      `DATABASE_URL en ${envFile} debe usar postgres:// o postgresql:// para producción.`,
+      `DATABASE_URL en ${envFile} debe usar mysql:// para producción.`,
     )
   }
 
