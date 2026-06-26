@@ -10,7 +10,9 @@ import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import {
   DEFAULT_KEYWORDS,
+  DEFAULT_SHARE_IMAGE_HEIGHT,
   DEFAULT_SHARE_IMAGE_PATH,
+  DEFAULT_SHARE_IMAGE_WIDTH,
   SITE_NAME,
   SITE_URL,
   SITE_LOCALE,
@@ -44,6 +46,8 @@ export const metadata: Metadata = {
       {
         url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
         alt: homeMetadata.shareImageAlt,
+        width: DEFAULT_SHARE_IMAGE_WIDTH,
+        height: DEFAULT_SHARE_IMAGE_HEIGHT,
       },
     ],
   },
@@ -63,26 +67,26 @@ export default async function Home() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "Que tipo de repuestos vende El Chino Americano?",
+        name: "¿Qué tipo de repuestos vende El Chino Americano?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Trabajamos con repuestos originales, OEM y alternos para vehiculos chinos y americanos.",
+          text: "Trabajamos con repuestos originales, OEM y alternos para vehículos chinos y americanos.",
         },
       },
       {
         "@type": "Question",
-        name: "Hacen envios fuera de Santo Domingo de los Tsachilas?",
+        name: "¿Hacen envíos fuera de Santo Domingo de los Tsáchilas?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Si. Coordinamos envios a diferentes ciudades de Ecuador y brindamos asesoria por WhatsApp antes de la compra.",
+          text: "Sí. Coordinamos envíos a diferentes ciudades de Ecuador y brindamos asesoría por WhatsApp antes de la compra.",
         },
       },
       {
         "@type": "Question",
-        name: "Como confirmo la compatibilidad de un repuesto?",
+        name: "¿Cómo confirmo la compatibilidad de un repuesto?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Puedes escribirnos por WhatsApp con marca, modelo, ano, numero de pieza o una foto para validar la aplicacion correcta del repuesto.",
+          text: "Puedes escribirnos por WhatsApp con marca, modelo, año, número de pieza o una foto para validar la aplicación correcta del repuesto.",
         },
       },
     ],

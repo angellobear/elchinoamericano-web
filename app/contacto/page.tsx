@@ -6,7 +6,9 @@ import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import {
   DEFAULT_KEYWORDS,
+  DEFAULT_SHARE_IMAGE_HEIGHT,
   DEFAULT_SHARE_IMAGE_PATH,
+  DEFAULT_SHARE_IMAGE_WIDTH,
   SITE_LOCALE,
   SITE_NAME,
   SITE_URL,
@@ -40,6 +42,8 @@ export const metadata: Metadata = {
       {
         url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
         alt: "Contacto El Chino Americano",
+        width: DEFAULT_SHARE_IMAGE_WIDTH,
+        height: DEFAULT_SHARE_IMAGE_HEIGHT,
       },
     ],
   },
@@ -90,18 +94,18 @@ export default async function ContactoPage() {
         mainEntity: [
           {
             "@type": "Question",
-            name: "Como cotizo un repuesto?",
+            name: "¿Cómo cotizo un repuesto?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Puedes escribirnos por WhatsApp o completar el formulario con marca, modelo, ano y datos del repuesto para recibir una cotizacion.",
+              text: "Puedes escribirnos por WhatsApp o completar el formulario con marca, modelo, año y datos del repuesto para recibir una cotización.",
             },
           },
           {
             "@type": "Question",
-            name: "Atienden fuera de Santo Domingo de los Tsachilas?",
+            name: "¿Atienden fuera de Santo Domingo de los Tsáchilas?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Si. Coordinamos pedidos y envios a distintas ciudades de Ecuador.",
+              text: "Sí. Coordinamos pedidos y envíos a distintas ciudades de Ecuador.",
             },
           },
         ],

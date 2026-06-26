@@ -12,7 +12,9 @@ import {
 import { filterCatalogProducts } from "@/lib/catalog-products"
 import {
   DEFAULT_KEYWORDS,
+  DEFAULT_SHARE_IMAGE_HEIGHT,
   DEFAULT_SHARE_IMAGE_PATH,
+  DEFAULT_SHARE_IMAGE_WIDTH,
   SITE_NAME,
   SITE_URL,
   SITE_LOCALE,
@@ -25,7 +27,7 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: "Catálogo de Repuestos | El Chino Americano",
   description:
-    "Explora el catálogo de repuestos automotrices para vehículos chinos y americanos. Filtra por precio, categoría y marca con una experiencia lista para SEO.",
+    "Explora nuestro catálogo de repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y precio con envíos a todo Ecuador.",
   keywords: [
     "catalogo de repuestos Ecuador",
     "repuestos por marca Ecuador",
@@ -51,6 +53,8 @@ export const metadata: Metadata = {
       {
         url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
         alt: "Catálogo de repuestos El Chino Americano",
+        width: DEFAULT_SHARE_IMAGE_WIDTH,
+        height: DEFAULT_SHARE_IMAGE_HEIGHT,
       },
     ],
   },
@@ -148,7 +152,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
           brands={brands}
           categories={categories.map((category) => ({ id: category.key, label: category.name }))}
           breadcrumbLabel="Catálogo"
-          headerDescription="Explora repuestos originales, OEM y alternos para vehículos chinos y americanos con filtros listos para encontrar la pieza correcta."
+          headerDescription="Explora repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y rango de precio para encontrar la pieza correcta."
           headerTitle="Catálogo de repuestos"
           initialFilters={sanitizedFilters}
           initialPage={safePage}

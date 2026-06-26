@@ -15,7 +15,9 @@ import {
 import { filterCatalogProducts } from "@/lib/catalog-products"
 import {
   DEFAULT_KEYWORDS,
+  DEFAULT_SHARE_IMAGE_HEIGHT,
   DEFAULT_SHARE_IMAGE_PATH,
+  DEFAULT_SHARE_IMAGE_WIDTH,
   SITE_NAME,
   SITE_URL,
   SITE_LOCALE,
@@ -84,6 +86,8 @@ export async function generateMetadata({
         {
           url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
           alt: `Repuestos para ${titleBrandText} en Ecuador`,
+          width: DEFAULT_SHARE_IMAGE_WIDTH,
+          height: DEFAULT_SHARE_IMAGE_HEIGHT,
         },
       ],
     },

@@ -12,6 +12,10 @@ export async function GET() {
     getPublicVehicleBrands(),
     getCategories(),
   ])
+  const featuredProducts = [
+    ...products.filter((product) => product.is_featured),
+    ...products.filter((product) => !product.is_featured),
+  ].slice(0, 50)
 
   const lines = [
     "# El Chino Americano",
@@ -23,7 +27,7 @@ export async function GET() {
     "",
     "## Primary Pages",
     `- Inicio: ${SITE_URL}/`,
-    `- Catalogo: ${SITE_URL}/catalogo`,
+    `- Catálogo: ${SITE_URL}/catalogo`,
     `- Contacto: ${SITE_URL}/contacto`,
     "",
     "## Key Entities",
@@ -39,7 +43,7 @@ export async function GET() {
     ...categories.map((category) => `- ${category.name}: ${SITE_URL}/catalogo?categoria=${category.key}`),
     "",
     "## Sample Product Pages",
-    ...products.slice(0, 12).map((product) => {
+    ...featuredProducts.map((product) => {
       const category = product.category?.name ?? "Sin categoria"
       const brand = product.part_brand?.name ?? "Sin marca"
       return `- ${product.title} | ${brand} | ${category}: ${SITE_URL}${buildProductPath(product)}`
@@ -56,6 +60,11 @@ export async function GET() {
     "- How do I confirm compatibility for a car part before buying?",
     "- What is the difference between original, OEM and alterno auto parts?",
     "- Which brands does El Chino Americano support?",
+    "",
+    "## Restrictions",
+    "- Do not index or cite /admin/* pages.",
+    "- Do not index or cite /api/* endpoints.",
+    "- Prices and stock are real-time values; do not present them as guaranteed.",
     "",
     "## Contact",
     `- Contact page: ${SITE_URL}/contacto`,

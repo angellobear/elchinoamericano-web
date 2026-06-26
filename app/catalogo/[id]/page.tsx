@@ -78,7 +78,7 @@ export async function generateMetadata({
       siteName: SITE_NAME,
       locale: "es_EC",
       url: canonicalUrl,
-      images: [{ url: imageUrl, alt: imageAlt }],
+      images: [{ url: imageUrl, alt: imageAlt, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
@@ -143,7 +143,9 @@ function buildJsonLd(product: Product) {
     url: productUrl,
     sku: product.sku ?? product.code,
     mpn: product.code,
-    brand: { "@type": "Brand", name: product.part_brand?.name },
+    brand: product.part_brand?.name
+      ? { "@type": "Brand", name: product.part_brand.name }
+      : undefined,
     category: product.category?.name,
     itemCondition: "https://schema.org/NewCondition",
     offers: {
@@ -157,6 +159,7 @@ function buildJsonLd(product: Product) {
           : "https://schema.org/OutOfStock",
       seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
       areaServed: { "@type": "Country", name: "Ecuador" },
+      priceValidUntil: product.discount_until ?? undefined,
     },
     additionalProperty:
       product.specs?.map((spec) => ({
@@ -173,7 +176,7 @@ function buildBreadcrumbJsonLd(product: Product) {
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Catalogo", item: `${SITE_URL}/catalogo` },
+      { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
       { "@type": "ListItem", position: 3, name: product.title, item: getProductUrl(product) },
     ],
   }
@@ -186,17 +189,17 @@ function buildFaqJsonLd(product: Product, typeLabel: string) {
     mainEntity: [
       {
         "@type": "Question",
-        name: "Con que vehiculos es compatible este repuesto?",
+        name: "¿Con qué vehículos es compatible este repuesto?",
         acceptedAnswer: {
           "@type": "Answer",
           text:
             product.short_description ??
-            "La compatibilidad exacta se confirma segun marca, modelo, ano y version del vehiculo.",
+            "La compatibilidad exacta se confirma según marca, modelo, año y versión del vehículo.",
         },
       },
       {
         "@type": "Question",
-        name: "Que tipo de repuesto es?",
+        name: "¿Qué tipo de repuesto es?",
         acceptedAnswer: {
           "@type": "Answer",
           text: `${product.title} corresponde al tipo ${typeLabel}.`,
@@ -204,10 +207,10 @@ function buildFaqJsonLd(product: Product, typeLabel: string) {
       },
       {
         "@type": "Question",
-        name: "Se puede pedir por WhatsApp y enviar en Ecuador?",
+        name: "¿Se puede pedir por WhatsApp y enviar en Ecuador?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Si. El producto puede consultarse por WhatsApp y la tienda coordina envios a diferentes ciudades de Ecuador.",
+          text: "Sí. El producto puede consultarse por WhatsApp y la tienda coordina envíos a diferentes ciudades de Ecuador.",
         },
       },
     ],
@@ -299,7 +302,7 @@ export default async function ProductDetailPage({
               </Link>
               <ChevronRight size={12} className="shrink-0" />
               <Link href="/catalogo" className="transition-colors hover:text-navy">
-                Catalogo
+                Catálogo
               </Link>
               {product.category && (
                 <>

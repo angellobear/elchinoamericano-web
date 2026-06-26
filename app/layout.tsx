@@ -5,7 +5,9 @@ import { CartProvider } from "@/context/CartContext"
 import {
   DEFAULT_KEYWORDS,
   DEFAULT_SHARE_IMAGE_ALT,
+  DEFAULT_SHARE_IMAGE_HEIGHT,
   DEFAULT_SHARE_IMAGE_PATH,
+  DEFAULT_SHARE_IMAGE_WIDTH,
   GEO_PLACENAME,
   GEO_POSITION,
   GEO_REGION,
@@ -55,6 +57,8 @@ export const metadata: Metadata = {
       {
         url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
         alt: DEFAULT_SHARE_IMAGE_ALT,
+        width: DEFAULT_SHARE_IMAGE_WIDTH,
+        height: DEFAULT_SHARE_IMAGE_HEIGHT,
       },
     ],
   },
@@ -90,6 +94,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`}>
+      <head>
+        <meta httpEquiv="content-language" content="es-EC" />
+      </head>
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <CartProvider>{children}</CartProvider>
       </body>

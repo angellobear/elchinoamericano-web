@@ -6,8 +6,10 @@ export const SITE_URL = "https://elchinoamericano.com"
 export const SITE_LOCALE = "es_EC"
 export const SITE_DESCRIPTION =
   "Repuestos automotrices originales, OEM y alternos para vehiculos chinos y americanos en Ecuador. Asesoria por WhatsApp, catalogo con filtros y envios a nivel nacional."
-export const DEFAULT_SHARE_IMAGE_PATH = "/share-default-product.svg"
+export const DEFAULT_SHARE_IMAGE_PATH = "/share-default-product.png"
 export const DEFAULT_SHARE_IMAGE_ALT = "El Chino Americano, repuestos automotrices en Ecuador"
+export const DEFAULT_SHARE_IMAGE_WIDTH = 1600
+export const DEFAULT_SHARE_IMAGE_HEIGHT = 1200
 export const DEFAULT_KEYWORDS = [
   "repuestos automotrices Ecuador",
   "repuestos para vehiculos chinos",
