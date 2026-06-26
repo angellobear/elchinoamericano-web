@@ -1,5 +1,5 @@
-import { businessName } from "./site"
-import { contactInfo, getWhatsAppUrl } from "./contact"
+import { businessName, SITE_NAME, SITE_URL, SITE_LOCALE } from "./site"
+import { contactInfo, contactPageContent, getWhatsAppUrl } from "./contact"
 import { homeContent } from "./home"
 import { socialLinks } from "./social"
 
@@ -10,4 +10,14 @@ export const siteConfig = {
   social: socialLinks,
 } as const
 
-export { businessName, contactInfo, getWhatsAppUrl, homeContent, socialLinks }
+export {
+  businessName,
+  SITE_NAME,
+  SITE_URL,
+  SITE_LOCALE,
+  contactInfo,
+  contactPageContent,
+  getWhatsAppUrl,
+  homeContent,
+  socialLinks,
+}

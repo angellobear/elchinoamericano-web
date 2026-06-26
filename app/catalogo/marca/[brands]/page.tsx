@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"

@@ -7,7 +7,8 @@ export const contactInfo = {
     full: "Santo Domingo de los Tsáchilas, Ecuador",
   },
   hours: {
-    display: "Lun–Sáb · 8:00–18:00",
+    weekdays: { display: "Lun–Vie · 8:30–17:30", schema: "Mo-Fr 08:30-17:30" },
+    saturday: { display: "Sáb · 9:00–13:00", schema: "Sa 09:00-13:00" },
   },
   map: {
     embedUrl:
@@ -20,3 +21,19 @@ export function getWhatsAppUrl(message?: string) {
   const baseUrl = `https://wa.me/${contactInfo.whatsappNumber}`
   return message ? `${baseUrl}?text=${encodeURIComponent(message)}` : baseUrl
 }
+
+export const contactPageContent = {
+  metadata: {
+    title: "Contacto | El Chino Americano",
+    description:
+      "Cotiza repuestos automotrices por WhatsApp. Te respondemos en menos de 24 horas con disponibilidad y precio.",
+    keywords: [
+      "contacto repuestos Ecuador",
+      "cotizar repuestos por WhatsApp",
+      "repuestos Santo Domingo contacto",
+    ],
+    ogDescription:
+      "Escríbenos para cotizar repuestos, resolver compatibilidades o coordinar envíos en Ecuador.",
+    imageAlt: "Contacto El Chino Americano",
+  },
+} as const

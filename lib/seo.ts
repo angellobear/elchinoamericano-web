@@ -1,10 +1,10 @@
 import type { Metadata } from "next"
 import type { Product } from "@/types"
 import { buildProductPath } from "@/lib/product-slugs"
+import { SITE_NAME, SITE_URL, SITE_LOCALE } from "@/lib/constants/site"
 
-export const SITE_NAME = "El Chino Americano"
-export const SITE_URL = "https://elchinoamericano.com"
-export const SITE_LOCALE = "es_EC"
+export { SITE_NAME, SITE_URL, SITE_LOCALE }
+
 export const SITE_DESCRIPTION =
   "Repuestos automotrices originales, OEM y alternos para vehiculos chinos y americanos en Ecuador. Asesoria por WhatsApp, catalogo con filtros y envios a nivel nacional."
 export const DEFAULT_SHARE_IMAGE_PATH = "/og-image.png"

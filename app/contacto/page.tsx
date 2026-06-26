@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { MessageCircle } from "lucide-react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
-import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
+import { getWhatsAppUrl, siteConfig, contactPageContent } from "@/lib/constants"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import {
   DEFAULT_KEYWORDS,
@@ -16,24 +16,17 @@ import {
 } from "@/lib/seo"
 import ContactoForm from "./ContactoForm"
 
+const { metadata: contactMeta } = contactPageContent
+
 export const metadata: Metadata = {
-  title: "Contacto | El Chino Americano",
-  description:
-    "Cotiza repuestos automotrices por WhatsApp. Te respondemos en menos de 24 horas con disponibilidad y precio.",
-  keywords: [
-    "contacto repuestos Ecuador",
-    "cotizar repuestos por WhatsApp",
-    "repuestos Santo Domingo contacto",
-    ...DEFAULT_KEYWORDS,
-  ],
+  title: contactMeta.title,
+  description: contactMeta.description,
+  keywords: [...contactMeta.keywords, ...DEFAULT_KEYWORDS],
   alternates: { canonical: "/contacto" },
-  robots: {
-    index: true,
-    follow: true,
-  },
+  robots: { index: true, follow: true },
   openGraph: {
-    title: "Contacto | El Chino Americano",
-    description: "Escríbenos para cotizar repuestos, resolver compatibilidades o coordinar envíos en Ecuador.",
+    title: contactMeta.title,
+    description: contactMeta.ogDescription,
     type: "website",
     locale: SITE_LOCALE,
     siteName: SITE_NAME,
@@ -41,7 +34,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
-        alt: "Contacto El Chino Americano",
+        alt: contactMeta.imageAlt,
         width: DEFAULT_SHARE_IMAGE_WIDTH,
         height: DEFAULT_SHARE_IMAGE_HEIGHT,
       },
@@ -49,8 +42,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Contacto | El Chino Americano",
-    description: "Escríbenos para cotizar repuestos, resolver compatibilidades o coordinar envíos en Ecuador.",
+    title: contactMeta.title,
+    description: contactMeta.ogDescription,
     images: [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
   },
 }
@@ -199,7 +192,8 @@ export default async function ContactoPage() {
                     </div>
                     <div>
                       <p className="text-3 text-[#9fb0c8]">Horario</p>
-                      <p className="font-bold text-4 text-white mt-1">{siteConfig.contact.hours.display}</p>
+                      <p className="font-bold text-4 text-white mt-1">{siteConfig.contact.hours.weekdays.display}</p>
+                      <p className="font-bold text-4 text-white mt-0.5">{siteConfig.contact.hours.saturday.display}</p>
                     </div>
                   </li>
                 </ul>

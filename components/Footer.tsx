@@ -149,7 +149,7 @@ export default async function Footer() {
               </li>
               <li className="flex gap-2.5 items-center">
                 <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#e03030" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                <span className="text-[#9fb0c8] text-3.5">{siteConfig.contact.hours.display}</span>
+                <span className="text-[#9fb0c8] text-3.5">{siteConfig.contact.hours.weekdays.display} · {siteConfig.contact.hours.saturday.display}</span>
               </li>
             </ul>
           </div>
