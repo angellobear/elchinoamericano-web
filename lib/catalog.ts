@@ -1,5 +1,6 @@
 export const CATALOG_PAGE_SIZE = 8
 export const CATALOG_ARRAY_SEPARATOR = "|"
+export const CATALOG_BRAND_PATH_SEPARATOR = "-"
 
 export interface FilterState {
   priceRange: string
@@ -76,19 +77,34 @@ export function parseCatalogFilters(searchParams: {
   }
 }
 
+function normalizeBrandKeys(brandKeys: string[]) {
+  return [...new Set(brandKeys.filter(Boolean))].sort((a, b) => a.localeCompare(b))
+}
+
+export function parseCatalogBrandSlug(value: string) {
+  return normalizeBrandKeys(value.split(CATALOG_BRAND_PATH_SEPARATOR))
+}
+
+export function buildCatalogBrandPath(brandKeys: string[]) {
+  const normalizedBrandKeys = normalizeBrandKeys(brandKeys)
+
+  if (normalizedBrandKeys.length === 0) return "/catalogo"
+
+  return `/catalogo/marca/${normalizedBrandKeys.join(CATALOG_BRAND_PATH_SEPARATOR)}`
+}
+
 export function buildCatalogUrl(search: string, filters: FilterState, page: number) {
   const params = new URLSearchParams()
+  const basePath =
+    filters.carBrands.length > 0 ? buildCatalogBrandPath(filters.carBrands) : "/catalogo"
 
   if (search) params.set("q", search)
   if (filters.priceRange !== "all") params.set("precio", filters.priceRange)
   if (filters.categories.length) {
     params.set("categoria", filters.categories.join(CATALOG_ARRAY_SEPARATOR))
   }
-  if (filters.carBrands.length) {
-    params.set("marca", filters.carBrands.join(CATALOG_ARRAY_SEPARATOR))
-  }
   if (page > 1) params.set("pagina", String(page))
 
   const queryString = params.toString()
-  return queryString ? `/catalogo?${queryString}` : "/catalogo"
+  return queryString ? `${basePath}?${queryString}` : basePath
 }

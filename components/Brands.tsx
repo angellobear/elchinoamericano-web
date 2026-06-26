@@ -1,6 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import { motion, useReducedMotion } from "framer-motion"
+import { buildCatalogBrandPath } from "@/lib/catalog"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -12,8 +14,8 @@ const fadeUp = {
 
 function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
   return (
-    <a
-      href={`/catalogo?marca=${brand.key}`}
+    <Link
+      href={buildCatalogBrandPath([brand.key])}
       className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 grid place-items-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
     >
       <img
@@ -24,7 +26,7 @@ function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
       <span className="font-display font-bold text-5 -mt-11 text-white leading-none tracking-[.04em]">
         {brand.name.toUpperCase()}
       </span>
-    </a>
+    </Link>
   )
 }
 

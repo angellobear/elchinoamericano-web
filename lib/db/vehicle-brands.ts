@@ -189,6 +189,11 @@ export async function getVehicleBrandsWithModels(options?: ActiveQueryOptions) {
 
 export async function getVehicleBrandsForAdmin(options?: ActiveQueryOptions) {
   const db = await getDb()
+  const visibilityOptions = {
+    includeInactive: true,
+    withTrashed: options?.withTrashed ?? false,
+  } satisfies ActiveQueryOptions
+
   const [brands, models] = await Promise.all([
     db
       .select({
@@ -200,7 +205,7 @@ export async function getVehicleBrandsForAdmin(options?: ActiveQueryOptions) {
         isVisibleOnWeb: vehicleBrands.isVisibleOnWeb,
       })
       .from(vehicleBrands)
-      .where(buildVisibilityWhere(vehicleBrands.isActive, vehicleBrands.deletedAt, options))
+      .where(buildVisibilityWhere(vehicleBrands.isActive, vehicleBrands.deletedAt, visibilityOptions))
       .orderBy(asc(vehicleBrands.sortOrder)),
     db
       .select({
@@ -208,7 +213,7 @@ export async function getVehicleBrandsForAdmin(options?: ActiveQueryOptions) {
         brandId: vehicleModels.brandId,
       })
       .from(vehicleModels)
-      .where(buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, options)),
+      .where(buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, visibilityOptions)),
   ])
 
   return brands.map((brand) => ({

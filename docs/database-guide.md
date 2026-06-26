@@ -39,6 +39,19 @@ DATABASE_URL=mysql://root:password@localhost:3306/elchinoamericano
 
 En servidor, la app runtime usa `process.env.DATABASE_URL` del hosting.
 
+## Version soportada
+
+La base oficial del proyecto es:
+
+- `MySQL 8.0+`
+
+No se soporta:
+
+- `MySQL 5.7`
+- `MariaDB`
+
+La app ahora valida eso al conectar y falla rapido si el servidor no cumple.
+
 ## Comandos
 
 ### Generar migracion
@@ -129,10 +142,9 @@ lib/audit.ts
 
 ## Nota importante sobre versiones de MySQL
 
-Aunque ahora solo usamos MySQL, la version si importa.
+Aunque ahora solo usamos MySQL, la version sigue importando.
 
-- MySQL 5.7 no soporta algunas cosas que MySQL 8 si
-- por eso evitamos depender de SQL moderno en runtime
-- el objetivo del proyecto ahora es mantenerse en el minimo comun compatible con MySQL 5.7
-
-En otras palabras: ya no hay conflicto entre motores, pero todavia debemos escribir pensando en compatibilidad entre versiones de MySQL.
+- este proyecto ya no apunta al minimo comun denominador
+- el target oficial es `MySQL 8.0+`
+- podemos usar queries y comportamiento alineados con ese contrato
+- si un hosting solo ofrece `5.7`, ese hosting no es compatible con el proyecto

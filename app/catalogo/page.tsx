@@ -3,20 +3,18 @@ import { Suspense } from "react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import CatalogoClient from "./CatalogoClient"
-import { products } from "@/data/products"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 import {
   CATALOG_PAGE_SIZE,
-  CATALOG_PRICE_RANGES,
   parseCatalogFilters,
 } from "@/lib/catalog"
+import { filterCatalogProducts } from "@/lib/catalog-products"
 import {
   DEFAULT_SHARE_IMAGE_PATH,
   SITE_NAME,
   SITE_URL,
   toAbsoluteUrl,
 } from "@/lib/seo"
-import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
 
 export const metadata: Metadata = {
   title: "Catálogo de Repuestos | El Chino Americano",
@@ -49,39 +47,6 @@ export const metadata: Metadata = {
   },
 }
 
-function filterProducts(search: string, priceRangeId: string, categories: string[], carBrands: string[]) {
-  const normalizedSearch = search.trim().toLowerCase()
-  const selectedPriceRange =
-    CATALOG_PRICE_RANGES.find((range) => range.id === priceRangeId) ??
-    CATALOG_PRICE_RANGES[0]
-
-  return products.filter((product) => {
-    const effectivePrice = product.offer_price ?? product.price
-    const matchesSearch =
-      normalizedSearch === "" ||
-      product.title.toLowerCase().includes(normalizedSearch) ||
-      (product.short_description ?? "").toLowerCase().includes(normalizedSearch) ||
-      (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch) ||
-      product.code.toLowerCase().includes(normalizedSearch)
-    const matchesPrice =
-      effectivePrice >= selectedPriceRange.min &&
-      (selectedPriceRange.max === Infinity
-        ? true
-        : effectivePrice <= selectedPriceRange.max)
-    const matchesCategory =
-      categories.length === 0 || categories.includes(product.category?.key ?? "")
-    const vehicleBrandKeys =
-      product.compatibilities?.map((compatibility) =>
-        compatibility.model?.brand?.name ? toVehicleBrandKey(compatibility.model.brand.name) : ""
-      ) ?? []
-    const matchesBrand =
-      carBrands.length === 0 ||
-      carBrands.some((brand) => vehicleBrandKeys.includes(brand))
-
-    return matchesSearch && matchesPrice && matchesCategory && matchesBrand
-  })
-}
-
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   const resolvedSearchParams = await props.searchParams
   const brands = await getVisibleVehicleBrands()
@@ -91,7 +56,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
     ...filters,
     carBrands: filters.carBrands.filter((brand) => visibleBrandKeys.has(brand)),
   }
-  const filteredProducts = filterProducts(
+  const filteredProducts = filterCatalogProducts(
     search,
     sanitizedFilters.priceRange,
     sanitizedFilters.categories,

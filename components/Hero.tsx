@@ -4,8 +4,9 @@ import Image from "next/image"
 import Link from "next/link"
 import { useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
-import { Layers, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
+import { CreditCard, Layers, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { buildCatalogBrandPath } from "@/lib/catalog"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
@@ -36,8 +37,8 @@ const PARTS = [
 const STAT_STRIP = [
   { icon: Truck, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Envíos a todo Ecuador", sub: "Entrega 24–72 h" },
   { icon: MessageCircle, iconColor: "text-wa", iconBg: "bg-wa/14", title: "Asesoría por WhatsApp", sub: "Respuesta en < 24 h" },
-  { icon: ShieldCheck, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Calidad garantizada", sub: "Originales y OEM" },
-  { icon: Layers, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Original · OEM · Alterno", sub: "3 líneas de precio" },
+  { icon: ShieldCheck, iconColor: "text-brand", iconBg: "bg-brand/14", title: "Calidad garantizada", sub: "Originales, OEM y alterno" },
+  { icon: CreditCard, iconColor: "text-wa", iconBg: "bg-wa/14", title: "Múltiples formas de pago", sub: "Tarjeta, transferencia, efectivo" },
 ]
 
 const EASE = [0.22, 1, 0.36, 1] as const
@@ -72,9 +73,7 @@ function HeroSearch({ brands }: { brands: PublicVehicleBrand[] }) {
       </select>
       <button
         onClick={() => {
-          const params = new URLSearchParams()
-          if (marca) params.set("marca", marca)
-          router.push(`/catalogo${params.size ? `?${params}` : ""}`)
+          router.push(marca ? buildCatalogBrandPath([marca]) : "/catalogo")
         }}
         className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-sm px-6 py-3 rounded-xl whitespace-nowrap transition-colors"
       >
@@ -120,20 +119,19 @@ export default function Hero({ brands }: HeroProps) {
             animate="visible"
             variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.11 } } }}
           >
-            <motion.div variants={fadeUp} className="flex items-center gap-2 mb-5">
+            {/* <motion.div variants={fadeUp} className="flex items-center gap-2 mb-5">
               <span className="h-1.75 w-1.75 rounded-full bg-brand shrink-0" />
                 <span className="text-3.25 font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
-                {siteConfig.contact.address.city} · {siteConfig.contact.address.country} — Repuestos chinos y americanos
+                  El Chino Americano
                 </span>
-            </motion.div>
-
+            </motion.div> */}
             <motion.h1
               variants={fadeUp}
               className="font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
             >
-              Repuestos que
+              Repuestos de calidad para tu
               <br />
-              <span className="text-brand">sí encajan.</span>
+              <span className="text-brand">vehículo</span>
             </motion.h1>
 
             <motion.p variants={fadeUp} className="mt-5 max-w-lg text-[#9fb0c8] text-4.5 leading-[1.55]">
@@ -144,7 +142,7 @@ export default function Hero({ brands }: HeroProps) {
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3 mt-8">
               <Link
                 href="/catalogo"
-                className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-[26px] py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-6.5 py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <Search size={18} />
                 Buscar mi repuesto
@@ -166,13 +164,13 @@ export default function Hero({ brands }: HeroProps) {
               </p>
               <div className="flex flex-wrap gap-2">
                 {brands.map((brand) => (
-                  <a
+                  <Link
                     key={brand.id}
-                    href={`/catalogo?marca=${brand.key}`}
+                    href={buildCatalogBrandPath([brand.key])}
                     className="font-display font-bold text-4 text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-[15px] py-2 rounded-full transition-colors duration-150"
                   >
                     {brand.name.toUpperCase()}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </motion.div>

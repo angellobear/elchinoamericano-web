@@ -7,6 +7,7 @@ import Brands from "@/components/Brands"
 import Footer from "@/components/Footer"
 import { siteConfig } from "@/lib/constants"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
+import { buildCatalogBrandPath } from "@/lib/catalog"
 import {
   DEFAULT_SHARE_IMAGE_PATH,
   SITE_NAME,
@@ -103,7 +104,7 @@ export default async function Home() {
           "@type": "ListItem",
           position: index + 1,
           name: brand.name,
-          url: `${SITE_URL}/catalogo?marca=${brand.key}`,
+          url: `${SITE_URL}${buildCatalogBrandPath([brand.key])}`,
         })),
       },
     ],

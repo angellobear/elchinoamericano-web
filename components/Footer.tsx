@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { MessageCircle } from "lucide-react"
+import { buildCatalogBrandPath } from "@/lib/catalog"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 
 const CATALOG_LINKS = [
@@ -12,12 +13,12 @@ const CATALOG_LINKS = [
 ]
 
 const BRAND_LINKS = [
-  { label: "Chery", href: "/catalogo?marca=chery" },
-  { label: "SWM", href: "/catalogo?marca=swm" },
-  { label: "Great Wall", href: "/catalogo?marca=great_wall" },
-  { label: "Shineray", href: "/catalogo?marca=shineray" },
-  { label: "Ford", href: "/catalogo?marca=ford" },
-  { label: "Chevrolet", href: "/catalogo?marca=chevrolet" },
+  { label: "Chery", href: buildCatalogBrandPath(["chery"]) },
+  { label: "SWM", href: buildCatalogBrandPath(["swm"]) },
+  { label: "Great Wall", href: buildCatalogBrandPath(["great_wall"]) },
+  { label: "Shineray", href: buildCatalogBrandPath(["shineray"]) },
+  { label: "Ford", href: buildCatalogBrandPath(["ford"]) },
+  { label: "Chevrolet", href: buildCatalogBrandPath(["chevrolet"]) },
 ]
 
 function FacebookIcon() {
@@ -102,12 +103,12 @@ export default function Footer() {
             <ul className="flex flex-col gap-[11px]">
               {CATALOG_LINKS.map(({ label, href }) => (
                 <li key={label}>
-                  <a
+                  <Link
                     href={href}
                     className="text-[#7e8ca3] hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                   >
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -121,12 +122,12 @@ export default function Footer() {
             <ul className="flex flex-col gap-[11px]">
               {BRAND_LINKS.map(({ label, href }) => (
                 <li key={label}>
-                  <a
+                  <Link
                     href={href}
                     className="text-[#7e8ca3] hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                   >
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

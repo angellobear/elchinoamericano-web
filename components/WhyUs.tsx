@@ -12,11 +12,6 @@ const FEATURES = [
     description: "Mándanos la placa o el número de pieza y te confirmamos compatibilidad antes de comprar.",
   },
   {
-    icon: ShieldCheck,
-    title: "Stock real y verificado",
-    description: "Lo que ves en el catálogo es lo que hay. Nada de pedidos fantasma que nunca llegan.",
-  },
-  {
     icon: Truck,
     title: "Envíos a todo el Ecuador",
     description: `Desde ${siteConfig.contact.address.city} a cualquier ciudad, con seguimiento y entrega en 24–72 horas.`,
