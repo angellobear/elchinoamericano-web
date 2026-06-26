@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import { Suspense } from "react"
 import { notFound } from "next/navigation"
 import Navbar from "@/components/Navbar"
@@ -14,14 +13,9 @@ import {
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
 import {
-  DEFAULT_KEYWORDS,
-  DEFAULT_SHARE_IMAGE_HEIGHT,
-  DEFAULT_SHARE_IMAGE_PATH,
-  DEFAULT_SHARE_IMAGE_WIDTH,
   SITE_NAME,
   SITE_URL,
-  SITE_LOCALE,
-  toAbsoluteUrl,
+  buildCatalogMetadata,
 } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
 
@@ -54,53 +48,21 @@ export async function generateMetadata({
     brandNames.length === 1 ? brandNames[0] : brandNames.slice(0, -1).join(", ") + ` y ${brandNames.at(-1)}`
   const canonicalPath = buildCatalogBrandPath(matchedBrands.map((brand) => brand.key))
 
-  return {
-    title: `Repuestos para ${titleBrandText} | ${SITE_NAME}`,
-    description:
-      brandNames.length === 1
-        ? `Explora repuestos automotrices para ${titleBrandText} en Ecuador. Encuentra opciones originales, OEM y alternas con asesoría especializada.`
-        : `Explora repuestos automotrices para ${titleBrandText} en Ecuador. Compara opciones originales, OEM y alternas en un solo catálogo.`,
-    alternates: {
-      canonical: canonicalPath,
+  const description =
+    brandNames.length === 1
+      ? `Explora repuestos automotrices para ${titleBrandText} en Ecuador. Encuentra opciones originales, OEM y alternas con asesoría especializada.`
+      : `Explora repuestos automotrices para ${titleBrandText} en Ecuador. Compara opciones originales, OEM y alternas en un solo catálogo.`
+
+  return buildCatalogMetadata(
+    `Repuestos para ${titleBrandText} | ${SITE_NAME}`,
+    description,
+    canonicalPath,
+    {
+      extraKeywords: [`repuestos ${titleBrandText} Ecuador`, `catalogo ${titleBrandText}`],
+      ogDescription: `Catálogo de repuestos para ${titleBrandText} con envíos a todo Ecuador.`,
+      imageAlt: `Repuestos para ${titleBrandText} en Ecuador`,
     },
-    keywords: [
-      `repuestos ${titleBrandText} Ecuador`,
-      `catalogo ${titleBrandText}`,
-      ...DEFAULT_KEYWORDS,
-    ],
-    robots: {
-      index: true,
-      follow: true,
-    },
-    openGraph: {
-      title: `Repuestos para ${titleBrandText} | ${SITE_NAME}`,
-      description:
-        brandNames.length === 1
-          ? `Catálogo de repuestos para ${titleBrandText} con envíos a todo Ecuador.`
-          : `Catálogo de repuestos para ${titleBrandText} con envíos a todo Ecuador.`,
-      type: "website",
-      locale: SITE_LOCALE,
-      siteName: SITE_NAME,
-      url: `${SITE_URL}${canonicalPath}`,
-      images: [
-        {
-          url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
-          alt: `Repuestos para ${titleBrandText} en Ecuador`,
-          width: DEFAULT_SHARE_IMAGE_WIDTH,
-          height: DEFAULT_SHARE_IMAGE_HEIGHT,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: `Repuestos para ${titleBrandText} | ${SITE_NAME}`,
-      description:
-        brandNames.length === 1
-          ? `Encuentra repuestos para ${titleBrandText} en Ecuador.`
-          : `Encuentra repuestos para ${titleBrandText} en Ecuador.`,
-      images: [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
-    },
-  }
+  )
 }
 
 export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marca/[brands]">) {

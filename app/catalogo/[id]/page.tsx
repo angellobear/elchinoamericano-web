@@ -16,8 +16,10 @@ import Navbar from "@/components/Navbar"
 import ProductCarousel from "@/components/ProductCarousel"
 import { products } from "@/data/products"
 import {
+  DEFAULT_PRODUCT_IMAGE_PATH,
   SITE_NAME,
   SITE_URL,
+  getProductDisplayImage,
   getProductSeoDescription,
   getProductSeoTitle,
   getProductShareImage,
@@ -261,13 +263,28 @@ export default async function ProductDetailPage({
     : null
 
   const carouselFallback = (
-    <div className="flex flex-col items-center gap-4 p-8 text-center">
-      <Package size={80} className="text-navy/15" strokeWidth={0.75} />
-      <div>
-        <p className="font-display text-lg font-bold leading-tight text-slate-400">
-          {product.part_brand?.name}
+    <div className="relative h-full w-full">
+      <Image
+        src={DEFAULT_PRODUCT_IMAGE_PATH}
+        alt={`${product.title} - imagen referencial`}
+        title={`${product.title} - imagen referencial`}
+        fill
+        className="object-contain p-6"
+        sizes="(max-width: 768px) 100vw, 50vw"
+      />
+      <div className="absolute inset-x-4 bottom-4 rounded-xl bg-navy/84 px-4 py-3 text-left">
+        <div className="flex items-center gap-2 text-white/80">
+          <Package size={16} strokeWidth={1.5} />
+          <span className="text-[11px] font-semibold uppercase tracking-[.08em]">
+            Imagen referencial
+          </span>
+        </div>
+        <p className="mt-2 font-display text-base font-bold leading-tight text-white">
+          {product.part_brand?.name ?? product.title}
         </p>
-        <p className="mt-1 text-xs text-slate-400">{categoryName}</p>
+        {categoryName && (
+          <p className="mt-1 text-xs text-white/70">{categoryName}</p>
+        )}
       </div>
     </div>
   )
@@ -746,9 +763,8 @@ export default async function ProductDetailPage({
               </div>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {related.map((relatedProduct) => {
-                  const relatedImage =
-                    relatedProduct.images?.find((img) => img.is_primary)?.url ??
-                    relatedProduct.images?.[0]?.url
+                  const relatedImage = getProductDisplayImage(relatedProduct)
+                  const hasRelatedImage = Boolean(relatedProduct.images?.length)
 
                   return (
                     <Link
@@ -757,24 +773,18 @@ export default async function ProductDetailPage({
                       className="group flex flex-col overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                     >
                       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#f3f5f9]">
-                        {relatedImage ? (
-                          <Image
-                            src={relatedImage}
-                            alt={relatedProduct.title}
-                            fill
-                            className="object-contain p-2"
-                            sizes="200px"
-                          />
-                        ) : (
-                          <div className="absolute inset-0 flex items-center justify-center bg-navy">
-                            <Image
-                              src="/logo-ca.png"
-                              alt=""
-                              width={80}
-                              height={27}
-                              className="object-contain opacity-[.55]"
-                              style={{ width: "auto", height: "auto" }}
-                            />
+                        <Image
+                          src={relatedImage}
+                          alt={hasRelatedImage ? relatedProduct.title : `${relatedProduct.title} - imagen referencial`}
+                          fill
+                          className={hasRelatedImage ? "object-cover" : "object-contain p-2"}
+                          sizes="200px"
+                        />
+                        {!hasRelatedImage && (
+                          <div className="absolute inset-x-0 bottom-0 bg-navy/82 px-3 py-2 text-center">
+                            <span className="text-[11px] font-semibold uppercase tracking-[.08em] text-white/85">
+                              Imagen referencial
+                            </span>
                           </div>
                         )}
                       </div>

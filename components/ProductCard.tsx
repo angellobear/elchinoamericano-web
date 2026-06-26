@@ -7,6 +7,7 @@ import { MessageCircle, Package } from "lucide-react"
 import { Product } from "@/types"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { buildProductPath } from "@/lib/product-slugs"
+import { DEFAULT_PRODUCT_IMAGE_PATH, getProductPrimaryImage } from "@/lib/seo"
 
 const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   original: { label: "Original", cls: "bg-navy text-white" },
@@ -15,7 +16,8 @@ const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
 }
 
 export default function ProductCard({ product }: { product: Product }) {
-  const primaryImage = product.images?.find(i => i.is_primary)?.url ?? product.images?.[0]?.url
+  const primaryImage = getProductPrimaryImage(product)
+  const displayImage = primaryImage ?? DEFAULT_PRODUCT_IMAGE_PATH
   const effectivePrice = product.offer_price ?? product.price
   const badge = TYPE_BADGE[product.type] ?? TYPE_BADGE.aftermarket
   const discountPct = product.offer_price
@@ -43,18 +45,25 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* Image 4:3 */}
       <div className="relative aspect-4/3 overflow-hidden pointer-events-none">
-        {primaryImage ? (
-          <Image
-            src={primaryImage}
-            alt={product.title}
-            fill
-            className="object-contain p-3 bg-[#f3f5f9]"
-            sizes="(max-width: 640px) 50vw, 33vw"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-navy flex flex-col items-center justify-center gap-2">
-            <Package size={44} className="text-white/20" strokeWidth={1.25} />
-            <span className="text-2.5 text-[#5f7090] font-mono">{product.category?.name}</span>
+        <Image
+          src={displayImage}
+          alt={primaryImage ? product.title : `${product.title} - imagen referencial`}
+          fill
+          className={primaryImage ? "object-cover bg-[#f3f5f9]" : "object-contain p-3 bg-[#f3f5f9]"}
+          sizes="(max-width: 640px) 50vw, 33vw"
+          loading={primaryImage ? "lazy" : "eager"}
+        />
+        {!primaryImage && (
+          <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-navy/82 px-3 py-2 text-white">
+            <div className="flex items-center gap-2">
+              <Package size={16} className="text-white/70" strokeWidth={1.5} />
+              <span className="text-[11px] font-semibold uppercase tracking-[.08em]">
+                Imagen referencial
+              </span>
+            </div>
+            {product.category?.name && (
+              <span className="text-[11px] text-white/70">{product.category.name}</span>
+            )}
           </div>
         )}
         {/* Type badge */}

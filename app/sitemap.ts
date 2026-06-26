@@ -3,6 +3,7 @@ import { products } from "@/data/products"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import {
+  DEFAULT_PRODUCT_IMAGE_PATH,
   DEFAULT_SHARE_IMAGE_PATH,
   SITE_URL,
   getProductPrimaryImage,
@@ -52,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: catalogLastModified,
     changeFrequency: "daily",
     priority: 0.9,
-    images: [toAbsoluteUrl(getProductPrimaryImage(product) ?? DEFAULT_SHARE_IMAGE_PATH)],
+    images: [toAbsoluteUrl(getProductPrimaryImage(product) ?? DEFAULT_PRODUCT_IMAGE_PATH)],
   }))
 
   return [...staticRoutes, ...brandRoutes, ...productRoutes]

@@ -55,15 +55,16 @@ export default async function Footer() {
           {/* Brand + social */}
           <div className="flex flex-col gap-5">
             <Link href="/" aria-label="Ir al inicio de El Chino Americano" title="El Chino Americano - Inicio">
-              <Image
-                src="/logo-ca.png"
-                alt="El Chino Americano"
-                title="El Chino Americano"
-                width={160}
-                height={64}
-                className="h-16 w-auto object-contain"
-                style={{ width: "auto", height: "64px" }}
-              />
+              <div className="relative h-16 w-[68px]">
+                <Image
+                  src="/logo-ca.png"
+                  alt="El Chino Americano"
+                  title="El Chino Americano"
+                  fill
+                  className="object-contain"
+                  sizes="68px"
+                />
+              </div>
             </Link>
             <p className="text-[#7e8ca3] text-sm leading-relaxed max-w-70">
               Repuestos originales, OEM y alternos para autos chinos y americanos. {siteConfig.contact.address.full}

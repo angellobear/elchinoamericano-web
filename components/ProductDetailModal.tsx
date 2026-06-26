@@ -7,6 +7,7 @@ import { useCart } from "@/context/CartContext"
 import { Product } from "@/types"
 import { cn } from "@/lib/utils"
 import { getWhatsAppUrl } from "@/lib/constants"
+import { DEFAULT_PRODUCT_IMAGE_PATH, getProductPrimaryImage } from "@/lib/seo"
 
 interface ProductDetailModalProps {
   product: Product | null
@@ -15,7 +16,8 @@ interface ProductDetailModalProps {
 
 export default function ProductDetailModal({ product, onClose }: ProductDetailModalProps) {
   const { dispatch } = useCart()
-  const primaryImage = product?.images?.find(i => i.is_primary)?.url ?? product?.images?.[0]?.url
+  const primaryImage = product ? getProductPrimaryImage(product) : null
+  const displayImage = primaryImage ?? DEFAULT_PRODUCT_IMAGE_PATH
   const effectivePrice = product ? (product.offer_price ?? product.price) : 0
 
   function handleAdd() {
@@ -65,10 +67,19 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
               <div className="p-6 flex flex-col gap-6">
                 <div className="flex items-center gap-6">
                   <div className="w-28 h-28 bg-slate-50 rounded-xl flex items-center justify-center shrink-0 border border-slate-100 relative overflow-hidden">
-                    {primaryImage ? (
-                      <Image src={primaryImage} alt={product.title} fill className="object-contain p-2" sizes="112px" />
-                    ) : (
-                      <Package size={56} className="text-navy/30" strokeWidth={1.5} />
+                    <Image
+                      src={displayImage}
+                      alt={primaryImage ? product.title : `${product.title} - imagen referencial`}
+                      fill
+                      className="object-contain p-2"
+                      sizes="112px"
+                    />
+                    {!primaryImage && (
+                      <div className="absolute inset-x-2 bottom-2 rounded-md bg-navy/80 px-2 py-1 text-center">
+                        <span className="text-[10px] font-semibold uppercase tracking-[.08em] text-white/85">
+                          Imagen referencial
+                        </span>
+                      </div>
                     )}
                   </div>
                   <div className="flex flex-col gap-2">

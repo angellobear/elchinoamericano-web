@@ -1,4 +1,3 @@
-import type { Metadata } from "next"
 import { Suspense } from "react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
@@ -10,62 +9,21 @@ import {
   parseCatalogFilters,
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
-import {
-  DEFAULT_KEYWORDS,
-  DEFAULT_SHARE_IMAGE_HEIGHT,
-  DEFAULT_SHARE_IMAGE_PATH,
-  DEFAULT_SHARE_IMAGE_WIDTH,
-  SITE_NAME,
-  SITE_URL,
-  SITE_LOCALE,
-  toAbsoluteUrl,
-} from "@/lib/seo"
+import { buildCatalogMetadata, SITE_NAME, SITE_URL } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
 
 export const revalidate = 3600
 
-export const metadata: Metadata = {
-  title: "Catálogo de Repuestos | El Chino Americano",
-  description:
-    "Explora nuestro catálogo de repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y precio con envíos a todo Ecuador.",
-  keywords: [
-    "catalogo de repuestos Ecuador",
-    "repuestos por marca Ecuador",
-    "repuestos por categoria Ecuador",
-    ...DEFAULT_KEYWORDS,
-  ],
-  alternates: {
-    canonical: "/catalogo",
+export const metadata = buildCatalogMetadata(
+  "Catálogo de Repuestos | El Chino Americano",
+  "Explora nuestro catálogo de repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y precio con envíos a todo Ecuador.",
+  "/catalogo",
+  {
+    extraKeywords: ["catalogo de repuestos Ecuador", "repuestos por marca Ecuador", "repuestos por categoria Ecuador"],
+    ogDescription: "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador.",
+    imageAlt: "Catálogo de repuestos El Chino Americano",
   },
-  robots: {
-    index: true,
-    follow: true,
-  },
-  openGraph: {
-    title: "Catálogo de Repuestos | El Chino Americano",
-    description:
-      "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador.",
-    type: "website",
-    locale: SITE_LOCALE,
-    siteName: SITE_NAME,
-    url: `${SITE_URL}/catalogo`,
-    images: [
-      {
-        url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
-        alt: "Catálogo de repuestos El Chino Americano",
-        width: DEFAULT_SHARE_IMAGE_WIDTH,
-        height: DEFAULT_SHARE_IMAGE_HEIGHT,
-      },
-    ],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Catálogo de Repuestos | El Chino Americano",
-    description:
-      "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador.",
-    images: [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
-  },
-}
+)
 
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   const resolvedSearchParams = await props.searchParams

@@ -64,16 +64,17 @@ export default function Navbar() {
             title="El Chino Americano - Inicio"
             className="flex items-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-navy rounded-sm"
           >
-            <Image
-              src="/logo-ca.png"
-              alt="El Chino Americano"
-              title="El Chino Americano"
-              width={120}
-              height={50}
-              className="h-[50px] w-auto object-contain"
-              style={{ width: "auto", height: "50px" }}
-              priority
-            />
+            <div className="relative h-[50px] w-[53px]">
+              <Image
+                src="/logo-ca.png"
+                alt="El Chino Americano"
+                title="El Chino Americano"
+                fill
+                className="object-contain"
+                sizes="53px"
+                priority
+              />
+            </div>
           </Link>
 
           {/* Desktop nav */}
@@ -139,15 +140,16 @@ export default function Navbar() {
               <SheetContent side="left" className="bg-navy border-r border-white/10 w-64 px-6 pt-10">
                 <div className="flex flex-col gap-8">
                   <Link href="/">
-                    <Image
-                      src="/logo-ca.png"
-                      alt="El Chino Americano"
-                      title="El Chino Americano"
-                      width={120}
-                      height={40}
-                      className="h-10 w-auto object-contain"
-                      style={{ width: "auto", height: "40px" }}
-                    />
+                    <div className="relative h-10 w-[43px]">
+                      <Image
+                        src="/logo-ca.png"
+                        alt="El Chino Americano"
+                        title="El Chino Americano"
+                        fill
+                        className="object-contain"
+                        sizes="43px"
+                      />
+                    </div>
                   </Link>
                   <nav className="flex flex-col gap-1">
                     {NAV_LINKS.map((link) => (
