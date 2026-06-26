@@ -88,7 +88,7 @@ export default function CatalogFilters({
     <div className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <span className="font-display font-bold text-navy text-lg">Filtros</span>
+        <h2 className="font-display font-bold text-navy text-lg">Filtros</h2>
         {activeCount > 0 && (
           <button
             onClick={onClear}

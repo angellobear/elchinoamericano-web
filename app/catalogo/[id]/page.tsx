@@ -728,6 +728,7 @@ export default async function ProductDetailPage({
                               width={80}
                               height={27}
                               className="object-contain opacity-[.55]"
+                              style={{ width: "auto", height: "auto" }}
                             />
                           </div>
                         )}

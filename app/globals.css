@@ -37,7 +37,7 @@
   --radius-lg: var(--radius); /* 8px  — code tags */
   --radius-xl: calc(var(--radius) + 4px); /* 12px — buttons */
   --radius-2xl: calc(var(--radius) + 8px); /* 16px — cards, containers */
-  --radius-3xl: calc(var(--radius) + 16px); /* 2x4px — shadcn default 3xl */
+  --radius-3xl: calc(var(--radius) + 16px); /* 24px — shadcn default 3xl */
 
   --text-tiny: 0.625rem; /* 10px */
 

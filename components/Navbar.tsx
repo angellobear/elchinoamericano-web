@@ -13,9 +13,9 @@ import { getWhatsAppUrl } from "@/lib/constants"
 
 const NAV_LINKS = [
   { href: "/", label: "Inicio" },
-  { href: "/catalogo", label: "Catálogo" },
-  { href: "/#marcas", label: "Marcas" },
   { href: "/#nosotros", label: "Nosotros" },
+  { href: "/#marcas", label: "Marcas" },
+  { href: "/catalogo", label: "Catálogo" },
   { href: "/contacto", label: "Contacto" },
 ]
 

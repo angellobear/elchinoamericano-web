@@ -337,6 +337,7 @@ export default function CatalogoClient({
           </aside>
 
           <div className="flex-1 min-w-0">
+            <h2 id="products-heading" className="sr-only">Listado de repuestos</h2>
             <AnimatePresence>
               {(activeCount > 0 || search) && (
                 <motion.div
