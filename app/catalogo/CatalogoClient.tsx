@@ -27,6 +27,9 @@ import { toVehicleBrandKey, type PublicVehicleBrand } from "@/lib/vehicle-brands
 
 interface CatalogoClientProps {
   brands: PublicVehicleBrand[]
+  breadcrumbLabel?: string
+  headerDescription?: string
+  headerTitle?: string
   initialFilters: FilterState
   initialPage: number
   initialSearch: string
@@ -192,6 +195,9 @@ function Pagination({
 
 export default function CatalogoClient({
   brands,
+  breadcrumbLabel = "Catálogo",
+  headerDescription,
+  headerTitle = "Catálogo de repuestos",
   initialFilters,
   initialPage,
   initialSearch,
@@ -251,13 +257,18 @@ export default function CatalogoClient({
       <div className="bg-navy px-4 sm:px-6 lg:px-8 pt-[30px] pb-[38px]">
         <div className="max-w-7xl mx-auto">
           <p className="text-3.25 font-medium text-[#9fb0c8]">
-            Inicio <span className="text-[#5f7090]">/</span> <span className="text-white">Catálogo</span>
+            Inicio <span className="text-[#5f7090]">/</span> <span className="text-white">{breadcrumbLabel}</span>
           </p>
           <div className="flex items-end justify-between mt-3 gap-4 flex-wrap">
             <div>
               <h1 className="font-display font-bold text-[#f4f7fb] uppercase leading-none text-[clamp(2rem,5vw,3.25rem)]">
-                Catálogo de repuestos
+                {headerTitle}
               </h1>
+              {headerDescription && (
+                <p className="max-w-3xl text-[#9fb0c8] text-3.75 mt-2 leading-relaxed">
+                  {headerDescription}
+                </p>
+              )}
               <p className="text-[#9fb0c8] text-3.75 mt-2">
                 <b className="text-white">{filteredProducts.length}</b>{" "}
                 {filteredProducts.length === 1 ? "repuesto encontrado" : "repuestos encontrados"}

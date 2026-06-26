@@ -16,6 +16,8 @@ import {
   toAbsoluteUrl,
 } from "@/lib/seo"
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: "Catálogo de Repuestos | El Chino Americano",
   description:
@@ -109,6 +111,9 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
         <CatalogoClient
           key={`${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${sanitizedFilters.carBrands.join(",")}-${safePage}`}
           brands={brands}
+          breadcrumbLabel="Catálogo"
+          headerDescription="Explora repuestos originales, OEM y alternos para vehículos chinos y americanos con filtros listos para encontrar la pieza correcta."
+          headerTitle="Catálogo de repuestos"
           initialFilters={sanitizedFilters}
           initialPage={safePage}
           initialSearch={search}

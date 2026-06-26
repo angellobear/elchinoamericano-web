@@ -19,6 +19,8 @@ import {
   toAbsoluteUrl,
 } from "@/lib/seo"
 
+export const revalidate = 3600
+
 export async function generateMetadata({
   params,
 }: {
@@ -107,6 +109,10 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
   )
   const canonicalPath = buildCatalogBrandPath(matchedBrands.map((brand) => brand.key))
   const brandNames = matchedBrands.map((brand) => brand.name)
+  const titleBrandText =
+    brandNames.length === 1
+      ? brandNames[0]
+      : brandNames.slice(0, -1).join(", ") + ` y ${brandNames.at(-1)}`
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
@@ -158,6 +164,17 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
         <CatalogoClient
           key={`${brandSlug}-${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${safePage}`}
           brands={visibleBrands}
+          breadcrumbLabel={brandNames.length === 1 ? brandNames[0] : `Marcas: ${titleBrandText}`}
+          headerDescription={
+            brandNames.length === 1
+              ? `Catálogo especializado en repuestos para ${brandNames[0]}. Filtra por categoría, precio y encuentra alternativas originales, OEM y alternas.`
+              : `Catálogo especializado en repuestos para ${titleBrandText}. Compara compatibilidades y filtra por categoría o precio desde una sola landing.`
+          }
+          headerTitle={
+            brandNames.length === 1
+              ? `Repuestos para ${brandNames[0]}`
+              : `Repuestos para ${titleBrandText}`
+          }
           initialFilters={sanitizedFilters}
           initialPage={safePage}
           initialSearch={search}
