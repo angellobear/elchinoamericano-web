@@ -4,6 +4,7 @@ import Footer from "@/components/Footer"
 import CatalogoClient from "./CatalogoClient"
 import { getCategories } from "@/lib/db/categories"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
+import { getPublicProducts } from "@/lib/db/products"
 import {
   CATALOG_PAGE_SIZE,
   parseCatalogFilters,
@@ -27,9 +28,10 @@ export const metadata = buildCatalogMetadata(
 
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   const resolvedSearchParams = await props.searchParams
-  const [brands, categories] = await Promise.all([
+  const [brands, categories, allProducts] = await Promise.all([
     getPublicVehicleBrands(),
     getCategories(),
+    getPublicProducts(),
   ])
   const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
   const activeBrandKeys = new Set(brands.map((brand) => brand.key))
@@ -40,6 +42,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
     carBrands: filters.carBrands.filter((brand) => activeBrandKeys.has(brand)),
   }
   const filteredProducts = filterCatalogProducts(
+    allProducts,
     search,
     sanitizedFilters.priceRange,
     sanitizedFilters.categories,
@@ -109,6 +112,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
           key={`${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${sanitizedFilters.carBrands.join(",")}-${safePage}`}
           brands={brands}
           categories={categories.map((category) => ({ id: category.key, label: category.name }))}
+          products={allProducts}
           breadcrumbLabel="Catálogo"
           headerDescription="Explora repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y rango de precio para encontrar la pieza correcta."
           headerTitle="Catálogo de repuestos"

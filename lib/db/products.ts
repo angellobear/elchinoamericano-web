@@ -6,6 +6,7 @@ import {
 import { eq, desc, and, sql } from 'drizzle-orm'
 import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
+import type { Product, ProductType, VehicleOrigin } from '@/types'
 import {
   buildNotDeletedWhere,
   type SoftDeleteQueryOptions,
@@ -287,4 +288,165 @@ export async function updateStock(productId: number, newStock: number, userId: s
     logActivitySafe('UPDATE', 'products', productId, beforeProduct as Record<string, unknown> | undefined, afterProduct as Record<string, unknown> | undefined, { userId }),
     logActivitySafe('CREATE', 'stock_movements', productId, undefined, movement as Record<string, unknown>, { userId }),
   ])
+}
+
+// ─── Public catalog helpers ───────────────────────────────────────────────────
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function toPublicProduct(row: any): Product {
+  const computedOfferPrice: number | undefined =
+    row.offerPrice ?? offerPrice(row.price, row.discountPct, row.discountUntil)
+  return {
+    id: row.id,
+    code: row.code ?? '',
+    sku: row.sku ?? undefined,
+    title: row.title,
+    short_title: row.shortTitle ?? undefined,
+    description: row.description ?? undefined,
+    short_description: row.shortDescription ?? undefined,
+    price: parseFloat(row.price),
+    discount_pct: row.discountPct ? parseFloat(row.discountPct) : undefined,
+    discount_until: row.discountUntil instanceof Date ? row.discountUntil.toISOString() : (row.discountUntil ?? null),
+    offer_price: computedOfferPrice,
+    stock: row.stock,
+    min_stock_alert: row.minStockAlert ?? undefined,
+    category_id: row.categoryId ?? undefined,
+    category: row.category ? {
+      id: row.category.id,
+      key: row.category.key,
+      name: row.category.name,
+      sort_order: row.category.sortOrder ?? 0,
+      is_active: row.category.isActive ?? true,
+    } : undefined,
+    part_brand_id: row.partBrandId ?? undefined,
+    part_brand: row.partBrand ? {
+      id: row.partBrand.id,
+      name: row.partBrand.name,
+      logo_url: row.partBrand.logoUrl ?? undefined,
+      is_active: row.partBrand.isActive ?? true,
+    } : undefined,
+    type: row.type as ProductType,
+    slug: row.slug,
+    meta_title: row.metaTitle ?? undefined,
+    meta_description: row.metaDescription ?? undefined,
+    is_featured: row.isFeatured ?? false,
+    is_active: row.isActive ?? true,
+    images: row.images?.map((img: any) => ({
+      id: img.id,
+      product_id: img.productId ?? 0,
+      url: img.url,
+      cloudinary_public_id: img.cloudinaryPublicId ?? undefined,
+      alt_text: img.altText ?? undefined,
+      is_primary: img.isPrimary ?? false,
+      sort_order: img.sortOrder ?? 0,
+    })),
+    specs: row.specs?.map((s: any) => ({
+      id: s.id,
+      label: s.label,
+      value: s.value,
+      sort_order: s.sortOrder ?? undefined,
+    })),
+    alternate_codes: row.alternateCodes?.map((ac: any) => ({
+      id: ac.id,
+      product_id: ac.productId ?? 0,
+      code: ac.code,
+      source: ac.source ?? undefined,
+    })),
+    compatibilities: row.compatibilities?.map((c: any) => ({
+      product_id: c.productId ?? 0,
+      vehicle_model_id: c.vehicleModelId ?? 0,
+      notes: c.notes ?? undefined,
+      model: c.model ? {
+        id: c.model.id,
+        brand_id: c.model.brandId ?? 0,
+        name: c.model.name,
+        displacement: c.model.displacement ?? undefined,
+        // yearStart/yearEnd live on the compatibility row, not the model
+        year_start: c.yearStart ?? undefined,
+        year_end: c.yearEnd ?? null,
+        is_active: c.model.isActive ?? true,
+        brand: c.model.brand ? {
+          id: c.model.brand.id,
+          name: c.model.brand.name,
+          origin: c.model.brand.origin as VehicleOrigin,
+          sort_order: c.model.brand.sortOrder ?? 0,
+          is_active: c.model.brand.isActive ?? true,
+        } : undefined,
+      } : undefined,
+    })),
+    equivalencies: row.equivalencies?.map((eq: any) => toPublicProduct(eq)),
+  }
+}
+
+export async function getPublicProducts(): Promise<Product[]> {
+  const db = await getDb()
+  const rows = await db.query.products.findMany({
+    where: and(eq(products.isActive, true), buildNotDeletedWhere(products.deletedAt)),
+    with: {
+      category: true,
+      partBrand: true,
+      images: true,
+      specs: true,
+      alternateCodes: true,
+      compatibilities: { with: { model: { with: { brand: true } } } },
+    },
+    orderBy: desc(products.createdAt),
+  })
+  return rows.map(r => toPublicProduct({
+    ...r,
+    offerPrice: offerPrice(r.price, r.discountPct, r.discountUntil),
+  }))
+}
+
+export async function getPublicProductBySlug(slug: string): Promise<Product | null> {
+  const row = await getProductBySlug(slug)
+  if (!row) return null
+  return toPublicProduct(row)
+}
+
+export async function getPublicProductByCode(code: string): Promise<Product | null> {
+  const db = await getDb()
+  const row = await db.query.products.findFirst({
+    where: and(
+      sql`lower(${products.code}) = lower(${code})`,
+      eq(products.isActive, true),
+      buildNotDeletedWhere(products.deletedAt),
+    ),
+    with: {
+      category: true, partBrand: true, supplier: true, images: true,
+      specs: true, alternateCodes: true,
+      compatibilities: { with: { model: { with: { brand: true } } } },
+    },
+  })
+  if (!row) return null
+  const eqRows = await db.query.productEquivalencies.findMany({
+    where: eq(productEquivalencies.productId, row.id),
+    with: { equivalent: { with: { images: { where: eq(productImages.isPrimary, true) } } } },
+  })
+  return toPublicProduct({
+    ...row,
+    offerPrice: offerPrice(row.price, row.discountPct, row.discountUntil),
+    equivalencies: eqRows.map(e => e.equivalent),
+  })
+}
+
+export async function getPublicProductsByCategory(categoryKey: string, excludeId: number, limit = 4): Promise<Product[]> {
+  const db = await getDb()
+  // join through category to filter by key
+  const catRows = await db.query.categories.findFirst({
+    where: (cat, { eq: eqFn }) => eqFn(cat.key, categoryKey),
+  })
+  if (!catRows) return []
+  const rows = await db.query.products.findMany({
+    where: and(
+      eq(products.isActive, true),
+      eq(products.categoryId, catRows.id),
+      buildNotDeletedWhere(products.deletedAt),
+      sql`${products.id} != ${excludeId}`,
+    ),
+    with: { category: true, partBrand: true, images: true },
+    limit,
+    orderBy: desc(products.createdAt),
+  })
+  return rows.map(r => toPublicProduct({ ...r, offerPrice: offerPrice(r.price, r.discountPct, r.discountUntil) }))
 }

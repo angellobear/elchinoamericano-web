@@ -6,6 +6,7 @@ import Footer from "@/components/Footer"
 import CatalogoClient from "@/app/catalogo/CatalogoClient"
 import { getCategories } from "@/lib/db/categories"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
+import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogBrandPath,
   CATALOG_PAGE_SIZE,
@@ -67,11 +68,12 @@ export async function generateMetadata({
 }
 
 export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marca/[brands]">) {
-  const [{ brands: brandSlug }, resolvedSearchParams, activeBrands, categories] = await Promise.all([
+  const [{ brands: brandSlug }, resolvedSearchParams, activeBrands, categories, allProducts] = await Promise.all([
     props.params,
     props.searchParams,
     getPublicVehicleBrands(),
     getCategories(),
+    getPublicProducts(),
   ])
 
   const requestedKeys = parseCatalogBrandSlug(brandSlug)
@@ -87,6 +89,7 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
     carBrands: matchedBrands.map((brand) => brand.key),
   }
   const filteredProducts = filterCatalogProducts(
+    allProducts,
     search,
     sanitizedFilters.priceRange,
     sanitizedFilters.categories,
@@ -174,6 +177,7 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
           key={`${brandSlug}-${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${safePage}`}
           brands={activeBrands}
           categories={categories.map((category) => ({ id: category.key, label: category.name }))}
+          products={allProducts}
           breadcrumbLabel={brandNames.length === 1 ? brandNames[0] : `Marcas: ${titleBrandText}`}
           headerDescription={
             brandNames.length === 1

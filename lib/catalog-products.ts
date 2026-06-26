@@ -1,8 +1,9 @@
-import { products } from "@/data/products"
 import { CATALOG_PRICE_RANGES } from "@/lib/catalog"
 import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
+import type { Product } from "@/types"
 
 export function filterCatalogProducts(
+  allProducts: Product[],
   search: string,
   priceRangeId: string,
   categories: string[],
@@ -13,7 +14,7 @@ export function filterCatalogProducts(
     CATALOG_PRICE_RANGES.find((range) => range.id === priceRangeId) ??
     CATALOG_PRICE_RANGES[0]
 
-  return products.filter((product) => {
+  return allProducts.filter((product) => {
     const effectivePrice = product.offer_price ?? product.price
     const matchesSearch =
       normalizedSearch === "" ||

@@ -14,7 +14,7 @@ import CatalogFilters from "@/components/CatalogFilters"
 import ProductGrid from "@/components/ProductGrid"
 import RequestPartForm from "@/components/RequestPartForm"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { products } from "@/data/products"
+import type { Product } from "@/types"
 import {
   buildCatalogUrl,
   CATALOG_PAGE_SIZE,
@@ -33,6 +33,7 @@ interface CatalogCategoryOption {
 interface CatalogoClientProps {
   brands: PublicVehicleBrand[]
   categories: CatalogCategoryOption[]
+  products: Product[]
   breadcrumbLabel?: string
   headerDescription?: string
   headerTitle?: string
@@ -41,13 +42,13 @@ interface CatalogoClientProps {
   initialSearch: string
 }
 
-function getFilteredProducts(search: string, filters: FilterState) {
+function getFilteredProducts(allProducts: Product[], search: string, filters: FilterState) {
   const normalizedSearch = search.trim().toLowerCase()
   const selectedPriceRange =
     CATALOG_PRICE_RANGES.find((range) => range.id === filters.priceRange) ??
     CATALOG_PRICE_RANGES[0]
 
-  return products.filter((product) => {
+  return allProducts.filter((product) => {
     const effectivePrice = product.offer_price ?? product.price
     const matchesSearch =
       normalizedSearch === "" ||
@@ -205,6 +206,7 @@ function Pagination({
 export default function CatalogoClient({
   brands,
   categories,
+  products,
   breadcrumbLabel = "Catálogo",
   headerDescription,
   headerTitle = "Catálogo de repuestos",
@@ -219,7 +221,7 @@ export default function CatalogoClient({
   const [filters, setFilters] = useState(initialFilters)
   const [page, setPage] = useState(initialPage)
 
-  const filteredProducts = getFilteredProducts(search, filters)
+  const filteredProducts = getFilteredProducts(products, search, filters)
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / CATALOG_PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
   const paginatedProducts = filteredProducts.slice(

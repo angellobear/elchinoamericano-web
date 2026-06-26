@@ -14,7 +14,7 @@ import AddToCartButton from "@/components/AddToCartButton"
 import Footer from "@/components/Footer"
 import Navbar from "@/components/Navbar"
 import ProductCarousel from "@/components/ProductCarousel"
-import { products } from "@/data/products"
+import { getPublicProducts, getPublicProductByCode, getPublicProductBySlug, getPublicProductsByCategory } from "@/lib/db/products"
 import {
   DEFAULT_PRODUCT_IMAGE_PATH,
   SITE_NAME,
@@ -27,14 +27,15 @@ import {
   getProductUrl,
 } from "@/lib/seo"
 import { getWhatsAppUrl } from "@/lib/constants"
-import { buildProductPath, resolveProductFromRouteSegment } from "@/lib/product-slugs"
+import { buildProductPath, extractProductCodeFromSegment } from "@/lib/product-slugs"
 import type { Product, ProductType } from "@/types"
 import ProductStickyBar from "./ProductStickyBar"
 
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  return products.map((product) => ({
+  const allProducts = await getPublicProducts()
+  return allProducts.map((product) => ({
     id: buildProductPath(product).replace("/catalogo/", ""),
   }))
 }
@@ -45,7 +46,10 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const { product } = resolveProductFromRouteSegment(products, id)
+  const extractedCode = extractProductCodeFromSegment(id)
+  const product = extractedCode
+    ? await getPublicProductByCode(extractedCode)
+    : await getPublicProductBySlug(id)
   if (!product) return {}
 
   const typeLabel =
@@ -225,9 +229,15 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const { product, shouldRedirect } = resolveProductFromRouteSegment(products, id)
+  const extractedCode = extractProductCodeFromSegment(id)
+  const product = extractedCode
+    ? await getPublicProductByCode(extractedCode)
+    : await getPublicProductBySlug(id)
   if (!product) notFound()
-  if (shouldRedirect) {
+
+  // Redirect if URL doesn't match canonical path
+  const canonicalSegment = buildProductPath(product).replace("/catalogo/", "")
+  if (canonicalSegment !== id) {
     permanentRedirect(buildProductPath(product))
   }
 
@@ -237,9 +247,9 @@ export default async function ProductDetailPage({
   const discountPct = product.offer_price
     ? Math.round((1 - product.offer_price / product.price) * 100)
     : 0
-  const related = products
-    .filter((p) => p.category?.key === product.category?.key && p.id !== product.id)
-    .slice(0, 4)
+  const related = product.category?.key
+    ? await getPublicProductsByCategory(product.category.key, product.id)
+    : []
 
   const whatsappMsg =
     `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (Cod: ${product.code}). Esta disponible? Cuanto es el envio?`

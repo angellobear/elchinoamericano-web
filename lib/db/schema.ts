@@ -252,3 +252,7 @@ export const productImagesRelations = relations(productImages, ({ one }) => ({
 export const productSpecsRelations = relations(productSpecs, ({ one }) => ({
   product: one(products, { fields: [productSpecs.productId], references: [products.id] }),
 }))
+
+export const productAlternateCodesRelations = relations(productAlternateCodes, ({ one }) => ({
+  product: one(products, { fields: [productAlternateCodes.productId], references: [products.id] }),
+}))
