@@ -126,7 +126,7 @@ export default function WhyUs() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.5 }}
           variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.1 } } }}
-          className="grid grid-cols-3 gap-6 mt-12"
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 mt-12"
         >
           {STATS.map(({ value, label }) => (
             <motion.div key={label} variants={fadeUp} className="bg-navy rounded-2xl py-7.5 px-5 text-center">
