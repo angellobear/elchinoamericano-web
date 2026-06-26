@@ -3,32 +3,126 @@ import { MessageCircle } from "lucide-react"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
+import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
+import {
+  DEFAULT_KEYWORDS,
+  DEFAULT_SHARE_IMAGE_PATH,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+  toAbsoluteUrl,
+} from "@/lib/seo"
 import ContactoForm from "./ContactoForm"
 
 export const metadata: Metadata = {
   title: "Contacto | El Chino Americano",
   description:
     "Cotiza repuestos automotrices por WhatsApp. Te respondemos en menos de 24 horas con disponibilidad y precio.",
+  keywords: [
+    "contacto repuestos Ecuador",
+    "cotizar repuestos por WhatsApp",
+    "repuestos Santo Domingo contacto",
+    ...DEFAULT_KEYWORDS,
+  ],
   alternates: { canonical: "/contacto" },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "Contacto | El Chino Americano",
     description: "Escríbenos para cotizar repuestos, resolver compatibilidades o coordinar envíos en Ecuador.",
     type: "website",
-    locale: "es_EC",
-    siteName: "El Chino Americano",
-    url: "https://elchinoamericano.com/contacto",
+    locale: SITE_LOCALE,
+    siteName: SITE_NAME,
+    url: `${SITE_URL}/contacto`,
+    images: [
+      {
+        url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
+        alt: "Contacto El Chino Americano",
+      },
+    ],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Contacto | El Chino Americano",
     description: "Escríbenos para cotizar repuestos, resolver compatibilidades o coordinar envíos en Ecuador.",
+    images: [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
   },
 }
 
-export default function ContactoPage() {
+export default async function ContactoPage() {
+  const brands = await getPublicVehicleBrands()
+  const contactJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ContactPage",
+        "@id": `${SITE_URL}/contacto#page`,
+        url: `${SITE_URL}/contacto`,
+        name: "Contacto | El Chino Americano",
+        description: metadata.description,
+        inLanguage: "es-EC",
+      },
+      {
+        "@type": "AutoPartsStore",
+        "@id": `${SITE_URL}/#business`,
+        name: SITE_NAME,
+        url: SITE_URL,
+        telephone: siteConfig.contact.whatsappDisplay,
+        areaServed: "EC",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: siteConfig.contact.address.city,
+          addressCountry: siteConfig.contact.address.country,
+          streetAddress: siteConfig.contact.address.full,
+        },
+        contactPoint: {
+          "@type": "ContactPoint",
+          contactType: "sales",
+          telephone: siteConfig.contact.whatsappDisplay,
+          availableLanguage: "es",
+          areaServed: "EC",
+        },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "Como cotizo un repuesto?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Puedes escribirnos por WhatsApp o completar el formulario con marca, modelo, ano y datos del repuesto para recibir una cotizacion.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Atienden fuera de Santo Domingo de los Tsachilas?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Si. Coordinamos pedidos y envios a distintas ciudades de Ecuador.",
+            },
+          },
+        ],
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Contacto", item: `${SITE_URL}/contacto` },
+        ],
+      },
+    ],
+  }
+
   return (
     <>
       <Navbar />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
+      />
       <main className="min-h-screen pt-16">
         {/* Header band */}
         <div className="relative overflow-hidden bg-navy py-10 px-4 sm:px-6 lg:px-8">
@@ -38,9 +132,9 @@ export default function ContactoPage() {
             aria-hidden="true"
           />
           <div className="relative max-w-7xl mx-auto">
-            <p className="text-3.25 text-[#9fb0c8]">
+            <nav aria-label="Breadcrumb" className="text-3.25 text-[#9fb0c8]">
               Inicio <span className="text-[#5f7090]">/</span> <span className="text-white">Contacto</span>
-            </p>
+            </nav>
             <h1 className="font-display font-bold text-[#f4f7fb] uppercase leading-[.95] text-[clamp(2.2rem,5vw,3.5rem)] mt-3">
               Hablemos de tu repuesto
             </h1>
@@ -62,7 +156,7 @@ export default function ContactoPage() {
               <p className="text-3.5 text-[#8a93a3] mt-1.5 mb-6">
                 Mientras más datos nos des, más rápido lo encontramos.
               </p>
-              <ContactoForm />
+              <ContactoForm brands={brands} />
             </div>
 
             {/* Info + map */}

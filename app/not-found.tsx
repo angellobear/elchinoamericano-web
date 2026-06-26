@@ -12,7 +12,7 @@ export default function NotFound() {
           El repuesto que buscas no está aquí. Prueba en el catálogo.
         </p>
         <Link
-          href="/"
+          href="/catalogo"
           className="inline-flex items-center gap-2 px-6 py-3 bg-brand text-white text-sm rounded-lg hover:bg-red-700 transition-colors font-medium"
         >
           <Home size={14} />

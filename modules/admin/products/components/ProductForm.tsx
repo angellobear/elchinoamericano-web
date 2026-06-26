@@ -7,6 +7,7 @@ import { ProductImagesSection } from '@/app/admin/products/_components/ProductIm
 import { routes } from '@/lib/routes'
 import { DynamicRows } from '@/app/admin/products/_components/DynamicRows'
 import { CompatSection } from '@/app/admin/products/_components/CompatSection'
+import { buildProductSlugBase } from '@/lib/product-slugs'
 import { ValidatedForm } from '@/modules/admin/shared/components/ValidatedForm'
 import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
@@ -21,6 +22,12 @@ interface ProductBrandOption {
   id: number
   name: string
   models: { id: number; name: string }[]
+}
+
+function buildSlugPreview(code?: string | null, slug?: string | null) {
+  const normalizedCode = code?.trim().toLowerCase() || 'ca-0000'
+  const normalizedSlug = buildProductSlugBase(slug?.trim() || 'slug-del-producto')
+  return `/catalogo/${normalizedCode}-${normalizedSlug}`
 }
 
 interface ProductFormProps {
@@ -199,9 +206,14 @@ export function ProductForm({
             <textarea name="description" rows={4} defaultValue={defaults?.description ?? ''} placeholder="Descripción completa del producto..." className={`${inputCls} resize-y`} />
           </div>
           <div>
-            <Label>Slug</Label>
+            <Label>Slug base SEO</Label>
             <input name="slug" defaultValue={defaults?.slug ?? ''} placeholder="Se genera automáticamente del título si lo dejas vacío" className={inputCls} />
-            {mode === 'create' ? <p className="text-xs text-gray-400 mt-1">URL amigable: /catalogo/este-slug</p> : null}
+            <p className="text-xs text-gray-400 mt-1">
+              URL pública: {buildSlugPreview(defaults?.code, defaults?.slug)}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              La ruta final usa el código estable del producto más este slug para mantener SEO y redirecciones canónicas.
+            </p>
           </div>
           <div>
             <Label>Meta título</Label>

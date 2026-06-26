@@ -9,9 +9,11 @@ import { siteConfig } from "@/lib/constants"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import {
+  DEFAULT_KEYWORDS,
   DEFAULT_SHARE_IMAGE_PATH,
   SITE_NAME,
   SITE_URL,
+  SITE_LOCALE,
   toAbsoluteUrl,
 } from "@/lib/seo"
 
@@ -25,12 +27,17 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "/",
   },
-  keywords: [...homeMetadata.keywords],
+  keywords: [...homeMetadata.keywords, ...DEFAULT_KEYWORDS],
+  category: "Automotive",
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: homeMetadata.openGraphTitle,
     description: homeMetadata.openGraphDescription,
     type: "website",
-    locale: "es_EC",
+    locale: SITE_LOCALE,
     siteName: SITE_NAME,
     url: SITE_URL,
     images: [
@@ -49,9 +56,37 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  
   const brands = await getVisibleVehicleBrands()
-  
+  const homeFaqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "Que tipo de repuestos vende El Chino Americano?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Trabajamos con repuestos originales, OEM y alternos para vehiculos chinos y americanos.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Hacen envios fuera de Santo Domingo de los Tsachilas?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Si. Coordinamos envios a diferentes ciudades de Ecuador y brindamos asesoria por WhatsApp antes de la compra.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Como confirmo la compatibilidad de un repuesto?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Puedes escribirnos por WhatsApp con marca, modelo, ano, numero de pieza o una foto para validar la aplicacion correcta del repuesto.",
+        },
+      },
+    ],
+  }
   const homeJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -63,7 +98,7 @@ export default async function Home() {
         inLanguage: "es-EC",
         potentialAction: {
           "@type": "SearchAction",
-          target: `${SITE_URL}/catalogo?search={search_term_string}`,
+          target: `${SITE_URL}/catalogo?q={search_term_string}`,
           "query-input": "required name=search_term_string",
         },
       },
@@ -96,6 +131,7 @@ export default async function Home() {
         sameAs: Object.values(siteConfig.social).filter((url) => url !== "#"),
         knowsAbout: [...homeStructuredData.knowsAbout],
       },
+      homeFaqJsonLd,
       {
         "@type": "ItemList",
         "@id": `${SITE_URL}/#brands`,

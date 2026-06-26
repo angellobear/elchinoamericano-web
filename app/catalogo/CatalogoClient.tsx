@@ -25,8 +25,14 @@ import {
 } from "@/lib/catalog"
 import { toVehicleBrandKey, type PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
+interface CatalogCategoryOption {
+  id: string
+  label: string
+}
+
 interface CatalogoClientProps {
   brands: PublicVehicleBrand[]
+  categories: CatalogCategoryOption[]
   breadcrumbLabel?: string
   headerDescription?: string
   headerTitle?: string
@@ -71,6 +77,7 @@ function getFilteredProducts(search: string, filters: FilterState) {
 
 function ActiveFilterChips({
   brands,
+  categories,
   filters,
   search,
   onRemoveCategory,
@@ -79,6 +86,7 @@ function ActiveFilterChips({
   onClear,
 }: {
   brands: PublicVehicleBrand[]
+  categories: CatalogCategoryOption[]
   filters: FilterState
   search: string
   onRemoveCategory: (category: string) => void
@@ -89,6 +97,7 @@ function ActiveFilterChips({
   const activeCount = countActiveFilters(filters) + (search ? 1 : 0)
   if (activeCount === 0) return null
   const brandLabels = new Map(brands.map((brand) => [brand.key, brand.name]))
+  const categoryLabels = new Map(categories.map((category) => [category.id, category.label]))
 
   return (
     <div className="flex flex-wrap items-center gap-2 mb-5">
@@ -106,7 +115,7 @@ function ActiveFilterChips({
       {filters.categories.map((category) => (
         <Chip
           key={category}
-          label={category.charAt(0).toUpperCase() + category.slice(1)}
+          label={categoryLabels.get(category) ?? category}
           onRemove={() => onRemoveCategory(category)}
         />
       ))}
@@ -195,6 +204,7 @@ function Pagination({
 
 export default function CatalogoClient({
   brands,
+  categories,
   breadcrumbLabel = "Catálogo",
   headerDescription,
   headerTitle = "Catálogo de repuestos",
@@ -321,6 +331,7 @@ export default function CatalogoClient({
                 <SheetContent side="left" className="w-72 px-6 pt-10 overflow-y-auto">
                   <CatalogFilters
                     brands={brands}
+                    categories={categories}
                     filters={filters}
                     onChange={handleFiltersChange}
                     activeCount={activeCount}
@@ -339,6 +350,7 @@ export default function CatalogoClient({
             <div className="sticky top-30 bg-white rounded-[14px] border border-slate-200 p-5">
               <CatalogFilters
                 brands={brands}
+                categories={categories}
                 filters={filters}
                 onChange={handleFiltersChange}
                 activeCount={activeCount}
@@ -359,6 +371,7 @@ export default function CatalogoClient({
                 >
                   <ActiveFilterChips
                     brands={brands}
+                    categories={categories}
                     filters={filters}
                     search={search}
                     onRemoveCategory={(category) =>

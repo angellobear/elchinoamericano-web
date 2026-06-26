@@ -48,6 +48,7 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
             fill
             src={images[0]}
             alt={productName ?? "Imagen del producto"}
+            title={productName ?? "Imagen del producto"}
             className="object-contain transition-transform duration-300 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
@@ -83,6 +84,7 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
               fill
               src={src}
               alt={`${productName ?? "Producto"} — imagen ${i + 1}`}
+              title={`${productName ?? "Producto"} — imagen ${i + 1}`}
               className={cn(
                 "object-contain transition-all duration-300",
                 i === current ? "opacity-100 z-10" : "opacity-0 z-0"
@@ -136,6 +138,7 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
                 fill
                 src={src}
                 alt={`Miniatura ${i + 1}`}
+                title={`Miniatura ${i + 1}`}
                 className="object-contain bg-slate-100"
                 sizes="64px"
               />
@@ -183,6 +186,7 @@ function LightBox({
       <img
         src={images[current]}
         alt={productName ?? "Imagen ampliada"}
+        title={productName ?? "Imagen ampliada"}
         className="max-w-full max-h-full object-contain rounded-xl"
         onClick={(e) => e.stopPropagation()}
       />

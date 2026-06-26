@@ -3,6 +3,7 @@ import Link from "next/link"
 import { MessageCircle } from "lucide-react"
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
+import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 
 const CATALOG_LINKS = [
   { label: "Motor", href: "/catalogo?categoria=motor" },
@@ -10,15 +11,6 @@ const CATALOG_LINKS = [
   { label: "Suspensión", href: "/catalogo?categoria=suspension" },
   { label: "Eléctrico", href: "/catalogo?categoria=electrico" },
   { label: "Carrocería", href: "/catalogo?categoria=carroceria" },
-]
-
-const BRAND_LINKS = [
-  { label: "Chery", href: buildCatalogBrandPath(["chery"]) },
-  { label: "SWM", href: buildCatalogBrandPath(["swm"]) },
-  { label: "Great Wall", href: buildCatalogBrandPath(["great_wall"]) },
-  { label: "Shineray", href: buildCatalogBrandPath(["shineray"]) },
-  { label: "Ford", href: buildCatalogBrandPath(["ford"]) },
-  { label: "Chevrolet", href: buildCatalogBrandPath(["chevrolet"]) },
 ]
 
 function FacebookIcon() {
@@ -47,7 +39,8 @@ function TikTokIcon() {
   )
 }
 
-export default function Footer() {
+export default async function Footer() {
+  const brands = (await getVisibleVehicleBrands()).slice(0, 10)
   const socialLinks = [
     { href: siteConfig.social.facebook, label: "Facebook", icon: <FacebookIcon />, cls: "text-[#9fb0c8] hover:text-white" },
     { href: siteConfig.social.instagram, label: "Instagram", icon: <InstagramIcon />, cls: "text-[#9fb0c8] hover:text-white" },
@@ -61,10 +54,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10 pb-12 border-b border-white/8">
           {/* Brand + social */}
           <div className="flex flex-col gap-5">
-            <Link href="/">
+            <Link href="/" aria-label="Ir al inicio de El Chino Americano" title="El Chino Americano - Inicio">
               <Image
                 src="/logo-ca.png"
                 alt="El Chino Americano"
+                title="El Chino Americano"
                 width={160}
                 height={64}
                 className="h-16 w-auto object-contain"
@@ -84,6 +78,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
+                  title={label}
                   target={external ? "_blank" : undefined}
                   rel={external ? "noopener noreferrer" : undefined}
                   className={`w-9.5 h-9.5 rounded-[10px] flex items-center justify-center transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isWa ? "bg-wa text-[#062b15] hover:brightness-105" : `bg-[#13294a] ${cls}`}`}
@@ -105,6 +100,7 @@ export default function Footer() {
                 <li key={label}>
                   <Link
                     href={href}
+                    title={`Ver repuestos de ${label}`}
                     className="text-[#7e8ca3] hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                   >
                     {label}
@@ -119,14 +115,15 @@ export default function Footer() {
             <p className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
               Marcas
             </p>
-            <ul className="flex flex-col gap-[11px]">
-              {BRAND_LINKS.map(({ label, href }) => (
-                <li key={label}>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-[11px]">
+              {brands.map((brand) => (
+                <li key={brand.id}>
                   <Link
-                    href={href}
+                    href={buildCatalogBrandPath([brand.key])}
+                    title={`Ver repuestos para ${brand.name}`}
                     className="text-[#7e8ca3] hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                   >
-                    {label}
+                    {brand.name}
                   </Link>
                 </li>
               ))}
@@ -145,7 +142,7 @@ export default function Footer() {
               </li>
               <li className="flex gap-2.5 items-center">
                 <MessageCircle size={17} className="text-wa shrink-0" />
-                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="text-white font-semibold text-3.5 hover:text-wa transition-colors">
+                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" title="Escribir por WhatsApp a El Chino Americano" className="text-white font-semibold text-3.5 hover:text-wa transition-colors">
                   {siteConfig.contact.whatsappDisplay}
                 </a>
               </li>

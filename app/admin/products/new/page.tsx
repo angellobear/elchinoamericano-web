@@ -15,6 +15,7 @@ import { getPartBrands } from '@/lib/db/part-brands'
 import { getSuppliers } from '@/lib/db/suppliers'
 import { getVehicleBrandsWithModels } from '@/lib/db/vehicle-brands'
 import { logger } from '@/lib/logger'
+import { buildProductPath, buildProductSlugBase } from '@/lib/product-slugs'
 import { routes } from '@/lib/routes'
 import { ProductForm } from '@/modules/admin/products/components/ProductForm'
 import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/products/form-schema'
@@ -22,16 +23,6 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
-
-function buildProductSlug(value: string) {
-  return value
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9-]/g, '')
-    .replace(/-+/g, '-')
-}
 
 async function create(_: ActionState, formData: FormData) {
   'use server'
@@ -68,12 +59,13 @@ async function create(_: ActionState, formData: FormData) {
       isFeatured,
       isActive,
     } = parsed.data
+    const normalizedSlug = buildProductSlugBase(slug || title)
 
-    const { id } = await createProduct({
+    const { id, code } = await createProduct({
       title,
       shortTitle,
       sku,
-      slug: slug || buildProductSlug(title),
+      slug: normalizedSlug,
       price,
       costPrice,
       discountPct,
@@ -120,6 +112,9 @@ async function create(_: ActionState, formData: FormData) {
     logger.info({ id, title }, 'Product created')
     revalidatePath(routes.admin.products.index)
     revalidatePath(routes.admin.inventory.index)
+    revalidatePath('/')
+    revalidatePath('/catalogo')
+    revalidatePath(buildProductPath({ code, slug: normalizedSlug }))
   } catch (error) {
     logger.error({ error }, 'Error creating product')
     return errorResult('Error al crear el producto')

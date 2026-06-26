@@ -6,6 +6,7 @@ import { motion } from "framer-motion"
 import { MessageCircle, Package } from "lucide-react"
 import { Product } from "@/types"
 import { getWhatsAppUrl } from "@/lib/constants"
+import { buildProductPath } from "@/lib/product-slugs"
 
 const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   original: { label: "Original", cls: "bg-navy text-white" },
@@ -34,9 +35,10 @@ export default function ProductCard({ product }: { product: Product }) {
     >
       {/* Full-card link */}
       <Link
-        href={`/catalogo/${product.slug}`}
+        href={buildProductPath(product)}
         className="absolute inset-0 z-0"
         aria-label={`Ver ${product.title}`}
+        title={`Ver detalle de ${product.title}`}
       />
 
       {/* Image 4:3 */}
@@ -90,6 +92,7 @@ export default function ProductCard({ product }: { product: Product }) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
+            title={`Consultar ${product.title} por WhatsApp`}
             className="relative z-10 pointer-events-auto flex items-center gap-1.5 bg-wa hover:brightness-105 text-[#062b15] font-bold text-3 px-[13px] py-2.5 rounded-[9px] transition-all shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
           >
             <MessageCircle size={14} />

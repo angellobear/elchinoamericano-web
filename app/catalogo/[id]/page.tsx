@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation"
+import { notFound, permanentRedirect } from "next/navigation"
 import type { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
@@ -25,11 +25,16 @@ import {
   getProductUrl,
 } from "@/lib/seo"
 import { getWhatsAppUrl } from "@/lib/constants"
+import { buildProductPath, resolveProductFromRouteSegment } from "@/lib/product-slugs"
 import type { Product, ProductType } from "@/types"
 import ProductStickyBar from "./ProductStickyBar"
 
+export const revalidate = 3600
+
 export async function generateStaticParams() {
-  return products.map((p) => ({ id: p.slug }))
+  return products.map((product) => ({
+    id: buildProductPath(product).replace("/catalogo/", ""),
+  }))
 }
 
 export async function generateMetadata({
@@ -38,7 +43,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const { id } = await params
-  const product = products.find((p) => p.slug === id) ?? products.find((p) => String(p.id) === id)
+  const { product } = resolveProductFromRouteSegment(products, id)
   if (!product) return {}
 
   const typeLabel =
@@ -215,8 +220,11 @@ export default async function ProductDetailPage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const product = products.find((p) => p.slug === id) ?? products.find((p) => String(p.id) === id)
+  const { product, shouldRedirect } = resolveProductFromRouteSegment(products, id)
   if (!product) notFound()
+  if (shouldRedirect) {
+    permanentRedirect(buildProductPath(product))
+  }
 
   const typeConfig = TYPE_CONFIG[product.type]
   const categoryName = product.category?.name ?? ""
@@ -235,6 +243,13 @@ export default async function ProductDetailPage({
   const hasDescription = Boolean(product.description || product.alternate_codes?.length)
   const hasSpecs = Boolean(product.specs?.length)
   const specs = product.specs ?? []
+  const quickFacts = [
+    product.code ? { label: "Codigo", value: product.code } : null,
+    product.part_brand?.name ? { label: "Marca del repuesto", value: product.part_brand.name } : null,
+    product.category?.name ? { label: "Categoria", value: product.category.name } : null,
+    { label: "Tipo", value: typeConfig.label },
+    product.short_description ? { label: "Compatibilidad base", value: product.short_description } : null,
+  ].filter((fact): fact is { label: string; value: string } => Boolean(fact))
   const offerDeadline = product.discount_until
     ? new Intl.DateTimeFormat("es-EC", {
         day: "numeric",
@@ -421,6 +436,33 @@ export default async function ProductDetailPage({
                   <p className="text-3.75 leading-[1.6] text-[#566071]">
                     {product.short_description}
                   </p>
+                )}
+
+                {quickFacts.length > 0 && (
+                  <section
+                    aria-labelledby="product-quick-summary"
+                    className="rounded-[13px] border border-[#e6e9ef] bg-[#f8fafc] p-4"
+                  >
+                    <h2
+                      id="product-quick-summary"
+                      className="text-3.25 font-bold uppercase tracking-[.08em] text-navy"
+                    >
+                      Resumen rapido
+                    </h2>
+                    <dl className="mt-3 space-y-2">
+                      {quickFacts.map((fact) => (
+                        <div
+                          key={fact.label}
+                          className="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4"
+                        >
+                          <dt className="text-3 text-[#8a93a3]">{fact.label}</dt>
+                          <dd className="text-3.25 font-semibold text-navy sm:max-w-[70%] sm:text-right">
+                            {fact.value}
+                          </dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </section>
                 )}
 
                 <div
@@ -639,7 +681,7 @@ export default async function ProductDetailPage({
                 return (
                   <Link
                     key={equivalency.id}
-                    href={`/catalogo/${equivalency.slug}`}
+                    href={buildProductPath(equivalency)}
                     className="group flex flex-col rounded-[15px] border border-[#e6e9ef] bg-white p-4.5 transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                   >
                     <div className="mb-3 flex items-start justify-between gap-3">
@@ -708,7 +750,7 @@ export default async function ProductDetailPage({
                   return (
                     <Link
                       key={relatedProduct.id}
-                      href={`/catalogo/${relatedProduct.slug}`}
+                      href={buildProductPath(relatedProduct)}
                       className="group flex flex-col overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                     >
                       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#f3f5f9]">

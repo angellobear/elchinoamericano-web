@@ -4,7 +4,8 @@ import { notFound } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import CatalogoClient from "@/app/catalogo/CatalogoClient"
-import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
+import { getCategories } from "@/lib/db/categories"
+import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import {
   buildCatalogBrandPath,
   CATALOG_PAGE_SIZE,
@@ -13,13 +14,24 @@ import {
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
 import {
+  DEFAULT_KEYWORDS,
   DEFAULT_SHARE_IMAGE_PATH,
   SITE_NAME,
   SITE_URL,
+  SITE_LOCALE,
   toAbsoluteUrl,
 } from "@/lib/seo"
+import { buildProductPath } from "@/lib/product-slugs"
 
 export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const activeBrands = await getPublicVehicleBrands()
+
+  return activeBrands.map((brand) => ({
+    brands: brand.key,
+  }))
+}
 
 export async function generateMetadata({
   params,
@@ -27,9 +39,9 @@ export async function generateMetadata({
   params: Promise<{ brands: string }>
 }): Promise<Metadata> {
   const { brands: brandSlug } = await params
-  const visibleBrands = await getVisibleVehicleBrands()
+  const activeBrands = await getPublicVehicleBrands()
   const requestedKeys = parseCatalogBrandSlug(brandSlug)
-  const matchedBrands = visibleBrands.filter((brand) => requestedKeys.includes(brand.key))
+  const matchedBrands = activeBrands.filter((brand) => requestedKeys.includes(brand.key))
 
   if (matchedBrands.length === 0) {
     return {}
@@ -49,6 +61,15 @@ export async function generateMetadata({
     alternates: {
       canonical: canonicalPath,
     },
+    keywords: [
+      `repuestos ${titleBrandText} Ecuador`,
+      `catalogo ${titleBrandText}`,
+      ...DEFAULT_KEYWORDS,
+    ],
+    robots: {
+      index: true,
+      follow: true,
+    },
     openGraph: {
       title: `Repuestos para ${titleBrandText} | ${SITE_NAME}`,
       description:
@@ -56,7 +77,7 @@ export async function generateMetadata({
           ? `Catálogo de repuestos para ${titleBrandText} con envíos a todo Ecuador.`
           : `Catálogo de repuestos para ${titleBrandText} con envíos a todo Ecuador.`,
       type: "website",
-      locale: "es_EC",
+      locale: SITE_LOCALE,
       siteName: SITE_NAME,
       url: `${SITE_URL}${canonicalPath}`,
       images: [
@@ -79,20 +100,23 @@ export async function generateMetadata({
 }
 
 export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marca/[brands]">) {
-  const [{ brands: brandSlug }, resolvedSearchParams, visibleBrands] = await Promise.all([
+  const [{ brands: brandSlug }, resolvedSearchParams, activeBrands, categories] = await Promise.all([
     props.params,
     props.searchParams,
-    getVisibleVehicleBrands(),
+    getPublicVehicleBrands(),
+    getCategories(),
   ])
 
   const requestedKeys = parseCatalogBrandSlug(brandSlug)
-  const matchedBrands = visibleBrands.filter((brand) => requestedKeys.includes(brand.key))
+  const matchedBrands = activeBrands.filter((brand) => requestedKeys.includes(brand.key))
 
   if (matchedBrands.length === 0) notFound()
 
   const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
+  const activeCategoryKeys = new Set(categories.map((category) => category.key))
   const sanitizedFilters = {
     ...filters,
+    categories: filters.categories.filter((category) => activeCategoryKeys.has(category)),
     carBrands: matchedBrands.map((brand) => brand.key),
   }
   const filteredProducts = filterCatalogProducts(
@@ -115,36 +139,54 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
       : brandNames.slice(0, -1).join(", ") + ` y ${brandNames.at(-1)}`
   const collectionJsonLd = {
     "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name:
-      brandNames.length === 1
-        ? `Repuestos para ${brandNames[0]}`
-        : `Repuestos para ${brandNames.join(", ")}`,
-    description:
-      brandNames.length === 1
-        ? `Catálogo de repuestos para ${brandNames[0]} en Ecuador.`
-        : `Catálogo de repuestos para ${brandNames.join(", ")} en Ecuador.`,
-    url: `${SITE_URL}${canonicalPath}`,
-    isPartOf: {
-      "@type": "WebSite",
-      name: SITE_NAME,
-      url: SITE_URL,
-    },
-    about: matchedBrands.map((brand) => ({
-      "@type": "Brand",
-      name: brand.name,
-    })),
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: filteredProducts.length,
-      itemListOrder: "https://schema.org/ItemListOrderAscending",
-      itemListElement: visibleProducts.map((product, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        url: `${SITE_URL}/catalogo/${product.slug}`,
-        name: product.title,
-      })),
-    },
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": `${SITE_URL}${canonicalPath}#page`,
+        name:
+          brandNames.length === 1
+            ? `Repuestos para ${brandNames[0]}`
+            : `Repuestos para ${brandNames.join(", ")}`,
+        description:
+          brandNames.length === 1
+            ? `Catálogo de repuestos para ${brandNames[0]} en Ecuador.`
+            : `Catálogo de repuestos para ${brandNames.join(", ")} en Ecuador.`,
+        url: `${SITE_URL}${canonicalPath}`,
+        isPartOf: {
+          "@type": "WebSite",
+          name: SITE_NAME,
+          url: SITE_URL,
+        },
+        about: matchedBrands.map((brand) => ({
+          "@type": "Brand",
+          name: brand.name,
+        })),
+        mainEntity: {
+          "@type": "ItemList",
+          numberOfItems: filteredProducts.length,
+          itemListOrder: "https://schema.org/ItemListOrderAscending",
+          itemListElement: visibleProducts.map((product, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            url: `${SITE_URL}${buildProductPath(product)}`,
+            name: product.title,
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
+          { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: brandNames.length === 1 ? brandNames[0] : `Marcas: ${titleBrandText}`,
+            item: `${SITE_URL}${canonicalPath}`,
+          },
+        ],
+      },
+    ],
   }
 
   return (
@@ -163,7 +205,8 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
       >
         <CatalogoClient
           key={`${brandSlug}-${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${safePage}`}
-          brands={visibleBrands}
+          brands={activeBrands}
+          categories={categories.map((category) => ({ id: category.key, label: category.name }))}
           breadcrumbLabel={brandNames.length === 1 ? brandNames[0] : `Marcas: ${titleBrandText}`}
           headerDescription={
             brandNames.length === 1

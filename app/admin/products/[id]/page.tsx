@@ -15,6 +15,7 @@ import { getPartBrands } from '@/lib/db/part-brands'
 import { getSuppliers } from '@/lib/db/suppliers'
 import { getVehicleBrandsWithModels } from '@/lib/db/vehicle-brands'
 import { logger } from '@/lib/logger'
+import { buildProductPath, buildProductSlugBase } from '@/lib/product-slugs'
 import { routes } from '@/lib/routes'
 import { ProductForm } from '@/modules/admin/products/components/ProductForm'
 import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/products/form-schema'
@@ -30,6 +31,11 @@ async function save(productId: number, _: ActionState, formData: FormData) {
   if (!payload) redirect(routes.login)
 
   try {
+    const currentProduct = await getProductById(productId)
+    if (!currentProduct) {
+      return errorResult('No se encontró el producto a editar.')
+    }
+
     const parsed = parseProductFormData(formData, { isActive: true })
     if (!parsed.success) {
       return errorResult(getZodErrorMessage(parsed.error))
@@ -57,12 +63,18 @@ async function save(productId: number, _: ActionState, formData: FormData) {
       isFeatured,
       isActive,
     } = parsed.data
+    const normalizedSlug = buildProductSlugBase(slug || title)
+    const previousPublicPath = buildProductPath(currentProduct)
+    const nextPublicPath = buildProductPath({
+      code: currentProduct.code,
+      slug: normalizedSlug,
+    })
 
     await updateProduct(productId, {
       title,
       shortTitle,
       sku,
-      slug: slug || undefined,
+      slug: normalizedSlug,
       price,
       costPrice,
       discountPct,
@@ -105,6 +117,10 @@ async function save(productId: number, _: ActionState, formData: FormData) {
     logger.info({ productId, title }, 'Product updated')
     revalidatePath(routes.admin.products.index)
     revalidatePath(routes.admin.inventory.index)
+    revalidatePath('/')
+    revalidatePath('/catalogo')
+    revalidatePath(previousPublicPath)
+    revalidatePath(nextPublicPath)
   } catch (error) {
     logger.error({ error }, 'Error updating product')
     return errorResult('Error al guardar el producto')
@@ -148,8 +164,16 @@ export default async function EditProductPage({
       <FormCard>
         <div className="space-y-4">
           {product.code ? (
-            <div className="inline-flex rounded-lg bg-gray-100 px-3 py-1 font-mono text-xs text-gray-500">
-              {product.code}
+            <div className="space-y-2">
+              <div className="inline-flex rounded-lg bg-gray-100 px-3 py-1 font-mono text-xs text-gray-500">
+                {product.code}
+              </div>
+              <p className="text-xs text-gray-500">
+                URL pública:{' '}
+                <span className="font-mono text-gray-700">
+                  {buildProductPath({ code: product.code, slug: product.slug })}
+                </span>
+              </p>
             </div>
           ) : null}
 

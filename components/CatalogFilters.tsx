@@ -8,17 +8,14 @@ import {
 } from "@/lib/catalog"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
-const CATEGORIES = [
-  { id: "motor", label: "Motor" },
-  { id: "frenos", label: "Frenos" },
-  { id: "suspension", label: "Suspensión" },
-  { id: "filtros", label: "Filtros" },
-  { id: "carroceria", label: "Carrocería" },
-  { id: "enfriamiento", label: "Enfriamiento" },
-]
+interface CatalogCategoryOption {
+  id: string
+  label: string
+}
 
 interface CatalogFiltersProps {
   brands: PublicVehicleBrand[]
+  categories: CatalogCategoryOption[]
   filters: FilterState
   onChange: (f: FilterState) => void
   activeCount: number
@@ -79,6 +76,7 @@ function toggle(arr: string[], val: string): string[] {
 
 export default function CatalogFilters({
   brands,
+  categories,
   filters,
   onChange,
   activeCount,
@@ -151,7 +149,7 @@ export default function CatalogFilters({
       {/* Category */}
       <FilterSection title="Categoría">
         <div className="flex flex-col gap-2">
-          {CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <Checkbox
               key={cat.id}
               checked={filters.categories.includes(cat.id)}

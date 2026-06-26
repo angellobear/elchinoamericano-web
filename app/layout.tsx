@@ -2,6 +2,19 @@ import type { Metadata } from "next"
 import { Barlow_Condensed, Inter } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/context/CartContext"
+import {
+  DEFAULT_KEYWORDS,
+  DEFAULT_SHARE_IMAGE_ALT,
+  DEFAULT_SHARE_IMAGE_PATH,
+  GEO_PLACENAME,
+  GEO_POSITION,
+  GEO_REGION,
+  SITE_DESCRIPTION,
+  SITE_LOCALE,
+  SITE_NAME,
+  SITE_URL,
+  toAbsoluteUrl,
+} from "@/lib/seo"
 
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
@@ -15,10 +28,59 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://elchinoamericano.com"),
-  title: "El Chino Americano — Repuestos Automotrices",
-  description:
-    "Tienda online de repuestos para vehiculos chinos y americanos. Catalogo con filtros y pedido por WhatsApp. Entrega en Quito y envios a todo el Ecuador.",
+  metadataBase: new URL(SITE_URL),
+  title: `${SITE_NAME} | Repuestos Automotrices`,
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: DEFAULT_KEYWORDS,
+  referrer: "origin-when-cross-origin",
+  authors: [{ name: SITE_NAME, url: SITE_URL }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "Automotive",
+  classification: "Auto Parts Store",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: "website",
+    locale: SITE_LOCALE,
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} | Repuestos Automotrices`,
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH),
+        alt: DEFAULT_SHARE_IMAGE_ALT,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} | Repuestos Automotrices`,
+    description: SITE_DESCRIPTION,
+    images: [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  other: {
+    "geo.region": GEO_REGION,
+    "geo.placename": GEO_PLACENAME,
+    "geo.position": GEO_POSITION,
+    ICBM: GEO_POSITION,
+  },
 }
 
 export default function RootLayout({

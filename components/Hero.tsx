@@ -97,7 +97,10 @@ export default function Hero({ brands }: HeroProps) {
   }
 
   return (
-    <section className="relative bg-navy overflow-hidden pt-16">
+    <section
+      className="relative bg-navy overflow-hidden pt-16"
+      aria-labelledby="home-hero-title"
+    >
       {/* diagonal grid */}
       <div
         className="absolute inset-0 opacity-[.05] pointer-events-none"
@@ -127,6 +130,7 @@ export default function Hero({ brands }: HeroProps) {
             </motion.div> */}
             <motion.h1
               variants={fadeUp}
+              id="home-hero-title"
               className="font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
             >
               El repuesto que tu vehículo necesita, cuando
@@ -142,6 +146,7 @@ export default function Hero({ brands }: HeroProps) {
             <motion.div variants={fadeUp} className="flex flex-wrap gap-3 mt-8">
               <Link
                 href="/catalogo"
+                title="Explorar catálogo de repuestos"
                 className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-6.5 py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <Search size={18} />
@@ -151,6 +156,7 @@ export default function Hero({ brands }: HeroProps) {
                 href={getWhatsAppUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
+                title="Escribir por WhatsApp a El Chino Americano"
                 className="inline-flex items-center gap-2 border-[1.5px] border-wa text-[#f4f7fb] hover:bg-wa/14 font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
               >
                 <MessageCircle size={18} className="text-wa" />
@@ -167,6 +173,7 @@ export default function Hero({ brands }: HeroProps) {
                   <Link
                     key={brand.id}
                     href={buildCatalogBrandPath([brand.key])}
+                    title={`Ver repuestos para ${brand.name}`}
                     className="font-display font-bold text-4 text-[#9fb0c8] border border-white/14 hover:border-brand hover:text-white px-3.75 py-2 rounded-full transition-colors duration-150"
                   >
                     {brand.name.toUpperCase()}
@@ -199,6 +206,7 @@ export default function Hero({ brands }: HeroProps) {
                   <Image
                     src={src}
                     alt={alt}
+                    title={alt}
                     fill
                     className="object-contain"
                     style={{ objectPosition: "center 56%" }}
@@ -232,6 +240,7 @@ export default function Hero({ brands }: HeroProps) {
                   <Image
                     src={src}
                     alt={alt}
+                    title={alt}
                     fill
                     className="object-contain"
                     style={{ objectPosition: "center 56%" }}

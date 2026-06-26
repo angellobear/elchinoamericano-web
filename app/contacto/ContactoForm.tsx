@@ -3,8 +3,7 @@
 import { useState } from "react"
 import { MessageCircle } from "lucide-react"
 import { getWhatsAppUrl } from "@/lib/constants"
-
-const CAR_BRANDS = ["Chery", "SWM", "Great Wall", "DFSK", "Shineray", "JAC", "Jetour", "Ford", "Chevrolet"]
+import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 const CURRENT_YEAR = new Date().getFullYear()
 const YEARS = Array.from({ length: 20 }, (_, i) => String(CURRENT_YEAR - i))
 
@@ -17,7 +16,11 @@ interface Form {
   repuesto: string
 }
 
-export default function ContactoForm() {
+interface ContactoFormProps {
+  brands: PublicVehicleBrand[]
+}
+
+export default function ContactoForm({ brands }: ContactoFormProps) {
   const [form, setForm] = useState<Form>({
     nombre: "",
     whatsapp: "",
@@ -70,7 +73,7 @@ export default function ContactoForm() {
           <label className="block text-3.25 font-semibold text-navy mb-2">Marca</label>
           <select value={form.marca} onChange={set("marca")} className={inputCls}>
             <option value="">Seleccionar</option>
-            {CAR_BRANDS.map((b) => <option key={b}>{b}</option>)}
+            {brands.map((brand) => <option key={brand.id} value={brand.name}>{brand.name}</option>)}
           </select>
         </div>
         <div>

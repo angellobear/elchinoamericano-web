@@ -15,6 +15,26 @@ import {
   type SoftDeleteQueryOptions,
 } from '@/lib/db/soft-delete'
 
+function mapPublicVehicleBrand(brand: {
+  id: number
+  name: string
+  origin: string
+  logoUrl: string | null
+  sortOrder: number | null
+}): PublicVehicleBrand {
+  return {
+    id: brand.id,
+    key: toVehicleBrandKey(brand.name),
+    name: brand.name,
+    origin: brand.origin,
+    logoUrl: brand.logoUrl ?? null,
+    sortOrder: brand.sortOrder ?? 0,
+    image: {
+      url: brand.logoUrl ?? null,
+    },
+  }
+}
+
 export async function getVehicleBrands(includeInactiveOrOptions: boolean | ActiveQueryOptions = false) {
   const db = await getDb()
   return db.query.vehicleBrands.findMany({
@@ -223,12 +243,20 @@ export async function getVehicleBrandsForAdmin(options?: ActiveQueryOptions) {
 }
 
 export async function getVisibleVehicleBrands(): Promise<PublicVehicleBrand[]> {
+  return getPublicVehicleBrands({ onlyVisibleOnWeb: true })
+}
+
+export async function getPublicVehicleBrands(options?: {
+  onlyVisibleOnWeb?: boolean
+}): Promise<PublicVehicleBrand[]> {
   const db = await getDb()
+  const onlyVisibleOnWeb = options?.onlyVisibleOnWeb ?? false
+
   try {
     const brands = await db.query.vehicleBrands.findMany({
       where: and(
         eq(vehicleBrands.isActive, true),
-        eq(vehicleBrands.isVisibleOnWeb, true),
+        onlyVisibleOnWeb ? eq(vehicleBrands.isVisibleOnWeb, true) : undefined,
         buildNotDeletedWhere(vehicleBrands.deletedAt),
       ),
       orderBy: asc(vehicleBrands.sortOrder),
@@ -241,24 +269,14 @@ export async function getVisibleVehicleBrands(): Promise<PublicVehicleBrand[]> {
       },
     })
 
-    return brands.map((brand) => ({
-      id: brand.id,
-      key: toVehicleBrandKey(brand.name),
-      name: brand.name,
-      origin: brand.origin,
-      logoUrl: brand.logoUrl ?? null,
-      sortOrder: brand.sortOrder ?? 0,
-      image: {
-        url: brand.logoUrl ?? null,
-      },
-    }))
+    return brands.map(mapPublicVehicleBrand)
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
     const missingVisibilityColumn =
       message.includes('is_visible_on_web') ||
       message.includes('isVisibleOnWeb')
 
-    if (!missingVisibilityColumn) throw error
+    if (!missingVisibilityColumn || onlyVisibleOnWeb === false) throw error
 
     const brands = await db.query.vehicleBrands.findMany({
       where: and(eq(vehicleBrands.isActive, true), buildNotDeletedWhere(vehicleBrands.deletedAt)),
@@ -274,16 +292,6 @@ export async function getVisibleVehicleBrands(): Promise<PublicVehicleBrand[]> {
 
     return brands
       .filter((brand) => LEGACY_VISIBLE_VEHICLE_BRAND_NAMES.includes(brand.name as typeof LEGACY_VISIBLE_VEHICLE_BRAND_NAMES[number]))
-      .map((brand) => ({
-        id: brand.id,
-        key: toVehicleBrandKey(brand.name),
-        name: brand.name,
-        origin: brand.origin,
-        logoUrl: brand.logoUrl ?? null,
-        sortOrder: brand.sortOrder ?? 0,
-        image: {
-          url: brand.logoUrl ?? null,
-        },
-      }))
+      .map(mapPublicVehicleBrand)
   }
 }

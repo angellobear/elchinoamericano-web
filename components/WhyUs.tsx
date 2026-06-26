@@ -45,7 +45,7 @@ export default function WhyUs() {
   }
 
   return (
-    <section id="nosotros" className="bg-[#f6f8fb] py-21">
+    <section id="nosotros" className="bg-[#f6f8fb] py-21" aria-labelledby="about-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
         <div className="flex flex-col items-center text-center gap-3 mb-14">
@@ -55,7 +55,7 @@ export default function WhyUs() {
               Sobre nosotros
             </span>
           </div>
-          <h2 className="font-display font-bold uppercase text-navy leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-190">
+          <h2 id="about-title" className="font-display font-bold uppercase text-navy leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-190">
             ¿Por qué elegir <span className="text-brand">El Chino</span> Americano?
           </h2>
           <p className="max-w-155 text-[#566071] text-balance text-4.25 leading-[1.6]">
@@ -82,6 +82,7 @@ export default function WhyUs() {
             <Image
               src="/about-us.png"
               alt="Bodega ordenada y zona de servicio automotriz"
+              title="Bodega y atencion de El Chino Americano"
               fill
               className="object-cover"
               sizes="(min-width: 1024px) 40vw, 100vw"

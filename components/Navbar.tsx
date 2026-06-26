@@ -60,11 +60,14 @@ export default function Navbar() {
           {/* Logo */}
           <Link
             href="/"
+            aria-label="Ir al inicio de El Chino Americano"
+            title="El Chino Americano - Inicio"
             className="flex items-center shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-navy rounded-sm"
           >
             <Image
               src="/logo-ca.png"
               alt="El Chino Americano"
+              title="El Chino Americano"
               width={120}
               height={50}
               className="h-[50px] w-auto object-contain"
@@ -139,6 +142,7 @@ export default function Navbar() {
                     <Image
                       src="/logo-ca.png"
                       alt="El Chino Americano"
+                      title="El Chino Americano"
                       width={120}
                       height={40}
                       className="h-10 w-auto object-contain"
