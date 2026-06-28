@@ -1,7 +1,7 @@
 import { getDb } from './client'
 import {
   products, productImages, productSpecs, productAlternateCodes,
-  productEquivalencies, productCompatibilities, stockMovements,
+  productEquivalencies, productCompatibilities, stockMovements, vehicleModels,
 } from './schema'
 import { eq, desc, and, sql } from 'drizzle-orm'
 import { dbNow } from './db-now'
@@ -87,16 +87,44 @@ export async function getInventory(options?: SoftDeleteQueryOptions) {
 }
 
 // For admin product list
-export async function getProductList(search?: string, options?: SoftDeleteQueryOptions) {
+export async function getProductList(
+  filters?: {
+    search?: string
+    type?: string
+    categoryId?: number
+    vehicleBrandId?: number
+    isActive?: boolean | 'all'
+  },
+  options?: SoftDeleteQueryOptions,
+) {
   const db = await getDb()
+  const { search, type, categoryId, vehicleBrandId, isActive = true } = filters ?? {}
   return db.query.products.findMany({
     where: and(
       buildNotDeletedWhere(products.deletedAt, options),
-      search ? sql`lower(${products.title}) like lower(${'%' + search + '%'})` : undefined,
+      isActive !== 'all' ? eq(products.isActive, isActive) : undefined,
+      type ? eq(products.type, type) : undefined,
+      categoryId ? eq(products.categoryId, categoryId) : undefined,
+      vehicleBrandId
+        ? sql`EXISTS (
+            SELECT 1 FROM ${productCompatibilities} pc
+            INNER JOIN ${vehicleModels} vm ON pc.vehicle_model_id = vm.id
+            WHERE pc.product_id = ${products.id} AND vm.brand_id = ${vehicleBrandId}
+          )`
+        : undefined,
+      search
+        ? sql`(
+            lower(${products.title}) like lower(${'%' + search + '%'}) or
+            lower(coalesce(${products.shortTitle}, '')) like lower(${'%' + search + '%'}) or
+            lower(coalesce(${products.description}, '')) like lower(${'%' + search + '%'}) or
+            lower(coalesce(${products.sku}, '')) like lower(${'%' + search + '%'}) or
+            lower(coalesce(${products.replacementCode}, '')) like lower(${'%' + search + '%'})
+          )`
+        : undefined,
     ),
     with: { category: true, partBrand: true },
     orderBy: desc(products.createdAt),
-    limit: 100,
+    limit: 200,
   })
 }
 

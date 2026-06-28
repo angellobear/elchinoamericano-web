@@ -8,6 +8,7 @@ export const productFormSchema = z.object({
   title: z.string().min(1, 'El título es obligatorio.').max(255, 'El título es demasiado largo.'),
   shortTitle: z.string().max(100, 'El título corto es demasiado largo.').optional(),
   sku: z.string().max(100, 'El SKU es demasiado largo.').optional(),
+  replacementCode: z.string().max(100, 'El código de repuesto es demasiado largo.').optional(),
   type: productTypeSchema,
   condition: productConditionSchema,
   categoryId: z.number().int().positive().optional(),
@@ -39,7 +40,8 @@ export function parseProductFormData(formData: FormData, defaults?: { isActive?:
   return productFormSchema.safeParse({
     title: getRequiredString(formData, 'title'),
     shortTitle: getOptionalString(formData, 'shortTitle'),
-    sku: getOptionalString(formData, 'sku'),
+    sku: getOptionalString(formData, 'sku')?.toUpperCase() || undefined,
+    replacementCode: getOptionalString(formData, 'replacementCode')?.toUpperCase() || undefined,
     type: getRequiredString(formData, 'type'),
     condition: (getOptionalString(formData, 'condition') ?? 'new'),
     categoryId: optionalPositiveNumber(formData.get('categoryId')),

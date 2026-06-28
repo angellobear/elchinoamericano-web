@@ -1,8 +1,11 @@
 import Link from 'next/link'
 import { getProductList, deleteProduct } from '@/lib/db/products'
+import { getCategories } from '@/lib/db/categories'
+import { getVehicleBrands } from '@/lib/db/vehicle-brands'
 import { revalidatePath } from 'next/cache'
-import { Plus, Search, Pencil, Trash2, Package } from 'lucide-react'
+import { Plus, Pencil, Trash2, Package } from 'lucide-react'
 import { ProductStatusToggle } from '@/modules/admin/products/components/ProductStatusToggle'
+import { ProductFilters } from './_components/ProductFilters'
 
 async function handleDelete(id: number) {
   'use server'
@@ -13,10 +16,24 @@ async function handleDelete(id: number) {
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string }>
+  searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string }>
 }) {
-  const { search } = await searchParams
-  const products = await getProductList(search)
+  const params = await searchParams
+  const { search, type, categoryId, vehicleBrandId } = params
+  const status = params.status ?? 'active'
+  const isActive = status === 'all' ? 'all' : status === 'inactive' ? false : true
+
+  const [products, categories, vehicleBrands] = await Promise.all([
+    getProductList({
+      search,
+      type,
+      categoryId: categoryId ? Number(categoryId) : undefined,
+      vehicleBrandId: vehicleBrandId ? Number(vehicleBrandId) : undefined,
+      isActive,
+    }),
+    getCategories(),           // active only by default
+    getVehicleBrands(),        // active only by default
+  ])
 
   return (
     <div className="p-8">
@@ -34,20 +51,11 @@ export default async function ProductsPage({
         </Link>
       </div>
 
-      <form className="mb-5 flex gap-2">
-        <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
-          <input
-            name="search"
-            defaultValue={search}
-            placeholder="Buscar por título, código, SKU..."
-            className="w-full border border-slate-200 rounded-lg pl-9 pr-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors"
-          />
-        </div>
-        <button type="submit" className="px-4 py-2.5 bg-navy text-white text-sm font-medium rounded-lg hover:bg-navy-dark active:scale-[0.98] transition-all">
-          Buscar
-        </button>
-      </form>
+      <ProductFilters
+        categories={categories.map((c) => ({ id: c.id, name: c.name }))}
+        vehicleBrands={vehicleBrands.map((b) => ({ id: b.id, name: b.name }))}
+        defaults={{ search, type, categoryId, vehicleBrandId, status }}
+      />
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-sm">
@@ -55,6 +63,7 @@ export default async function ProductsPage({
             <tr className="bg-slate-50 border-b border-slate-100">
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Código</th>
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Producto</th>
+              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">SKU / Repuesto</th>
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Categoría</th>
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Tipo</th>
               <th className="text-right px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Precio</th>
@@ -72,6 +81,11 @@ export default async function ProductsPage({
                   {p.partBrand?.name && (
                     <div className="text-xs text-slate-400 mt-0.5">{p.partBrand.name}</div>
                   )}
+                </td>
+                <td className="px-4 py-3.5">
+                  {p.sku && <div className="font-mono text-xs text-slate-500 uppercase">{p.sku}</div>}
+                  {p.replacementCode && <div className="font-mono text-xs text-slate-400 uppercase">{p.replacementCode}</div>}
+                  {!p.sku && !p.replacementCode && <span className="text-slate-300">—</span>}
                 </td>
                 <td className="px-4 py-3.5 text-slate-500 text-sm">{p.category?.name ?? '—'}</td>
                 <td className="px-4 py-3.5">
@@ -127,7 +141,7 @@ export default async function ProductsPage({
             ))}
             {products.length === 0 && (
               <tr>
-                <td colSpan={8} className="py-20 text-center">
+                <td colSpan={9} className="py-20 text-center">
                   <Package size={28} className="mx-auto mb-3 text-slate-300" />
                   <p className="text-slate-400 text-sm">No hay productos que coincidan</p>
                   <Link href="/admin/products/new" className="inline-flex items-center gap-1.5 mt-3 text-xs text-brand font-medium hover:underline">

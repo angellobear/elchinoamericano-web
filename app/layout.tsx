@@ -93,7 +93,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`}>
+    <html lang="es" className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <meta httpEquiv="content-language" content="es-EC" />
       </head>

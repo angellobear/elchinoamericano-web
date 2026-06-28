@@ -42,6 +42,7 @@ interface ProductFormProps {
     title?: string
     shortTitle?: string
     sku?: string
+    replacementCode?: string | null
     type?: 'original' | 'oem' | 'aftermarket'
     condition?: 'new' | 'used' | 'refurbished'
     categoryId?: number | null
@@ -106,7 +107,11 @@ export function ProductForm({
           </div>
           <div>
             <Label>SKU</Label>
-            <input name="sku" defaultValue={defaults?.sku ?? ''} placeholder="ej: BWP-001" className={inputCls} />
+            <input name="sku" defaultValue={defaults?.sku ?? ''} placeholder="ej: BWP-001" className={`${inputCls} uppercase`} />
+          </div>
+          <div>
+            <Label>Código de repuesto</Label>
+            <input name="replacementCode" defaultValue={defaults?.replacementCode ?? ''} placeholder="ej: 1K0121004A" className={`${inputCls} uppercase`} />
           </div>
           <div>
             <Label>Tipo <Required /></Label>

@@ -119,6 +119,7 @@ export const products = mysqlTable('products', {
   id: int('id').autoincrement().primaryKey(),
   code: varchar('code', { length: 20 }).unique(),
   sku: varchar('sku', { length: 100 }),
+  replacementCode: varchar('replacement_code', { length: 100 }),
   title: varchar('title', { length: 255 }).notNull(),
   shortTitle: varchar('short_title', { length: 100 }),
   description: text('description'),
