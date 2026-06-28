@@ -173,6 +173,26 @@ body {
   animation-fill-mode: both;
 }
 
+/* Hero parts-card float */
+@keyframes float-bob {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-float-bob {
+  animation: float-bob 4s ease-in-out infinite;
+}
+
+/* Stock online-dot pulse ring */
+@keyframes pulse-ring {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.22); }
+  50% { box-shadow: 0 0 0 8px rgba(37, 211, 102, 0); }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2.2s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

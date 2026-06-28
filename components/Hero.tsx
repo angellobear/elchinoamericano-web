@@ -147,7 +147,7 @@ export default function Hero({ brands }: HeroProps) {
               <Link
                 href="/catalogo"
                 title="Explorar catálogo de repuestos"
-                className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-6.5 py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="inline-flex items-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-base px-6.5 py-4 rounded-xl shadow-[0_14px_30px_rgba(224,48,48,.32)] transition-all duration-150 hover:-translate-y-0.5 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               >
                 <Search size={18} />
                 Buscar mi repuesto
@@ -157,7 +157,7 @@ export default function Hero({ brands }: HeroProps) {
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Escribir por WhatsApp a El Chino Americano"
-                className="inline-flex items-center gap-2 border-[1.5px] border-wa text-[#f4f7fb] hover:bg-wa/14 font-bold text-base px-6 py-4 rounded-xl transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
+                className="inline-flex items-center gap-2 border-[1.5px] border-wa text-[#f4f7fb] hover:bg-wa/14 font-bold text-base px-6 py-4 rounded-xl transition-all duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
               >
                 <MessageCircle size={18} className="text-wa" />
                 Escríbenos por WhatsApp
@@ -218,14 +218,14 @@ export default function Hero({ brands }: HeroProps) {
 
               {/* stock pill */}
               <div className="absolute top-4 left-4 flex items-center gap-2 bg-[rgba(13,31,60,.92)] px-3 py-2 rounded-full shadow-[0_6px_16px_rgba(0,0,0,.22)]">
-                <span className="h-1.75 w-1.75 rounded-full bg-wa shadow-[0_0_0_4px_rgba(37,211,102,.22)]" />
+                <span className="h-1.75 w-1.75 rounded-full bg-wa animate-pulse-ring shrink-0" />
                 <span className="font-bold text-2.75 tracking-[.12em] uppercase text-white">+5.000 referencias en stock</span>
               </div>
             </div>
 
             {/* Parts float card */}
             <div
-              className="absolute -bottom-7 -left-7 w-56.5 h-38 rounded-2xl overflow-hidden border border-white/14 shadow-[0_18px_36px_rgba(0,0,0,.45)]"
+              className="absolute -bottom-7 -left-7 w-56.5 h-38 rounded-2xl overflow-hidden border border-white/14 shadow-[0_18px_36px_rgba(0,0,0,.45)] animate-float-bob"
               style={{
                 background: "#13294a",
                 backgroundImage: "radial-gradient(120% 100% at 50% 25%,rgba(40,68,112,.5),rgba(19,41,74,0) 72%),repeating-linear-gradient(135deg,rgba(255,255,255,.05) 0 12px,transparent 12px 24px)",
@@ -251,10 +251,15 @@ export default function Hero({ brands }: HeroProps) {
             </div>
 
             {/* top-right badge */}
-            <div className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-sm border border-white/16 rounded-[14px] p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]">
+            <motion.div
+              initial={reduce ? false : { opacity: 0, y: -16, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.6 }}
+              className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-sm border border-white/16 rounded-[14px] p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]"
+            >
               <p className="font-display font-bold text-white text-7.5 leading-none">&lt; 24 h</p>
               <p className="text-3 text-[#9fb0c8] mt-1.5">Asesoría por WhatsApp</p>
-            </div>
+            </motion.div>
           </motion.div>
         </div>
 

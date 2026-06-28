@@ -48,24 +48,30 @@ export default function WhyUs() {
     <section id="nosotros" className="bg-[#f6f8fb] py-21" aria-labelledby="about-title">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section header */}
-        <div className="flex flex-col items-center text-center gap-3 mb-14">
-          <div className="flex items-center gap-2">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.4 }}
+          variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.1 } } }}
+          className="flex flex-col items-center text-center gap-3 mb-14"
+        >
+          <motion.div variants={fadeUp} className="flex items-center gap-2">
             <span className="w-1.75 h-1.75 rounded-full bg-brand" />
             <span className="text-3.25 font-semibold uppercase tracking-[.16em] text-brand">
               Sobre nosotros
             </span>
-          </div>
-          <h2 id="about-title" className="font-display font-bold uppercase text-navy leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-190">
+          </motion.div>
+          <motion.h2 variants={fadeUp} id="about-title" className="font-display font-bold uppercase text-navy leading-none text-[clamp(2.2rem,5vw,3.5rem)] max-w-190">
             ¿Por qué elegir <span className="text-brand">El Chino</span> Americano?
-          </h2>
-          <p className="max-w-155 text-[#566071] text-balance text-4.25 leading-[1.6]">
+          </motion.h2>
+          <motion.p variants={fadeUp} className="max-w-155 text-[#566071] text-balance text-4.25 leading-[1.6]">
             Somos una empresa familiar ecuatoriana con más de 8 años de experiencia en el mercado automotriz, especializada en repuestos y accesorios para vehículos <strong>chinos</strong> y <strong>americanos</strong>.
             <br />
             Nuestro compromiso es ayudarte a encontrar la pieza correcta con la confianza de recibir un producto de calidad. Para lograrlo, trabajamos directamente con distribuidores verificados, ofreciendo un amplio catálogo y precios competitivos.
             <br />
             Creemos que comprar un repuesto debe ser un proceso sencillo, transparente y seguro. Esa es la razón de ser de <strong>El Chino Americano:</strong> acercarte las mejores soluciones para tu vehículo con la atención y el respaldo que mereces.
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
         {/* 2-col grid */}
         <motion.div
@@ -104,7 +110,10 @@ export default function WhyUs() {
               <motion.div
                 key={title}
                 variants={fadeUp}
-                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-[14px] py-5 px-5.5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-all duration-200"
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.99 }}
+                transition={{ duration: 0.15 }}
+                className="flex gap-4 items-start bg-white border border-[#e6e9ef] rounded-[14px] py-5 px-5.5 hover:shadow-[0_10px_30px_rgba(13,31,60,.08)] transition-shadow duration-200"
               >
                 <div className="w-11.5 h-11.5 rounded-[11px] bg-brand/10 flex items-center justify-center shrink-0">
                   <Icon size={22} className="text-brand" strokeWidth={2} />

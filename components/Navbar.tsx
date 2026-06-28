@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { ShoppingCart, MessageCircle, Menu, X } from "lucide-react"
 import Image from "next/image"
+import { motion, useReducedMotion } from "framer-motion"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useCart } from "@/context/CartContext"
 import CartDrawer from "@/components/CartDrawer"
@@ -22,6 +23,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const { itemCount } = useCart()
   const pathname = usePathname()
+  const reduce = useReducedMotion()
   const [scrolled, setScrolled] = useState(false)
   const [cartOpen, setCartOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -50,7 +52,10 @@ export default function Navbar() {
 
   return (
     <>
-      <header
+      <motion.header
+        initial={reduce ? false : { y: -64, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
           "fixed top-0 inset-x-0 z-50 bg-navy border-b border-white/10 transition-shadow duration-300",
           scrolled && "shadow-xl shadow-navy/40"
@@ -183,7 +188,7 @@ export default function Navbar() {
             </Sheet>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>

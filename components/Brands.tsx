@@ -12,14 +12,26 @@ const fadeUp = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: EASE } },
 }
 
+const cardVariant = {
+  hidden: { opacity: 0, y: 20, scale: 0.96 },
+  visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.45, ease: EASE } },
+}
+
 function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
   const hasImage = Boolean(brand.image.url)
+  const reduce = useReducedMotion()
 
   return (
+    <motion.div
+      variants={cardVariant}
+      whileHover={reduce ? undefined : { y: -4, scale: 1.02 }}
+      whileTap={reduce ? undefined : { scale: 0.98 }}
+      transition={{ duration: 0.15 }}
+    >
     <Link
       href={buildCatalogBrandPath([brand.key])}
       title={`Ver repuestos para ${brand.name}`}
-      className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 grid place-items-center cursor-pointer hover:-translate-y-1 hover:scale-[1.02] hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+      className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 grid place-items-center cursor-pointer hover:border-brand hover:shadow-[0_16px_34px_rgba(0,0,0,.4)] transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
     >
       {hasImage ? (
         <img
@@ -42,6 +54,7 @@ function BrandCard({ brand }: { brand: PublicVehicleBrand }) {
         {brand.name.toUpperCase()}
       </span>
     </Link>
+    </motion.div>
   )
 }
 
@@ -88,37 +101,43 @@ export default function Brands({ brands }: BrandsProps) {
           {/* Chinese brands */}
           <motion.div variants={fadeUp}>
             <Divider label="Marcas chinas" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <motion.div
+              variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.06 } } }}
+              className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+            >
               {chineseBrands.map((brand) => (
                 <BrandCard key={brand.id} brand={brand} />
               ))}
-              <div className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center">
+              <motion.div variants={cardVariant} className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center">
                 <span className="font-display font-semibold text-4.25 text-[#9fb0c8] text-center leading-snug">
                   y más<br />marcas
                 </span>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </motion.div>
 
           {/* American brands */}
           <motion.div variants={fadeUp}>
             <Divider label="Marcas americanas" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <motion.div
+              variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.06 } } }}
+              className="grid grid-cols-2 sm:grid-cols-4 gap-4"
+            >
               {americanBrands.map((brand) => (
                 <BrandCard key={brand.id} brand={brand} />
               ))}
-              <div className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center">
+              <motion.div variants={cardVariant} className="h-28 rounded-[14px] bg-[#13294a] border border-white/10 flex items-center justify-center">
                 <span className="font-display font-semibold text-4.25 text-[#9fb0c8] text-center leading-snug">
                   y más<br />marcas
                 </span>
-              </div>
-              <div className="h-28 rounded-[14px] border border-dashed border-brand/45 bg-gradient-to-br from-brand/16 to-brand/4 flex flex-col items-center justify-center gap-1.5 p-3 text-center">
+              </motion.div>
+              <motion.div variants={cardVariant} className="h-28 rounded-[14px] border border-dashed border-brand/45 bg-gradient-to-br from-brand/16 to-brand/4 flex flex-col items-center justify-center gap-1.5 p-3 text-center">
                 <span className="font-display font-bold text-4.25 uppercase text-white leading-tight">
                   ¿Otra marca?
                 </span>
                 <span className="text-3 text-[#9fb0c8]">Consúltanos por WhatsApp</span>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>
