@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getJwtPayload } from '@/lib/auth/check-permission'
-import { parseImagesFormData } from '@/app/admin/products/_components/ProductImagesSection'
+import { parseImagesFormData } from '@/app/admin/products/_components/parseImagesFormData'
 import {
   createProduct,
   setAlternateCodes,
@@ -116,7 +116,7 @@ async function create(_: ActionState, formData: FormData) {
     revalidatePath(buildProductPath({ code, slug: normalizedSlug }))
   } catch (error) {
     logger.error({ error }, 'Error creating product')
-    return errorResult('Error al crear el producto')
+    return errorResult(error instanceof Error ? error.message : 'Error al crear el producto')
   }
 
   return successResult('Producto creado', undefined, { redirectTo: routes.admin.products.index })

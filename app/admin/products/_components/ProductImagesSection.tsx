@@ -3,63 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Upload, X } from 'lucide-react'
 
-// ── Server-side FormData parser (no 'use client' needed here, imported by server actions) ──
-export async function parseImagesFormData(formData: FormData) {
-  // Dynamic import so uploadImage/deleteImage are only loaded server-side
-  const { uploadImage, deleteImage } = await import('@/lib/cloudinary')
-
-  // 1. Delete removed existing images from Cloudinary
-  const toDelete: string[] = []
-  let r = 0
-  while (formData.has(`removed_publicIds[${r}]`)) {
-    const pid = String(formData.get(`removed_publicIds[${r}]`))
-    if (pid) toDelete.push(pid)
-    r++
-  }
-  await Promise.all(toDelete.map(pid => deleteImage(pid).catch(() => {})))
-
-  // 2. Kept existing images
-  const kept: { url: string; cloudinaryPublicId: string | null; isPrimary: boolean; sortOrder: number }[] = []
-  let i = 0
-  while (formData.has(`existing_images[${i}][url]`)) {
-    kept.push({
-      url:                String(formData.get(`existing_images[${i}][url]`)),
-      cloudinaryPublicId: String(formData.get(`existing_images[${i}][publicId]`)) || null,
-      isPrimary:          formData.get(`existing_images[${i}][isPrimary]`) === '1',
-      sortOrder:          i,
-    })
-    i++
-  }
-
-  // 3. Upload new files
-  const newFiles = formData.getAll('new_images') as File[]
-  const newPrimary: boolean[] = []
-  for (let j = 0; j < newFiles.length; j++) {
-    newPrimary.push(formData.get(`new_images_primary[${j}]`) === '1')
-  }
-
-  const uploaded = await Promise.all(
-    newFiles
-      .filter(f => f instanceof File && f.size > 0)
-      .map(f => uploadImage(f, 'products'))
-  )
-
-  const newImages = uploaded.map((u, j) => ({
-    url:                u.url,
-    cloudinaryPublicId: u.publicId,
-    isPrimary:          newPrimary[j] ?? false,
-    sortOrder:          kept.length + j,
-  }))
-
-  const finalImages = [...kept, ...newImages]
-
-  // Ensure at least one is primary (first wins)
-  if (finalImages.length && !finalImages.some(img => img.isPrimary)) {
-    finalImages[0].isPrimary = true
-  }
-
-  return { finalImages }
-}
 
 const MAX = 6
 

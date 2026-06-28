@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getJwtPayload } from '@/lib/auth/check-permission'
-import { parseImagesFormData } from '@/app/admin/products/_components/ProductImagesSection'
+import { parseImagesFormData } from '@/app/admin/products/_components/parseImagesFormData'
 import { getCategories } from '@/lib/db/categories'
 import {
   getProductById,
@@ -122,7 +122,7 @@ async function save(productId: number, _: ActionState, formData: FormData) {
     revalidatePath(nextPublicPath)
   } catch (error) {
     logger.error({ error }, 'Error updating product')
-    return errorResult('Error al guardar el producto')
+    return errorResult(error instanceof Error ? error.message : 'Error al guardar el producto')
   }
 
   return successResult('Producto guardado', undefined, { redirectTo: routes.admin.products.index })
