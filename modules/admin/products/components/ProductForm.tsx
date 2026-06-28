@@ -1,6 +1,7 @@
 'use client'
 
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
+import { ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import { SubmitButton } from '@/app/admin/_components/SubmitButton'
 import { ProductImagesSection } from '@/app/admin/products/_components/ProductImagesSection'
@@ -83,7 +84,7 @@ export function ProductForm({
   return (
     <ValidatedForm
       action={action}
-      className="space-y-6 max-w-4xl"
+      className="space-y-6"
       validate={(formData) => {
         const parsed = parseProductFormData(formData, {
           isActive: defaults?.isActive ?? true,
@@ -93,7 +94,7 @@ export function ProductForm({
         return getZodErrorMessage(parsed.error)
       }}
     >
-      <Section title="Información básica">
+      <Section title="Información básica" defaultOpen>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <Label>Título <Required /></Label>
@@ -152,7 +153,7 @@ export function ProductForm({
         </div>
       </Section>
 
-      <Section title="Precio y stock">
+      <Section title="Precio y stock" defaultOpen>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <Label>Precio PVP <Required /></Label>
@@ -191,7 +192,7 @@ export function ProductForm({
         </div>
       </Section>
 
-      <Section title="Imágenes del producto">
+      <Section title="Imágenes del producto" defaultOpen>
         <ProductImagesSection existingImages={defaults?.images ?? []} />
       </Section>
 
@@ -294,15 +295,23 @@ function Required() {
   return <span className="text-brand"> *</span>
 }
 
-function Section({ title, hint, hidden, children }: { title: string; hint?: string; hidden?: boolean; children: ReactNode }) {
+function Section({ title, hint, hidden, defaultOpen = false, children }: { title: string; hint?: string; hidden?: boolean; defaultOpen?: boolean; children: ReactNode }) {
+  const [open, setOpen] = useState(defaultOpen)
   if (hidden) return null
   return (
     <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/60">
-        <h2 className="text-xs font-bold text-navy uppercase tracking-wider">{title}</h2>
-        {hint && <p className="text-xs text-slate-400 mt-0.5">{hint}</p>}
-      </div>
-      <div className="p-5">{children}</div>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left cursor-pointer hover:bg-slate-50/80 transition-colors"
+      >
+        <div>
+          <h2 className="text-xs font-bold text-navy uppercase tracking-wider">{title}</h2>
+          {hint && <p className="text-xs text-slate-400 mt-0.5">{hint}</p>}
+        </div>
+        <ChevronDown size={16} className={`text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+      </button>
+      {open && <div className="p-5 border-t border-slate-100">{children}</div>}
     </div>
   )
 }
