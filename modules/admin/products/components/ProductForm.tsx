@@ -68,7 +68,7 @@ interface ProductFormProps {
   }
 }
 
-const inputCls = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent'
+const inputCls = 'w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-navy/25 focus:border-navy transition-colors duration-150'
 const selectCls = `${inputCls} bg-white`
 
 export function ProductForm({
@@ -178,13 +178,13 @@ export function ProductForm({
             <div>
               <Label>Stock inicial</Label>
               <input name="stockInitial" type="number" min="0" defaultValue={defaults?.stockInitial ?? 0} className={inputCls} />
-              <p className="text-xs text-gray-400 mt-1">Se registra como movimiento de compra</p>
+              <p className="text-xs text-slate-400 mt-1">Se registra como movimiento de compra</p>
             </div>
           ) : (
             <div className="flex items-end pb-2">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-slate-500">
                 Stock actual: <span className="font-semibold text-navy">{defaults?.stock ?? 0}</span>
-                <span className="text-xs text-gray-400 ml-1">— ajustar en Inventario</span>
+                <span className="text-xs text-slate-400 ml-1">— ajustar en Inventario</span>
               </p>
             </div>
           )}
@@ -195,33 +195,50 @@ export function ProductForm({
         <ProductImagesSection existingImages={defaults?.images ?? []} />
       </Section>
 
-      <Section title="Descripción y SEO">
+      <Section title="Descripción">
         <div className="grid grid-cols-1 gap-4">
           <div>
             <Label>Descripción corta</Label>
-            <input name="shortDescription" defaultValue={defaults?.shortDescription ?? ''} placeholder="Resumen en una línea" className={inputCls} />
+            <input name="shortDescription" defaultValue={defaults?.shortDescription ?? ''} placeholder="Resumen en una línea para catálogo y SEO" className={inputCls} />
           </div>
           <div>
-            <Label>Descripción</Label>
-            <textarea name="description" rows={4} defaultValue={defaults?.description ?? ''} placeholder="Descripción completa del producto..." className={`${inputCls} resize-y`} />
+            <Label>Descripción completa</Label>
+            <textarea name="description" rows={4} defaultValue={defaults?.description ?? ''} placeholder="Descripción detallada del producto, materiales, aplicaciones..." className={`${inputCls} resize-y`} />
           </div>
-          <div>
-            <Label>Slug base SEO</Label>
-            <input name="slug" defaultValue={defaults?.slug ?? ''} placeholder="Se genera automáticamente del título si lo dejas vacío" className={inputCls} />
-            <p className="text-xs text-gray-400 mt-1">
-              URL pública: {buildSlugPreview(defaults?.code, defaults?.slug)}
-            </p>
-            <p className="text-xs text-gray-400 mt-1">
-              La ruta final usa el código estable del producto más este slug para mantener SEO y redirecciones canónicas.
-            </p>
-          </div>
+        </div>
+      </Section>
+
+      <Section title="SEO" hint="Si dejas en blanco, se genera automáticamente del título y marca del producto.">
+        <div className="grid grid-cols-1 gap-4">
           <div>
             <Label>Meta título</Label>
-            <input name="metaTitle" defaultValue={defaults?.metaTitle ?? ''} className={inputCls} />
+            <input
+              name="metaTitle"
+              defaultValue={defaults?.metaTitle ?? ''}
+              placeholder={defaults?.title ? `${defaults.title}${defaults.code ? ` ${defaults.code}` : ''} | El Chino Americano` : 'Auto-generado del título del producto'}
+              className={inputCls}
+            />
+            <p className="text-xs text-slate-400 mt-1">Máximo 60 caracteres. Se muestra en Google y resultados de búsqueda.</p>
           </div>
           <div>
             <Label>Meta descripción</Label>
-            <input name="metaDescription" defaultValue={defaults?.metaDescription ?? ''} className={inputCls} />
+            <textarea
+              name="metaDescription"
+              rows={2}
+              defaultValue={defaults?.metaDescription ?? ''}
+              placeholder="Auto-generada del título, marca y precio si se deja en blanco"
+              className={`${inputCls} resize-none`}
+            />
+            <p className="text-xs text-slate-400 mt-1">Máximo 160 caracteres. Aparece debajo del título en Google.</p>
+          </div>
+          <div>
+            <Label>Slug URL</Label>
+            <input name="slug" defaultValue={defaults?.slug ?? ''} placeholder="auto-generado-del-titulo" className={inputCls} />
+            {defaults?.code && (
+              <p className="text-xs text-slate-400 mt-1 font-mono">
+                URL: {buildSlugPreview(defaults.code, defaults.slug)}
+              </p>
+            )}
           </div>
         </div>
       </Section>
@@ -238,7 +255,7 @@ export function ProductForm({
         />
       </Section>
 
-      <Section title="Códigos alternos">
+      <Section title="Códigos alternos" hidden>
         <DynamicRows
           name="codes"
           columns={[
@@ -257,11 +274,11 @@ export function ProductForm({
       <div className="flex gap-3 pt-2">
         <SubmitButton
           pendingText={mode === 'create' ? 'Creando...' : 'Guardando...'}
-          className="px-6 py-2.5 bg-navy text-white text-sm rounded-lg hover:bg-navy-dark transition-colors font-medium disabled:opacity-60"
+          className="px-6 py-2.5 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-dark active:scale-[0.98] transition-all disabled:opacity-60"
         >
           {mode === 'create' ? 'Crear producto' : 'Guardar cambios'}
         </SubmitButton>
-        <Link href={routes.admin.products.index} className="px-6 py-2.5 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50 transition-colors">
+        <Link href={routes.admin.products.index} className="px-6 py-2.5 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">
           Cancelar
         </Link>
       </div>
@@ -270,18 +287,20 @@ export function ProductForm({
 }
 
 function Label({ children }: { children: ReactNode }) {
-  return <label className="block text-sm font-medium text-gray-700 mb-1.5">{children}</label>
+  return <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">{children}</label>
 }
 
 function Required() {
   return <span className="text-brand"> *</span>
 }
 
-function Section({ title, children }: { title: string; children: ReactNode }) {
+function Section({ title, hint, hidden, children }: { title: string; hint?: string; hidden?: boolean; children: ReactNode }) {
+  if (hidden) return null
   return (
-    <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
-      <div className="px-5 py-3.5 border-b border-gray-50">
-        <h2 className="text-sm font-semibold text-navy">{title}</h2>
+    <div className="bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden">
+      <div className="px-5 py-4 border-b border-slate-100 bg-slate-50/60">
+        <h2 className="text-xs font-bold text-navy uppercase tracking-wider">{title}</h2>
+        {hint && <p className="text-xs text-slate-400 mt-0.5">{hint}</p>}
       </div>
       <div className="p-5">{children}</div>
     </div>
@@ -291,8 +310,8 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 function CheckField({ name, label, defaultChecked = false }: { name: string; label: string; defaultChecked?: boolean }) {
   return (
     <label className="flex items-center gap-2 cursor-pointer">
-      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="w-4 h-4 rounded border-gray-300 text-navy focus:ring-navy" />
-      <span className="text-sm text-gray-700">{label}</span>
+      <input type="checkbox" name={name} defaultChecked={defaultChecked} className="w-4 h-4 rounded border-slate-300 text-navy focus:ring-navy/30 focus:ring-2" />
+      <span className="text-sm text-slate-700 select-none">{label}</span>
     </label>
   )
 }

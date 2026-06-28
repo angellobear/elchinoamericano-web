@@ -11,32 +11,32 @@ export default async function CategoriesPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Categorías</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{categories.length} categorías registradas</p>
+          <h1 className="text-xl font-bold text-navy">Categorías</h1>
+          <p className="text-slate-400 text-sm mt-0.5">{categories.length} categorías registradas</p>
         </div>
         <Link
           href="/admin/categories/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 active:scale-[0.98] transition-all"
         >
           <Plus size={15} />
           Nueva categoría
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Nombre</th>
-              <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Clave</th>
-              <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Orden</th>
-              <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Estado</th>
+            <tr className="bg-slate-50 border-b border-slate-100">
+              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Nombre</th>
+              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Clave</th>
+              <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Orden</th>
+              <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Estado</th>
               <th className="px-4 py-3.5 w-20"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-slate-100">
             {categories.map(c => (
-              <tr key={c.id} className="hover:bg-gray-50/70 transition-colors">
+              <tr key={c.id} className="hover:bg-slate-50/80 transition-colors">
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-2">
                     {c.parentId && <span className="text-gray-300">└</span>}

@@ -19,13 +19,13 @@ export default async function UsersPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Usuarios</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{users.length} usuarios registrados</p>
+          <h1 className="text-xl font-bold text-navy">Usuarios</h1>
+          <p className="text-slate-400 text-sm mt-0.5">{users.length} usuarios registrados</p>
         </div>
         {isSuperAdmin && (
           <Link
             href="/admin/users/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 active:scale-[0.98] transition-all"
           >
             <Plus size={15} />
             Nuevo usuario
@@ -33,25 +33,25 @@ export default async function UsersPage() {
         )}
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-100">
-              <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Usuario</th>
-              <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Email</th>
-              <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Rol</th>
-              <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Último acceso</th>
-              <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Estado</th>
+            <tr className="bg-slate-50 border-b border-slate-100">
+              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Usuario</th>
+              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Email</th>
+              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Rol</th>
+              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Último acceso</th>
+              <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Estado</th>
               <th className="px-4 py-3.5 w-24"></th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-slate-100">
             {users.map(u => {
               const roleName = u.role?.name ?? ''
               const RoleIcon = roleName === 'superadmin' ? Crown : roleName === 'admin' ? Shield : User
               const isSelf = u.id === payload.userId
               return (
-                <tr key={u.id} className="hover:bg-gray-50/70 transition-colors">
+                <tr key={u.id} className="hover:bg-slate-50/80 transition-colors">
                   <td className="px-4 py-3.5">
                     <div className="flex items-center gap-2.5">
                       <div className="w-7 h-7 bg-navy/10 rounded-full flex items-center justify-center shrink-0">

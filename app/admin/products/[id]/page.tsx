@@ -20,7 +20,6 @@ import { routes } from '@/lib/routes'
 import { ProductForm } from '@/modules/admin/products/components/ProductForm'
 import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/products/form-schema'
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
-import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 
@@ -161,23 +160,18 @@ export default async function EditProductPage({
         description="Actualiza la ficha técnica, compatibilidades e imagen principal del producto."
       />
 
-      <FormCard>
-        <div className="space-y-4">
-          {product.code ? (
-            <div className="space-y-2">
-              <div className="inline-flex rounded-lg bg-gray-100 px-3 py-1 font-mono text-xs text-gray-500">
-                {product.code}
-              </div>
-              <p className="text-xs text-gray-500">
-                URL pública:{' '}
-                <span className="font-mono text-gray-700">
-                  {buildProductPath({ code: product.code, slug: product.slug })}
-                </span>
-              </p>
-            </div>
-          ) : null}
+      {product.code ? (
+        <div className="flex items-center gap-3 mb-6 p-3 rounded-lg bg-slate-50 border border-slate-100">
+          <span className="font-mono text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded px-2 py-1">
+            {product.code}
+          </span>
+          <span className="text-xs text-slate-400">
+            URL: <span className="font-mono text-slate-600">{buildProductPath({ code: product.code, slug: product.slug })}</span>
+          </span>
+        </div>
+      ) : null}
 
-          <ProductForm
+      <ProductForm
             action={saveWithId}
             mode="edit"
             categories={categories}
@@ -227,8 +221,6 @@ export default async function EditProductPage({
               code: product.code,
             }}
           />
-        </div>
-      </FormCard>
     </div>
   )
 }

@@ -27,7 +27,7 @@ export function CategoryFormFields({
             defaultValue={defaults?.key ?? ''}
             placeholder="ej: motor, frenos, suspension"
           />
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-slate-400 mt-1">
             Identificador único, sin espacios ni caracteres especiales
           </p>
         </div>
@@ -60,7 +60,7 @@ export function CategoryFormFields({
           type="number"
           min={0}
           defaultValue={defaults?.sortOrder ?? 0}
-          className="w-32 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+          className="w-32 border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/25 focus:border-navy transition-colors"
         />
       </div>
 

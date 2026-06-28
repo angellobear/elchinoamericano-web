@@ -36,12 +36,12 @@ export function CategoryForm({ action, defaults, mode }: CategoryFormProps) {
         includeIsActive={mode === 'edit'}
       />
       <FormActions>
-        <SubmitButton className="px-5 py-2 bg-navy text-white text-sm rounded-lg hover:bg-navy-dark transition-colors font-medium disabled:opacity-60">
+        <SubmitButton className="px-5 py-2.5 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-dark active:scale-[0.98] transition-all disabled:opacity-60">
           {mode === 'create' ? 'Crear categoría' : 'Guardar cambios'}
         </SubmitButton>
         <Link
           href={routes.admin.categories.index}
-          className="px-5 py-2 border border-gray-200 text-gray-600 text-sm rounded-lg hover:bg-gray-50 transition-colors"
+          className="px-5 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
         >
           Cancelar
         </Link>

@@ -30,37 +30,46 @@ export function SidebarNav({ isSuperAdmin, email, role }: Props) {
 
   return (
     <>
-      <nav className="flex-1 p-3 space-y-0.5">
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {visible.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150 ${
                 active
-                  ? 'bg-white/15 text-white font-medium border-l-2 border-brand'
-                  : 'text-white/60 hover:text-white hover:bg-white/10'
+                  ? 'bg-white/12 text-white font-medium'
+                  : 'text-white/55 hover:text-white hover:bg-white/8'
               }`}
             >
-              <Icon
-                size={16}
-                className={active ? 'text-brand shrink-0' : 'shrink-0 opacity-60'}
-              />
+              <span className={`flex items-center justify-center w-7 h-7 rounded-md shrink-0 transition-colors ${
+                active ? 'bg-brand text-white' : 'text-white/40'
+              }`}>
+                <Icon size={15} />
+              </span>
               {label}
             </Link>
           )
         })}
       </nav>
 
-      <div className="p-3 border-t border-white/10">
-        <div className="px-3 mb-2">
-          <p className="text-white/60 text-xs truncate">{email}</p>
-          <p className="text-white/30 text-xs capitalize">{role}</p>
+      {/* User card */}
+      <div className="p-3 border-t border-white/10 shrink-0">
+        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-white/6 mb-1">
+          <div className="w-7 h-7 rounded-md bg-brand/80 flex items-center justify-center shrink-0">
+            <span className="text-white text-xs font-bold leading-none">
+              {email.slice(0, 1).toUpperCase()}
+            </span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-white text-xs font-medium truncate">{email}</p>
+            <p className="text-white/35 text-xs capitalize">{role}</p>
+          </div>
         </div>
         <a
           href="/api/auth/logout"
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-white/45 hover:text-white hover:bg-white/8 transition-colors duration-150"
         >
           <LogOut size={14} className="shrink-0" />
           Cerrar sesión

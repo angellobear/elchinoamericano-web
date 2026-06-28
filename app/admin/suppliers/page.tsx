@@ -10,12 +10,12 @@ export default async function SuppliersPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Proveedores</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{suppliers.length} proveedores registrados</p>
+          <h1 className="text-xl font-bold text-navy">Proveedores</h1>
+          <p className="text-slate-400 text-sm mt-0.5">{suppliers.length} proveedores registrados</p>
         </div>
         <Link
           href="/admin/suppliers/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 active:scale-[0.98] transition-all"
         >
           <Plus size={15} />
           Nuevo proveedor

@@ -20,7 +20,6 @@ import { routes } from '@/lib/routes'
 import { ProductForm } from '@/modules/admin/products/components/ProductForm'
 import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/products/form-schema'
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
-import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
 
@@ -143,17 +142,15 @@ export default async function NewProductPage() {
         description="Crea un producto con precio, stock, compatibilidades e imagen principal."
       />
 
-      <FormCard>
-        <ProductForm
-          action={create}
-          mode="create"
-          categories={categories}
-          partBrands={partBrands}
-          suppliers={suppliers}
-          brands={brands}
-          defaults={{ isActive: true, stockInitial: 0 }}
-        />
-      </FormCard>
+      <ProductForm
+        action={create}
+        mode="create"
+        categories={categories}
+        partBrands={partBrands}
+        suppliers={suppliers}
+        brands={brands}
+        defaults={{ isActive: true, stockInitial: 1 }}
+      />
     </div>
   )
 }

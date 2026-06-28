@@ -10,12 +10,12 @@ export default async function PartBrandsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-navy">Marcas de Repuestos</h1>
-          <p className="text-gray-500 text-sm mt-0.5">{brands.length} marcas registradas</p>
+          <h1 className="text-xl font-bold text-navy">Marcas de Repuestos</h1>
+          <p className="text-slate-400 text-sm mt-0.5">{brands.length} marcas registradas</p>
         </div>
         <Link
           href="/admin/part-brands/new"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-brand text-white text-sm font-semibold rounded-lg hover:bg-brand/90 active:scale-[0.98] transition-all"
         >
           <Plus size={15} />
           Nueva marca

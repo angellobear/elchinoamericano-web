@@ -1,7 +1,7 @@
 import type { ComponentProps, ReactNode } from 'react'
 
 const baseControlClass =
-  'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent'
+  'w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-800 bg-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-navy/25 focus:border-navy transition-colors duration-150'
 
 interface FieldLabelProps {
   children: ReactNode
@@ -10,9 +10,9 @@ interface FieldLabelProps {
 
 export function FieldLabel({ children, required = false }: FieldLabelProps) {
   return (
-    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+    <label className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1.5">
       {children}
-      {required ? <span className="text-brand"> *</span> : null}
+      {required ? <span className="text-brand normal-case tracking-normal ml-0.5"> *</span> : null}
     </label>
   )
 }
@@ -26,7 +26,7 @@ export function TextArea(props: ComponentProps<'textarea'>) {
 }
 
 export function SelectInput(props: ComponentProps<'select'>) {
-  return <select {...props} className={props.className ?? `${baseControlClass} bg-white`} />
+  return <select {...props} className={props.className ?? baseControlClass} />
 }
 
 interface CheckboxFieldProps extends Omit<ComponentProps<'input'>, 'type'> {
@@ -35,21 +35,25 @@ interface CheckboxFieldProps extends Omit<ComponentProps<'input'>, 'type'> {
 
 export function CheckboxField({ label, ...props }: CheckboxFieldProps) {
   return (
-    <label className="flex items-center gap-3">
+    <label className="flex items-center gap-3 cursor-pointer">
       <input
         {...props}
         type="checkbox"
-        className="w-4 h-4 rounded border-gray-300 text-navy focus:ring-navy"
+        className="w-4 h-4 rounded border-slate-300 text-navy focus:ring-navy/30 focus:ring-2 cursor-pointer"
       />
-      <span className="text-sm font-medium text-gray-700">{label}</span>
+      <span className="text-sm text-slate-700 select-none">{label}</span>
     </label>
   )
 }
 
 export function FormCard({ children }: { children: ReactNode }) {
-  return <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">{children}</div>
+  return (
+    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
+      {children}
+    </div>
+  )
 }
 
 export function FormActions({ children }: { children: ReactNode }) {
-  return <div className="flex gap-3 pt-2">{children}</div>
+  return <div className="flex gap-3 pt-4 border-t border-slate-100 mt-2">{children}</div>
 }

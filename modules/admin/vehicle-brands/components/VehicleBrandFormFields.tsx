@@ -43,7 +43,7 @@ export function VehicleBrandFormFields({
           type="number"
           min={0}
           defaultValue={defaults?.sortOrder ?? 0}
-          className="w-32 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy focus:border-transparent"
+          className="w-32 border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-navy/25 focus:border-navy transition-colors"
         />
       </div>
 

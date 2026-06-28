@@ -9,51 +9,51 @@ interface VehicleBrandsTableProps {
 
 export function VehicleBrandsTable({ brands }: VehicleBrandsTableProps) {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-gray-50 border-b border-gray-100">
-            <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Marca</th>
-            <th className="text-left px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Origen</th>
-            <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Modelos</th>
-            <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Web</th>
-            <th className="text-center px-4 py-3.5 font-medium text-gray-500 text-xs uppercase tracking-wide">Estado</th>
+          <tr className="bg-slate-50 border-b border-slate-100">
+            <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Marca</th>
+            <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Origen</th>
+            <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Modelos</th>
+            <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Web</th>
+            <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Estado</th>
             <th className="px-4 py-3.5 w-28"></th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody className="divide-y divide-slate-100">
           {brands.map((brand) => (
-            <tr key={brand.id} className="hover:bg-gray-50/70 transition-colors">
+            <tr key={brand.id} className="hover:bg-slate-50/80 transition-colors">
               <td className="px-4 py-3.5">
                 <div className="flex items-center gap-2">
-                  <Car size={13} className="text-gray-400 shrink-0" />
-                  <span className="font-medium text-gray-800">{brand.name}</span>
+                  <Car size={13} className="text-slate-400 shrink-0" />
+                  <span className="font-medium text-slate-800">{brand.name}</span>
                 </div>
               </td>
               <td className="px-4 py-3.5">
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs font-medium ${brand.origin === 'chinese'
-                  ? 'bg-red-100 text-red-700'
+                <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-semibold ${brand.origin === 'chinese'
+                  ? 'bg-red-50 text-red-700'
                   : brand.origin === 'american'
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'bg-gray-100 text-gray-600'
+                    ? 'bg-blue-50 text-blue-700'
+                    : 'bg-slate-100 text-slate-600'
                   }`}>
                   {brand.origin === 'chinese' ? 'China' : brand.origin === 'american' ? 'EE.UU.' : brand.origin}
                 </span>
               </td>
               <td className="px-4 py-3.5 text-center">
-                <span className="inline-flex items-center justify-center w-7 h-7 bg-gray-100 rounded-lg text-xs font-semibold text-gray-600">
+                <span className="inline-flex items-center justify-center w-7 h-7 bg-slate-100 rounded-lg text-xs font-semibold text-slate-600">
                   {brand.models.length}
                 </span>
               </td>
               <td className="px-4 py-3.5 text-center">
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${
-                  brand.isVisibleOnWeb ? 'bg-sky-100 text-sky-700' : 'bg-gray-100 text-gray-500'
+                <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium ${
+                  brand.isVisibleOnWeb ? 'bg-sky-50 text-sky-700' : 'bg-slate-100 text-slate-500'
                 }`}>
                   {brand.isVisibleOnWeb ? 'Visible' : 'Oculta'}
                 </span>
               </td>
               <td className="px-4 py-3.5 text-center">
-                <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${brand.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+                <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium ${brand.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
                   }`}>
                   {brand.isActive ? 'Activa' : 'Inactiva'}
                 </span>
@@ -63,7 +63,7 @@ export function VehicleBrandsTable({ brands }: VehicleBrandsTableProps) {
                   <VehicleBrandStatusToggle id={brand.id} isActive={brand.isActive ?? true} />
                   <Link
                     href={`/admin/vehicle-brands/${brand.id}`}
-                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-navy hover:text-white text-gray-500 text-xs font-medium transition-colors"
+                    className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg hover:bg-navy hover:text-white text-slate-500 text-xs font-medium transition-colors"
                   >
                     Gestionar
                     <ChevronRight size={12} />
@@ -74,9 +74,9 @@ export function VehicleBrandsTable({ brands }: VehicleBrandsTableProps) {
           ))}
           {brands.length === 0 && (
             <tr>
-              <td colSpan={6} className="py-16 text-center">
-                <Car size={32} className="mx-auto mb-3 text-gray-300" />
-                <p className="text-gray-400">No hay marcas registradas</p>
+              <td colSpan={6} className="py-20 text-center">
+                <Car size={28} className="mx-auto mb-3 text-slate-300" />
+                <p className="text-slate-400 text-sm">No hay marcas registradas</p>
               </td>
             </tr>
           )}

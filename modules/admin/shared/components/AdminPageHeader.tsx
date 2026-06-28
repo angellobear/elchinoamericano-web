@@ -15,16 +15,18 @@ export function AdminPageHeader({
   backLabel,
 }: AdminPageHeaderProps) {
   return (
-    <div className="mb-6">
+    <div className="mb-7">
       <Link
         href={backHref}
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-navy transition-colors mb-3"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-navy transition-colors duration-150 mb-4 uppercase tracking-wide"
       >
-        <ArrowLeft size={14} />
+        <ArrowLeft size={13} />
         {backLabel}
       </Link>
-      <h1 className="text-2xl font-bold text-navy">{title}</h1>
-      {description ? <p className="text-gray-500 text-sm mt-0.5">{description}</p> : null}
+      <h1 className="text-xl font-bold text-navy leading-tight">{title}</h1>
+      {description ? (
+        <p className="text-slate-400 text-sm mt-1">{description}</p>
+      ) : null}
     </div>
   )
 }
