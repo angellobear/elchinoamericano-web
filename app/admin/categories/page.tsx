@@ -3,9 +3,21 @@ import { getCategories } from '@/lib/db/categories'
 import { Plus, Pencil, Tag } from 'lucide-react'
 import { CategoryStatusToggle } from '@/modules/admin/categories/components/CategoryStatusToggle'
 import { CategoryDeleteButton } from '@/modules/admin/categories/components/CategoryDeleteButton'
+import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
 
-export default async function CategoriesPage() {
-  const categories = await getCategories(true)
+export default async function CategoriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>
+}) {
+  const { search } = await searchParams
+  const allCategories = await getCategories(true)
+  const categories = search
+    ? allCategories.filter((c) =>
+        c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.key.toLowerCase().includes(search.toLowerCase())
+      )
+    : allCategories
 
   return (
     <div className="p-8">
@@ -22,6 +34,8 @@ export default async function CategoriesPage() {
           Nueva categoría
         </Link>
       </div>
+
+      <AdminSearchInput defaultValue={search} placeholder="Buscar por nombre o clave..." />
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-sm">
@@ -72,7 +86,7 @@ export default async function CategoriesPage() {
               <tr>
                 <td colSpan={5} className="py-16 text-center">
                   <Tag size={32} className="mx-auto mb-3 text-gray-300" />
-                  <p className="text-gray-400">No hay categorías registradas</p>
+                  <p className="text-gray-400">No hay categorías que coincidan</p>
                 </td>
               </tr>
             )}

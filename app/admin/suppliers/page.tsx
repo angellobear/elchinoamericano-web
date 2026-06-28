@@ -2,9 +2,25 @@ import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { SuppliersTable } from '@/modules/admin/suppliers/components/SuppliersTable'
 import { supplierRepository } from '@/modules/admin/suppliers/server/repository'
+import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
 
-export default async function SuppliersPage() {
-  const suppliers = await supplierRepository.listForAdmin()
+export default async function SuppliersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>
+}) {
+  const { search } = await searchParams
+  const all = await supplierRepository.listForAdmin()
+  const suppliers = search
+    ? all.filter((s) => {
+        const q = search.toLowerCase()
+        return (
+          s.name.toLowerCase().includes(q) ||
+          s.contactName?.toLowerCase().includes(q) ||
+          s.email?.toLowerCase().includes(q)
+        )
+      })
+    : all
 
   return (
     <div className="p-8">
@@ -21,6 +37,7 @@ export default async function SuppliersPage() {
           Nuevo proveedor
         </Link>
       </div>
+      <AdminSearchInput defaultValue={search} placeholder="Buscar por nombre, contacto o email..." />
       <SuppliersTable suppliers={suppliers} />
     </div>
   )

@@ -2,9 +2,18 @@ import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { PartBrandsTable } from '@/modules/admin/part-brands/components/PartBrandsTable'
 import { partBrandRepository } from '@/modules/admin/part-brands/server/repository'
+import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
 
-export default async function PartBrandsPage() {
-  const brands = await partBrandRepository.listForAdmin()
+export default async function PartBrandsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>
+}) {
+  const { search } = await searchParams
+  const all = await partBrandRepository.listForAdmin()
+  const brands = search
+    ? all.filter((b) => b.name.toLowerCase().includes(search.toLowerCase()))
+    : all
 
   return (
     <div className="p-8">
@@ -21,6 +30,7 @@ export default async function PartBrandsPage() {
           Nueva marca
         </Link>
       </div>
+      <AdminSearchInput defaultValue={search} placeholder="Buscar por nombre..." />
       <PartBrandsTable brands={brands} />
     </div>
   )

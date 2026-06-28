@@ -4,15 +4,30 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Users, Crown, Shield, User, Plus, Pencil } from 'lucide-react'
 import { UserStatusToggle } from '@/modules/admin/users/components/UserStatusToggle'
+import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
 
-export default async function UsersPage() {
+export default async function UsersPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>
+}) {
   const payload = await getJwtPayload()
-  // Solo superadmin puede gestionar usuarios; admin puede ver la lista
   if (!payload || (payload.role !== 'superadmin' && payload.role !== 'admin')) {
     redirect('/admin/forbidden')
   }
 
-  const users = await getUsers()
+  const { search } = await searchParams
+  const allUsers = await getUsers()
+  const users = search
+    ? allUsers.filter((u) => {
+        const q = search.toLowerCase()
+        return (
+          u.email.toLowerCase().includes(q) ||
+          u.fullName?.toLowerCase().includes(q)
+        )
+      })
+    : allUsers
+
   const isSuperAdmin = payload.role === 'superadmin'
 
   return (
@@ -32,6 +47,8 @@ export default async function UsersPage() {
           </Link>
         )}
       </div>
+
+      <AdminSearchInput defaultValue={search} placeholder="Buscar por nombre o email..." />
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
         <table className="w-full text-sm">
@@ -109,7 +126,7 @@ export default async function UsersPage() {
               <tr>
                 <td colSpan={6} className="py-16 text-center">
                   <Users size={32} className="mx-auto mb-3 text-gray-300" />
-                  <p className="text-gray-400">No hay usuarios registrados</p>
+                  <p className="text-gray-400">No hay usuarios que coincidan</p>
                 </td>
               </tr>
             )}

@@ -2,9 +2,18 @@ import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { VehicleBrandsTable } from '@/modules/admin/vehicle-brands/components/VehicleBrandsTable'
 import { vehicleBrandRepository } from '@/modules/admin/vehicle-brands/server/repository'
+import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
 
-export default async function VehicleBrandsPage() {
-  const brands = await vehicleBrandRepository.listForAdmin()
+export default async function VehicleBrandsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ search?: string }>
+}) {
+  const { search } = await searchParams
+  const all = await vehicleBrandRepository.listForAdmin()
+  const brands = search
+    ? all.filter((b) => b.name.toLowerCase().includes(search.toLowerCase()))
+    : all
 
   return (
     <div className="p-8">
@@ -21,6 +30,7 @@ export default async function VehicleBrandsPage() {
           Nueva marca
         </Link>
       </div>
+      <AdminSearchInput defaultValue={search} placeholder="Buscar por nombre..." />
       <VehicleBrandsTable brands={brands} />
     </div>
   )
