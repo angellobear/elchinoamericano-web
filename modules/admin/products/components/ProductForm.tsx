@@ -316,7 +316,7 @@ function Section({ title, hint, hidden, defaultOpen = false, children }: { title
         </div>
         <ChevronDown size={16} className={`text-slate-400 shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </button>
-      {open && <div className="p-5 border-t border-slate-100">{children}</div>}
+      <div className={`p-5 border-t border-slate-100 ${open ? '' : 'hidden'}`}>{children}</div>
     </div>
   )
 }
