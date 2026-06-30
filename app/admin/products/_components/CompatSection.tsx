@@ -82,9 +82,9 @@ export function CompatSection({ brands, initialCompat = [] }: Props) {
               {brands.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
 
-            {/* modelId — this goes to server */}
+            {/* modelId — hidden input ensures value always submits even when select is disabled */}
+            <input type="hidden" name={`compat[${i}][modelId]`} value={row.modelId} />
             <select
-              name={`compat[${i}][modelId]`}
               value={row.modelId}
               onChange={e => update(i, 'modelId', e.target.value)}
               disabled={!row.brandId}

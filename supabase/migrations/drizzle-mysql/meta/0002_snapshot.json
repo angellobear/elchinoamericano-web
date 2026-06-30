@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "2fc690c8-ddb5-49ae-8947-b1afd237c6e9",
-  "prevId": "ad9944ea-a091-43f0-bb46-53ab36903275",
+  "id": "3ba9c5b7-bf25-4d93-86c6-57cbe56403b7",
+  "prevId": "2fc690c8-ddb5-49ae-8947-b1afd237c6e9",
   "tables": {
     "audit_log": {
       "name": "audit_log",
@@ -692,6 +692,13 @@
         },
         "sku": {
           "name": "sku",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "replacement_code": {
+          "name": "replacement_code",
           "type": "varchar(100)",
           "primaryKey": false,
           "notNull": false,
@@ -1498,6 +1505,13 @@
         "transmission": {
           "name": "transmission",
           "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "drive_type": {
+          "name": "drive_type",
+          "type": "varchar(10)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false

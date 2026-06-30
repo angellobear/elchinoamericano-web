@@ -23,6 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       displacement: data.displacement ?? null,
       fuelType:     data.fuelType ?? null,
       transmission: data.transmission ?? null,
+      driveType:    data.driveType ?? null,
       bodyType:     data.bodyType ?? null,
       isActive:     data.isActive,
     })

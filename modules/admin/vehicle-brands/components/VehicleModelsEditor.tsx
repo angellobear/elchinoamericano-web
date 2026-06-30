@@ -12,6 +12,7 @@ interface Model {
   displacement?: string | null
   fuelType?: string | null
   transmission?: string | null
+  driveType?: string | null
   bodyType?: string | null
   isActive?: boolean | null
 }
@@ -29,8 +30,18 @@ const emptyForm = {
   displacement: '',
   fuelType: 'gasoline',
   transmission: '',
+  driveType: '',
   bodyType: '',
 }
+
+const DRIVE_TYPE_OPTIONS = [
+  { value: '', label: '—' },
+  { value: '4x2', label: '4x2' },
+  { value: '4x4', label: '4x4' },
+  { value: 'awd', label: 'AWD' },
+  { value: 'fwd', label: 'FWD' },
+  { value: 'rwd', label: 'RWD' },
+] as const
 
 const BODY_TYPE_OPTIONS = [
   { value: '', label: '—' },
@@ -86,6 +97,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
       displacement: form.displacement || undefined,
       fuelType: form.fuelType || undefined,
       transmission: form.transmission || undefined,
+      driveType: form.driveType || undefined,
       bodyType: form.bodyType || undefined,
     })
 
@@ -120,6 +132,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
       displacement: model.displacement ?? '',
       fuelType: model.fuelType ?? 'gasoline',
       transmission: model.transmission ?? '',
+      driveType: model.driveType ?? '',
       bodyType: model.bodyType ?? '',
     })
   }
@@ -130,6 +143,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
       displacement: editForm.displacement || undefined,
       fuelType: editForm.fuelType || undefined,
       transmission: editForm.transmission || undefined,
+      driveType: editForm.driveType || undefined,
       bodyType: editForm.bodyType || undefined,
     })
 
@@ -162,6 +176,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
       displacement: model.displacement || undefined,
       fuelType: model.fuelType || undefined,
       transmission: model.transmission || undefined,
+      driveType: model.driveType || undefined,
       bodyType: model.bodyType || undefined,
       isActive: model.isActive === false,
     }
@@ -218,6 +233,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Cilindraje</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Combustible</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Transmisión</th>
+              <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Tracción</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Tipo</th>
               <th className="text-left px-4 py-2 text-xs font-medium text-gray-500">Estado</th>
               <th className="px-4 py-2 w-28"></th>
@@ -269,6 +285,19 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                     </td>
                     <td className="px-2 py-2">
                       <select
+                        value={editForm.driveType}
+                        onChange={(event) => setEditForm((current) => ({ ...current, driveType: event.target.value }))}
+                        className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
+                      >
+                        {DRIVE_TYPE_OPTIONS.map((option) => (
+                          <option key={option.value || 'empty'} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </td>
+                    <td className="px-2 py-2">
+                      <select
                         value={editForm.bodyType}
                         onChange={(event) => setEditForm((current) => ({ ...current, bodyType: event.target.value }))}
                         className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy bg-white"
@@ -313,6 +342,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                     <td className="px-4 py-2.5 text-gray-500">{model.displacement ?? '—'}</td>
                     <td className="px-4 py-2.5 text-gray-500">{model.fuelType ?? '—'}</td>
                     <td className="px-4 py-2.5 text-gray-500">{model.transmission ?? '—'}</td>
+                    <td className="px-4 py-2.5 text-gray-500">{model.driveType ? model.driveType.toUpperCase() : '—'}</td>
                     <td className="px-4 py-2.5 text-gray-500">{getBodyTypeLabel(model.bodyType)}</td>
                     <td className="px-4 py-2.5">
                       <span className={`inline-flex px-2 py-0.5 rounded-full text-xs ${
@@ -351,7 +381,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
             ))}
             {models.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center text-gray-400 py-8 text-sm">
+                <td colSpan={8} className="text-center text-gray-400 py-8 text-sm">
                   Sin modelos registrados
                 </td>
               </tr>
@@ -405,6 +435,20 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
               <option value="manual">Manual</option>
               <option value="automatic">Automática</option>
               <option value="cvt">CVT</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Tracción</label>
+            <select
+              value={form.driveType}
+              onChange={(event) => setForm((current) => ({ ...current, driveType: event.target.value }))}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
+            >
+              {DRIVE_TYPE_OPTIONS.map((option) => (
+                <option key={option.value || 'empty'} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
           <div>

@@ -68,6 +68,7 @@ export const vehicleModels = mysqlTable('vehicle_models', {
   displacement: varchar('displacement', { length: 20 }),
   fuelType: varchar('fuel_type', { length: 20 }),
   transmission: varchar('transmission', { length: 20 }),
+  driveType: varchar('drive_type', { length: 10 }),
   bodyType: varchar('body_type', { length: 30 }),
   isActive: boolean('is_active').default(true),
   deletedAt: timestamp('deleted_at'),

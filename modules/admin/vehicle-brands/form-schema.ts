@@ -16,6 +16,7 @@ export const vehicleModelFormSchema = z.object({
   displacement: z.string().max(20, 'El cilindraje es demasiado largo.').optional(),
   fuelType: z.string().max(20, 'El combustible es demasiado largo.').optional(),
   transmission: z.string().max(20, 'La transmisión es demasiado larga.').optional(),
+  driveType: z.string().max(10, 'La tracción es demasiado larga.').optional(),
   bodyType: z.string().max(30, 'El tipo es demasiado largo.').optional(),
   isActive: z.boolean().optional(),
 })
