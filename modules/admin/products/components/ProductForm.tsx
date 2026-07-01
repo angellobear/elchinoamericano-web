@@ -75,11 +75,13 @@ export function ProductForm({
   defaults,
 }: ProductFormProps) {
   const titleRef = useRef<HTMLInputElement>(null)
+  const skuRef = useRef<HTMLInputElement>(null)
   const [slug, setSlug] = useState(defaults?.slug ?? '')
 
   function regenerateSlug() {
     const title = titleRef.current?.value?.trim()
-    if (title) setSlug(buildProductSlugBase(title))
+    const sku = skuRef.current?.value?.trim()
+    if (title) setSlug(buildProductSlugBase(`${sku ?? ''} ${title}`))
   }
 
   return (
@@ -106,8 +108,8 @@ export function ProductForm({
             <input name="shortTitle" defaultValue={defaults?.shortTitle ?? ''} placeholder="ej: Bomba de agua" className={inputCls} />
           </div>
           <div>
-            <Label>SKU</Label>
-            <input name="sku" defaultValue={defaults?.sku ?? ''} placeholder="ej: BWP-001" className={`${inputCls} uppercase`} />
+            <Label>SKU <Required /></Label>
+            <input ref={skuRef} name="sku" required defaultValue={defaults?.sku ?? ''} placeholder="ej: BWP-001" className={`${inputCls} uppercase`} />
           </div>
           <div>
             <Label>Código de repuesto</Label>

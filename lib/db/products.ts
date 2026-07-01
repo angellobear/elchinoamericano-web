@@ -12,6 +12,16 @@ import {
   type SoftDeleteQueryOptions,
 } from '@/lib/db/soft-delete'
 
+function rethrowReadable(error: unknown): never {
+  const msg = error instanceof Error ? error.message : ''
+  if (msg.includes('Duplicate entry')) {
+    if (msg.includes('slug')) throw new Error('Ya existe un producto con ese slug URL. Cambia el slug e intenta de nuevo.')
+    if (msg.includes('_sku_')) throw new Error('Ya existe un producto con ese SKU.')
+    if (msg.includes('_code_')) throw new Error('Ya existe un producto con ese código.')
+  }
+  throw error
+}
+
 // DECIMAL columns come back as string from the driver — convert for arithmetic
 function offerPrice(price: string, pct?: string | null, until?: Date | null): number | undefined {
   if (!pct || !until || until <= new Date()) return undefined
@@ -146,36 +156,44 @@ export async function getProductStats(options?: SoftDeleteQueryOptions) {
 // ─── Writes ──────────────────────────────────────────────────────────────────
 
 export async function createProduct(data: typeof products.$inferInsert) {
-  const { rowId, code, created } = await withAudit(async (tx) => {
-    const result = await tx.insert(products).values(data)
-    const insertId = Array.isArray(result)
-      ? (result[0] as { insertId?: number } | undefined)?.insertId
-      : (result as { insertId?: number }).insertId
+  try {
+    const { rowId, code, created } = await withAudit(async (tx) => {
+      const result = await tx.insert(products).values(data)
+      const insertId = Array.isArray(result)
+        ? (result[0] as { insertId?: number } | undefined)?.insertId
+        : (result as { insertId?: number }).insertId
 
-    if (!insertId) {
-      throw new Error('No se pudo obtener el ID del producto creado.')
-    }
+      if (!insertId) {
+        throw new Error('No se pudo obtener el ID del producto creado.')
+      }
 
-    const rowId = Number(insertId)
-    const code = `CA-${String(rowId).padStart(4, '0')}`
-    await tx.update(products).set({ code }).where(eq(products.id, rowId))
-    const created = await tx.query.products.findFirst({ where: eq(products.id, rowId) })
-    return { rowId, code, created }
-  })
+      const rowId = Number(insertId)
+      const code = `CA-${String(rowId).padStart(4, '0')}`
+      await tx.update(products).set({ code }).where(eq(products.id, rowId))
+      const created = await tx.query.products.findFirst({ where: eq(products.id, rowId) })
+      return { rowId, code, created }
+    })
 
-  await logActivitySafe('CREATE', 'products', rowId, undefined, created as Record<string, unknown> | undefined)
-  return { id: rowId, code }
+    await logActivitySafe('CREATE', 'products', rowId, undefined, created as Record<string, unknown> | undefined)
+    return { id: rowId, code }
+  } catch (error) {
+    rethrowReadable(error)
+  }
 }
 
 export async function updateProduct(id: number, data: Partial<typeof products.$inferInsert>) {
-  const { before, after } = await withAudit(async (tx) => {
-    const before = await tx.query.products.findFirst({ where: eq(products.id, id) })
-    await tx.update(products).set({ ...data, updatedAt: dbNow() }).where(eq(products.id, id))
-    const after = await tx.query.products.findFirst({ where: eq(products.id, id) })
-    return { before, after }
-  })
+  try {
+    const { before, after } = await withAudit(async (tx) => {
+      const before = await tx.query.products.findFirst({ where: eq(products.id, id) })
+      await tx.update(products).set({ ...data, updatedAt: dbNow() }).where(eq(products.id, id))
+      const after = await tx.query.products.findFirst({ where: eq(products.id, id) })
+      return { before, after }
+    })
 
-  await logActivitySafe('UPDATE', 'products', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
+    await logActivitySafe('UPDATE', 'products', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
+  } catch (error) {
+    rethrowReadable(error)
+  }
 }
 
 export async function deleteProduct(id: number) {
