@@ -65,7 +65,7 @@ export async function generateMetadata({
 
   const compatKeywords = (product.compatibilities ?? []).flatMap(c =>
     [c.model?.brand?.name, `${c.model?.brand?.name ?? ""} ${c.model?.name ?? ""}`.trim()]
-      .filter((v): v is string => Boolean(v) && v.length > 2)
+      .filter((v): v is string => v != null && v.length > 2)
   )
 
   return {
