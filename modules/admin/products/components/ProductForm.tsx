@@ -80,8 +80,8 @@ export function ProductForm({
 
   function regenerateSlug() {
     const title = titleRef.current?.value?.trim()
-    const sku = skuRef.current?.value?.trim()
-    if (title) setSlug(buildProductSlugBase(`${sku ?? ''} ${title}`))
+    const sku = skuRef.current?.value?.trim() ?? ''
+    if (title) setSlug(`${buildProductSlugBase(title)}-${buildProductSlugBase(sku)}`)
   }
 
   return (

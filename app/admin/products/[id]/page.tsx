@@ -62,7 +62,7 @@ async function save(productId: number, _: ActionState, formData: FormData) {
       isFeatured,
       isActive,
     } = parsed.data
-    const normalizedSlug = buildProductSlugBase(`${sku} ${slug || title}`)
+    const normalizedSlug = `${buildProductSlugBase(slug || title)}-${buildProductSlugBase(sku)}`
     const previousPublicPath = buildProductPath(currentProduct)
     const nextPublicPath = buildProductPath({
       code: currentProduct.code,
