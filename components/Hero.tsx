@@ -219,7 +219,7 @@ export default function Hero({ brands }: HeroProps) {
               {/* stock pill */}
               <div className="absolute top-4 left-4 flex items-center gap-2 bg-[rgba(13,31,60,.92)] px-3 py-2 rounded-full shadow-[0_6px_16px_rgba(0,0,0,.22)]">
                 <span className="h-1.75 w-1.75 rounded-full bg-wa animate-pulse-ring shrink-0" />
-                <span className="font-bold text-2.75 tracking-[.12em] uppercase text-white">+5.000 referencias en stock</span>
+                <span className="font-bold text-2.75 tracking-[.12em] uppercase text-white">+1.000 referencias en stock</span>
               </div>
             </div>
 

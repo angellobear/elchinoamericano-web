@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, Package, ZoomIn } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -13,9 +13,14 @@ interface ProductCarouselProps {
   categoryName?: string
 }
 
+const LENS_SIZE = 190 // px
+const LENS_HALF = LENS_SIZE / 2
+const ZOOM = 8
+
 export default function ProductCarousel({ images, productName, brandName, categoryName }: ProductCarouselProps) {
   const [current, setCurrent] = useState(0)
   const [lightbox, setLightbox] = useState(false)
+  const lensRef = useRef<HTMLDivElement>(null)
 
   const hasImages = Array.isArray(images) && images.length > 0
   const count = hasImages ? images.length : 0
@@ -23,6 +28,42 @@ export default function ProductCarousel({ images, productName, brandName, catego
 
   const prev = () => setCurrent((c) => (c === 0 ? count - 1 : c - 1))
   const next = () => setCurrent((c) => (c === count - 1 ? 0 : c + 1))
+
+  function moveLens(e: React.MouseEvent<HTMLDivElement>, src: string) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width))
+    const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height))
+    if (!lensRef.current) return
+    lensRef.current.style.display = "block"
+    lensRef.current.style.left = `${x * rect.width - LENS_HALF}px`
+    lensRef.current.style.top = `${y * rect.height - LENS_HALF}px`
+    lensRef.current.style.backgroundImage = `url(${src})`
+    lensRef.current.style.backgroundPosition = `${x * 100}% ${y * 100}%`
+  }
+
+  function hideLens() {
+    if (lensRef.current) lensRef.current.style.display = "none"
+  }
+
+  useEffect(() => {
+    window.addEventListener("scroll", hideLens, { passive: true })
+    return () => window.removeEventListener("scroll", hideLens)
+  }, [])
+
+  /* Shared lens element — rendered once, shared between modes */
+  const lens = (
+    <div
+      ref={lensRef}
+      aria-hidden
+      className="pointer-events-none absolute z-20 hidden rounded-xl border-[1.5px] border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.22)]"
+      style={{
+        width: LENS_SIZE,
+        height: LENS_SIZE,
+        backgroundSize: `${ZOOM * 100}%`,
+        backgroundRepeat: "no-repeat",
+      }}
+    />
+  )
 
   /* ── No real images: placeholder ── */
   if (!hasImages) {
@@ -55,23 +96,26 @@ export default function ProductCarousel({ images, productName, brandName, catego
     )
   }
 
-  /* ── Single image: just show it, no nav ── */
+  /* ── Single image ── */
   if (isSingle) {
     return (
       <>
         <div
-          className="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square cursor-zoom-in group"
+          className="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square cursor-crosshair group"
           onClick={() => setLightbox(true)}
+          onMouseMove={(e) => moveLens(e, images[0])}
+          onMouseLeave={hideLens}
         >
+          {lens}
           <Image
             fill
             src={images[0]}
             alt={productName ?? "Imagen del producto"}
             title={productName ?? "Imagen del producto"}
-            className="object-contain transition-transform duration-300 group-hover:scale-105"
+            className="object-contain"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
-          <div className="absolute bottom-3 right-3 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+          <div className="absolute bottom-3 right-3 z-30 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
             <ZoomIn size={14} className="text-slate-700" />
           </div>
         </div>
@@ -92,18 +136,21 @@ export default function ProductCarousel({ images, productName, brandName, catego
   return (
     <>
       <div className="flex flex-col gap-3">
-        {/* Main image */}
         <div
-          className="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square select-none cursor-zoom-in group"
+          className="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square select-none cursor-crosshair group"
           onClick={() => setLightbox(true)}
+          onMouseMove={(e) => moveLens(e, images[current])}
+          onMouseLeave={hideLens}
         >
+          {lens}
+
           {images.map((src, i) => (
             <Image
               key={i}
               fill
               src={src}
-              alt={`${productName ?? "Producto"} — imagen ${i + 1}`}
-              title={`${productName ?? "Producto"} — imagen ${i + 1}`}
+              alt={`${productName ?? "Producto"} - imagen ${i + 1}`}
+              title={`${productName ?? "Producto"} - imagen ${i + 1}`}
               className={cn(
                 "object-contain transition-all duration-300",
                 i === current ? "opacity-100 z-10" : "opacity-0 z-0"
@@ -116,25 +163,25 @@ export default function ProductCarousel({ images, productName, brandName, catego
           <button
             onClick={(e) => { e.stopPropagation(); prev() }}
             aria-label="Imagen anterior"
-            className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-700 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+            className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-700 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-150"
           >
             <ChevronLeft size={18} />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); next() }}
             aria-label="Imagen siguiente"
-            className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-700 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+            className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-700 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-150"
           >
             <ChevronRight size={18} />
           </button>
 
           {/* Counter */}
-          <span className="absolute top-3 right-3 z-20 bg-black/30 text-white text-2.5 font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
+          <span className="absolute top-3 right-3 z-30 bg-black/30 text-white text-2.5 font-bold px-2 py-0.5 rounded-full backdrop-blur-sm">
             {current + 1} / {count}
           </span>
 
-          {/* Zoom hint */}
-          <div className="absolute bottom-3 right-3 z-20 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+          {/* Lightbox hint */}
+          <div className="absolute bottom-3 right-3 z-30 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
             <ZoomIn size={14} className="text-slate-700" />
           </div>
         </div>
