@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
-import { ChevronDown } from 'lucide-react'
+import { useState, useRef, type ReactNode } from 'react'
+import { ChevronDown, RotateCcw } from 'lucide-react'
 import Link from 'next/link'
 import { SubmitButton } from '@/app/admin/_components/SubmitButton'
 import { ProductImagesSection } from '@/app/admin/products/_components/ProductImagesSection'
@@ -74,6 +74,14 @@ export function ProductForm({
   suppliers,
   defaults,
 }: ProductFormProps) {
+  const titleRef = useRef<HTMLInputElement>(null)
+  const [slug, setSlug] = useState(defaults?.slug ?? '')
+
+  function regenerateSlug() {
+    const title = titleRef.current?.value?.trim()
+    if (title) setSlug(buildProductSlugBase(title))
+  }
+
   return (
     <ValidatedForm
       action={action}
@@ -91,7 +99,7 @@ export function ProductForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
             <Label>Título <Required /></Label>
-            <input name="title" required defaultValue={defaults?.title ?? ''} placeholder="ej: Bomba de agua original" className={inputCls} />
+            <input ref={titleRef} name="title" required defaultValue={defaults?.title ?? ''} placeholder="ej: Bomba de agua original" className={inputCls} />
           </div>
           <div>
             <Label>Título corto</Label>
@@ -231,10 +239,27 @@ export function ProductForm({
           </div>
           <div>
             <Label>Slug URL</Label>
-            <input name="slug" defaultValue={defaults?.slug ?? ''} placeholder="auto-generado-del-titulo" className={inputCls} />
+            <div className="flex gap-2">
+              <input
+                name="slug"
+                value={slug}
+                onChange={e => setSlug(e.target.value)}
+                placeholder="auto-generado-del-titulo"
+                className={inputCls}
+              />
+              <button
+                type="button"
+                onClick={regenerateSlug}
+                title="Regenerar desde título"
+                className="shrink-0 flex items-center gap-1.5 px-3 py-2 text-xs text-slate-500 border border-slate-200 rounded-lg hover:bg-slate-50 hover:text-navy transition-colors"
+              >
+                <RotateCcw size={13} />
+                Regenerar
+              </button>
+            </div>
             {defaults?.code && (
               <p className="text-xs text-slate-400 mt-1 font-mono">
-                URL: {buildSlugPreview(defaults.code, defaults.slug)}
+                URL: {buildSlugPreview(defaults.code, slug)}
               </p>
             )}
           </div>
