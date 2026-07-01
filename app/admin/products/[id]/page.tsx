@@ -13,7 +13,6 @@ import {
 } from '@/lib/db/products'
 import { getPartBrands } from '@/lib/db/part-brands'
 import { getSuppliers } from '@/lib/db/suppliers'
-import { getVehicleBrandsWithModels } from '@/lib/db/vehicle-brands'
 import { logger } from '@/lib/logger'
 import { buildProductPath, buildProductSlugBase } from '@/lib/product-slugs'
 import { routes } from '@/lib/routes'
@@ -141,12 +140,11 @@ export default async function EditProductPage({
   const { id } = await params
   const productId = Number(id)
 
-  const [product, categories, partBrands, suppliers, brands] = await Promise.all([
+  const [product, categories, partBrands, suppliers] = await Promise.all([
     getProductById(productId),
     getCategories(),
     getPartBrands(),
     getSuppliers(),
-    getVehicleBrandsWithModels(),
   ])
 
   if (!product) notFound()
@@ -179,7 +177,6 @@ export default async function EditProductPage({
             categories={categories}
             partBrands={partBrands}
             suppliers={suppliers}
-            brands={brands}
             defaults={{
               title: product.title,
               shortTitle: product.shortTitle ?? undefined,

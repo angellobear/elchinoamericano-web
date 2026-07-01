@@ -19,12 +19,6 @@ interface SelectOption {
   name: string
 }
 
-interface ProductBrandOption {
-  id: number
-  name: string
-  models: { id: number; name: string }[]
-}
-
 function buildSlugPreview(code?: string | null, slug?: string | null) {
   const normalizedCode = code?.trim().toLowerCase() || 'ca-0000'
   const normalizedSlug = buildProductSlugBase(slug?.trim() || 'slug-del-producto')
@@ -37,7 +31,6 @@ interface ProductFormProps {
   categories: SelectOption[]
   partBrands: SelectOption[]
   suppliers: SelectOption[]
-  brands: ProductBrandOption[]
   defaults?: {
     title?: string
     shortTitle?: string
@@ -79,7 +72,6 @@ export function ProductForm({
   categories,
   partBrands,
   suppliers,
-  brands,
   defaults,
 }: ProductFormProps) {
   return (
@@ -274,7 +266,7 @@ export function ProductForm({
       </Section>
 
       <Section title="Compatibilidad con vehículos">
-        <CompatSection brands={brands} initialCompat={defaults?.compatibilities ?? []} />
+        <CompatSection initialCompat={defaults?.compatibilities ?? []} />
       </Section>
 
       <div className="flex gap-3 pt-2">

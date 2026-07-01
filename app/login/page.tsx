@@ -1,4 +1,7 @@
+import { redirect } from 'next/navigation'
 import type { Metadata } from "next"
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { routes } from '@/lib/routes'
 import LoginForm from "./LoginForm"
 
 export const metadata: Metadata = {
@@ -11,7 +14,9 @@ export const metadata: Metadata = {
   },
 }
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const payload = await getJwtPayload()
+  if (payload) redirect(routes.admin.dashboard)
   return (
     <main className="min-h-screen bg-navy flex items-center justify-center p-4">
       <section className="w-full max-w-sm bg-white rounded-2xl shadow-2xl p-8">

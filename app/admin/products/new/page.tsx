@@ -13,7 +13,6 @@ import {
 import { getCategories } from '@/lib/db/categories'
 import { getPartBrands } from '@/lib/db/part-brands'
 import { getSuppliers } from '@/lib/db/suppliers'
-import { getVehicleBrandsWithModels } from '@/lib/db/vehicle-brands'
 import { logger } from '@/lib/logger'
 import { buildProductPath, buildProductSlugBase } from '@/lib/product-slugs'
 import { routes } from '@/lib/routes'
@@ -128,11 +127,10 @@ export default async function NewProductPage() {
   const payload = await getJwtPayload()
   if (!payload) redirect(routes.login)
 
-  const [categories, partBrands, suppliers, brands] = await Promise.all([
+  const [categories, partBrands, suppliers] = await Promise.all([
     getCategories(),
     getPartBrands(),
     getSuppliers(),
-    getVehicleBrandsWithModels(),
   ])
 
   return (
@@ -150,7 +148,6 @@ export default async function NewProductPage() {
         categories={categories}
         partBrands={partBrands}
         suppliers={suppliers}
-        brands={brands}
         defaults={{ isActive: true, stockInitial: 1 }}
       />
     </div>
