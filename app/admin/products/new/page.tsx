@@ -14,7 +14,7 @@ import { getCategories } from '@/lib/db/categories'
 import { getPartBrands } from '@/lib/db/part-brands'
 import { getSuppliers } from '@/lib/db/suppliers'
 import { logger } from '@/lib/logger'
-import { buildProductPath, buildProductSlugBase } from '@/lib/product-slugs'
+import { buildProductPath, buildSlugWithSku } from '@/lib/product-slugs'
 import { routes } from '@/lib/routes'
 import { ProductForm } from '@/modules/admin/products/components/ProductForm'
 import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/products/form-schema'
@@ -58,7 +58,7 @@ async function create(_: ActionState, formData: FormData) {
       isFeatured,
       isActive,
     } = parsed.data
-    const normalizedSlug = `${buildProductSlugBase(slug || title)}-${buildProductSlugBase(sku)}`
+    const normalizedSlug = buildSlugWithSku(slug || title, sku)
 
     const { id, code } = await createProduct({
       title,

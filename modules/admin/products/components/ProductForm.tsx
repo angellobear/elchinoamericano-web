@@ -8,7 +8,7 @@ import { ProductImagesSection } from '@/app/admin/products/_components/ProductIm
 import { routes } from '@/lib/routes'
 import { DynamicRows } from '@/app/admin/products/_components/DynamicRows'
 import { CompatSection } from '@/app/admin/products/_components/CompatSection'
-import { buildProductSlugBase } from '@/lib/product-slugs'
+import { buildProductSlugBase, sanitizeSkuForSlug } from '@/lib/product-slugs'
 import { ValidatedForm } from '@/modules/admin/shared/components/ValidatedForm'
 import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
@@ -81,7 +81,7 @@ export function ProductForm({
   function regenerateSlug() {
     const title = titleRef.current?.value?.trim()
     const sku = skuRef.current?.value?.trim() ?? ''
-    if (title) setSlug(`${buildProductSlugBase(title)}-${buildProductSlugBase(sku)}`)
+    if (title) setSlug(`${buildProductSlugBase(title)}-${sanitizeSkuForSlug(sku)}`)
   }
 
   return (

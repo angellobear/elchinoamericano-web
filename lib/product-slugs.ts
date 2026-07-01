@@ -3,6 +3,24 @@ type ProductSlugSource = {
   slug?: string | null
 }
 
+export function sanitizeSkuForSlug(sku: string) {
+  return sku
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/\s+/g, '')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+}
+
+export function buildSlugWithSku(slugOrTitle: string, sku: string) {
+  const skuSuffix = sanitizeSkuForSlug(sku)
+  const base = buildProductSlugBase(slugOrTitle)
+  const baseWithoutSku = skuSuffix ? base.replace(new RegExp(`-${skuSuffix}$`), '') : base
+  return skuSuffix ? `${baseWithoutSku}-${skuSuffix}` : base
+}
+
 export function buildProductSlugBase(value: string) {
   return value
     .toLowerCase()
