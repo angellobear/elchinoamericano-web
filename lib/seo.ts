@@ -59,14 +59,33 @@ export function getProductUrl(product: Product) {
   return toAbsoluteUrl(buildProductPath(product))
 }
 
+function buildCompatSuffix(product: Product): string {
+  if (!product.compatibilities?.length) return ""
+  const brands = [...new Set(
+    product.compatibilities.map(c => c.model?.brand?.name).filter((v): v is string => Boolean(v))
+  )]
+  const models = [...new Set(
+    product.compatibilities
+      .map(c => `${c.model?.brand?.name ?? ""} ${c.model?.name ?? ""}`.trim())
+      .filter(Boolean)
+  )]
+  const list = models.length <= 4 ? models : brands
+  return ` Compatible con: ${list.join(", ")}.`
+}
+
 export function getProductSeoDescription(product: Product, typeLabel: string) {
-  if (product.meta_description) return product.meta_description
+  const compatSuffix = buildCompatSuffix(product)
 
-  const compatibleText = product.short_description
+  if (product.meta_description) {
+    // Concatenate — never override
+    return compatSuffix ? `${product.meta_description}${compatSuffix}` : product.meta_description
+  }
+
+  const shortDescText = product.short_description
     ? ` Compatible con ${product.short_description}.`
-    : ""
+    : compatSuffix
 
-  return `Compra ${product.title} marca ${product.part_brand?.name ?? ""}. ${typeLabel}.${compatibleText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}.`
+  return `${product.title} ${product.part_brand?.name ?? ""} - ${typeLabel}.${shortDescText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}.`
 }
 
 export function getProductSeoTitle(product: Product) {

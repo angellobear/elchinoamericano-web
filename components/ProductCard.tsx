@@ -44,7 +44,7 @@ export default function ProductCard({ product }: { product: Product }) {
       />
 
       {/* Image 4:3 */}
-      <div className="relative aspect-4/3 overflow-hidden pointer-events-none">
+      <div className="relative aspect-square overflow-hidden pointer-events-none">
         <Image
           src={displayImage}
           alt={primaryImage ? product.title : `${product.title} - imagen referencial`}
@@ -83,7 +83,7 @@ export default function ProductCard({ product }: { product: Product }) {
         <p className="text-2.75 font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
           {product.part_brand?.name}
         </p>
-        <h3 className="font-display font-bold text-4.75 uppercase text-navy leading-[1.12] mt-[5px]">
+        <h3 className="font-display font-bold text-4.75 uppercase text-navy leading-[1.12] mt-1.25">
           {product.title}
         </h3>
 

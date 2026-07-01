@@ -29,6 +29,7 @@ export interface VehicleModel {
   name: string
   displacement?: string
   fuel_type?: string
+  drive_type?: string
   transmission?: string
   body_type?: string
   year_start?: number

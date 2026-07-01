@@ -93,9 +93,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="es" className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="es" translate="no" className={`${barlowCondensed.variable} ${inter.variable} h-full antialiased`} suppressHydrationWarning>
       <head>
         <meta httpEquiv="content-language" content="es-EC" />
+        <meta name="google" content="notranslate" />
       </head>
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <CartProvider>{children}</CartProvider>

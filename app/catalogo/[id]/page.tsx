@@ -5,7 +5,6 @@ import Link from "next/link"
 import {
   ChevronRight,
   MessageCircle,
-  Package,
   ShieldCheck,
   ShoppingCart,
   Truck,
@@ -16,7 +15,6 @@ import Navbar from "@/components/Navbar"
 import ProductCarousel from "@/components/ProductCarousel"
 import { getPublicProducts, getPublicProductByCode, getPublicProductBySlug, getPublicProductsByCategory } from "@/lib/db/products"
 import {
-  DEFAULT_PRODUCT_IMAGE_PATH,
   SITE_NAME,
   SITE_URL,
   getProductDisplayImage,
@@ -65,6 +63,11 @@ export async function generateMetadata({
   const imageAlt = getProductShareImageAlt(product)
   const canonicalUrl = getProductUrl(product)
 
+  const compatKeywords = (product.compatibilities ?? []).flatMap(c =>
+    [c.model?.brand?.name, `${c.model?.brand?.name ?? ""} ${c.model?.name ?? ""}`.trim()]
+      .filter((v): v is string => Boolean(v) && v.length > 2)
+  )
+
   return {
     title,
     description,
@@ -72,9 +75,10 @@ export async function generateMetadata({
       product.title,
       product.part_brand?.name,
       product.category?.name,
-      product.code,
+      product.sku,
       "repuestos automotrices",
       "Ecuador",
+      ...compatKeywords,
     ].filter((value): value is string => Boolean(value)),
     alternates: { canonical: canonicalUrl },
     openGraph: {
@@ -128,11 +132,11 @@ const TYPE_CONFIG: Record<
   aftermarket: {
     label: "Alterno",
     description: "Repuesto de mercado libre de alta calidad con excelente relacion precio-durabilidad.",
-    badgeCls: "bg-brand text-white",
-    stripBg: "bg-brand/6",
-    stripBorder: "border-brand/20",
-    stripText: "text-brand",
-    stripSub: "text-[#566071]",
+    badgeCls: "bg-[#4e6280] text-white",
+    stripBg: "bg-[#edf1f7]",
+    stripBorder: "border-[#c8d4e4]",
+    stripText: "text-[#354e6a]",
+    stripSub: "text-[#5a6f8a]",
   },
 }
 
@@ -247,57 +251,34 @@ export default async function ProductDetailPage({
   const discountPct = product.offer_price
     ? Math.round((1 - product.offer_price / product.price) * 100)
     : 0
-  const related = product.category?.key
+  
+    const related = product.category?.key
     ? await getPublicProductsByCategory(product.category.key, product.id)
     : []
 
   const whatsappMsg =
-    `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (Cod: ${product.code}). Esta disponible? Cuanto es el envio?`
+    `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (SKU: ${product.sku}). Esta disponible? Cuanto es el envio?`
+
   const whatsappHref = getWhatsAppUrl(whatsappMsg)
   const ctaTargetId = "product-whatsapp-cta"
   const hasDescription = Boolean(product.description || product.alternate_codes?.length)
   const hasSpecs = Boolean(product.specs?.length)
   const specs = product.specs ?? []
+  
   const quickFacts = [
-    product.code ? { label: "Codigo", value: product.code } : null,
+    product.sku ? { label: "SKU", value: product.sku } : null,
     product.part_brand?.name ? { label: "Marca del repuesto", value: product.part_brand.name } : null,
     product.category?.name ? { label: "Categoria", value: product.category.name } : null,
     { label: "Tipo", value: typeConfig.label },
     product.short_description ? { label: "Compatibilidad base", value: product.short_description } : null,
   ].filter((fact): fact is { label: string; value: string } => Boolean(fact))
+  
   const offerDeadline = product.discount_until
     ? new Intl.DateTimeFormat("es-EC", {
-        day: "numeric",
-        month: "long",
-      }).format(new Date(product.discount_until))
+      day: "numeric",
+      month: "long",
+    }).format(new Date(product.discount_until))
     : null
-
-  const carouselFallback = (
-    <div className="relative h-full w-full">
-      <Image
-        src={DEFAULT_PRODUCT_IMAGE_PATH}
-        alt={`${product.title} - imagen referencial`}
-        title={`${product.title} - imagen referencial`}
-        fill
-        className="object-contain p-6"
-        sizes="(max-width: 768px) 100vw, 50vw"
-      />
-      <div className="absolute inset-x-4 bottom-4 rounded-xl bg-navy/84 px-4 py-3 text-left">
-        <div className="flex items-center gap-2 text-white/80">
-          <Package size={16} strokeWidth={1.5} />
-          <span className="text-[11px] font-semibold uppercase tracking-[.08em]">
-            Imagen referencial
-          </span>
-        </div>
-        <p className="mt-2 font-display text-base font-bold leading-tight text-white">
-          {product.part_brand?.name ?? product.title}
-        </p>
-        {categoryName && (
-          <p className="mt-1 text-xs text-white/70">{categoryName}</p>
-        )}
-      </div>
-    </div>
-  )
 
   const faqJsonLd = buildFaqJsonLd(product, typeConfig.label)
 
@@ -362,8 +343,9 @@ export default async function ProductDetailPage({
                   )}
                   <ProductCarousel
                     images={product.images?.map((img) => img.url)}
-                    fallback={carouselFallback}
-                    productName={`${product.title} ${product.part_brand?.name ?? ""}`}
+                    productName={product.title}
+                    brandName={product.part_brand?.name}
+                    categoryName={categoryName}
                   />
                 </div>
               </div>
@@ -398,8 +380,7 @@ export default async function ProductDetailPage({
                     {product.title}
                   </h1>
                   <p className="mt-3 font-mono text-3.25 text-[#9aa3b2]">
-                    {product.code}
-                    {product.sku && ` · SKU ${product.sku}`}
+                    {`SKU ${product.sku ?? product.code}`}
                   </p>
                 </div>
 
@@ -630,69 +611,75 @@ export default async function ProductDetailPage({
                 </h2>
               </div>
               <p className="mb-6 text-3.75 text-[#566071]">
-                Confirma el modelo y ano de tu auto. Si tienes dudas, escribenos la placa por WhatsApp y lo verificamos.
+                Confirma el modelo y año de tu auto. Si tienes dudas, escribenos la placa por WhatsApp y lo verificamos.
               </p>
               {(() => {
-                const byBrand = product.compatibilities.reduce<
-                  Record<string, NonNullable<Product["compatibilities"]>>
-                >((acc, compatibility) => {
-                  const brand = compatibility.model?.brand?.name ?? "Otros"
-                  ;(acc[brand] ??= []).push(compatibility)
-                  return acc
-                }, {})
-
-                return Object.entries(byBrand).map(([brandName, compatibilities]) => (
-                  <div
-                    key={brandName}
-                    className="mb-4 overflow-hidden rounded-2xl border border-[#e6e9ef] bg-white"
-                  >
-                    <div className="flex items-center gap-3 bg-navy px-5 py-4">
-                      <span className="flex h-7.5 w-7.5 items-center justify-center rounded-[7px] bg-white/14 text-2.75 font-bold text-white">
-                        {brandName.slice(0, 2).toUpperCase()}
-                      </span>
-                      <span className="font-display text-4.5 font-bold uppercase tracking-[.04em] text-white">
-                        {brandName}
-                      </span>
-                    </div>
-                    {compatibilities.map((compatibility, index) => (
-                      <div
-                        key={`${compatibility.vehicle_model_id}-${index}`}
-                        className={`flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between ${index < compatibilities.length - 1 ? "border-b border-[#ebeef3]" : ""}`}
-                      >
-                        <div>
-                          <span className="text-4 font-bold text-navy">
-                            {compatibility.model?.name}
-                          </span>
-                          {compatibility.model?.displacement && (
-                            <span className="text-3.5 text-[#8a93a3]">
-                              {" "}
-                              · {compatibility.model.displacement}
-                            </span>
-                          )}
-                          {compatibility.notes && (
-                            <span className="ml-2 text-3.25 text-[#8a93a3]">
-                              ({compatibility.notes})
-                            </span>
-                          )}
-                        </div>
-                        {(compatibility.model?.year_start || compatibility.model?.year_end) && (
-                          <span className="shrink-0 rounded-[7px] bg-[#e7ebf1] px-3 py-1.5 text-3 font-semibold text-navy">
-                            {compatibility.model?.year_start}
-                            {compatibility.model?.year_end
-                              ? `–${compatibility.model.year_end}`
-                              : "–actual"}
-                          </span>
-                        )}
-                      </div>
-                    ))}
+                const FUEL_ES: Record<string, string> = {
+                  gasoline: "Gasolina",
+                  diesel: "Diésel",
+                  hybrid: "Híbrido",
+                  electric: "Eléctrico",
+                }
+                const sorted = [...product.compatibilities].sort((a, b) => {
+                  const ba = a.model?.brand?.name ?? ""
+                  const bb = b.model?.brand?.name ?? ""
+                  return ba !== bb ? ba.localeCompare(bb) : (a.model?.name ?? "").localeCompare(b.model?.name ?? "")
+                })
+                const dash = <span className="text-[#c8d0db]">-</span>
+                return (
+                  <div className="overflow-hidden rounded-2xl border border-[#e6e9ef] bg-white overflow-x-auto">
+                    <table className="w-full min-w-[640px] text-left">
+                      <thead>
+                        <tr className="bg-navy">
+                          {(["Marca", "Modelo", "Cilindraje", "Tracción", "Combustible", "Año"] as const).map((h, i) => (
+                            <th
+                              key={h}
+                              className={`py-3 text-2.75 font-semibold uppercase tracking-[.08em] text-white/60 ${i === 0 ? "pl-5 pr-4" : i === 5 ? "pl-4 pr-5 text-right" : "px-4"}`}
+                            >
+                              {h}
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sorted.map((c, idx) => (
+                          <tr
+                            key={`${c.vehicle_model_id}-${idx}`}
+                            className={`transition-colors hover:bg-[#f8fafc] ${idx < sorted.length - 1 ? "border-b border-[#ebeef3]" : ""}`}
+                          >
+                            <td className="pl-5 pr-4 py-3.5 text-3.5 font-semibold text-navy">
+                              {c.model?.brand?.name ?? dash}
+                            </td>
+                            <td className="px-4 py-3.5">
+                              <span className="text-3.75 font-semibold text-navy">{c.model?.name}</span>
+                              {c.notes && <span className="ml-1.5 text-3 text-[#8a93a3]">({c.notes})</span>}
+                            </td>
+                            <td className="px-4 py-3.5 text-3.5 text-[#566071]">
+                              {c.model?.displacement ?? dash}
+                            </td>
+                            <td className="px-4 py-3.5 text-3.5 text-[#566071]">
+                              {c.model?.drive_type ? c.model.drive_type.toUpperCase() : dash}
+                            </td>
+                            <td className="px-4 py-3.5 text-3.5 text-[#566071]">
+                              {c.model?.fuel_type ? (FUEL_ES[c.model.fuel_type] ?? c.model.fuel_type) : dash}
+                            </td>
+                            <td className="pl-4 pr-5 py-3.5 text-right text-3.5 text-[#566071]">
+                              {(c.model?.year_start || c.model?.year_end)
+                                ? `${c.model?.year_start ?? ""}-${c.model?.year_end ?? "actual"}`
+                                : dash}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
-                ))
+                )
               })()}
             </div>
           </section>
         )}
 
-        {product.equivalencies && product.equivalencies.length > 0 && (
+        {/* {product.equivalencies && product.equivalencies.length > 0 && (
           <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
             <h2 className="mb-2 font-display text-8 font-bold uppercase leading-none text-navy">
               Mismo repuesto, otra marca
@@ -753,7 +740,7 @@ export default async function ProductDetailPage({
               })}
             </div>
           </section>
-        )}
+        )} */}
 
         {related.length > 0 && (
           <section className="border-t border-[#e6e9ef]">

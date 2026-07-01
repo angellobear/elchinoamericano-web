@@ -389,6 +389,8 @@ function toPublicProduct(row: any): Product {
         brand_id: c.model.brandId ?? 0,
         name: c.model.name,
         displacement: c.model.displacement ?? undefined,
+        fuel_type: c.model.fuelType ?? undefined,
+        drive_type: c.model.driveType ?? undefined,
         // yearStart/yearEnd live on the compatibility row, not the model
         year_start: c.yearStart ?? undefined,
         year_end: c.yearEnd ?? null,

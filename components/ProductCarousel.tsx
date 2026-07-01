@@ -2,18 +2,18 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
+import { ChevronLeft, ChevronRight, Package, ZoomIn } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { DEFAULT_PRODUCT_IMAGE_PATH } from "@/lib/seo"
 
 interface ProductCarouselProps {
-  /** Real image URLs. If empty or undefined, shows the fallback. */
   images?: string[]
-  /** Shown when no images are provided — typically the product's Lucide icon. */
-  fallback: React.ReactNode
   productName?: string
+  brandName?: string
+  categoryName?: string
 }
 
-export default function ProductCarousel({ images, fallback, productName }: ProductCarouselProps) {
+export default function ProductCarousel({ images, productName, brandName, categoryName }: ProductCarouselProps) {
   const [current, setCurrent] = useState(0)
   const [lightbox, setLightbox] = useState(false)
 
@@ -27,11 +27,30 @@ export default function ProductCarousel({ images, fallback, productName }: Produ
   /* ── No real images: placeholder ── */
   if (!hasImages) {
     return (
-      <div className="relative rounded-2xl overflow-hidden bg-slate-100 aspect-square flex items-center justify-center">
-        {fallback}
-        <span className="absolute bottom-3 right-3 text-2.5 text-slate-400 bg-white/80 px-2 py-0.5 rounded-full font-semibold">
-          Imagen referencial
-        </span>
+      <div className="relative overflow-hidden rounded-2xl bg-slate-100 aspect-square flex items-center justify-center">
+        <div className="relative h-full w-full">
+          <Image
+            src={DEFAULT_PRODUCT_IMAGE_PATH}
+            alt={`${productName ?? "Producto"} - imagen referencial`}
+            fill
+            className="object-contain p-6"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
+          <div className="absolute inset-x-4 bottom-4 rounded-xl bg-navy/84 px-4 py-3 text-left">
+            <div className="flex items-center gap-2 text-white/80">
+              <Package size={16} strokeWidth={1.5} />
+              <span className="text-[11px] font-semibold uppercase tracking-[.08em]">
+                Imagen referencial
+              </span>
+            </div>
+            <p className="mt-2 font-display text-base font-bold leading-tight text-white">
+              {brandName ?? productName ?? "Repuesto"}
+            </p>
+            {categoryName && (
+              <p className="mt-1 text-xs text-white/70">{categoryName}</p>
+            )}
+          </div>
+        </div>
       </div>
     )
   }

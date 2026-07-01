@@ -178,7 +178,7 @@ export function ProductForm({
           </div>
           <div>
             <Label>Stock mínimo alerta</Label>
-            <input name="minStockAlert" type="number" min="0" defaultValue={defaults?.minStockAlert ?? 5} className={inputCls} />
+            <input name="minStockAlert" type="number" min="0" defaultValue={defaults?.minStockAlert ?? 2} className={inputCls} />
           </div>
           {mode === 'create' ? (
             <div>
@@ -216,7 +216,7 @@ export function ProductForm({
 
       <Section title="SEO" hint="Si dejas en blanco, se genera automáticamente del título y marca del producto.">
         <div className="grid grid-cols-1 gap-4">
-          <div>
+          <div className="hidden">
             <Label>Meta título</Label>
             <input
               name="metaTitle"
@@ -226,7 +226,7 @@ export function ProductForm({
             />
             <p className="text-xs text-slate-400 mt-1">Máximo 60 caracteres. Se muestra en Google y resultados de búsqueda.</p>
           </div>
-          <div>
+          <div className="hidden">
             <Label>Meta descripción</Label>
             <textarea
               name="metaDescription"
