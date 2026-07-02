@@ -21,6 +21,12 @@
 - This project runs on a newer Next.js version with breaking changes.
 - Before changing App Router behavior, metadata, file conventions, or rendering strategy, read the relevant guide in `node_modules/next/dist/docs/`.
 
+## Next.js 16 — Middleware
+
+- **NEVER crear `middleware.ts`.** Next.js 16 usa `proxy.ts` en la raíz como archivo de middleware (breaking change vs versiones anteriores).
+- Tener ambos archivos a la vez causa error de build: `Both middleware file "./middleware.ts" and proxy file "./proxy.ts" are detected`.
+- Toda la lógica de middleware va en `proxy.ts`, exportando la función como `proxy` y el `config` con el matcher.
+
 ## Current Stack
 
 - Next.js 16 with App Router
