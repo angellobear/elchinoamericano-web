@@ -76,6 +76,8 @@ export async function generateMetadata({
       product.part_brand?.name,
       product.category?.name,
       product.sku,
+      product.code,
+      ...(product.alternate_codes?.map(ac => ac.code) ?? []),
       "repuestos automotrices",
       "Ecuador",
       ...compatKeywords,
