@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function LoginForm() {
@@ -8,11 +8,12 @@ export default function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
-  const [isPending, startTransition] = useTransition()
+  const [isPending, setIsPending] = useState(false)
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault()
     setError("")
+    setIsPending(true)
 
     const response = await fetch("/api/auth/login", {
       method: "POST",
@@ -21,12 +22,17 @@ export default function LoginForm() {
     })
 
     if (response.ok) {
-      startTransition(() => {
+      // ponytail: iOS WebKit tiene race condition entre Set-Cookie y el fetch RSC
+      // de router.push — forzar navegación completa solo ahí.
+      if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+        window.location.assign("/admin/dashboard")
+      } else {
         router.push("/admin/dashboard")
-      })
+      }
       return
     }
 
+    setIsPending(false)
     const data = await response.json()
     setError(data.error ?? "Error al iniciar sesión")
   }
