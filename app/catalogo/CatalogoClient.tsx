@@ -18,7 +18,7 @@ import type { Product } from "@/types"
 import {
   buildCatalogUrl,
   CATALOG_PAGE_SIZE,
-  CATALOG_PRICE_RANGES,
+  CATALOG_QUALITY_OPTIONS,
   countActiveFilters,
   DEFAULT_CATALOG_FILTERS,
   type FilterState,
@@ -44,23 +44,16 @@ interface CatalogoClientProps {
 
 function getFilteredProducts(allProducts: Product[], search: string, filters: FilterState) {
   const normalizedSearch = search.trim().toLowerCase()
-  const selectedPriceRange =
-    CATALOG_PRICE_RANGES.find((range) => range.id === filters.priceRange) ??
-    CATALOG_PRICE_RANGES[0]
 
   return allProducts.filter((product) => {
-    const effectivePrice = product.offer_price ?? product.price
     const matchesSearch =
       normalizedSearch === "" ||
       product.title.toLowerCase().includes(normalizedSearch) ||
       (product.short_description ?? "").toLowerCase().includes(normalizedSearch) ||
       (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch) ||
       product.code.toLowerCase().includes(normalizedSearch)
-    const matchesPrice =
-      effectivePrice >= selectedPriceRange.min &&
-      (selectedPriceRange.max === Infinity
-        ? true
-        : effectivePrice <= selectedPriceRange.max)
+    const matchesQuality =
+      filters.qualities.length === 0 || filters.qualities.includes(product.type)
     const matchesCategory =
       filters.categories.length === 0 ||
       filters.categories.includes(product.category?.key ?? "")
@@ -72,27 +65,65 @@ function getFilteredProducts(allProducts: Product[], search: string, filters: Fi
       filters.carBrands.length === 0 ||
       filters.carBrands.some((brand) => vehicleBrandKeys.includes(brand))
 
-    return matchesSearch && matchesPrice && matchesCategory && matchesBrand
+    return matchesSearch && matchesQuality && matchesCategory && matchesBrand
   })
 }
+
+// For each dimension, count available options using all OTHER active filters.
+// This ensures options never count to zero while selected, and correctly hides
+// truly unavailable options given the current filter combination.
+function computeFacetCounts(allProducts: Product[], search: string, filters: FilterState) {
+  const forBrands = getFilteredProducts(allProducts, search, { ...filters, carBrands: [] })
+  const forCategories = getFilteredProducts(allProducts, search, { ...filters, categories: [] })
+  const forQualities = getFilteredProducts(allProducts, search, { ...filters, qualities: [] })
+
+  const brandCounts: Record<string, number> = {}
+  for (const product of forBrands) {
+    const seen = new Set<string>()
+    for (const compat of product.compatibilities ?? []) {
+      const key = compat.model?.brand?.name ? toVehicleBrandKey(compat.model.brand.name) : ""
+      if (key && !seen.has(key)) {
+        seen.add(key)
+        brandCounts[key] = (brandCounts[key] ?? 0) + 1
+      }
+    }
+  }
+
+  const categoryCounts: Record<string, number> = {}
+  for (const product of forCategories) {
+    const key = product.category?.key
+    if (key) categoryCounts[key] = (categoryCounts[key] ?? 0) + 1
+  }
+
+  const qualityCounts: Record<string, number> = {}
+  for (const product of forQualities) {
+    qualityCounts[product.type] = (qualityCounts[product.type] ?? 0) + 1
+  }
+
+  return { brandCounts, categoryCounts, qualityCounts }
+}
+
+const QUALITY_LABEL = Object.fromEntries(
+  CATALOG_QUALITY_OPTIONS.map((q) => [q.id, q.label])
+) as Record<string, string>
 
 function ActiveFilterChips({
   brands,
   categories,
   filters,
   search,
+  onRemoveQuality,
   onRemoveCategory,
   onRemoveBrand,
-  onRemovePrice,
   onClear,
 }: {
   brands: PublicVehicleBrand[]
   categories: CatalogCategoryOption[]
   filters: FilterState
   search: string
+  onRemoveQuality: (quality: string) => void
   onRemoveCategory: (category: string) => void
   onRemoveBrand: (brand: string) => void
-  onRemovePrice: () => void
   onClear: () => void
 }) {
   const activeCount = countActiveFilters(filters) + (search ? 1 : 0)
@@ -105,14 +136,13 @@ function ActiveFilterChips({
       {search && (
         <Chip label={`"${search}"`} onRemove={onClear} />
       )}
-      {filters.priceRange !== "all" && (
+      {filters.qualities.map((quality) => (
         <Chip
-          label={
-            CATALOG_PRICE_RANGES.find((range) => range.id === filters.priceRange)?.label ?? ""
-          }
-          onRemove={onRemovePrice}
+          key={quality}
+          label={QUALITY_LABEL[quality] ?? quality}
+          onRemove={() => onRemoveQuality(quality)}
         />
-      )}
+      ))}
       {filters.categories.map((category) => (
         <Chip
           key={category}
@@ -222,6 +252,7 @@ export default function CatalogoClient({
   const [page, setPage] = useState(initialPage)
 
   const filteredProducts = getFilteredProducts(products, search, filters)
+  const facetCounts = computeFacetCounts(products, search, filters)
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / CATALOG_PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
   const paginatedProducts = filteredProducts.slice(
@@ -261,6 +292,18 @@ export default function CatalogoClient({
     setPage(nextPage)
     syncRoute(search, filters, nextPage)
     window.scrollTo({ top: 0, behavior: "smooth" })
+  }
+
+  const filterProps = {
+    brands,
+    categories,
+    filters,
+    onChange: handleFiltersChange,
+    activeCount,
+    onClear: handleClear,
+    brandCounts: facetCounts.brandCounts,
+    categoryCounts: facetCounts.categoryCounts,
+    qualityCounts: facetCounts.qualityCounts,
   }
 
   return (
@@ -331,14 +374,7 @@ export default function CatalogoClient({
                   </button>
                 </SheetTrigger>
                 <SheetContent side="left" className="w-72 px-6 pt-10 overflow-y-auto">
-                  <CatalogFilters
-                    brands={brands}
-                    categories={categories}
-                    filters={filters}
-                    onChange={handleFiltersChange}
-                    activeCount={activeCount}
-                    onClear={handleClear}
-                  />
+                  <CatalogFilters {...filterProps} />
                 </SheetContent>
               </Sheet>
             </div>
@@ -350,14 +386,7 @@ export default function CatalogoClient({
         <div className="flex gap-8">
           <aside className="hidden lg:block w-[266px] shrink-0">
             <div className="sticky top-30 bg-white rounded-[14px] border border-slate-200 p-5">
-              <CatalogFilters
-                brands={brands}
-                categories={categories}
-                filters={filters}
-                onChange={handleFiltersChange}
-                activeCount={activeCount}
-                onClear={handleClear}
-              />
+              <CatalogFilters {...filterProps} />
             </div>
           </aside>
 
@@ -376,6 +405,12 @@ export default function CatalogoClient({
                     categories={categories}
                     filters={filters}
                     search={search}
+                    onRemoveQuality={(quality) =>
+                      handleFiltersChange({
+                        ...filters,
+                        qualities: filters.qualities.filter((item) => item !== quality),
+                      })
+                    }
                     onRemoveCategory={(category) =>
                       handleFiltersChange({
                         ...filters,
@@ -387,9 +422,6 @@ export default function CatalogoClient({
                         ...filters,
                         carBrands: filters.carBrands.filter((item) => item !== brand),
                       })
-                    }
-                    onRemovePrice={() =>
-                      handleFiltersChange({ ...filters, priceRange: "all" })
                     }
                     onClear={handleClear}
                   />

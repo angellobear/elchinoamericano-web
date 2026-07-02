@@ -1,35 +1,27 @@
-export const CATALOG_PAGE_SIZE = 8
+export const CATALOG_PAGE_SIZE = 9
 export const CATALOG_ARRAY_SEPARATOR = "|"
 export const CATALOG_BRAND_PATH_SEPARATOR = "-"
 
+export const CATALOG_QUALITY_OPTIONS = [
+  { id: "original", label: "Original" },
+  { id: "oem", label: "OEM" },
+  { id: "aftermarket", label: "Alterno" },
+] as const
+
 export interface FilterState {
-  priceRange: string
+  qualities: string[]
   categories: string[]
   carBrands: string[]
 }
 
 export const DEFAULT_CATALOG_FILTERS: FilterState = {
-  priceRange: "all",
+  qualities: [],
   categories: [],
   carBrands: [],
 }
 
-export const CATALOG_PRICE_RANGES = [
-  { id: "all", label: "Todos los precios", min: 0, max: Infinity },
-  { id: "lt20", label: "Menos de $20", min: 0, max: 20 },
-  { id: "20-50", label: "$20 a $50", min: 20, max: 50 },
-  { id: "50-100", label: "$50 a $100", min: 50, max: 100 },
-  { id: "gt100", label: "Más de $100", min: 100, max: Infinity },
-] as const
-
 export function countActiveFilters(filters: FilterState): number {
-  let total = 0
-
-  if (filters.priceRange !== "all") total += 1
-  total += filters.categories.length
-  total += filters.carBrands.length
-
-  return total
+  return filters.qualities.length + filters.categories.length + filters.carBrands.length
 }
 
 export function parseArrayParam(value: string | null): string[] {
@@ -46,16 +38,15 @@ export function parseCatalogPage(value: string | null | undefined): number {
 
 export function parseCatalogFilters(searchParams: {
   q?: string | string[]
-  precio?: string | string[]
+  calidad?: string | string[]
   categoria?: string | string[]
   marca?: string | string[]
   pagina?: string | string[]
 }) {
   const search = typeof searchParams.q === "string" ? searchParams.q : ""
-  const priceRange =
-    typeof searchParams.precio === "string"
-      ? searchParams.precio
-      : DEFAULT_CATALOG_FILTERS.priceRange
+  const qualities = parseArrayParam(
+    typeof searchParams.calidad === "string" ? searchParams.calidad : null
+  )
   const categories = parseArrayParam(
     typeof searchParams.categoria === "string" ? searchParams.categoria : null
   )
@@ -69,7 +60,7 @@ export function parseCatalogFilters(searchParams: {
   return {
     search,
     filters: {
-      priceRange,
+      qualities,
       categories,
       carBrands,
     },
@@ -99,7 +90,9 @@ export function buildCatalogUrl(search: string, filters: FilterState, page: numb
     filters.carBrands.length > 0 ? buildCatalogBrandPath(filters.carBrands) : "/catalogo"
 
   if (search) params.set("q", search)
-  if (filters.priceRange !== "all") params.set("precio", filters.priceRange)
+  if (filters.qualities.length) {
+    params.set("calidad", filters.qualities.join(CATALOG_ARRAY_SEPARATOR))
+  }
   if (filters.categories.length) {
     params.set("categoria", filters.categories.join(CATALOG_ARRAY_SEPARATOR))
   }

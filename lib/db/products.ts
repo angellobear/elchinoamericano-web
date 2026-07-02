@@ -104,38 +104,49 @@ export async function getProductList(
     categoryId?: number
     vehicleBrandId?: number
     isActive?: boolean | 'all'
+    page?: number
+    limit?: number
   },
   options?: SoftDeleteQueryOptions,
 ) {
   const db = await getDb()
-  const { search, type, categoryId, vehicleBrandId, isActive = true } = filters ?? {}
-  return db.query.products.findMany({
-    where: and(
-      buildNotDeletedWhere(products.deletedAt, options),
-      isActive !== 'all' ? eq(products.isActive, isActive) : undefined,
-      type ? eq(products.type, type) : undefined,
-      categoryId ? eq(products.categoryId, categoryId) : undefined,
-      vehicleBrandId
-        ? sql`EXISTS (
-            SELECT 1 FROM ${productCompatibilities} pc
-            INNER JOIN ${vehicleModels} vm ON pc.vehicle_model_id = vm.id
-            WHERE pc.product_id = ${products.id} AND vm.brand_id = ${vehicleBrandId}
-          )`
-        : undefined,
-      search
-        ? sql`(
-            lower(${products.title}) like lower(${'%' + search + '%'}) or
-            lower(coalesce(${products.shortTitle}, '')) like lower(${'%' + search + '%'}) or
-            lower(coalesce(${products.description}, '')) like lower(${'%' + search + '%'}) or
-            lower(coalesce(${products.sku}, '')) like lower(${'%' + search + '%'}) or
-            lower(coalesce(${products.replacementCode}, '')) like lower(${'%' + search + '%'})
-          )`
-        : undefined,
-    ),
-    with: { category: true, partBrand: true },
-    orderBy: desc(products.createdAt),
-    limit: 200,
-  })
+  const { search, type, categoryId, vehicleBrandId, isActive = true, page = 1, limit = 10 } = filters ?? {}
+
+  const where = and(
+    buildNotDeletedWhere(products.deletedAt, options),
+    isActive !== 'all' ? eq(products.isActive, isActive) : undefined,
+    type ? eq(products.type, type) : undefined,
+    categoryId ? eq(products.categoryId, categoryId) : undefined,
+    vehicleBrandId
+      ? sql`EXISTS (
+          SELECT 1 FROM ${productCompatibilities} pc
+          INNER JOIN ${vehicleModels} vm ON pc.vehicle_model_id = vm.id
+          WHERE pc.product_id = ${products.id} AND vm.brand_id = ${vehicleBrandId}
+        )`
+      : undefined,
+    search
+      ? sql`(
+          lower(${products.title}) like lower(${'%' + search + '%'}) or
+          lower(coalesce(${products.shortTitle}, '')) like lower(${'%' + search + '%'}) or
+          lower(coalesce(${products.description}, '')) like lower(${'%' + search + '%'}) or
+          lower(coalesce(${products.sku}, '')) like lower(${'%' + search + '%'}) or
+          lower(coalesce(${products.replacementCode}, '')) like lower(${'%' + search + '%'})
+        )`
+      : undefined,
+  )
+
+  const [countResult, items] = await Promise.all([
+    db.select({ count: sql<number>`count(*)` }).from(products).where(where),
+    db.query.products.findMany({
+      where,
+      with: { category: true, partBrand: true },
+      orderBy: desc(products.createdAt),
+      limit,
+      offset: (page - 1) * limit,
+    }),
+  ])
+
+  return { items, total: Number(countResult[0]?.count ?? 0) }
 }
 
 // For admin dashboard stats

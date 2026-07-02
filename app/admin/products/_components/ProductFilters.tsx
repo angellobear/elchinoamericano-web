@@ -15,6 +15,7 @@ interface ProductFiltersProps {
     categoryId?: string
     vehicleBrandId?: string
     status?: string
+    limit?: string
   }
 }
 
@@ -48,6 +49,8 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     if (categoryId) params.set('categoryId', categoryId)
     if (vehicleBrandId) params.set('vehicleBrandId', vehicleBrandId)
     if (status !== 'active') params.set('status', status)
+    if (defaults.limit && defaults.limit !== '10') params.set('limit', defaults.limit)
+    // page intentionally omitted — filter change resets to page 1
 
     const qs = params.toString()
     router.push(qs ? `/admin/products?${qs}` : '/admin/products')

@@ -83,15 +83,17 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
 
   const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
   const activeCategoryKeys = new Set(categories.map((category) => category.key))
+  const validQualityIds = new Set(["original", "oem", "aftermarket"])
   const sanitizedFilters = {
     ...filters,
+    qualities: filters.qualities.filter((q) => validQualityIds.has(q)),
     categories: filters.categories.filter((category) => activeCategoryKeys.has(category)),
     carBrands: matchedBrands.map((brand) => brand.key),
   }
   const filteredProducts = filterCatalogProducts(
     allProducts,
     search,
-    sanitizedFilters.priceRange,
+    sanitizedFilters.qualities,
     sanitizedFilters.categories,
     sanitizedFilters.carBrands,
   )
@@ -174,7 +176,7 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
         }
       >
         <CatalogoClient
-          key={`${brandSlug}-${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${safePage}`}
+          key={`${brandSlug}-${search}-${sanitizedFilters.qualities.join(",")}-${sanitizedFilters.categories.join(",")}-${safePage}`}
           brands={activeBrands}
           categories={categories.map((category) => ({ id: category.key, label: category.name }))}
           products={allProducts}

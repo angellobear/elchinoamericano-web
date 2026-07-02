@@ -115,7 +115,7 @@ export default function ProductCarousel({ images, productName, brandName, catego
             className="object-contain"
             sizes="(max-width: 768px) 100vw, 50vw"
           />
-          <div className="absolute bottom-3 right-3 z-30 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+          <div onMouseEnter={hideLens} className="absolute bottom-3 right-3 z-30 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
             <ZoomIn size={14} className="text-slate-700" />
           </div>
         </div>
@@ -162,6 +162,7 @@ export default function ProductCarousel({ images, productName, brandName, catego
           {/* Arrows */}
           <button
             onClick={(e) => { e.stopPropagation(); prev() }}
+            onMouseEnter={hideLens}
             aria-label="Imagen anterior"
             className="absolute left-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-700 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-150"
           >
@@ -169,6 +170,7 @@ export default function ProductCarousel({ images, productName, brandName, catego
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); next() }}
+            onMouseEnter={hideLens}
             aria-label="Imagen siguiente"
             className="absolute right-3 top-1/2 -translate-y-1/2 z-30 w-9 h-9 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-slate-700 hover:bg-white shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-150"
           >
@@ -181,7 +183,7 @@ export default function ProductCarousel({ images, productName, brandName, catego
           </span>
 
           {/* Lightbox hint */}
-          <div className="absolute bottom-3 right-3 z-30 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+          <div onMouseEnter={hideLens} className="absolute bottom-3 right-3 z-30 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
             <ZoomIn size={14} className="text-slate-700" />
           </div>
         </div>

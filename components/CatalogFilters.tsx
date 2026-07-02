@@ -3,7 +3,7 @@
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import {
-  CATALOG_PRICE_RANGES,
+  CATALOG_QUALITY_OPTIONS,
   type FilterState,
 } from "@/lib/catalog"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
@@ -20,6 +20,9 @@ interface CatalogFiltersProps {
   onChange: (f: FilterState) => void
   activeCount: number
   onClear: () => void
+  brandCounts: Record<string, number>
+  categoryCounts: Record<string, number>
+  qualityCounts: Record<string, number>
 }
 
 function FilterSection({ title, children }: { title: string; children: React.ReactNode }) {
@@ -35,10 +38,12 @@ function Checkbox({
   checked,
   onChange,
   label,
+  count,
 }: {
   checked: boolean
   onChange: () => void
   label: string
+  count: number
 }) {
   return (
     <label className="flex items-center gap-2.5 cursor-pointer group">
@@ -60,11 +65,17 @@ function Checkbox({
       <span
         onClick={onChange}
         className={cn(
-          "text-sm transition-colors duration-150",
+          "text-sm transition-colors duration-150 flex-1",
           checked ? "text-navy font-semibold" : "text-slate-600 group-hover:text-slate-900"
         )}
       >
         {label}
+      </span>
+      <span className={cn(
+        "text-xs tabular-nums",
+        checked ? "text-navy/60" : "text-slate-400"
+      )}>
+        {count}
       </span>
     </label>
   )
@@ -81,7 +92,20 @@ export default function CatalogFilters({
   onChange,
   activeCount,
   onClear,
+  brandCounts,
+  categoryCounts,
+  qualityCounts,
 }: CatalogFiltersProps) {
+  const visibleBrands = brands.filter(
+    (brand) => (brandCounts[brand.key] ?? 0) > 0 || filters.carBrands.includes(brand.key)
+  )
+  const visibleCategories = categories.filter(
+    (cat) => (categoryCounts[cat.id] ?? 0) > 0 || filters.categories.includes(cat.id)
+  )
+  const visibleQualities = CATALOG_QUALITY_OPTIONS.filter(
+    (q) => (qualityCounts[q.id] ?? 0) > 0 || filters.qualities.includes(q.id)
+  )
+
   return (
     <div className="flex flex-col gap-6">
       {/* Header */}
@@ -100,67 +124,68 @@ export default function CatalogFilters({
 
       <div className="h-px bg-slate-100" />
 
-      {/* Price range */}
-      <FilterSection title="Precio">
-        <div className="flex flex-col gap-2">
-          {CATALOG_PRICE_RANGES.map((range) => (
-            <label
-              key={range.id}
-              className={cn(
-                "flex items-center gap-2 px-3 py-2 rounded-md cursor-pointer text-sm transition-colors duration-150",
-                filters.priceRange === range.id
-                  ? "bg-navy text-white font-semibold"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              )}
-            >
-              <input
-                type="radio"
-                name="price"
-                checked={filters.priceRange === range.id}
-                onChange={() => onChange({ ...filters, priceRange: range.id })}
-                className="sr-only"
-              />
-              {range.label}
-            </label>
-          ))}
-        </div>
-      </FilterSection>
-
-      <div className="h-px bg-slate-100" />
+      {/* Quality */}
+      {visibleQualities.length > 0 && (
+        <>
+          <FilterSection title="Calidad">
+            <div className="flex flex-col gap-2">
+              {visibleQualities.map((q) => (
+                <Checkbox
+                  key={q.id}
+                  checked={filters.qualities.includes(q.id)}
+                  onChange={() =>
+                    onChange({ ...filters, qualities: toggle(filters.qualities, q.id) })
+                  }
+                  label={q.label}
+                  count={qualityCounts[q.id] ?? 0}
+                />
+              ))}
+            </div>
+          </FilterSection>
+          <div className="h-px bg-slate-100" />
+        </>
+      )}
 
       {/* Marca de vehículo */}
-      <FilterSection title="Marca de vehículo">
-        <div className="flex flex-col gap-2">
-          {brands.map((brand) => (
-            <Checkbox
-              key={brand.id}
-              checked={filters.carBrands.includes(brand.key)}
-              onChange={() =>
-                onChange({ ...filters, carBrands: toggle(filters.carBrands, brand.key) })
-              }
-              label={brand.name}
-            />
-          ))}
-        </div>
-      </FilterSection>
+      {visibleBrands.length > 0 && (
+        <>
+          <FilterSection title="Marca de vehículo">
+            <div className="flex flex-col gap-2">
+              {visibleBrands.map((brand) => (
+                <Checkbox
+                  key={brand.id}
+                  checked={filters.carBrands.includes(brand.key)}
+                  onChange={() =>
+                    onChange({ ...filters, carBrands: toggle(filters.carBrands, brand.key) })
+                  }
+                  label={brand.name}
+                  count={brandCounts[brand.key] ?? 0}
+                />
+              ))}
+            </div>
+          </FilterSection>
+          <div className="h-px bg-slate-100" />
+        </>
+      )}
 
-      <div className="h-px bg-slate-100" />
-
-      {/* Category */}
-      <FilterSection title="Categoría">
-        <div className="flex flex-col gap-2">
-          {categories.map((cat) => (
-            <Checkbox
-              key={cat.id}
-              checked={filters.categories.includes(cat.id)}
-              onChange={() =>
-                onChange({ ...filters, categories: toggle(filters.categories, cat.id) })
-              }
-              label={cat.label}
-            />
-          ))}
-        </div>
-      </FilterSection>
+      {/* Categoría */}
+      {visibleCategories.length > 0 && (
+        <FilterSection title="Categoría">
+          <div className="flex flex-col gap-2">
+            {visibleCategories.map((cat) => (
+              <Checkbox
+                key={cat.id}
+                checked={filters.categories.includes(cat.id)}
+                onChange={() =>
+                  onChange({ ...filters, categories: toggle(filters.categories, cat.id) })
+                }
+                label={cat.label}
+                count={categoryCounts[cat.id] ?? 0}
+              />
+            ))}
+          </div>
+        </FilterSection>
+      )}
     </div>
   )
 }

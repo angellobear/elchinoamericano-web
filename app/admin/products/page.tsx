@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache'
 import { Plus, Pencil, Trash2, Package } from 'lucide-react'
 import { ProductStatusToggle } from '@/modules/admin/products/components/ProductStatusToggle'
 import { ProductFilters } from './_components/ProductFilters'
+import { ProductPagination } from './_components/ProductPagination'
 
 async function handleDelete(id: number) {
   'use server'
@@ -16,31 +17,43 @@ async function handleDelete(id: number) {
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string }>
+  searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string; page?: string; limit?: string }>
 }) {
   const params = await searchParams
   const { search, type, categoryId, vehicleBrandId } = params
   const status = params.status ?? 'active'
   const isActive = status === 'all' ? 'all' : status === 'inactive' ? false : true
+  const page = Math.max(1, Number(params.page ?? 1))
+  const limit = [10, 20, 50, 100].includes(Number(params.limit)) ? Number(params.limit) : 10
 
-  const [products, categories, vehicleBrands] = await Promise.all([
+  const [{ items: products, total }, categories, vehicleBrands] = await Promise.all([
     getProductList({
       search,
       type,
       categoryId: categoryId ? Number(categoryId) : undefined,
       vehicleBrandId: vehicleBrandId ? Number(vehicleBrandId) : undefined,
       isActive,
+      page,
+      limit,
     }),
-    getCategories(),           // active only by default
-    getVehicleBrands(),        // active only by default
+    getCategories(),
+    getVehicleBrands(),
   ])
+
+  const totalPages = Math.max(1, Math.ceil(total / limit))
+  const baseParams: Record<string, string> = {}
+  if (search) baseParams.search = search
+  if (type) baseParams.type = type
+  if (categoryId) baseParams.categoryId = categoryId
+  if (vehicleBrandId) baseParams.vehicleBrandId = vehicleBrandId
+  if (status !== 'active') baseParams.status = status
 
   return (
     <div className="p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-navy">Productos</h1>
-          <p className="text-slate-400 text-sm mt-0.5">{products.length} productos</p>
+          <p className="text-slate-400 text-sm mt-0.5">{total} productos</p>
         </div>
         <Link
           href="/admin/products/new"
@@ -54,7 +67,7 @@ export default async function ProductsPage({
       <ProductFilters
         categories={categories.map((c) => ({ id: c.id, name: c.name }))}
         vehicleBrands={vehicleBrands.map((b) => ({ id: b.id, name: b.name }))}
-        defaults={{ search, type, categoryId, vehicleBrandId, status }}
+        defaults={{ search, type, categoryId, vehicleBrandId, status, limit: String(limit) }}
       />
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
@@ -153,6 +166,13 @@ export default async function ProductsPage({
             )}
           </tbody>
         </table>
+        <ProductPagination
+          page={page}
+          totalPages={totalPages}
+          total={total}
+          limit={limit}
+          baseParams={baseParams}
+        />
       </div>
     </div>
   )

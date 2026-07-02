@@ -36,15 +36,17 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
   const activeBrandKeys = new Set(brands.map((brand) => brand.key))
   const activeCategoryKeys = new Set(categories.map((category) => category.key))
+  const validQualityIds = new Set(["original", "oem", "aftermarket"])
   const sanitizedFilters = {
     ...filters,
+    qualities: filters.qualities.filter((q) => validQualityIds.has(q)),
     categories: filters.categories.filter((category) => activeCategoryKeys.has(category)),
     carBrands: filters.carBrands.filter((brand) => activeBrandKeys.has(brand)),
   }
   const filteredProducts = filterCatalogProducts(
     allProducts,
     search,
-    sanitizedFilters.priceRange,
+    sanitizedFilters.qualities,
     sanitizedFilters.categories,
     sanitizedFilters.carBrands,
   )
@@ -109,7 +111,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
         }
       >
         <CatalogoClient
-          key={`${search}-${sanitizedFilters.priceRange}-${sanitizedFilters.categories.join(",")}-${sanitizedFilters.carBrands.join(",")}-${safePage}`}
+          key={`${search}-${sanitizedFilters.qualities.join(",")}-${sanitizedFilters.categories.join(",")}-${sanitizedFilters.carBrands.join(",")}-${safePage}`}
           brands={brands}
           categories={categories.map((category) => ({ id: category.key, label: category.name }))}
           products={allProducts}

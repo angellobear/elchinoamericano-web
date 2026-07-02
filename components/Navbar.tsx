@@ -53,7 +53,7 @@ export default function Navbar() {
   return (
     <>
       <motion.header
-        initial={reduce ? false : { y: -64, opacity: 0 }}
+        initial={reduce || pathname.startsWith("/catalogo") ? false : { y: -64, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className={cn(
