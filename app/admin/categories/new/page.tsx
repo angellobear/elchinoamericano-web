@@ -39,7 +39,7 @@ async function create(_: ActionState, formData: FormData) {
 
 export default function NewCategoryPage() {
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.categories.index}
         backLabel="Volver a categorías"

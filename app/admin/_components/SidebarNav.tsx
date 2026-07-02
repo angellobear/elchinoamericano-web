@@ -22,9 +22,10 @@ interface Props {
   isSuperAdmin: boolean
   email: string
   role: string
+  onLinkClick?: () => void
 }
 
-export function SidebarNav({ isSuperAdmin, email, role }: Props) {
+export function SidebarNav({ isSuperAdmin, email, role, onLinkClick }: Props) {
   const pathname = usePathname()
   const visible = NAV.filter(i => i.href !== '/admin/users' || isSuperAdmin)
 
@@ -37,6 +38,7 @@ export function SidebarNav({ isSuperAdmin, email, role }: Props) {
             <Link
               key={href}
               href={href}
+              onClick={onLinkClick}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors duration-150 ${
                 active
                   ? 'bg-white/12 text-white font-medium'

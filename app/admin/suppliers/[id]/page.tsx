@@ -40,7 +40,7 @@ export default async function EditSupplierPage({ params }: { params: Promise<{ i
   const saveWithId = save.bind(null, supplier.id)
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.suppliers.index}
         backLabel="Volver a proveedores"

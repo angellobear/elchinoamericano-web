@@ -11,6 +11,7 @@ interface SuppliersTableProps {
 export function SuppliersTable({ suppliers }: SuppliersTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="bg-slate-50 border-b border-slate-100">
@@ -66,6 +67,7 @@ export function SuppliersTable({ suppliers }: SuppliersTableProps) {
           )}
         </tbody>
       </table>
+      </div>
     </div>
   )
 }

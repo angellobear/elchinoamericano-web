@@ -31,7 +31,7 @@ export default async function UsersPage({
   const isSuperAdmin = payload.role === 'superadmin'
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-navy">Usuarios</h1>
@@ -51,6 +51,7 @@ export default async function UsersPage({
       <AdminSearchInput defaultValue={search} placeholder="Buscar por nombre o email..." />
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+        <div className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
@@ -132,6 +133,7 @@ export default async function UsersPage({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

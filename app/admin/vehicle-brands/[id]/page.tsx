@@ -83,7 +83,7 @@ export default async function VehicleBrandPage({ params }: { params: Promise<{ i
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.vehicleBrands.index}
         backLabel="Volver a marcas de vehículos"

@@ -32,7 +32,7 @@ async function create(_: ActionState, formData: FormData) {
 
 export default function NewSupplierPage() {
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.suppliers.index}
         backLabel="Volver a proveedores"

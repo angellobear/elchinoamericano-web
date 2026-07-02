@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Toaster } from 'sonner'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { SidebarNav } from './_components/SidebarNav'
+import { MobileAdminHeader } from './_components/MobileAdminHeader'
 
 export default async function AdminLayout({
   children,
@@ -13,11 +14,13 @@ export default async function AdminLayout({
   const payload = await getJwtPayload()
   if (!payload) redirect('/login')
 
+  const isSuperAdmin = payload.role === 'superadmin'
+
   return (
     <>
-      <div className="min-h-screen flex bg-slate-50">
-        <aside className="w-64 shrink-0 bg-navy text-white flex flex-col border-r border-white/6">
-          {/* Sidebar header */}
+      <div className="min-h-screen bg-slate-50 md:flex">
+        {/* Desktop sidebar */}
+        <aside className="hidden md:flex w-64 shrink-0 bg-navy text-white flex-col border-r border-white/6">
           <div className="h-16 px-5 flex items-center gap-3 border-b border-white/10 shrink-0">
             <Link href="/admin/dashboard" className="flex items-center gap-3 min-w-0">
               <div className="relative h-9 w-9 shrink-0">
@@ -38,17 +41,16 @@ export default async function AdminLayout({
               </div>
             </Link>
           </div>
-
-          <SidebarNav
-            isSuperAdmin={payload.role === 'superadmin'}
-            email={payload.email}
-            role={payload.role}
-          />
+          <SidebarNav isSuperAdmin={isSuperAdmin} email={payload.email} role={payload.role} />
         </aside>
 
-        <main className="flex-1 overflow-auto">
-          {children}
-        </main>
+        {/* Content area */}
+        <div className="flex-1 flex flex-col min-h-screen md:min-h-0 md:overflow-hidden">
+          <MobileAdminHeader isSuperAdmin={isSuperAdmin} email={payload.email} role={payload.role} />
+          <main className="flex-1 overflow-auto">
+            {children}
+          </main>
+        </div>
       </div>
       <Toaster position="top-right" richColors={true} />
     </>

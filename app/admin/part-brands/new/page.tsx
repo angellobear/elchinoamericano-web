@@ -39,7 +39,7 @@ async function create(_: ActionState, formData: FormData) {
 
 export default function NewPartBrandPage() {
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.partBrands.index}
         backLabel="Volver a marcas de repuestos"

@@ -59,7 +59,7 @@ export default async function EditUserPage({ params }: { params: Promise<{ id: s
   const saveWithId = save.bind(null, user.id)
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.users.index}
         backLabel="Volver a usuarios"

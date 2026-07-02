@@ -134,7 +134,7 @@ export default async function NewProductPage() {
   ])
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.products.index}
         backLabel="Volver a productos"

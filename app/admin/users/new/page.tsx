@@ -41,7 +41,7 @@ export default async function NewUserPage() {
   const roles = await getRoles()
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.users.index}
         backLabel="Volver a usuarios"

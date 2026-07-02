@@ -53,7 +53,7 @@ export default async function EditCategoryPage({ params }: { params: Promise<{ i
   const saveWithId = save.bind(null, cat.id)
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       <AdminPageHeader
         backHref={routes.admin.categories.index}
         backLabel="Volver a categorías"
