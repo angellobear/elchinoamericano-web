@@ -649,11 +649,11 @@ export default async function ProductDetailPage({
                             key={`${c.vehicle_model_id}-${idx}`}
                             className={`transition-colors hover:bg-[#f8fafc] ${idx < sorted.length - 1 ? "border-b border-[#ebeef3]" : ""}`}
                           >
-                            <td className="pl-5 pr-4 py-3.5 text-3.5 font-semibold text-navy">
+                            <td className="pl-5 pr-4 py-3.5 text-3.5 font-semibold text-navy uppercase">
                               {c.model?.brand?.name ?? dash}
                             </td>
                             <td className="px-4 py-3.5">
-                              <span className="text-3.75 font-semibold text-navy">{c.model?.name}</span>
+                              <span className="text-3.75 font-semibold text-navy uppercase">{c.model?.name}</span>
                               {c.notes && <span className="ml-1.5 text-3 text-[#8a93a3]">({c.notes})</span>}
                             </td>
                             <td className="px-4 py-3.5 text-3.5 text-[#566071]">
@@ -662,7 +662,7 @@ export default async function ProductDetailPage({
                             <td className="px-4 py-3.5 text-3.5 text-[#566071]">
                               {c.model?.drive_type ? c.model.drive_type.toUpperCase() : dash}
                             </td>
-                            <td className="px-4 py-3.5 text-3.5 text-[#566071]">
+                            <td className="px-4 py-3.5 text-3.5 text-[#566071] uppercase">
                               {c.model?.fuel_type ? (FUEL_ES[c.model.fuel_type] ?? c.model.fuel_type) : dash}
                             </td>
                             <td className="pl-4 pr-5 py-3.5 text-right text-3.5 text-[#566071]">
