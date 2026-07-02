@@ -1,9 +1,10 @@
 "use client"
 
-import { Minus, Plus, Trash2, MessageCircle, ShoppingBag } from "lucide-react"
+import { Minus, Plus, Trash2, MessageCircle, ShoppingBag, X } from "lucide-react"
 import {
   Sheet,
   SheetContent,
+  SheetClose,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet"
@@ -19,14 +20,18 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
-      <SheetContent side="right" className="w-95 sm:w-95 p-0 flex flex-col">
+      <SheetContent side="right" showCloseButton={false} className="w-95 sm:w-95 p-0 flex flex-col">
         {/* Header */}
         <SheetHeader className="bg-navy px-6 py-4 shrink-0">
           <div className="flex items-center gap-3">
             <ShoppingBag size={20} className="text-white" />
-            <SheetTitle className="text-white font-display font-bold text-lg">
+            <SheetTitle className="text-white font-display font-bold text-lg flex-1">
               Mi pedido ({itemCount} {itemCount === 1 ? "producto" : "productos"})
             </SheetTitle>
+            <SheetClose className="text-white/70 hover:text-white transition-colors">
+              <X size={18} />
+              <span className="sr-only">Cerrar</span>
+            </SheetClose>
           </div>
         </SheetHeader>
 

@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import { ShoppingCart, MessageCircle, Menu, X } from "lucide-react"
 import Image from "next/image"
 import { motion, useReducedMotion } from "framer-motion"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useCart } from "@/context/CartContext"
 import CartDrawer from "@/components/CartDrawer"
 import { cn } from "@/lib/utils"
@@ -117,7 +117,7 @@ export default function Navbar() {
             {/* Cart */}
             <button
               onClick={() => setCartOpen(true)}
-              className="relative items-center justify-center w-11 h-11 text-white hover:text-brand hover:bg-white/8 rounded-md transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand hidden"
+              className="relative flex items-center justify-center w-11 h-11 text-white hover:text-brand hover:bg-white/8 rounded-md transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
               aria-label={`Ver pedido${itemCount > 0 ? ` (${itemCount} productos)` : ""}`}
             >
               <ShoppingCart size={22} />
@@ -143,7 +143,11 @@ export default function Navbar() {
                   {mobileOpen ? <X className="text-white/80 hover:text-white hover:bg-white/8" size={22} /> : <Menu size={22} />}
                 </button>
               </SheetTrigger>
-              <SheetContent side="left" className="bg-navy border-r border-white/10 w-64 px-6 pt-10">
+              <SheetContent side="left" showCloseButton={false} className="bg-navy border-r border-white/10 w-64 px-6 pt-10">
+                <SheetClose className="absolute top-4 right-4 text-white/70 hover:text-white transition-colors">
+                  <X size={20} />
+                  <span className="sr-only">Cerrar menú</span>
+                </SheetClose>
                 <div className="flex flex-col gap-8">
                   <Link href="/">
                     <div className="relative h-10 w-[43px]">
