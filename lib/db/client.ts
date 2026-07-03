@@ -41,7 +41,12 @@ async function ensureSupportedMysqlVersion(pool: mysql.Pool) {
 export async function getDb(): Promise<AppDb> {
   if (g._db) return g._db
 
-  const pool = mysql.createPool(process.env.DATABASE_URL!)
+  const pool = mysql.createPool({
+    uri: process.env.DATABASE_URL!,
+    connectionLimit: 3,
+    waitForConnections: true,
+    queueLimit: 0,
+  })
   await ensureSupportedMysqlVersion(pool)
 
   g._db = drizzle(pool, { schema, mode: 'default' }) as unknown as AppDb
