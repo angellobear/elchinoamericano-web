@@ -30,10 +30,15 @@ const bodySchema = z.object({
   slug: z.string().max(255).optional(),
   metaTitle: z.string().max(255).optional(),
   metaDescription: z.string().max(500).optional(),
-  // Name-based lookups (resolved to IDs, null if not found)
+  // Categoría: por nombre O por ID (ID tiene prioridad si se envían ambos)
   categoryName: z.string().optional(),
+  categoryId: z.number().int().positive().optional(),
+  // Marca de autoparte: por nombre O por ID
   partBrandName: z.string().optional(),
+  partBrandId: z.number().int().positive().optional(),
+  // Proveedor: por nombre O por ID
   supplierName: z.string().optional(),
+  supplierId: z.number().int().positive().optional(),
   // Relations
   specs: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
   images: z.array(z.object({
@@ -118,11 +123,17 @@ export async function POST(req: NextRequest) {
 
   const db = await getDb()
 
-  // Name → ID lookups (categoría, marca de pieza, proveedor)
+  // Resolver IDs: se prefiere el ID directo; si no, se busca por nombre
   const [categoryRow, partBrandRow, supplierRow] = await Promise.all([
-    data.categoryName ? db.query.categories.findFirst({ where: eq(categories.name, data.categoryName) }) : undefined,
-    data.partBrandName ? db.query.partBrands.findFirst({ where: eq(partBrands.name, data.partBrandName) }) : undefined,
-    data.supplierName ? db.query.suppliers.findFirst({ where: eq(suppliers.name, data.supplierName) }) : undefined,
+    data.categoryId
+      ? { id: data.categoryId }
+      : data.categoryName ? db.query.categories.findFirst({ where: eq(categories.name, data.categoryName), columns: { id: true } }) : undefined,
+    data.partBrandId
+      ? { id: data.partBrandId }
+      : data.partBrandName ? db.query.partBrands.findFirst({ where: eq(partBrands.name, data.partBrandName), columns: { id: true } }) : undefined,
+    data.supplierId
+      ? { id: data.supplierId }
+      : data.supplierName ? db.query.suppliers.findFirst({ where: eq(suppliers.name, data.supplierName), columns: { id: true } }) : undefined,
   ])
 
   // Resolver vehicleModelIds (con auto-create si no existen)
