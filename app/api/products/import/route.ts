@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { getDb } from '@/lib/db/client'
-import { categories, partBrands, suppliers } from '@/lib/db/schema'
-import { createProduct, setSpecs, setImages, setAlternateCodes } from '@/lib/db/products'
+import { categories, partBrands, suppliers, vehicleBrands, vehicleModels } from '@/lib/db/schema'
+import { createProduct, setSpecs, setImages, setAlternateCodes, setCompatibilities } from '@/lib/db/products'
+import { createVehicleBrand, createVehicleModel } from '@/lib/db/vehicle-brands'
 import { buildSlugWithSku } from '@/lib/product-slugs'
+import { normalizeVehicleBrand } from '@/lib/vehicle-brand-aliases'
 
 const bodySchema = z.object({
   // Required
@@ -43,11 +45,48 @@ const bodySchema = z.object({
     code: z.string(),
     source: z.string().optional(),
   })).optional(),
+  // Compatibilidades de vehículo — se crean marca/modelo si no existen
+  compatibilities: z.array(z.object({
+    brandName: z.string().min(1),
+    modelName: z.string().min(1),
+    yearStart: z.number().int().optional(),
+    yearEnd: z.number().int().optional(),
+    notes: z.string().optional(),
+  })).optional(),
 })
 
 function toDecimal(v: string | number | undefined): string | undefined {
   if (v === undefined || v === '') return undefined
   return String(v)
+}
+
+/** Busca o crea la marca y el modelo, devuelve el vehicleModelId. */
+async function resolveOrCreateVehicleModel(
+  db: Awaited<ReturnType<typeof getDb>>,
+  brandName: string,
+  modelName: string,
+): Promise<number> {
+  const canonicalBrand = normalizeVehicleBrand(brandName)
+  const canonicalModel = modelName.trim()
+
+  let brand = await db.query.vehicleBrands.findFirst({
+    where: eq(vehicleBrands.name, canonicalBrand),
+    columns: { id: true },
+  })
+
+  if (!brand) {
+    const brandId = await createVehicleBrand({ name: canonicalBrand, origin: 'unknown' })
+    brand = { id: brandId }
+  }
+
+  const model = await db.query.vehicleModels.findFirst({
+    where: and(eq(vehicleModels.brandId, brand.id), eq(vehicleModels.name, canonicalModel)),
+    columns: { id: true },
+  })
+
+  if (model) return model.id
+
+  return createVehicleModel({ brandId: brand.id, name: canonicalModel })
 }
 
 export async function POST(req: NextRequest) {
@@ -77,13 +116,23 @@ export async function POST(req: NextRequest) {
   const data = parsed.data
   const sku = data.sku.toUpperCase()
 
-  // Name → ID lookups
   const db = await getDb()
+
+  // Name → ID lookups (categoría, marca de pieza, proveedor)
   const [categoryRow, partBrandRow, supplierRow] = await Promise.all([
     data.categoryName ? db.query.categories.findFirst({ where: eq(categories.name, data.categoryName) }) : undefined,
     data.partBrandName ? db.query.partBrands.findFirst({ where: eq(partBrands.name, data.partBrandName) }) : undefined,
     data.supplierName ? db.query.suppliers.findFirst({ where: eq(suppliers.name, data.supplierName) }) : undefined,
   ])
+
+  // Resolver vehicleModelIds (con auto-create si no existen)
+  const compatEntries: { vehicleModelId: number; yearStart?: number; yearEnd?: number; notes?: string }[] = []
+  if (data.compatibilities?.length) {
+    for (const compat of data.compatibilities) {
+      const vehicleModelId = await resolveOrCreateVehicleModel(db, compat.brandName, compat.modelName)
+      compatEntries.push({ vehicleModelId, yearStart: compat.yearStart, yearEnd: compat.yearEnd, notes: compat.notes })
+    }
+  }
 
   const slug = buildSlugWithSku(data.slug || data.title, sku)
 
@@ -128,6 +177,7 @@ export async function POST(req: NextRequest) {
             sortOrder: i,
           })))
         : null,
+      compatEntries.length ? setCompatibilities(id, compatEntries) : null,
     ])
 
     return NextResponse.json({ success: true, code, id, slug })

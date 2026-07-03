@@ -65,8 +65,24 @@ openssl rand -base64 32
 | `specs`            | `Array<{ label: string, value: string }>`   | Especificaciones técnicas                                     | —         |
 | `images`           | `Array<{ url, altText?, isPrimary? }>`      | Imágenes del producto (URLs directas, sin subir a Cloudinary)  | —        |
 | `alternateCodes`   | `Array<{ code: string, source?: string }>`  | Códigos alternativos / referencias cruzadas                   | —         |
+| `compatibilities`  | `Array<CompatEntry>` (ver abajo)            | Vehículos compatibles — marca/modelo se crean si no existen   | —         |
 
-> **Nota sobre categorías, marcas y proveedores:** se buscan por nombre exacto en la base de datos. Si no se encuentran, el campo se guarda como `null` sin causar error. Los nombres deben coincidir exactamente (sensible a mayúsculas).
+**Estructura de `CompatEntry`:**
+
+| Campo        | Tipo      | Descripción                                   |
+|--------------|-----------|-----------------------------------------------|
+| `brandName`  | `string`  | Nombre de la marca del vehículo (ver aliases) |
+| `modelName`  | `string`  | Nombre del modelo                             |
+| `yearStart`  | `number`  | Año inicial del rango (opcional)              |
+| `yearEnd`    | `number`  | Año final del rango (opcional)                |
+| `notes`      | `string`  | Notas adicionales (opcional)                  |
+
+> **Aliases de marcas:** los nombres se normalizan antes de buscar en la BD. Todas estas variantes se resuelven a la misma marca:
+> - `Dongfeng`, `dong feng`, `Donfeng`, `DFSK`, `dfsk` → **DFSK**
+>
+> La comparación también ignora mayúsculas/minúsculas. Si la marca o el modelo no existen, se insertan automáticamente.
+
+> **Nota sobre categorías, marcas de pieza y proveedores:** se buscan por nombre exacto. Si no se encuentran, el campo se guarda como `null` sin causar error.
 
 ---
 
