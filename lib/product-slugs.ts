@@ -21,12 +21,18 @@ export function buildSlugWithSku(slugOrTitle: string, sku: string) {
   return skuSuffix ? `${baseWithoutSku}-${skuSuffix}` : base
 }
 
+const SLUG_STOPWORDS = new Set([
+  "de", "del", "la", "las", "el", "los", "para", "por", "con", "y", "en", "un", "una",
+])
+
 export function buildProductSlugBase(value: string) {
   return value
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
-    .replace(/\s+/g, "-")
+    .split(/\s+/)
+    .filter((word) => word && !SLUG_STOPWORDS.has(word))
+    .join("-")
     .replace(/[^a-z0-9-]/g, "")
     .replace(/-+/g, "-")
     .replace(/^-+|-+$/g, "")

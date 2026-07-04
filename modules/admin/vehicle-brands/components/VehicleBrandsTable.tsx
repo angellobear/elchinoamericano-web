@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Car, ChevronRight } from 'lucide-react'
 import type { VehicleBrandListItem } from '@/modules/admin/vehicle-brands/types'
 import { VehicleBrandStatusToggle } from '@/modules/admin/vehicle-brands/components/VehicleBrandStatusToggle'
+import { VehicleBrandDeleteButton } from '@/modules/admin/vehicle-brands/components/VehicleBrandDeleteButton'
 
 interface VehicleBrandsTableProps {
   brands: VehicleBrandListItem[]
@@ -61,6 +62,7 @@ export function VehicleBrandsTable({ brands }: VehicleBrandsTableProps) {
               </td>
               <td className="px-4 py-3.5">
                 <div className="flex items-center justify-end gap-1">
+                  <VehicleBrandDeleteButton id={brand.id} name={brand.name} modelCount={brand.models.length} />
                   <VehicleBrandStatusToggle id={brand.id} isActive={brand.isActive ?? true} />
                   <Link
                     href={`/admin/vehicle-brands/${brand.id}`}

@@ -8,6 +8,29 @@ import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
 import { vehicleBrandRepository } from '@/modules/admin/vehicle-brands/server/repository'
 import { VEHICLE_BRAND_PERMISSION_KEYS } from '@/modules/admin/vehicle-brands/types'
 
+export async function deleteVehicleBrandAction(id: number) {
+  const payload = await getJwtPayload()
+
+  if (!payload) {
+    return errorResult('Tu sesión expiró. Vuelve a iniciar sesión.')
+  }
+
+  if (!hasModulePermission(payload, VEHICLE_BRAND_PERMISSION_KEYS, 'can_delete')) {
+    return errorResult('No tienes permiso para eliminar marcas.')
+  }
+
+  try {
+    await vehicleBrandRepository.deleteBrand(id)
+    revalidatePath('/admin/vehicle-brands')
+    revalidatePath('/')
+    revalidatePath('/catalogo')
+    return successResult('Marca eliminada junto con sus modelos y compatibilidades.')
+  } catch (err) {
+    logger.error({ err, id }, 'Error deleting vehicle brand')
+    return errorResult('No se pudo eliminar la marca.')
+  }
+}
+
 export async function toggleVehicleBrandStatusAction(id: number, current: boolean) {
   const payload = await getJwtPayload()
 

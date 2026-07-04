@@ -1,6 +1,6 @@
 import { getDb } from './client'
-import { vehicleBrands, vehicleModels } from './schema'
-import { eq, asc, and } from 'drizzle-orm'
+import { vehicleBrands, vehicleModels, productCompatibilities } from './schema'
+import { eq, asc, and, inArray } from 'drizzle-orm'
 import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
 import {
@@ -135,6 +135,20 @@ export async function updateVehicleBrand(id: number, data: Partial<typeof vehicl
 export async function deleteVehicleBrand(id: number) {
   const { before, after } = await withAudit(async (tx) => {
     const before = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
+
+    const models = await tx
+      .select({ id: vehicleModels.id })
+      .from(vehicleModels)
+      .where(eq(vehicleModels.brandId, id))
+
+    if (models.length > 0) {
+      const modelIds = models.map((m) => m.id)
+      await tx.delete(productCompatibilities).where(inArray(productCompatibilities.vehicleModelId, modelIds))
+      await tx.update(vehicleModels)
+        .set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() })
+        .where(inArray(vehicleModels.id, modelIds))
+    }
+
     await tx.update(vehicleBrands).set({ isActive: false, deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(vehicleBrands.id, id))
     const after = await tx.query.vehicleBrands.findFirst({ where: eq(vehicleBrands.id, id) })
     return { before, after }
