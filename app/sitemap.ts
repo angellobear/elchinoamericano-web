@@ -49,7 +49,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${SITE_URL}${buildProductPath(product)}`,
-    lastModified: now,
+    lastModified: new Date(product.updated_at ?? product.created_at ?? now),
     changeFrequency: "weekly" as const,
     priority: 0.9,
     images: [toAbsoluteUrl(getProductPrimaryImage(product) ?? DEFAULT_PRODUCT_IMAGE_PATH)],

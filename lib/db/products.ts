@@ -433,6 +433,8 @@ function toPublicProduct(row: any): Product {
         } : undefined,
       } : undefined,
     })),
+    created_at: row.createdAt instanceof Date ? row.createdAt.toISOString() : (row.createdAt ?? undefined),
+    updated_at: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : (row.updatedAt ?? undefined),
     equivalencies: row.equivalencies?.map((eq: any) => toPublicProduct(eq)),
   }
 }
