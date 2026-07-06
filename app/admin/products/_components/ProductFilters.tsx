@@ -1,8 +1,10 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, X } from 'lucide-react'
+
+const STORAGE_KEY = 'admin_products_filters'
 
 interface Option { id: number; name: string }
 
@@ -36,6 +38,19 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     || !!defaults.vehicleBrandId
     || (!!defaults.status && defaults.status !== 'active')
 
+  // Restore saved filters on mount if page has no active filters
+  useEffect(() => {
+    if (hasFilters) {
+      sessionStorage.setItem(STORAGE_KEY, window.location.search)
+      return
+    }
+    const saved = sessionStorage.getItem(STORAGE_KEY)
+    if (saved && saved !== '?' && saved !== '') {
+      router.replace(`/admin/products${saved}`)
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
   const navigate = () => {
     const params = new URLSearchParams()
     const search = inputRef.current?.value ?? ''
@@ -53,7 +68,9 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     // page intentionally omitted — filter change resets to page 1
 
     const qs = params.toString()
-    router.push(qs ? `/admin/products?${qs}` : '/admin/products')
+    const url = qs ? `/admin/products?${qs}` : '/admin/products'
+    sessionStorage.setItem(STORAGE_KEY, qs ? `?${qs}` : '')
+    router.push(url)
   }
 
   return (
@@ -90,7 +107,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
         {hasFilters && (
           <button
             type="button"
-            onClick={() => router.push('/admin/products')}
+            onClick={() => { sessionStorage.removeItem(STORAGE_KEY); router.push('/admin/products') }}
             className="px-4 py-2.5 bg-brand/10 text-brand text-sm font-medium rounded-lg hover:bg-brand/20 active:scale-[0.98] transition-all whitespace-nowrap"
           >
             Limpiar

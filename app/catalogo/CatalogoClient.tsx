@@ -42,6 +42,24 @@ interface CatalogoClientProps {
   initialSearch: string
 }
 
+function hasImage(product: Product) {
+  return !!(product.images && product.images.length > 0)
+}
+
+function sortProducts(products: Product[]) {
+  return [...products].sort((a, b) => {
+    // 1. Featured first
+    if (a.is_featured !== b.is_featured) return a.is_featured ? -1 : 1
+    // 2. With image before without
+    const aImg = hasImage(a), bImg = hasImage(b)
+    if (aImg !== bImg) return aImg ? -1 : 1
+    // 3. Most recently modified
+    const aDate = a.updated_at ? new Date(a.updated_at).getTime() : 0
+    const bDate = b.updated_at ? new Date(b.updated_at).getTime() : 0
+    return bDate - aDate
+  })
+}
+
 function getFilteredProducts(allProducts: Product[], search: string, filters: FilterState) {
   const normalizedSearch = search.trim().toLowerCase()
 
@@ -251,7 +269,7 @@ export default function CatalogoClient({
   const [filters, setFilters] = useState(initialFilters)
   const [page, setPage] = useState(initialPage)
 
-  const filteredProducts = getFilteredProducts(products, search, filters)
+  const filteredProducts = sortProducts(getFilteredProducts(products, search, filters))
   const facetCounts = computeFacetCounts(products, search, filters)
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / CATALOG_PAGE_SIZE))
   const safePage = Math.min(page, totalPages)
