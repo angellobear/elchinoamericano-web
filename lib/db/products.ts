@@ -268,7 +268,8 @@ export async function setCompatibilities(productId: number, entries: { vehicleMo
       where: eq(productCompatibilities.productId, productId),
     })
     await tx.delete(productCompatibilities).where(eq(productCompatibilities.productId, productId))
-    if (entries.length) await tx.insert(productCompatibilities).values(entries.map(e => ({ ...e, productId })))
+    const unique = [...new Map(entries.map(e => [e.vehicleModelId, e])).values()]
+    if (unique.length) await tx.insert(productCompatibilities).values(unique.map(e => ({ ...e, productId })))
     const after = await tx.query.productCompatibilities.findMany({
       where: eq(productCompatibilities.productId, productId),
     })

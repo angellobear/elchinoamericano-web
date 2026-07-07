@@ -188,9 +188,7 @@ export async function POST(req: NextRequest) {
             sortOrder: i,
           })))
         : null,
-      compatEntries.length
-      ? setCompatibilities(id, [...new Map(compatEntries.map(e => [e.vehicleModelId, e])).values()])
-      : null,
+      compatEntries.length ? setCompatibilities(id, compatEntries) : null,
     ])
 
     return NextResponse.json({ success: true, code, id, slug })
