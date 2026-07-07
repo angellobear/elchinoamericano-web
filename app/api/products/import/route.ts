@@ -54,8 +54,8 @@ const bodySchema = z.object({
   compatibilities: z.array(z.object({
     brandName: z.string().min(1),
     modelName: z.string().min(1),
-    yearStart: z.number().int().optional(),
-    yearEnd: z.number().int().optional(),
+    yearStart: z.number().int().nullable().optional(),
+    yearEnd: z.number().int().nullable().optional(),
     notes: z.string().optional(),
   })).optional(),
 })
@@ -141,7 +141,12 @@ export async function POST(req: NextRequest) {
   if (data.compatibilities?.length) {
     for (const compat of data.compatibilities) {
       const vehicleModelId = await resolveOrCreateVehicleModel(db, compat.brandName, compat.modelName)
-      compatEntries.push({ vehicleModelId, yearStart: compat.yearStart, yearEnd: compat.yearEnd, notes: compat.notes })
+      compatEntries.push({
+        vehicleModelId,
+        yearStart: compat.yearStart ?? undefined,
+        yearEnd: compat.yearEnd ?? undefined,
+        notes: compat.notes,
+      })
     }
   }
 
