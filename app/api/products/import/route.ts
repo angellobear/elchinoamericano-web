@@ -72,7 +72,7 @@ async function resolveOrCreateVehicleModel(
   modelName: string,
 ): Promise<number> {
   const canonicalBrand = normalizeVehicleBrand(brandName)
-  const canonicalModel = modelName.trim()
+  const canonicalModel = modelName.trim().replace(/\s+/g, ' ')
 
   let brand = await db.query.vehicleBrands.findFirst({
     where: eq(vehicleBrands.name, canonicalBrand),
