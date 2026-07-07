@@ -188,11 +188,14 @@ export async function POST(req: NextRequest) {
             sortOrder: i,
           })))
         : null,
-      compatEntries.length ? setCompatibilities(id, compatEntries) : null,
+      compatEntries.length
+      ? setCompatibilities(id, [...new Map(compatEntries.map(e => [e.vehicleModelId, e])).values()])
+      : null,
     ])
 
     return NextResponse.json({ success: true, code, id, slug })
   } catch (err: unknown) {
+    console.error('[import/products] error:', err)
     const msg = err instanceof Error ? err.message : 'Error inesperado'
     if (msg.toLowerCase().includes('duplicate') || msg.toLowerCase().includes('unique')) {
       return NextResponse.json({ error: 'Ya existe un producto con ese SKU o slug', detail: msg }, { status: 409 })
