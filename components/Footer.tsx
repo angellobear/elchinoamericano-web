@@ -71,7 +71,6 @@ export default async function Footer() {
             </p>
             <div className="flex gap-2.5">
               {socialLinks.map(({ href, label, icon, cls }) => {
-                const external = href !== "#"
                 const isWa = label === "WhatsApp"
 
                 return (
@@ -80,8 +79,8 @@ export default async function Footer() {
                   href={href}
                   aria-label={label}
                   title={label}
-                  target={external ? "_blank" : undefined}
-                  rel={external ? "noopener noreferrer" : undefined}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className={`w-9.5 h-9.5 rounded-[10px] flex items-center justify-center transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand ${isWa ? "bg-wa text-[#062b15] hover:brightness-105" : `bg-[#13294a] ${cls}`}`}
                 >
                   {icon}

@@ -132,7 +132,7 @@ export default async function Home() {
           availableLanguage: "es",
         },
         openingHours: [siteConfig.contact.hours.weekdays.schema, siteConfig.contact.hours.saturday.schema],
-        sameAs: Object.values(siteConfig.social).filter((url) => url !== "#"),
+        sameAs: Object.values(siteConfig.social),
         knowsAbout: [...homeStructuredData.knowsAbout],
       },
       homeFaqJsonLd,
