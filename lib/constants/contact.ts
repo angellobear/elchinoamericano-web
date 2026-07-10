@@ -2,9 +2,9 @@ export const contactInfo = {
   whatsappNumber: "593984878153",
   whatsappDisplay: "+593 984 878 153",
   address: {
-    city: "Santo Domingo de los Tsáchilas",
+    city: "Quito",
     country: "Ecuador",
-    full: "Santo Domingo de los Tsáchilas, Ecuador",
+    full: "Quito, Ecuador",
   },
   hours: {
     weekdays: { display: "Lun–Vie · 8:30–17:30", schema: "Mo-Fr 08:30-17:30" },
