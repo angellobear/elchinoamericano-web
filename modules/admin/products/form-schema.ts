@@ -59,7 +59,7 @@ export function parseProductFormData(formData: FormData, defaults?: { isActive?:
     metaTitle: getOptionalString(formData, 'metaTitle'),
     metaDescription: getOptionalString(formData, 'metaDescription'),
     isFeatured: getBoolean(formData, 'isFeatured'),
-    isActive: formData.has('isActive') ? getBoolean(formData, 'isActive') : (defaults?.isActive ?? true),
+    isActive: getBoolean(formData, 'isActive'),
   })
 }
 
