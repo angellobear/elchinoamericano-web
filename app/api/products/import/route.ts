@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
-import { eq, and } from 'drizzle-orm'
+import { eq, and, sql } from 'drizzle-orm'
 import { getDb } from '@/lib/db/client'
 import { categories, partBrands, suppliers, vehicleBrands, vehicleModels } from '@/lib/db/schema'
 import { createProduct, setSpecs, setImages, setAlternateCodes, setCompatibilities } from '@/lib/db/products'
@@ -130,7 +130,7 @@ export async function POST(req: NextRequest) {
       : data.categoryName ? db.query.categories.findFirst({ where: eq(categories.name, data.categoryName), columns: { id: true } }) : undefined,
     data.partBrandId
       ? { id: data.partBrandId }
-      : data.partBrandName ? db.query.partBrands.findFirst({ where: eq(partBrands.name, data.partBrandName), columns: { id: true } }) : undefined,
+      : data.partBrandName ? db.query.partBrands.findFirst({ where: sql`lower(${partBrands.name}) = lower(${data.partBrandName.trim()})`, columns: { id: true } }) : undefined,
     data.supplierId
       ? { id: data.supplierId }
       : data.supplierName ? db.query.suppliers.findFirst({ where: eq(suppliers.name, data.supplierName), columns: { id: true } }) : undefined,
