@@ -3,7 +3,7 @@ import {
   products, productImages, productSpecs, productAlternateCodes,
   productEquivalencies, productCompatibilities, stockMovements, vehicleModels,
 } from './schema'
-import { eq, desc, and, sql } from 'drizzle-orm'
+import { eq, desc, and, sql, inArray } from 'drizzle-orm'
 import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
 import type { Product, ProductType, VehicleOrigin } from '@/types'
@@ -101,8 +101,8 @@ export async function getProductList(
   filters?: {
     search?: string
     type?: string
-    categoryId?: number
-    vehicleBrandId?: number
+    categoryId?: number | number[]
+    vehicleBrandId?: number | number[]
     isActive?: boolean | 'all'
     page?: number
     limit?: number
@@ -116,13 +116,23 @@ export async function getProductList(
     buildNotDeletedWhere(products.deletedAt, options),
     isActive !== 'all' ? eq(products.isActive, isActive) : undefined,
     type ? eq(products.type, type) : undefined,
-    categoryId ? eq(products.categoryId, categoryId) : undefined,
+    categoryId
+      ? Array.isArray(categoryId)
+        ? inArray(products.categoryId, categoryId)
+        : eq(products.categoryId, categoryId)
+      : undefined,
     vehicleBrandId
-      ? sql`EXISTS (
-          SELECT 1 FROM ${productCompatibilities} pc
-          INNER JOIN ${vehicleModels} vm ON pc.vehicle_model_id = vm.id
-          WHERE pc.product_id = ${products.id} AND vm.brand_id = ${vehicleBrandId}
-        )`
+      ? Array.isArray(vehicleBrandId)
+        ? sql`EXISTS (
+            SELECT 1 FROM ${productCompatibilities} pc
+            INNER JOIN ${vehicleModels} vm ON pc.vehicle_model_id = vm.id
+            WHERE pc.product_id = ${products.id} AND vm.brand_id IN (${sql.join(vehicleBrandId.map(id => sql`${id}`), sql`, `)})
+          )`
+        : sql`EXISTS (
+            SELECT 1 FROM ${productCompatibilities} pc
+            INNER JOIN ${vehicleModels} vm ON pc.vehicle_model_id = vm.id
+            WHERE pc.product_id = ${products.id} AND vm.brand_id = ${vehicleBrandId}
+          )`
       : undefined,
     search
       ? sql`(

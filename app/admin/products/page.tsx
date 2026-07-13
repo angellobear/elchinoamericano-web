@@ -20,18 +20,25 @@ export default async function ProductsPage({
   searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string; page?: string; limit?: string }>
 }) {
   const params = await searchParams
-  const { search, type, categoryId, vehicleBrandId } = params
+  const { search, type } = params
   const status = params.status ?? 'active'
   const isActive = status === 'all' ? 'all' : status === 'inactive' ? false : true
   const page = Math.max(1, Number(params.page ?? 1))
   const limit = [10, 20, 50, 100].includes(Number(params.limit)) ? Number(params.limit) : 10
 
+  const categoryIds = params.categoryId
+    ? params.categoryId.split(',').map(Number).filter(Boolean)
+    : undefined
+  const vehicleBrandIds = params.vehicleBrandId
+    ? params.vehicleBrandId.split(',').map(Number).filter(Boolean)
+    : undefined
+
   const [{ items: products, total }, categories, vehicleBrands] = await Promise.all([
     getProductList({
       search,
       type,
-      categoryId: categoryId ? Number(categoryId) : undefined,
-      vehicleBrandId: vehicleBrandId ? Number(vehicleBrandId) : undefined,
+      categoryId: categoryIds,
+      vehicleBrandId: vehicleBrandIds,
       isActive,
       page,
       limit,
@@ -44,8 +51,8 @@ export default async function ProductsPage({
   const baseParams: Record<string, string> = {}
   if (search) baseParams.search = search
   if (type) baseParams.type = type
-  if (categoryId) baseParams.categoryId = categoryId
-  if (vehicleBrandId) baseParams.vehicleBrandId = vehicleBrandId
+  if (params.categoryId) baseParams.categoryId = params.categoryId
+  if (params.vehicleBrandId) baseParams.vehicleBrandId = params.vehicleBrandId
   if (status !== 'active') baseParams.status = status
 
   return (
@@ -67,7 +74,14 @@ export default async function ProductsPage({
       <ProductFilters
         categories={categories.map((c) => ({ id: c.id, name: c.name }))}
         vehicleBrands={vehicleBrands.map((b) => ({ id: b.id, name: b.name }))}
-        defaults={{ search, type, categoryId, vehicleBrandId, status, limit: String(limit) }}
+        defaults={{
+          search,
+          type,
+          categoryIds: categoryIds?.map(String),
+          vehicleBrandIds: vehicleBrandIds?.map(String),
+          status,
+          limit: String(limit),
+        }}
       />
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">

@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Search, X } from 'lucide-react'
+import { SearchSelect } from '@/components/ui/search-select'
 
 const STORAGE_KEY = 'admin_products_filters'
 
@@ -14,31 +15,28 @@ interface ProductFiltersProps {
   defaults: {
     search?: string
     type?: string
-    categoryId?: string
-    vehicleBrandId?: string
+    categoryIds?: string[]
+    vehicleBrandIds?: string[]
     status?: string
     limit?: string
   }
 }
 
-const selectCls = 'border border-slate-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors'
-
 export function ProductFilters({ categories, vehicleBrands, defaults }: ProductFiltersProps) {
   const router = useRouter()
   const inputRef = useRef<HTMLInputElement>(null)
-  const typeRef = useRef<HTMLSelectElement>(null)
-  const categoryRef = useRef<HTMLSelectElement>(null)
-  const vehicleBrandRef = useRef<HTMLSelectElement>(null)
-  const statusRef = useRef<HTMLSelectElement>(null)
   const [hasSearch, setHasSearch] = useState(!!defaults.search)
+  const [type, setType] = useState(defaults.type ?? '')
+  const [status, setStatus] = useState(defaults.status ?? 'active')
+  const [categoryIds, setCategoryIds] = useState<string[]>(defaults.categoryIds ?? [])
+  const [vehicleBrandIds, setVehicleBrandIds] = useState<string[]>(defaults.vehicleBrandIds ?? [])
 
   const hasFilters = hasSearch
-    || !!defaults.type
-    || !!defaults.categoryId
-    || !!defaults.vehicleBrandId
-    || (!!defaults.status && defaults.status !== 'active')
+    || !!type
+    || categoryIds.length > 0
+    || vehicleBrandIds.length > 0
+    || (!!status && status !== 'active')
 
-  // Restore saved filters on mount if page has no active filters
   useEffect(() => {
     if (hasFilters) {
       sessionStorage.setItem(STORAGE_KEY, window.location.search)
@@ -51,27 +49,62 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const navigate = () => {
+  function navigate(overrides?: {
+    type?: string
+    status?: string
+    categoryIds?: string[]
+    vehicleBrandIds?: string[]
+  }) {
     const params = new URLSearchParams()
     const search = inputRef.current?.value ?? ''
-    const type = typeRef.current?.value ?? ''
-    const categoryId = categoryRef.current?.value ?? ''
-    const vehicleBrandId = vehicleBrandRef.current?.value ?? ''
-    const status = statusRef.current?.value ?? 'active'
+    const resolvedType = overrides?.type ?? type
+    const resolvedStatus = overrides?.status ?? status
+    const resolvedCategoryIds = overrides?.categoryIds ?? categoryIds
+    const resolvedVehicleBrandIds = overrides?.vehicleBrandIds ?? vehicleBrandIds
 
     if (search) params.set('search', search)
-    if (type) params.set('type', type)
-    if (categoryId) params.set('categoryId', categoryId)
-    if (vehicleBrandId) params.set('vehicleBrandId', vehicleBrandId)
-    if (status !== 'active') params.set('status', status)
+    if (resolvedType) params.set('type', resolvedType)
+    if (resolvedCategoryIds.length) params.set('categoryId', resolvedCategoryIds.join(','))
+    if (resolvedVehicleBrandIds.length) params.set('vehicleBrandId', resolvedVehicleBrandIds.join(','))
+    if (resolvedStatus !== 'active') params.set('status', resolvedStatus)
     if (defaults.limit && defaults.limit !== '10') params.set('limit', defaults.limit)
-    // page intentionally omitted — filter change resets to page 1
 
     const qs = params.toString()
     const url = qs ? `/admin/products?${qs}` : '/admin/products'
     sessionStorage.setItem(STORAGE_KEY, qs ? `?${qs}` : '')
     router.push(url)
   }
+
+  function handleType(val: string) {
+    setType(val)
+    navigate({ type: val })
+  }
+
+  function handleStatus(val: string) {
+    setStatus(val)
+    navigate({ status: val })
+  }
+
+  function handleCategoryIds(val: string[]) {
+    setCategoryIds(val)
+    navigate({ categoryIds: val })
+  }
+
+  function handleVehicleBrandIds(val: string[]) {
+    setVehicleBrandIds(val)
+    navigate({ vehicleBrandIds: val })
+  }
+
+  const typeOptions = [
+    { value: 'original', label: 'Original' },
+    { value: 'oem', label: 'OEM' },
+    { value: 'aftermarket', label: 'Alterno / Aftermarket' },
+  ]
+  const statusOptions = [
+    { value: 'active', label: 'Activos' },
+    { value: 'inactive', label: 'Inactivos' },
+    { value: 'all', label: 'Todos' },
+  ]
 
   return (
     <div className="mb-5 space-y-3">
@@ -99,7 +132,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
         </div>
         <button
           type="button"
-          onClick={navigate}
+          onClick={() => navigate()}
           className="px-4 py-2.5 bg-navy text-white text-sm font-medium rounded-lg hover:bg-navy-dark active:scale-[0.98] transition-all"
         >
           Buscar
@@ -107,7 +140,16 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
         {hasFilters && (
           <button
             type="button"
-            onClick={() => { sessionStorage.removeItem(STORAGE_KEY); router.push('/admin/products') }}
+            onClick={() => {
+              sessionStorage.removeItem(STORAGE_KEY)
+              setCategoryIds([])
+              setVehicleBrandIds([])
+              setType('')
+              setStatus('active')
+              if (inputRef.current) inputRef.current.value = ''
+              setHasSearch(false)
+              router.push('/admin/products')
+            }}
             className="px-4 py-2.5 bg-brand/10 text-brand text-sm font-medium rounded-lg hover:bg-brand/20 active:scale-[0.98] transition-all whitespace-nowrap"
           >
             Limpiar
@@ -117,32 +159,40 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
 
       {/* Filters */}
       <div className="flex flex-wrap gap-2">
-        <select ref={typeRef} defaultValue={defaults.type ?? ''} className={selectCls} onChange={navigate}>
-          <option value="">Todos los tipos</option>
-          <option value="original">Original</option>
-          <option value="oem">OEM</option>
-          <option value="aftermarket">Alterno / Aftermarket</option>
-        </select>
-
-        <select ref={categoryRef} defaultValue={defaults.categoryId ?? ''} className={selectCls} onChange={navigate}>
-          <option value="">Todas las categorías</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
-
-        <select ref={vehicleBrandRef} defaultValue={defaults.vehicleBrandId ?? ''} className={selectCls} onChange={navigate}>
-          <option value="">Todas las marcas</option>
-          {vehicleBrands.map((b) => (
-            <option key={b.id} value={b.id}>{b.name}</option>
-          ))}
-        </select>
-
-        <select ref={statusRef} defaultValue={defaults.status ?? 'active'} className={selectCls} onChange={navigate}>
-          <option value="active">Activos</option>
-          <option value="inactive">Inactivos</option>
-          <option value="all">Todos</option>
-        </select>
+        <div className="min-w-36">
+          <SearchSelect
+            value={type}
+            onChange={handleType}
+            options={typeOptions}
+            placeholder="Todos los tipos"
+          />
+        </div>
+        <div className="min-w-44">
+          <SearchSelect
+            multiple
+            value={categoryIds}
+            onChange={handleCategoryIds}
+            options={categories.map(c => ({ value: String(c.id), label: c.name }))}
+            placeholder="Categorías"
+          />
+        </div>
+        <div className="min-w-44">
+          <SearchSelect
+            multiple
+            value={vehicleBrandIds}
+            onChange={handleVehicleBrandIds}
+            options={vehicleBrands.map(b => ({ value: String(b.id), label: b.name }))}
+            placeholder="Marcas de vehículo"
+          />
+        </div>
+        <div className="min-w-32">
+          <SearchSelect
+            value={status}
+            onChange={handleStatus}
+            options={statusOptions}
+            placeholder="Estado"
+          />
+        </div>
       </div>
     </div>
   )
