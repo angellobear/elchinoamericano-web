@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Trash2 } from 'lucide-react'
 import { SearchSelect } from '@/components/ui/search-select'
 
-interface VehicleModel { id: number; name: string; displacement?: string | null; transmission?: string | null; driveType?: string | null }
+interface VehicleModel { id: number; name: string; displacement?: string | null; fuelType?: string | null; transmission?: string | null; driveType?: string | null }
 interface VehicleBrand { id: number; name: string; models: VehicleModel[] }
 
 interface CompatEntry {
@@ -101,7 +101,7 @@ export function CompatSection({ initialCompat = [] }: Props) {
       {rows.map((row, i) => {
         const brand = brands.find(b => String(b.id) === row.brandId)
         const modelOptions = (brand?.models ?? []).map(m => {
-          const parts = [m.name, m.displacement, m.transmission, m.driveType].filter(Boolean)
+          const parts = [m.name, m.displacement, m.fuelType, m.transmission, m.driveType].filter(Boolean)
           return { value: String(m.id), label: parts.join(' · ') }
         })
 

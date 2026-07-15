@@ -215,7 +215,7 @@ export async function getVehicleBrandsWithModels(options?: ActiveQueryOptions) {
     with: {
       models: {
         where: buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, options),
-        columns: { id: true, name: true, displacement: true, transmission: true, driveType: true },
+        columns: { id: true, name: true, displacement: true, fuelType: true, transmission: true, driveType: true },
       },
     },
   })
