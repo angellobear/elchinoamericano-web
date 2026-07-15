@@ -216,6 +216,7 @@ export async function getVehicleBrandsWithModels(options?: ActiveQueryOptions) {
       models: {
         where: buildVisibilityWhere(vehicleModels.isActive, vehicleModels.deletedAt, options),
         columns: { id: true, name: true, displacement: true, fuelType: true, transmission: true, driveType: true },
+        orderBy: asc(vehicleModels.name),
       },
     },
   })
@@ -240,7 +241,7 @@ export async function getVehicleBrandsForAdmin(options?: ActiveQueryOptions) {
       })
       .from(vehicleBrands)
       .where(buildVisibilityWhere(vehicleBrands.isActive, vehicleBrands.deletedAt, visibilityOptions))
-      .orderBy(asc(vehicleBrands.sortOrder)),
+      .orderBy(asc(vehicleBrands.sortOrder), asc(vehicleBrands.name)),
     db
       .select({
         id: vehicleModels.id,
