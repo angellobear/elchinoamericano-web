@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import { Upload, X } from 'lucide-react'
+import { Upload, X, ZoomIn } from 'lucide-react'
 
 
 const MAX = 6
@@ -30,6 +30,7 @@ export function ProductImagesSection({ existingImages = [] }: Props) {
     const i = existingImages.findIndex(img => img.isPrimary)
     return i >= 0 ? i : 0
   })
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
   const triggerRef  = useRef<HTMLInputElement>(null)
   // one hidden file input per new file so FormData picks them up
@@ -109,6 +110,7 @@ export function ProductImagesSection({ existingImages = [] }: Props) {
             isPrimary={primaryIdx === i}
             onSelect={() => setPrimaryIdx(i)}
             onRemove={() => removeExisting(i)}
+            onPreview={() => setPreviewUrl(img.url)}
           />
         ))}
 
@@ -122,6 +124,7 @@ export function ProductImagesSection({ existingImages = [] }: Props) {
               isPrimary={primaryIdx === abs}
               onSelect={() => setPrimaryIdx(abs)}
               onRemove={() => removeNew(i)}
+              onPreview={() => setPreviewUrl(nf.previewUrl)}
             />
           )
         })}
@@ -140,7 +143,7 @@ export function ProductImagesSection({ existingImages = [] }: Props) {
       </div>
 
       <p className="text-xs text-gray-400">
-        {totalCount}/{MAX} imágenes · Clic para marcar como principal
+        {totalCount}/{MAX} imágenes · Clic para marcar como principal · <ZoomIn size={10} className="inline" /> para ampliar
       </p>
 
       {/* Trigger input (hidden, multiple) */}
@@ -152,15 +155,21 @@ export function ProductImagesSection({ existingImages = [] }: Props) {
         className="hidden"
         onChange={handleAdd}
       />
+
+      {/* Image preview lightbox */}
+      {previewUrl && (
+        <ImagePreview url={previewUrl} onClose={() => setPreviewUrl(null)} />
+      )}
     </div>
   )
 }
 
-function Thumb({ url, isPrimary, onSelect, onRemove }: {
+function Thumb({ url, isPrimary, onSelect, onRemove, onPreview }: {
   url: string
   isPrimary: boolean
   onSelect: () => void
   onRemove: () => void
+  onPreview: () => void
 }) {
   return (
     <div
@@ -180,10 +189,48 @@ function Thumb({ url, isPrimary, onSelect, onRemove }: {
 
       <button
         type="button"
+        onClick={e => { e.stopPropagation(); onPreview() }}
+        className="absolute top-1 left-1 w-5 h-5 bg-black/60 hover:bg-black/80 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
+      >
+        <ZoomIn size={10} />
+      </button>
+
+      <button
+        type="button"
         onClick={e => { e.stopPropagation(); onRemove() }}
         className="absolute top-1 right-1 w-5 h-5 bg-black/60 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all"
       >
         <X size={10} />
+      </button>
+    </div>
+  )
+}
+
+function ImagePreview({ url, onClose }: { url: string; onClose: () => void }) {
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") onClose() }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [onClose])
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/85 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={url}
+        alt="Vista previa"
+        className="max-w-full max-h-full object-contain rounded-xl"
+        onClick={e => e.stopPropagation()}
+      />
+      <button
+        type="button"
+        onClick={onClose}
+        className="absolute top-4 right-4 w-9 h-9 bg-white/15 hover:bg-white/25 rounded-full flex items-center justify-center text-white text-lg font-bold transition-colors"
+      >
+        ✕
       </button>
     </div>
   )

@@ -37,17 +37,41 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     || vehicleBrandIds.length > 0
     || (!!status && status !== 'active')
 
+  // Restore saved filters on initial load (when URL has no filters)
   useEffect(() => {
     if (hasFilters) {
       sessionStorage.setItem(STORAGE_KEY, window.location.search)
       return
     }
     const saved = sessionStorage.getItem(STORAGE_KEY)
-    if (saved && saved !== '?' && saved !== '') {
-      router.replace(`/admin/products${saved}`)
-    }
+    if (!saved || saved === '?' || saved === '') return
+
+    // Update local state immediately so selects reflect saved values before navigation completes
+    const params = new URLSearchParams(saved.slice(1))
+    const catIds = (params.get('categoryId') ?? '').split(',').filter(Boolean)
+    const brandIds = (params.get('vehicleBrandId') ?? '').split(',').filter(Boolean)
+    if (catIds.length) setCategoryIds(catIds)
+    if (brandIds.length) setVehicleBrandIds(brandIds)
+    const t = params.get('type')
+    if (t) setType(t)
+    const s = params.get('status')
+    if (s) setStatus(s)
+
+    router.replace(`/admin/products${saved}`)
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Sync local state when defaults change after a storage-triggered redirect
+  const defaultCategoryKey = (defaults.categoryIds ?? []).join(',')
+  const defaultBrandKey = (defaults.vehicleBrandIds ?? []).join(',')
+  useEffect(() => {
+    setCategoryIds(defaults.categoryIds ?? [])
+    setVehicleBrandIds(defaults.vehicleBrandIds ?? [])
+    setType(defaults.type ?? '')
+    setStatus(defaults.status ?? 'active')
+    setHasSearch(!!defaults.search)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultCategoryKey, defaultBrandKey, defaults.type, defaults.status, defaults.search])
 
   function navigate(overrides?: {
     type?: string

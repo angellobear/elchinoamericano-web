@@ -200,6 +200,18 @@ function Chip({ label, onRemove }: { label: string; onRemove: () => void }) {
   )
 }
 
+function paginationItems(page: number, total: number): (number | "…")[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const set = new Set([1, 2, page - 1, page, page + 1, total - 1, total].filter(p => p >= 1 && p <= total))
+  const sorted = [...set].sort((a, b) => a - b)
+  const result: (number | "…")[] = []
+  for (let i = 0; i < sorted.length; i++) {
+    if (i > 0 && sorted[i] - sorted[i - 1] > 1) result.push("…")
+    result.push(sorted[i])
+  }
+  return result
+}
+
 function Pagination({
   page,
   totalPages,
@@ -210,8 +222,6 @@ function Pagination({
   onPage: (page: number) => void
 }) {
   if (totalPages <= 1) return null
-
-  const pages = Array.from({ length: totalPages }, (_, index) => index + 1)
 
   return (
     <nav aria-label="Paginación" className="flex items-center justify-center gap-1 mt-10">
@@ -224,20 +234,26 @@ function Pagination({
         <ChevronLeft size={16} />
       </button>
 
-      {pages.map((currentPage) => (
-        <button
-          key={currentPage}
-          onClick={() => onPage(currentPage)}
-          aria-current={currentPage === page ? "page" : undefined}
-          className={`w-9.5 h-9.5 flex items-center justify-center rounded-[9px] text-sm font-semibold transition-colors border ${
-            currentPage === page
-              ? "bg-brand border-brand text-white"
-              : "border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy"
-          }`}
-        >
-          {currentPage}
-        </button>
-      ))}
+      {paginationItems(page, totalPages).map((item, idx) =>
+        item === "…" ? (
+          <span key={`ellipsis-${idx}`} className="w-9.5 h-9.5 flex items-center justify-center text-slate-400 text-sm select-none">
+            …
+          </span>
+        ) : (
+          <button
+            key={item}
+            onClick={() => onPage(item)}
+            aria-current={item === page ? "page" : undefined}
+            className={`w-9.5 h-9.5 flex items-center justify-center rounded-[9px] text-sm font-semibold transition-colors border ${
+              item === page
+                ? "bg-brand border-brand text-white"
+                : "border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy"
+            }`}
+          >
+            {item}
+          </button>
+        )
+      )}
 
       <button
         onClick={() => onPage(page + 1)}

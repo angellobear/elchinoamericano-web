@@ -245,6 +245,17 @@ function LightBox({
   productName?: string
 }) {
   const multi = images.length > 1
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+      else if (e.key === "ArrowLeft" && onPrev) onPrev()
+      else if (e.key === "ArrowRight" && onNext) onNext()
+    }
+    window.addEventListener("keydown", handler)
+    return () => window.removeEventListener("keydown", handler)
+  }, [onClose, onPrev, onNext])
+
   return (
     <div
       className="fixed inset-0 z-999 bg-black/90 flex items-center justify-center p-4"
