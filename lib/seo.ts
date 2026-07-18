@@ -6,7 +6,7 @@ import { SITE_NAME, SITE_URL, SITE_LOCALE } from "@/lib/constants/site"
 export { SITE_NAME, SITE_URL, SITE_LOCALE }
 
 export const SITE_DESCRIPTION =
-  "Repuestos automotrices originales, OEM y alternos para vehiculos chinos y americanos en Ecuador. Asesoria por WhatsApp, catalogo con filtros y envios a nivel nacional."
+  "Repuestos automotrices originales, OEM y alternos para vehiculos chinos y americanos en Ecuador. Tiendas en Quito y Santo Domingo de los Tsachilas. Asesoria por WhatsApp y envios a todo el pais."
 export const DEFAULT_SHARE_IMAGE_PATH = "/og-image.png"
 export const DEFAULT_SHARE_IMAGE_ALT = "El Chino Americano, repuestos automotrices en Ecuador"
 export const DEFAULT_SHARE_IMAGE_WIDTH = 1536
@@ -15,15 +15,18 @@ export const DEFAULT_PRODUCT_IMAGE_PATH = "/share-default-product.png"
 export const DEFAULT_PRODUCT_IMAGE_ALT = "Imagen referencial del producto"
 export const DEFAULT_KEYWORDS = [
   "repuestos automotrices Ecuador",
-  "repuestos para vehiculos chinos",
-  "repuestos para vehiculos americanos",
+  "repuestos para vehiculos chinos Ecuador",
+  "repuestos para vehiculos americanos Ecuador",
+  "repuestos Quito Ecuador",
   "repuestos Santo Domingo Ecuador",
   "catalogo de repuestos Ecuador",
   "repuestos por WhatsApp Ecuador",
+  "repuestos automotrices Quito",
+  "repuestos automotrices Santo Domingo",
 ]
-export const GEO_REGION = "EC-SD"
-export const GEO_PLACENAME = "Santo Domingo de los Tsachilas, Ecuador"
-export const GEO_POSITION = "-0.24986;-79.20380"
+export const GEO_REGION = "EC-P"
+export const GEO_PLACENAME = "Quito y Santo Domingo de los Tsachilas, Ecuador"
+export const GEO_POSITION = "-0.18070;-78.46780"
 
 export function toAbsoluteUrl(path: string) {
   if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -85,7 +88,7 @@ export function getProductSeoDescription(product: Product, typeLabel: string) {
     ? ` Compatible con ${product.short_description}.`
     : compatSuffix
 
-  return `${product.title} ${product.part_brand?.name ?? ""} - ${typeLabel}.${shortDescText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}.`
+  return `${product.title} ${product.part_brand?.name ?? ""} - ${typeLabel}.${shortDescText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}. Disponible en Ecuador, envios a Quito, Santo Domingo y todo el pais.`
 }
 
 export function getProductSeoTitle(product: Product) {
