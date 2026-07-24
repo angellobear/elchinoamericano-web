@@ -93,6 +93,43 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
           { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
         ],
       },
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "¿Qué tipos de repuestos automotrices tienen disponibles en el catálogo?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "El catálogo incluye repuestos originales, OEM y alternos para vehículos chinos y americanos: filtros, frenos, suspensión, motor, dirección, transmisión, sistema eléctrico, carrocería y más. Puedes filtrar por categoría, marca de vehículo o rango de precio.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "¿Cómo busco un repuesto específico en el catálogo?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Puedes buscar por nombre del repuesto, número de parte (SKU) o código del fabricante usando la barra de búsqueda. También puedes filtrar por marca de vehículo (Chery, BYD, Ford, Chevrolet, etc.) y por categoría de repuesto para encontrar la pieza correcta.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "¿Los repuestos del catálogo están disponibles para envío inmediato a todo Ecuador?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Los productos marcados como 'en stock' están disponibles para envío inmediato. Coordinamos envíos a Quito, Guayaquil, Cuenca, Santo Domingo de los Tsáchilas y todo el Ecuador en 24 a 72 horas. Para verificar disponibilidad de un repuesto específico, consúltanos por WhatsApp.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "¿Puedo encontrar repuestos para marcas chinas como Chery, BYD o JAC en el catálogo?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Sí. El catálogo incluye repuestos específicos para las principales marcas chinas presentes en Ecuador: Chery, BYD, JAC, Great Wall, Haval, Geely, Lifan y Brilliance. Selecciona la marca de vehículo en el filtro para ver solo los repuestos compatibles.",
+            },
+          },
+        ],
+      },
     ],
   }
 
@@ -123,6 +160,41 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
           initialSearch={search}
         />
       </Suspense>
+      <section aria-labelledby="catalogo-faq-heading" className="border-t border-[#e6e9ef] bg-white">
+        <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
+          <h2
+            id="catalogo-faq-heading"
+            className="mb-10 font-display text-8 font-bold uppercase leading-none text-navy"
+          >
+            Preguntas frecuentes
+          </h2>
+          <dl className="divide-y divide-[#e6e9ef]">
+            {[
+              {
+                q: "¿Qué tipos de repuestos automotrices tienen disponibles en el catálogo?",
+                a: "El catálogo incluye repuestos originales, OEM y alternos para vehículos chinos y americanos: filtros, frenos, suspensión, motor, dirección, transmisión, sistema eléctrico, carrocería y más. Puedes filtrar por categoría, marca de vehículo o rango de precio.",
+              },
+              {
+                q: "¿Cómo busco un repuesto específico en el catálogo?",
+                a: "Puedes buscar por nombre del repuesto, número de parte (SKU) o código del fabricante usando la barra de búsqueda. También puedes filtrar por marca de vehículo (Chery, BYD, Ford, Chevrolet, etc.) y por categoría de repuesto para encontrar la pieza correcta.",
+              },
+              {
+                q: "¿Los repuestos del catálogo están disponibles para envío inmediato a todo Ecuador?",
+                a: "Los productos marcados como 'en stock' están disponibles para envío inmediato. Coordinamos envíos a Quito, Guayaquil, Cuenca, Santo Domingo de los Tsáchilas y todo el Ecuador en 24 a 72 horas. Para verificar disponibilidad de un repuesto específico, consúltanos por WhatsApp.",
+              },
+              {
+                q: "¿Puedo encontrar repuestos para marcas chinas como Chery, BYD o JAC en el catálogo?",
+                a: "Sí. El catálogo incluye repuestos específicos para las principales marcas chinas presentes en Ecuador: Chery, BYD, JAC, Great Wall, Haval, Geely, Lifan y Brilliance. Selecciona la marca de vehículo en el filtro para ver solo los repuestos compatibles.",
+              },
+            ].map(({ q, a }) => (
+              <div key={q} className="py-7">
+                <dt className="mb-3 text-4.25 font-bold leading-snug text-navy">{q}</dt>
+                <dd className="text-3.75 leading-[1.65] text-[#566071]">{a}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
       <Footer />
     </>
   )

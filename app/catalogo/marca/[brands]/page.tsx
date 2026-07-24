@@ -158,6 +158,35 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
           },
         ],
       },
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `¿Qué repuestos para ${titleBrandText} están disponibles?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `Disponemos de repuestos originales, OEM y alternos para ${titleBrandText} en Ecuador. Encuentra filtros, frenos, suspensión, motor y más en nuestro catálogo con envíos a todo el país.`,
+            },
+          },
+          {
+            "@type": "Question",
+            name: `¿Hacen envíos de repuestos para ${titleBrandText} a todo Ecuador?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `Sí. Coordinamos envíos a Quito, Santo Domingo de los Tsáchilas y todo el Ecuador. Consúltanos por WhatsApp para disponibilidad y precio.`,
+            },
+          },
+          {
+            "@type": "Question",
+            name: `¿Cómo verifico si el repuesto para ${titleBrandText} es compatible con mi vehículo?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `Puedes escribirnos por WhatsApp con la marca, modelo, año y número de pieza o una foto del repuesto. También puedes buscar en el catálogo filtrando por categoría para confirmar compatibilidad.`,
+            },
+          },
+        ],
+      },
     ],
   }
 
