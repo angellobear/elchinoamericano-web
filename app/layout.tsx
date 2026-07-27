@@ -3,6 +3,7 @@ import { Barlow_Condensed, Inter } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/context/CartContext"
 import { GoogleAnalytics } from "@/components/GoogleAnalytics"
+import { MicrosoftClarity } from "@/components/MicrosoftClarity"
 import {
   DEFAULT_KEYWORDS,
   DEFAULT_SHARE_IMAGE_ALT,
@@ -104,6 +105,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <CartProvider>{children}</CartProvider>
         {GA_ID && <GoogleAnalytics id={GA_ID} />}
+        <MicrosoftClarity id="xt16vwz9rk" />
       </body>
     </html>
   )
