@@ -71,7 +71,7 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
   const [{ brands: brandSlug }, resolvedSearchParams, activeBrands, categories, allProducts] = await Promise.all([
     props.params,
     props.searchParams,
-    getVisibleVehicleBrands(),
+    getPublicVehicleBrands(),
     getCategories(),
     getPublicProducts(),
   ])
