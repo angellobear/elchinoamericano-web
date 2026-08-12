@@ -1,6 +1,7 @@
 export const CATALOG_PAGE_SIZE = 9
 export const CATALOG_ARRAY_SEPARATOR = "|"
-export const CATALOG_BRAND_PATH_SEPARATOR = "-"
+// ponytail: ~ avoids collision with brand keys that use - (e.g. "great-wall")
+export const CATALOG_BRAND_PATH_SEPARATOR = "~"
 
 export const CATALOG_QUALITY_OPTIONS = [
   { id: "original", label: "Original" },

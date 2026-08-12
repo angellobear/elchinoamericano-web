@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import CatalogoClient from "@/app/catalogo/CatalogoClient"
 import { getCategories } from "@/lib/db/categories"
-import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
+import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogBrandPath,
@@ -24,7 +24,7 @@ import { buildProductPath } from "@/lib/product-slugs"
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  const activeBrands = await getPublicVehicleBrands()
+  const activeBrands = await getVisibleVehicleBrands()
 
   return activeBrands.map((brand) => ({
     brands: brand.key,
@@ -37,7 +37,7 @@ export async function generateMetadata({
   params: Promise<{ brands: string }>
 }): Promise<Metadata> {
   const { brands: brandSlug } = await params
-  const activeBrands = await getPublicVehicleBrands()
+  const activeBrands = await getVisibleVehicleBrands()
   const requestedKeys = parseCatalogBrandSlug(brandSlug)
   const matchedBrands = activeBrands.filter((brand) => requestedKeys.includes(brand.key))
 
@@ -71,7 +71,7 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
   const [{ brands: brandSlug }, resolvedSearchParams, activeBrands, categories, allProducts] = await Promise.all([
     props.params,
     props.searchParams,
-    getPublicVehicleBrands(),
+    getVisibleVehicleBrands(),
     getCategories(),
     getPublicProducts(),
   ])

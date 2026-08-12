@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next"
 import { getPublicProducts } from "@/lib/db/products"
-import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
+import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import {
   DEFAULT_PRODUCT_IMAGE_PATH,
@@ -13,7 +13,7 @@ import { buildProductPath } from "@/lib/product-slugs"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
-  const [products, brands] = await Promise.all([getPublicProducts(), getPublicVehicleBrands()])
+  const [products, brands] = await Promise.all([getPublicProducts(), getVisibleVehicleBrands()])
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
