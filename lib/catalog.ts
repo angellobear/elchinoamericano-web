@@ -77,6 +77,10 @@ export function parseCatalogBrandSlug(value: string) {
   return normalizeBrandKeys(value.split(CATALOG_BRAND_PATH_SEPARATOR))
 }
 
+export function buildCatalogCategoryPath(categoryKey: string) {
+  return `/catalogo/categoria/${categoryKey.toLowerCase().trim()}`
+}
+
 export function buildCatalogBrandPath(brandKeys: string[]) {
   const normalizedBrandKeys = normalizeBrandKeys(brandKeys)
 
