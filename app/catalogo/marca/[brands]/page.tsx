@@ -1,6 +1,6 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { notFound } from "next/navigation"
+import { notFound, redirect } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import CatalogoClient from "@/app/catalogo/CatalogoClient"
@@ -13,6 +13,8 @@ import {
   parseCatalogBrandSlug,
   parseCatalogFilters,
 } from "@/lib/catalog"
+import { normalizeVehicleBrand } from "@/lib/vehicle-brand-aliases"
+import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
 import { filterCatalogProducts } from "@/lib/catalog-products"
 import {
   SITE_NAME,
@@ -79,7 +81,13 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
   const requestedKeys = parseCatalogBrandSlug(brandSlug)
   const matchedBrands = activeBrands.filter((brand) => requestedKeys.includes(brand.key))
 
-  if (matchedBrands.length === 0) notFound()
+  if (matchedBrands.length === 0) {
+    const resolvedKeys = requestedKeys
+      .map((k) => toVehicleBrandKey(normalizeVehicleBrand(k)))
+      .filter((k) => activeBrands.some((b) => b.key === k))
+    if (resolvedKeys.length > 0) redirect(buildCatalogBrandPath(resolvedKeys))
+    notFound()
+  }
 
   const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
   const activeCategoryKeys = new Set(categories.map((category) => category.key))
