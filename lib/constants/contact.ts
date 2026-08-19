@@ -18,7 +18,9 @@ export const contactInfo = {
 } as const
 
 export const defaultWaMessage =
-  "Hola! Le escribo desde [su ciudad]. "
+  "Hola! Le escribo desde [su ciudad]. Estoy buscando "
+
+export const waGreeting = "Hola! Le escribo desde [su ciudad]. "
 
 export function getWhatsAppUrl(message?: string) {
   const baseUrl = `https://wa.me/${contactInfo.whatsappNumber}`

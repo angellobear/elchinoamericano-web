@@ -1,5 +1,5 @@
 import { businessName, SITE_NAME, SITE_URL, SITE_LOCALE } from "./site"
-import { contactInfo, contactPageContent, getWhatsAppUrl, defaultWaMessage } from "./contact"
+import { contactInfo, contactPageContent, getWhatsAppUrl, defaultWaMessage, waGreeting } from "./contact"
 import { homeContent } from "./home"
 import { socialLinks } from "./social"
 
@@ -19,6 +19,7 @@ export {
   contactPageContent,
   getWhatsAppUrl,
   defaultWaMessage,
+  waGreeting,
   homeContent,
   socialLinks,
 }

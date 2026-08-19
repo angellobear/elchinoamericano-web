@@ -72,7 +72,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           `- ${i.title} x${i.qty} => $${((i.offer_price ?? i.price) * i.qty).toFixed(2)}`
       )
       .join("\n")
-    const msg = `Hola! Quiero hacer el siguiente pedido:\n\n${lines}\n\nTotal estimado: $${total.toFixed(2)}\n\nPueden confirmarme disponibilidad y costo de envio?`
+    const msg = `Hola! Le escribo desde [su ciudad]. Quiero hacer el siguiente pedido:\n\n${lines}\n\nTotal estimado: $${total.toFixed(2)}\n\nPueden confirmarme disponibilidad y costo de envio?`
     return getWhatsAppUrl(msg)
   }
 

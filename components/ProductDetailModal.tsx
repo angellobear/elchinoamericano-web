@@ -128,7 +128,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                   Agregar al pedido
                 </button>
                 <a
-                  href={getWhatsAppUrl(`Hola! Quiero consultar sobre: ${product.title} (${product.code}) - $${effectivePrice.toFixed(2)}`)}
+                  href={getWhatsAppUrl(`Hola! Le escribo desde [su ciudad]. Quiero consultar sobre: ${product.title} (${product.code}) - $${effectivePrice.toFixed(2)}`)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-bold text-sm px-4 py-3 rounded-md transition-colors duration-150 active:scale-[0.98]"

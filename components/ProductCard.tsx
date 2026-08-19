@@ -24,7 +24,7 @@ export default function ProductCard({ product }: { product: Product }) {
     ? Math.round((1 - product.offer_price / product.price) * 100)
     : 0
   const waMsg =
-    `Hola! Me interesa: ${product.title} (Cód: ${product.code}). ¿Está disponible?`
+    `Hola! Le escribo desde [su ciudad]. Me interesa: ${product.title} (Cód: ${product.code}). ¿Está disponible?`
 
   return (
     <motion.article

@@ -274,7 +274,7 @@ export default async function ProductDetailPage({
     : []
 
   const whatsappMsg =
-    `Hola! Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (SKU: ${product.sku}). Esta disponible? Cuanto es el envio?`
+    `Hola! Le escribo desde [su ciudad]. Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (SKU: ${product.sku}). Esta disponible? Cuanto es el envio?`
 
   const whatsappHref = getWhatsAppUrl(whatsappMsg)
   const ctaTargetId = "product-whatsapp-cta"
