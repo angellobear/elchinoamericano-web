@@ -146,20 +146,20 @@ export default function CatalogFilters({
         </>
       )}
 
-      {/* Marca de vehículo */}
-      {visibleBrands.length > 0 && (
+      {/* Categoría */}
+      {visibleCategories.length > 0 && (
         <>
-          <FilterSection title="Marca de vehículo">
+          <FilterSection title="Categoría">
             <div className="flex flex-col gap-2">
-              {visibleBrands.map((brand) => (
+              {visibleCategories.map((cat) => (
                 <Checkbox
-                  key={brand.id}
-                  checked={filters.carBrands.includes(brand.key)}
+                  key={cat.id}
+                  checked={filters.categories.includes(cat.id)}
                   onChange={() =>
-                    onChange({ ...filters, carBrands: toggle(filters.carBrands, brand.key) })
+                    onChange({ ...filters, categories: toggle(filters.categories, cat.id) })
                   }
-                  label={brand.name}
-                  count={brandCounts[brand.key] ?? 0}
+                  label={cat.label}
+                  count={categoryCounts[cat.id] ?? 0}
                 />
               ))}
             </div>
@@ -168,19 +168,19 @@ export default function CatalogFilters({
         </>
       )}
 
-      {/* Categoría */}
-      {visibleCategories.length > 0 && (
-        <FilterSection title="Categoría">
+      {/* Marca de vehículo */}
+      {visibleBrands.length > 0 && (
+        <FilterSection title="Marca de vehículo">
           <div className="flex flex-col gap-2">
-            {visibleCategories.map((cat) => (
+            {visibleBrands.map((brand) => (
               <Checkbox
-                key={cat.id}
-                checked={filters.categories.includes(cat.id)}
+                key={brand.id}
+                checked={filters.carBrands.includes(brand.key)}
                 onChange={() =>
-                  onChange({ ...filters, categories: toggle(filters.categories, cat.id) })
+                  onChange({ ...filters, carBrands: toggle(filters.carBrands, brand.key) })
                 }
-                label={cat.label}
-                count={categoryCounts[cat.id] ?? 0}
+                label={brand.name}
+                count={brandCounts[brand.key] ?? 0}
               />
             ))}
           </div>
