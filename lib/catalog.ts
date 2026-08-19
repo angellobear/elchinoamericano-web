@@ -91,14 +91,21 @@ export function buildCatalogBrandPath(brandKeys: string[]) {
 
 export function buildCatalogUrl(search: string, filters: FilterState, page: number) {
   const params = new URLSearchParams()
-  const basePath =
-    filters.carBrands.length > 0 ? buildCatalogBrandPath(filters.carBrands) : "/catalogo"
+
+  // Use clean path routes when only one dimension is active
+  let basePath = "/catalogo"
+  if (filters.carBrands.length > 0) {
+    basePath = buildCatalogBrandPath(filters.carBrands)
+  } else if (filters.categories.length === 1) {
+    basePath = buildCatalogCategoryPath(filters.categories[0])
+  }
 
   if (search) params.set("q", search)
   if (filters.qualities.length) {
     params.set("calidad", filters.qualities.join(CATALOG_ARRAY_SEPARATOR))
   }
-  if (filters.categories.length) {
+  // Only add categoria param when multiple categories or brand route is active
+  if (filters.categories.length > 1 || (filters.categories.length === 1 && filters.carBrands.length > 0)) {
     params.set("categoria", filters.categories.join(CATALOG_ARRAY_SEPARATOR))
   }
   if (page > 1) params.set("pagina", String(page))
