@@ -77,8 +77,18 @@ export function parseCatalogBrandSlug(value: string) {
   return normalizeBrandKeys(value.split(CATALOG_BRAND_PATH_SEPARATOR))
 }
 
-export function buildCatalogCategoryPath(categoryKey: string) {
-  return `/catalogo/categoria/${categoryKey.toLowerCase().trim()}`
+function normalizeCategoryKeys(keys: string[]) {
+  return [...new Set(keys.filter(Boolean).map((k) => k.toLowerCase().trim()))].sort((a, b) => a.localeCompare(b))
+}
+
+export function parseCatalogCategorySlug(value: string) {
+  return normalizeCategoryKeys(value.split(CATALOG_BRAND_PATH_SEPARATOR))
+}
+
+export function buildCatalogCategoryPath(categoryKeys: string | string[]) {
+  const keys = normalizeCategoryKeys(Array.isArray(categoryKeys) ? categoryKeys : [categoryKeys])
+  if (keys.length === 0) return "/catalogo"
+  return `/catalogo/categoria/${keys.join(CATALOG_BRAND_PATH_SEPARATOR)}`
 }
 
 export function buildCatalogBrandPath(brandKeys: string[]) {
@@ -92,20 +102,18 @@ export function buildCatalogBrandPath(brandKeys: string[]) {
 export function buildCatalogUrl(search: string, filters: FilterState, page: number) {
   const params = new URLSearchParams()
 
-  // Use clean path routes when only one dimension is active
   let basePath = "/catalogo"
   if (filters.carBrands.length > 0) {
     basePath = buildCatalogBrandPath(filters.carBrands)
-  } else if (filters.categories.length === 1) {
-    basePath = buildCatalogCategoryPath(filters.categories[0])
+  } else if (filters.categories.length > 0) {
+    basePath = buildCatalogCategoryPath(filters.categories)
   }
 
   if (search) params.set("q", search)
   if (filters.qualities.length) {
     params.set("calidad", filters.qualities.join(CATALOG_ARRAY_SEPARATOR))
   }
-  // Only add categoria param when multiple categories or brand route is active
-  if (filters.categories.length > 1 || (filters.categories.length === 1 && filters.carBrands.length > 0)) {
+  if (filters.categories.length > 0 && filters.carBrands.length > 0) {
     params.set("categoria", filters.categories.join(CATALOG_ARRAY_SEPARATOR))
   }
   if (page > 1) params.set("pagina", String(page))

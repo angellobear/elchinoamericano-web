@@ -10,6 +10,7 @@ import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogCategoryPath,
   CATALOG_PAGE_SIZE,
+  parseCatalogCategorySlug,
   parseCatalogFilters,
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
@@ -32,20 +33,25 @@ export async function generateMetadata({
 }: {
   params: Promise<{ category: string }>
 }): Promise<Metadata> {
-  const { category: categoryKey } = await params
-  const categories = await getCategories()
-  const matched = categories.find((cat) => cat.key === categoryKey)
+  const { category: categorySlug } = await params
+  const allCategories = await getCategories()
+  const requestedKeys = parseCatalogCategorySlug(categorySlug)
+  const matchedCategories = allCategories.filter((cat) => requestedKeys.includes(cat.key))
 
-  if (!matched) return {}
+  if (matchedCategories.length === 0) return {}
+
+  const names = matchedCategories.map((c) => c.name)
+  const titleText = names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + ` y ${names.at(-1)}`
+  const canonicalPath = buildCatalogCategoryPath(matchedCategories.map((c) => c.key))
 
   return buildCatalogMetadata(
-    `Repuestos de ${matched.name} | ${SITE_NAME}`,
-    `Catálogo de repuestos de ${matched.name} para vehículos chinos y americanos en Ecuador. Encuentra opciones originales, OEM y alternas con envíos a todo el país.`,
-    buildCatalogCategoryPath(categoryKey),
+    `Repuestos de ${titleText} | ${SITE_NAME}`,
+    `Catálogo de repuestos de ${titleText} para vehículos chinos y americanos en Ecuador. Encuentra opciones originales, OEM y alternas con envíos a todo el país.`,
+    canonicalPath,
     {
-      extraKeywords: [`repuestos ${matched.name} Ecuador`, `${matched.name} vehículos Ecuador`],
-      ogDescription: `Catálogo de repuestos de ${matched.name} con envíos a todo Ecuador.`,
-      imageAlt: `Repuestos de ${matched.name} en Ecuador`,
+      extraKeywords: [`repuestos ${titleText} Ecuador`, `${titleText} vehículos Ecuador`],
+      ogDescription: `Catálogo de repuestos de ${titleText} con envíos a todo Ecuador.`,
+      imageAlt: `Repuestos de ${titleText} en Ecuador`,
     },
   )
 }
@@ -53,7 +59,7 @@ export async function generateMetadata({
 type Props = { params: Promise<{ category: string }>; searchParams: Promise<Record<string, string | string[] | undefined>> }
 
 export default async function CatalogoCategoriaPage(props: Props) {
-  const [{ category: categoryKey }, resolvedSearchParams, categories, brands, allProducts] = await Promise.all([
+  const [{ category: categorySlug }, resolvedSearchParams, allCategories, brands, allProducts] = await Promise.all([
     props.params,
     props.searchParams,
     getCategories(),
@@ -61,8 +67,9 @@ export default async function CatalogoCategoriaPage(props: Props) {
     getPublicProducts(),
   ])
 
-  const matched = categories.find((cat) => cat.key === categoryKey)
-  if (!matched) notFound()
+  const requestedKeys = parseCatalogCategorySlug(categorySlug)
+  const matchedCategories = allCategories.filter((cat) => requestedKeys.includes(cat.key))
+  if (matchedCategories.length === 0) notFound()
 
   const { search, filters, page } = parseCatalogFilters(resolvedSearchParams)
   const activeBrandKeys = new Set(brands.map((b) => b.key))
@@ -70,7 +77,7 @@ export default async function CatalogoCategoriaPage(props: Props) {
   const sanitizedFilters = {
     ...filters,
     qualities: filters.qualities.filter((q) => validQualityIds.has(q)),
-    categories: [matched.key],
+    categories: matchedCategories.map((c) => c.key),
     carBrands: filters.carBrands.filter((b) => activeBrandKeys.has(b)),
   }
   const filteredProducts = filterCatalogProducts(
@@ -86,15 +93,17 @@ export default async function CatalogoCategoriaPage(props: Props) {
     (safePage - 1) * CATALOG_PAGE_SIZE,
     safePage * CATALOG_PAGE_SIZE,
   )
-  const canonicalPath = buildCatalogCategoryPath(categoryKey)
+  const names = matchedCategories.map((c) => c.name)
+  const titleText = names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + ` y ${names.at(-1)}`
+  const canonicalPath = buildCatalogCategoryPath(matchedCategories.map((c) => c.key))
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
       {
         "@type": "CollectionPage",
         "@id": `${SITE_URL}${canonicalPath}#page`,
-        name: `Repuestos de ${matched.name}`,
-        description: `Catálogo de repuestos de ${matched.name} en Ecuador.`,
+        name: `Repuestos de ${titleText}`,
+        description: `Catálogo de repuestos de ${titleText} en Ecuador.`,
         url: `${SITE_URL}${canonicalPath}`,
         isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
         mainEntity: {
@@ -114,7 +123,7 @@ export default async function CatalogoCategoriaPage(props: Props) {
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
           { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
-          { "@type": "ListItem", position: 3, name: matched.name, item: `${SITE_URL}${canonicalPath}` },
+          { "@type": "ListItem", position: 3, name: titleText, item: `${SITE_URL}${canonicalPath}` },
         ],
       },
       {
@@ -122,15 +131,15 @@ export default async function CatalogoCategoriaPage(props: Props) {
         mainEntity: [
           {
             "@type": "Question",
-            name: `¿Qué repuestos de ${matched.name} están disponibles?`,
+            name: `¿Qué repuestos de ${titleText} están disponibles?`,
             acceptedAnswer: {
               "@type": "Answer",
-              text: `Disponemos de repuestos originales, OEM y alternos de ${matched.name} para vehículos chinos y americanos en Ecuador, con envíos a todo el país.`,
+              text: `Disponemos de repuestos originales, OEM y alternos de ${titleText} para vehículos chinos y americanos en Ecuador, con envíos a todo el país.`,
             },
           },
           {
             "@type": "Question",
-            name: `¿Hacen envíos de repuestos de ${matched.name} a todo Ecuador?`,
+            name: `¿Hacen envíos de repuestos de ${titleText} a todo Ecuador?`,
             acceptedAnswer: {
               "@type": "Answer",
               text: `Sí. Coordinamos envíos a Quito, Santo Domingo de los Tsáchilas y todo el Ecuador. Consúltanos por WhatsApp para disponibilidad y precio.`,
@@ -156,13 +165,13 @@ export default async function CatalogoCategoriaPage(props: Props) {
         }
       >
         <CatalogoClient
-          key={`${categoryKey}-${search}-${sanitizedFilters.qualities.join(",")}-${sanitizedFilters.carBrands.join(",")}-${safePage}`}
+          key={`${categorySlug}-${search}-${sanitizedFilters.qualities.join(",")}-${sanitizedFilters.carBrands.join(",")}-${safePage}`}
           brands={brands}
-          categories={categories.map((cat) => ({ id: cat.key, label: cat.name }))}
+          categories={allCategories.map((cat) => ({ id: cat.key, label: cat.name }))}
           products={allProducts}
-          breadcrumbLabel={matched.name}
-          headerTitle={`Repuestos de ${matched.name}`}
-          headerDescription={`Catálogo especializado en repuestos de ${matched.name}. Filtra por marca, precio y encuentra alternativas originales, OEM y alternas.`}
+          breadcrumbLabel={titleText}
+          headerTitle={`Repuestos de ${titleText}`}
+          headerDescription={`Catálogo especializado en repuestos de ${titleText}. Filtra por marca, precio y encuentra alternativas originales, OEM y alternas.`}
           initialFilters={sanitizedFilters}
           initialPage={safePage}
           initialSearch={search}
