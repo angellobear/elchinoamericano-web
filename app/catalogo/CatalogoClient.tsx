@@ -67,9 +67,10 @@ function getFilteredProducts(allProducts: Product[], search: string, filters: Fi
     const matchesSearch =
       normalizedSearch === "" ||
       product.title.toLowerCase().includes(normalizedSearch) ||
-      (product.short_description ?? "").toLowerCase().includes(normalizedSearch) ||
-      (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch) ||
-      product.code.toLowerCase().includes(normalizedSearch)
+      (product.short_title ?? "").toLowerCase().includes(normalizedSearch) ||
+      (product.sku ?? "").toLowerCase().includes(normalizedSearch) ||
+      product.code.toLowerCase().includes(normalizedSearch) ||
+      (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch)
     const matchesQuality =
       filters.qualities.length === 0 || filters.qualities.includes(product.type)
     const matchesCategory =
