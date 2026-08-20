@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useRef, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import {
   ChevronLeft,
@@ -284,6 +284,7 @@ export default function CatalogoClient({
   const [search, setSearch] = useState(initialSearch)
   const [filters, setFilters] = useState(initialFilters)
   const [page, setPage] = useState(initialPage)
+  const searchSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const filteredProducts = sortProducts(getFilteredProducts(products, search, filters))
   const facetCounts = computeFacetCounts(products, search, filters)
@@ -306,7 +307,9 @@ export default function CatalogoClient({
   function handleSearch(nextSearch: string) {
     setSearch(nextSearch)
     setPage(1)
-    syncRoute(nextSearch, filters, 1)
+    if (searchSyncTimer.current) clearTimeout(searchSyncTimer.current)
+    // ponytail: debounce URL sync so input never loses focus on route re-render
+    searchSyncTimer.current = setTimeout(() => syncRoute(nextSearch, filters, 1), 400)
   }
 
   function handleFiltersChange(nextFilters: FilterState) {
@@ -368,55 +371,53 @@ export default function CatalogoClient({
         </div>
       </div>
 
-      <div className="bg-white border-b border-slate-200 sticky top-16 z-30">
+      <div className="lg:hidden bg-white border-b border-slate-200 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-            <div className="flex items-center gap-2">
-              <div className="relative flex-1 sm:w-64 sm:flex-none">
-                <Search
-                  size={14}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                />
-                <input
-                  type="search"
-                  value={search}
-                  onChange={(event) => handleSearch(event.target.value)}
-                  placeholder="Buscar repuesto..."
-                  className="w-full pl-8 pr-8 py-2 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors bg-white"
-                />
-                {search && (
-                  <button
-                    onClick={() => handleSearch("")}
-                    aria-label="Limpiar búsqueda"
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                  >
-                    <X size={13} />
-                  </button>
-                )}
-              </div>
-
-              <Sheet>
-                <SheetTrigger asChild>
-                  <button className="lg:hidden relative inline-flex items-center gap-1.5 border border-slate-200 bg-white text-slate-700 text-sm font-medium px-3 py-2 rounded-md hover:border-navy/30 transition-colors shrink-0 min-h-9">
-                    <SlidersHorizontal size={14} />
-                    Filtros
-                    {activeCount > 0 && (
-                      <span className="bg-brand text-white text-2.25 font-bold rounded-full min-w-4 min-h-4 flex items-center justify-center px-1 leading-none">
-                        {activeCount}
-                      </span>
-                    )}
-                  </button>
-                </SheetTrigger>
-                <SheetContent side="left" className="w-72 px-6 pt-10 overflow-y-auto">
-                  <CatalogFilters {...filterProps} />
-                </SheetContent>
-              </Sheet>
-            </div>
+          <div className="flex items-center gap-2">
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className="relative inline-flex items-center gap-1.5 border border-slate-200 bg-white text-slate-700 text-sm font-medium px-3 py-2 rounded-md hover:border-navy/30 transition-colors shrink-0 min-h-9">
+                  <SlidersHorizontal size={14} />
+                  Filtros
+                  {activeCount > 0 && (
+                    <span className="bg-brand text-white text-2.25 font-bold rounded-full min-w-4 min-h-4 flex items-center justify-center px-1 leading-none">
+                      {activeCount}
+                    </span>
+                  )}
+                </button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72 px-6 pt-10 overflow-y-auto">
+                <CatalogFilters {...filterProps} />
+              </SheetContent>
+            </Sheet>
           </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="relative mb-6">
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+          />
+          <input
+            type="search"
+            value={search}
+            onChange={(event) => handleSearch(event.target.value)}
+            placeholder="Buscar repuesto..."
+            className="w-full pl-8 pr-8 py-2.5 text-sm border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors bg-white"
+          />
+          {search && (
+            <button
+              onClick={() => handleSearch("")}
+              aria-label="Limpiar búsqueda"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+            >
+              <X size={13} />
+            </button>
+          )}
+        </div>
+
         <div className="flex gap-8">
           <aside className="hidden lg:block w-[266px] shrink-0">
             <div className="sticky top-30 bg-white rounded-[14px] border border-slate-200 p-5">
