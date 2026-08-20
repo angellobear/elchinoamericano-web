@@ -309,7 +309,10 @@ export default function CatalogoClient({
     setPage(1)
     if (searchSyncTimer.current) clearTimeout(searchSyncTimer.current)
     // ponytail: debounce URL sync so input never loses focus on route re-render
-    searchSyncTimer.current = setTimeout(() => syncRoute(nextSearch, filters, 1), 400)
+    // ponytail: replaceState skips Next.js router → no server re-render; search is client-only filtering
+    searchSyncTimer.current = setTimeout(() => {
+      window.history.replaceState(null, "", buildCatalogUrl(nextSearch, filters, 1))
+    }, 400)
   }
 
   function handleFiltersChange(nextFilters: FilterState) {
