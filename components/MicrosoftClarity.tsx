@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation"
 
 export function MicrosoftClarity({ id }: { id: string }) {
   const pathname = usePathname()
+  if (process.env.NODE_ENV !== "production") return null
   if (pathname.startsWith("/admin")) return null
 
   return (
