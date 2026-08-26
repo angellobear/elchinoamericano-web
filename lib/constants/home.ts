@@ -10,7 +10,7 @@ export const homeContent = {
       "repuestos Chery",
       "repuestos Ford",
       "repuestos Chevrolet",
-      "repuestos Santo Domingo de los Tsáchilas",
+      "repuestos Quito Ecuador",
     ],
     openGraphTitle: "Repuestos automotrices chinos y americanos | El Chino Americano",
     openGraphDescription:

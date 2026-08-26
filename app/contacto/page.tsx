@@ -95,10 +95,10 @@ export default async function ContactoPage() {
           },
           {
             "@type": "Question",
-            name: "¿Atienden fuera de Santo Domingo de los Tsáchilas?",
+            name: "¿Realizan envíos fuera de Quito?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Sí. Coordinamos pedidos y envíos a distintas ciudades de Ecuador.",
+              text: "Sí. Coordinamos envíos a todo el Ecuador: Guayaquil, Cuenca, Ambato, Santo Domingo de los Tsáchilas, Loja, Esmeraldas, Manta y más ciudades. El plazo estimado es de 24 a 72 horas según la ciudad.",
             },
           },
         ],

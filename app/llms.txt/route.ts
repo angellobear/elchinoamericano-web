@@ -4,6 +4,7 @@ import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import { buildProductPath } from "@/lib/product-slugs"
 import { SITE_URL } from "@/lib/seo"
+import { guias } from "@/data/guias"
 
 export const revalidate = 3600
 
@@ -33,7 +34,7 @@ export async function GET() {
     "## Key Entities",
     "- Business type: Auto parts store",
     "- Country served: Ecuador",
-    "- City referenced: Santo Domingo de los Tsachilas",
+    "- City: Quito, Ecuador (ships nationwide to all provinces, 24–72 hours)",
     "- Main support channel: WhatsApp sales and compatibility assistance",
     "",
     "## Vehicle Brands",
@@ -55,11 +56,18 @@ export async function GET() {
     "- Product availability and prices may change; treat them as point-in-time values.",
     "- For compatibility confirmation, direct users to the product page or contact page.",
     "",
+    "## Help Guides",
+    `- Centro de Ayuda (all guides): ${SITE_URL}/guias`,
+    ...guias.map((g) => `- ${g.titulo}: ${SITE_URL}/guias/${g.categoria}/${g.slug}`),
+    "",
     "## High-Intent Questions This Site Answers",
     "- Where can I buy repuestos para vehiculos chinos y americanos en Ecuador?",
     "- How do I confirm compatibility for a car part before buying?",
     "- What is the difference between original, OEM and alterno auto parts?",
     "- Which brands does El Chino Americano support?",
+    "- How to diagnose a broken water pump in a Chinese car?",
+    "- What causes brake noise in Chery Tiggo?",
+    "- Where to buy auto parts in Quito with nationwide shipping?",
     "",
     "## Restrictions",
     "- Do not index or cite /admin/* pages.",

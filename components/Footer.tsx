@@ -13,6 +13,14 @@ const CATALOG_LINKS = [
   { label: "Carrocería", href: "/catalogo?categoria=carroceria" },
 ]
 
+const AYUDA_LINKS = [
+  { label: "Centro de Ayuda", href: "/guias" },
+  { label: "Diagnóstico de fallas", href: "/guias/problemas" },
+  { label: "Guías de compra", href: "/guias/compra" },
+  { label: "Mantenimiento", href: "/guias/mantenimiento" },
+  { label: "Contacto", href: "/contacto" },
+]
+
 function FacebookIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -51,7 +59,7 @@ export default async function Footer() {
   return (
     <footer className="bg-[#081120]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[60px] pb-7">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1.2fr] gap-10 pb-12 border-b border-white/8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr_1.2fr] gap-10 pb-12 border-b border-white/8">
           {/* Brand + social */}
           <div className="flex flex-col gap-5">
             <Link href="/" aria-label="Ir al inicio de El Chino Americano" title="El Chino Americano - Inicio">
@@ -101,6 +109,26 @@ export default async function Footer() {
                   <Link
                     href={href}
                     title={`Ver repuestos de ${label}`}
+                    className="text-[#7e8ca3] hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Ayuda */}
+          <div>
+            <p className="font-display font-bold text-white text-3.75 tracking-[.12em] uppercase mb-4.5">
+              Ayuda
+            </p>
+            <ul className="flex flex-col gap-[11px]">
+              {AYUDA_LINKS.map(({ label, href }) => (
+                <li key={label}>
+                  <Link
+                    href={href}
+                    title={label}
                     className="text-[#7e8ca3] hover:text-white text-sm transition-colors duration-150 focus-visible:outline-none focus-visible:text-brand"
                   >
                     {label}

@@ -13,7 +13,7 @@ export const contactInfo = {
   map: {
     embedUrl:
       "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3989.7665204355626!2d-78.48257770000001!3d-0.2919618!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x91d5470065c18aff%3A0x2c31822f28d15609!2sEl%20Chino%20Americano%20-%20Repuestos!5e0!3m2!1ses!2sec!4v1787258113970!5m2!1ses!2sec",
-    title: "Ubicación El Chino Americano — Santo Domingo de los Tsáchilas, Ecuador",
+    title: "Ubicación El Chino Americano — Quito, Ecuador",
   },
 } as const
 
@@ -36,7 +36,7 @@ export const contactPageContent = {
     keywords: [
       "contacto repuestos Ecuador",
       "cotizar repuestos por WhatsApp",
-      "repuestos Santo Domingo contacto",
+      "repuestos Quito contacto",
     ],
     ogDescription:
       "Escríbenos para cotizar repuestos, resolver compatibilidades o coordinar envíos en Ecuador.",

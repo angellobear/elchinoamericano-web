@@ -10,6 +10,7 @@ import {
   toAbsoluteUrl,
 } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
+import { guias } from "@/data/guias"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
@@ -31,6 +32,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       images: [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
     },
     {
+      url: `${SITE_URL}/guias`,
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.85,
+    },
+    {
       url: `${SITE_URL}/contacto`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -38,6 +45,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       images: [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
     },
   ]
+
+  const guiaRoutes: MetadataRoute.Sitemap = guias.map((guia) => ({
+    url: `${SITE_URL}/guias/${guia.categoria}/${guia.slug}`,
+    lastModified: new Date(guia.fechaPublicacion),
+    changeFrequency: "monthly" as const,
+    priority: 0.75,
+  }))
 
   const brandRoutes: MetadataRoute.Sitemap = brands.map((brand) => ({
     url: `${SITE_URL}${buildCatalogBrandPath([brand.key])}`,
@@ -55,5 +69,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     images: [toAbsoluteUrl(getProductPrimaryImage(product) ?? DEFAULT_PRODUCT_IMAGE_PATH)],
   }))
 
-  return [...staticRoutes, ...brandRoutes, ...productRoutes]
+  return [...staticRoutes, ...brandRoutes, ...productRoutes, ...guiaRoutes]
 }
