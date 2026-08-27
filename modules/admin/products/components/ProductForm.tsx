@@ -77,6 +77,7 @@ export function ProductForm({
   const titleRef = useRef<HTMLInputElement>(null)
   const skuRef = useRef<HTMLInputElement>(null)
   const [slug, setSlug] = useState(defaults?.slug ?? '')
+  const [previewPrice, setPreviewPrice] = useState({ price: Number(defaults?.price ?? 0), pct: Number(defaults?.discountPct ?? 0) })
 
   function regenerateSlug() {
     const title = titleRef.current?.value?.trim()
@@ -164,7 +165,8 @@ export function ProductForm({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <Label>Precio PVP <Required /></Label>
-            <input name="price" type="number" step="0.01" min="0" required defaultValue={defaults?.price ?? ''} placeholder="0.00" className={inputCls} />
+            <input name="price" type="number" step="0.01" min="0" required defaultValue={defaults?.price ?? ''} placeholder="0.00" className={inputCls}
+              onChange={e => setPreviewPrice(p => ({ ...p, price: Number(e.target.value) || 0 }))} />
           </div>
           <div>
             <Label>Costo</Label>
@@ -172,7 +174,13 @@ export function ProductForm({
           </div>
           <div>
             <Label>Descuento %</Label>
-            <input name="discountPct" type="number" step="0.01" min="0" max="100" defaultValue={defaults?.discountPct ?? ''} placeholder="0.00" className={inputCls} />
+            <input name="discountPct" type="number" step="0.01" min="0" max="100" defaultValue={defaults?.discountPct ?? ''} placeholder="0.00" className={inputCls}
+              onChange={e => setPreviewPrice(p => ({ ...p, pct: Number(e.target.value) || 0 }))} />
+            {previewPrice.pct > 0 && previewPrice.price > 0 && (
+              <p className="mt-1 text-xs text-emerald-700 font-semibold">
+                Precio con descuento: ${(previewPrice.price * (1 - previewPrice.pct / 100)).toFixed(2)}
+              </p>
+            )}
           </div>
           <div>
             <Label>Peso (kg)</Label>

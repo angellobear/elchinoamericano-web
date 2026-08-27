@@ -12,7 +12,7 @@ import { DEFAULT_PRODUCT_IMAGE_PATH, getProductPrimaryImage } from "@/lib/seo"
 const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   original: { label: "Original", cls: "bg-navy text-white" },
   oem:      { label: "OEM",      cls: "bg-[#1f9d57] text-white" },
-  aftermarket: { label: "Alterno", cls: "bg-brand text-white" },
+  aftermarket: { label: "Alterno", cls: "bg-[#4e6280] text-white" },
 }
 
 export default function ProductCard({ product }: { product: Product }) {

@@ -125,8 +125,18 @@ export default async function ProductsPage({
                     {p.type}
                   </span>
                 </td>
-                <td className="px-4 py-3.5 text-right font-semibold text-slate-700">
-                  ${Number(p.price).toFixed(2)}
+                <td className="px-4 py-3.5 text-right">
+                  {p.discountPct && Number(p.discountPct) > 0 && (!p.discountUntil || new Date(p.discountUntil) > new Date()) ? (
+                    <div>
+                      <div className="text-xs text-slate-400 line-through">${Number(p.price).toFixed(2)}</div>
+                      <div className="font-semibold text-emerald-700">
+                        ${(Number(p.price) * (1 - Number(p.discountPct) / 100)).toFixed(2)}
+                        <span className="ml-1 text-xs font-normal text-slate-400">(-{Number(p.discountPct)}%)</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="font-semibold text-slate-700">${Number(p.price).toFixed(2)}</span>
+                  )}
                 </td>
                 <td className="px-4 py-3.5 text-center">
                   <span className={`font-semibold text-sm ${

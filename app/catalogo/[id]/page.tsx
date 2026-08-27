@@ -287,7 +287,7 @@ export default async function ProductDetailPage({
     product.part_brand?.name ? { label: "Marca del repuesto", value: product.part_brand.name } : null,
     product.category?.name ? { label: "Categoria", value: product.category.name } : null,
     { label: "Tipo", value: typeConfig.label },
-    product.short_description ? { label: "Compatibilidad base", value: product.short_description } : null,
+    product.short_description ? { label: "Descripción", value: product.short_description } : null,
   ].filter((fact): fact is { label: string; value: string } => Boolean(fact))
   
   const offerDeadline = product.discount_until
@@ -382,11 +382,6 @@ export default async function ProductDetailPage({
                   >
                     {typeConfig.label}
                   </span>
-                  {product.is_featured && (
-                    <span className="rounded-[7px] bg-[#ffd23f] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy">
-                      Destacado
-                    </span>
-                  )}
                 </div>
 
                 <div>
