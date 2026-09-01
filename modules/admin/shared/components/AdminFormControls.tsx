@@ -25,10 +25,6 @@ export function TextArea(props: ComponentProps<'textarea'>) {
   return <textarea {...props} className={props.className ?? `${baseControlClass} resize-none`} />
 }
 
-export function SelectInput(props: ComponentProps<'select'>) {
-  return <select {...props} className={props.className ?? baseControlClass} />
-}
-
 interface CheckboxFieldProps extends Omit<ComponentProps<'input'>, 'type'> {
   label: string
 }

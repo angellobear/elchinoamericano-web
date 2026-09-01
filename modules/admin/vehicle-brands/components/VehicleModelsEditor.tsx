@@ -2,9 +2,10 @@
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { Pencil, Trash2, Check, X, ToggleLeft, ToggleRight, ChevronDown, Plus } from 'lucide-react'
+import { Pencil, Trash2, Check, X, ToggleLeft, ToggleRight, ChevronDown, Plus, Search } from 'lucide-react'
 import { routes } from '@/lib/routes'
 import { vehicleModelFormSchema } from '@/modules/admin/vehicle-brands/form-schema'
+import { SearchSelect, type SearchSelectOption } from '@/components/ui/search-select'
 
 interface Model {
   id: number
@@ -32,6 +33,24 @@ const emptyForm = {
   transmission: '',
   driveType: '',
   bodyType: '',
+}
+
+const FUEL_TYPE_OPTIONS: SearchSelectOption[] = [
+  { value: 'gasoline', label: 'Gasolina' },
+  { value: 'diesel', label: 'Diésel' },
+  { value: 'hybrid', label: 'Híbrido' },
+  { value: 'electric', label: 'Eléctrico' },
+]
+
+const TRANSMISSION_OPTIONS: SearchSelectOption[] = [
+  { value: 'manual', label: 'Manual' },
+  { value: 'automatic', label: 'Automática' },
+  { value: 'cvt', label: 'CVT' },
+]
+
+// El SearchSelect ya limpia con la X, asi que la opcion vacia "—" sobra.
+function toSelectOptions(options: readonly { value: string; label: string }[]): SearchSelectOption[] {
+  return options.filter((option) => option.value !== '').map((option) => ({ ...option }))
 }
 
 const DRIVE_TYPE_OPTIONS = [
@@ -86,6 +105,16 @@ async function getResponseErrorMessage(res: Response, fallback: string) {
 
 export function VehicleModelsEditor({ brand }: { brand: Brand }) {
   const [models, setModels] = useState<Model[]>(brand.models ?? [])
+  const [modelSearch, setModelSearch] = useState('')
+
+  const modelQuery = modelSearch.trim().toLowerCase()
+  const visibleModels = modelQuery
+    ? models.filter((model) =>
+        [model.name, model.displacement, model.fuelType, model.transmission, model.driveType, model.bodyType]
+          .filter(Boolean)
+          .some((field) => String(field).toLowerCase().includes(modelQuery)),
+      )
+    : models
   const [form, setForm] = useState(emptyForm)
   const [formOpen, setFormOpen] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -265,57 +294,39 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">Combustible</label>
-              <select
+              <SearchSelect
                 value={form.fuelType}
-                onChange={(event) => setForm((current) => ({ ...current, fuelType: event.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
-              >
-                <option value="gasoline">Gasolina</option>
-                <option value="diesel">Diésel</option>
-                <option value="hybrid">Híbrido</option>
-                <option value="electric">Eléctrico</option>
-              </select>
+                onChange={(value) => setForm((current) => ({ ...current, fuelType: value }))}
+                options={FUEL_TYPE_OPTIONS}
+                placeholder="—"
+              />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">Transmisión</label>
-              <select
+              <SearchSelect
                 value={form.transmission}
-                onChange={(event) => setForm((current) => ({ ...current, transmission: event.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
-              >
-                <option value="">—</option>
-                <option value="manual">Manual</option>
-                <option value="automatic">Automática</option>
-                <option value="cvt">CVT</option>
-              </select>
+                onChange={(value) => setForm((current) => ({ ...current, transmission: value }))}
+                options={TRANSMISSION_OPTIONS}
+                placeholder="—"
+              />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">Tracción</label>
-              <select
+              <SearchSelect
                 value={form.driveType}
-                onChange={(event) => setForm((current) => ({ ...current, driveType: event.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
-              >
-                {DRIVE_TYPE_OPTIONS.map((option) => (
-                  <option key={option.value || 'empty'} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm((current) => ({ ...current, driveType: value }))}
+                options={toSelectOptions(DRIVE_TYPE_OPTIONS)}
+                placeholder="—"
+              />
             </div>
             <div>
               <label className="block text-xs text-gray-500 mb-1">Tipo</label>
-              <select
+              <SearchSelect
                 value={form.bodyType}
-                onChange={(event) => setForm((current) => ({ ...current, bodyType: event.target.value }))}
-                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy bg-white"
-              >
-                {BODY_TYPE_OPTIONS.map((option) => (
-                  <option key={option.value || 'empty'} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setForm((current) => ({ ...current, bodyType: value }))}
+                options={toSelectOptions(BODY_TYPE_OPTIONS)}
+                placeholder="—"
+              />
             </div>
           </div>
           <button
@@ -330,8 +341,20 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
 
       {/* Models table with max height scroll */}
       <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-        <div className="px-4 py-3 border-b border-gray-100 font-medium text-gray-700 text-sm">
-          Modelos ({models.length})
+        <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-b border-gray-100">
+          <span className="font-medium text-gray-700 text-sm">
+            Modelos ({visibleModels.length}{visibleModels.length !== models.length ? ` de ${models.length}` : ''})
+          </span>
+          <div className="relative w-full sm:w-64">
+            <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="search"
+              value={modelSearch}
+              onChange={(event) => setModelSearch(event.target.value)}
+              placeholder="Buscar modelo..."
+              className="w-full border border-gray-200 rounded-lg pl-8 pr-3 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors"
+            />
+          </div>
         </div>
         <div className="overflow-auto max-h-96">
           <table className="w-full text-sm">
@@ -348,7 +371,7 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {models.map((model) => (
+              {visibleModels.map((model) => (
                 <tr key={model.id} className={`hover:bg-gray-50 ${model.isActive === false ? 'bg-gray-50/60' : ''}`}>
                   {editingId === model.id ? (
                     <>
@@ -368,54 +391,40 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                         />
                       </td>
                       <td className="px-2 py-2">
-                        <select
+                        <SearchSelect
                           value={editForm.fuelType}
-                          onChange={(event) => setEditForm((current) => ({ ...current, fuelType: event.target.value }))}
-                          className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
-                        >
-                          <option value="gasoline">Gasolina</option>
-                          <option value="diesel">Diésel</option>
-                          <option value="hybrid">Híbrido</option>
-                          <option value="electric">Eléctrico</option>
-                        </select>
+                          onChange={(value) => setEditForm((current) => ({ ...current, fuelType: value }))}
+                          options={FUEL_TYPE_OPTIONS}
+                          placeholder="—"
+                          className="min-h-8 py-1 text-xs"
+                        />
                       </td>
                       <td className="px-2 py-2">
-                        <select
+                        <SearchSelect
                           value={editForm.transmission}
-                          onChange={(event) => setEditForm((current) => ({ ...current, transmission: event.target.value }))}
-                          className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
-                        >
-                          <option value="">—</option>
-                          <option value="manual">Manual</option>
-                          <option value="automatic">Automática</option>
-                          <option value="cvt">CVT</option>
-                        </select>
+                          onChange={(value) => setEditForm((current) => ({ ...current, transmission: value }))}
+                          options={TRANSMISSION_OPTIONS}
+                          placeholder="—"
+                          className="min-h-8 py-1 text-xs"
+                        />
                       </td>
                       <td className="px-2 py-2">
-                        <select
+                        <SearchSelect
                           value={editForm.driveType}
-                          onChange={(event) => setEditForm((current) => ({ ...current, driveType: event.target.value }))}
-                          className="border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy"
-                        >
-                          {DRIVE_TYPE_OPTIONS.map((option) => (
-                            <option key={option.value || 'empty'} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
+                          onChange={(value) => setEditForm((current) => ({ ...current, driveType: value }))}
+                          options={toSelectOptions(DRIVE_TYPE_OPTIONS)}
+                          placeholder="—"
+                          className="min-h-8 py-1 text-xs"
+                        />
                       </td>
                       <td className="px-2 py-2">
-                        <select
+                        <SearchSelect
                           value={editForm.bodyType}
-                          onChange={(event) => setEditForm((current) => ({ ...current, bodyType: event.target.value }))}
-                          className="w-full border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-navy bg-white"
-                        >
-                          {getBodyTypeOptions(editForm.bodyType).map((option) => (
-                            <option key={option.value || 'empty'} value={option.value}>
-                              {option.label}
-                            </option>
-                          ))}
-                        </select>
+                          onChange={(value) => setEditForm((current) => ({ ...current, bodyType: value }))}
+                          options={toSelectOptions(getBodyTypeOptions(editForm.bodyType))}
+                          placeholder="—"
+                          className="min-h-8 py-1 text-xs"
+                        />
                       </td>
                       <td className="px-4 py-2.5 text-gray-500">
                         {editForm.name ? (
@@ -487,10 +496,10 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
                   )}
                 </tr>
               ))}
-              {models.length === 0 ? (
+              {visibleModels.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center text-gray-400 py-8 text-sm">
-                    Sin modelos registrados
+                    {modelSearch ? 'Ningun modelo coincide con la busqueda' : 'Sin modelos registrados'}
                   </td>
                 </tr>
               ) : null}

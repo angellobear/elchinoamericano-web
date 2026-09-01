@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { SearchSelect } from '@/components/ui/search-select'
 
 interface Props {
   page: number
@@ -30,13 +31,12 @@ export function ProductPagination({ page, totalPages, total, limit, baseParams }
     <div className="flex items-center justify-between px-4 py-3 border-t border-slate-100">
       <div className="flex items-center gap-2 text-sm text-slate-500">
         <span>Ver</span>
-        <select
-          value={limit}
-          onChange={(e) => nav(1, Number(e.target.value))}
-          className="border border-slate-200 rounded-lg px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors"
-        >
-          {PAGE_SIZES.map((s) => <option key={s} value={s}>{s}</option>)}
-        </select>
+        <SearchSelect
+          value={String(limit)}
+          onChange={(value) => nav(1, Number(value) || 10)}
+          options={PAGE_SIZES.map((s) => ({ value: String(s), label: String(s) }))}
+          className="w-20"
+        />
         <span>por página &middot; <strong className="text-slate-700">{total}</strong> total</span>
       </div>
       {totalPages > 1 && (

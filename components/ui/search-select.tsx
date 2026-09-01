@@ -217,3 +217,25 @@ export function SearchSelect({
     </Popover>
   )
 }
+
+interface SelectFieldProps extends SearchSelectBaseProps {
+  name: string
+  defaultValue?: string
+  required?: boolean
+}
+
+/**
+ * SearchSelect usable inside forms with server actions: keeps the value in a
+ * hidden input so FormData still carries it.
+ * ponytail: la validacion de `required` queda del lado del server (los inputs
+ * hidden no participan en la validacion nativa del browser).
+ */
+export function SelectField({ name, defaultValue = '', required, ...rest }: SelectFieldProps) {
+  const [value, setValue] = React.useState(defaultValue)
+  return (
+    <>
+      <SearchSelect {...rest} value={value} onChange={setValue} />
+      <input type="hidden" name={name} value={value} aria-required={required} />
+    </>
+  )
+}

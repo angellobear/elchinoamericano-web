@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { ArrowRightLeft, PackagePlus, PackageMinus, SlidersHorizontal, X } from 'lucide-react'
+import { SearchSelect } from '@/components/ui/search-select'
 
 interface Product {
   id: number
@@ -180,42 +181,39 @@ export function StockModal({
                   <label className="mb-1.5 block text-sm font-medium text-gray-700">
                     Producto <span className="text-brand">*</span>
                   </label>
-                  <select
-                    required
+                  <SearchSelect
                     value={effectiveProductId}
-                    onChange={(e) => setForm((current) => ({ ...current, productId: e.target.value }))}
-                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
-                  >
-                    <option value="">Seleccionar producto...</option>
-                    {products.map((product) => (
-                      <option key={product.id} value={product.id}>
-                        {product.code ? `[${product.code}] ` : ''}{product.title}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setForm((current) => ({ ...current, productId: value }))}
+                    options={products.map((product) => ({
+                      value: String(product.id),
+                      label: `${product.code ? `[${product.code}] ` : ''}${product.title}`,
+                    }))}
+                    placeholder="Seleccionar producto..."
+                    searchPlaceholder="Buscar producto..."
+                  />
                 </div>
 
                 <div>
                   <label className="mb-1.5 block text-sm font-medium text-gray-700">
                     Tipo de movimiento
                   </label>
-                  <select
+                  <SearchSelect
                     value={form.movementType}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       setForm((current) => ({
                         ...current,
-                        movementType: e.target.value as MovementType,
+                        movementType: (value || 'entry') as MovementType,
                         quantity: '',
                         finalStock: '',
                       }))
                     }
-                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-navy"
-                  >
-                    <option value="entry">Ingreso</option>
-                    <option value="exit">Salida</option>
-                    <option value="transfer">Traslado</option>
-                    <option value="adjustment">Ajuste</option>
-                  </select>
+                    options={[
+                      { value: 'entry', label: 'Ingreso' },
+                      { value: 'exit', label: 'Salida' },
+                      { value: 'transfer', label: 'Traslado' },
+                      { value: 'adjustment', label: 'Ajuste' },
+                    ]}
+                  />
                 </div>
               </div>
 

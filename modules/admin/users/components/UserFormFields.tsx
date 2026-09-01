@@ -1,5 +1,6 @@
 import type { Role } from '@/types'
-import { CheckboxField, FieldLabel, SelectInput, TextInput } from '@/modules/admin/shared/components/AdminFormControls'
+import { CheckboxField, FieldLabel, TextInput } from '@/modules/admin/shared/components/AdminFormControls'
+import { SelectField } from '@/components/ui/search-select'
 
 interface UserFormFieldsProps {
   mode: 'create' | 'edit'
@@ -57,20 +58,14 @@ export function UserFormFields({ mode, roles, defaults, isSelf = false }: UserFo
       {!isSelf ? (
         <div>
           <FieldLabel required={mode === 'create'}>Rol</FieldLabel>
-          <SelectInput
+          <SelectField
             name="roleId"
             required={mode === 'create'}
-            defaultValue={defaults?.roleId ?? ''}
-          >
-            <option value="" disabled>
-              Seleccionar rol...
-            </option>
-            {roles.map((role) => (
-              <option key={role.id} value={role.id}>
-                {role.name}
-              </option>
-            ))}
-          </SelectInput>
+            defaultValue={defaults?.roleId ? String(defaults.roleId) : ''}
+            options={roles.map((role) => ({ value: String(role.id), label: role.name }))}
+            placeholder="Seleccionar rol..."
+            searchPlaceholder="Buscar rol..."
+          />
         </div>
       ) : null}
 

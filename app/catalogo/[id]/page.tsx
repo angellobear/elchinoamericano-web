@@ -28,6 +28,7 @@ import { getWhatsAppUrl } from "@/lib/constants"
 import { buildProductPath, extractProductCodeFromSegment } from "@/lib/product-slugs"
 import type { Product, ProductType } from "@/types"
 import ProductStickyBar from "./ProductStickyBar"
+import CompatibilityTable from "./CompatibilityTable"
 
 export const revalidate = 3600
 
@@ -625,87 +626,7 @@ export default async function ProductDetailPage({
               <p className="mb-6 text-3.75 text-[#566071]">
                 Confirma el modelo y año de tu auto. Si tienes dudas, escribenos la placa por WhatsApp y lo verificamos.
               </p>
-              {(() => {
-                const sorted = [...product.compatibilities].sort((a, b) => {
-                  const ba = a.model?.brand?.name ?? ""
-                  const bb = b.model?.brand?.name ?? ""
-                  return ba !== bb ? ba.localeCompare(bb) : (a.model?.name ?? "").localeCompare(b.model?.name ?? "")
-                })
-                const PREVIEW = 5
-                const dash = <span className="text-[#c8d0db]">-</span>
-                return (
-                  // ponytail: CSS-only "mostrar todos" (checkbox + peer). Sin client component y todas las filas quedan en el HTML para SEO.
-                  <div>
-                    <input type="checkbox" id="compat-all" className="peer sr-only" />
-                    <div className="overflow-hidden overflow-x-auto rounded-2xl border border-[#e6e9ef] bg-white peer-checked:[&_tr[data-extra]]:table-row">
-                      <table className="w-full min-w-140 text-left">
-                        <thead>
-                          <tr className="bg-navy">
-                            {(["Marca", "Modelo", "Cilindraje", "Años"] as const).map((h, i) => (
-                              <th
-                                key={h}
-                                className={`py-3 text-2.75 font-semibold uppercase tracking-[.08em] text-white ${i === 0 ? "pl-5 pr-4" : i === 3 ? "pl-4 pr-5" : "px-4"}`}
-                              >
-                                {h}
-                              </th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {sorted.map((c, idx) => (
-                            <tr
-                              key={`${c.vehicle_model_id}-${idx}`}
-                              data-extra={idx >= PREVIEW ? "" : undefined}
-                              className={`border-b border-[#ebeef3] transition-colors last:border-b-0 hover:bg-[#f8fafc] ${idx >= PREVIEW ? "hidden" : ""}`}
-                            >
-                              <td className="pl-5 pr-4 py-3.5">
-                                <div className="flex items-center gap-3">
-                                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#e6e9ef] bg-[#f8fafc]">
-                                    {c.model?.brand?.logo_url ? (
-                                      <Image
-                                        src={c.model.brand.logo_url}
-                                        alt={c.model.brand.name}
-                                        width={44}
-                                        height={44}
-                                        className="h-7 w-7 object-contain"
-                                      />
-                                    ) : (
-                                      <Truck size={16} className="text-[#c8d0db]" />
-                                    )}
-                                  </span>
-                                  <span className="text-3.5 font-semibold uppercase text-navy">
-                                    {c.model?.brand?.name ?? dash}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="px-4 py-3.5">
-                                <span className="text-3.75 font-semibold text-navy uppercase">{c.model?.name}</span>
-                                {c.notes && <span className="ml-1.5 text-3 text-[#8a93a3]">({c.notes})</span>}
-                              </td>
-                              <td className="px-4 py-3.5 text-3.5 text-[#566071]">
-                                {c.model?.displacement ?? dash}
-                              </td>
-                              <td className="pl-4 pr-5 py-3.5 text-3.5 text-[#566071]">
-                                {(c.model?.year_start || c.model?.year_end)
-                                  ? `${c.model?.year_start ?? ""} - ${c.model?.year_end ?? ""}`
-                                  : dash}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    {sorted.length > PREVIEW && (
-                      <label
-                        htmlFor="compat-all"
-                        className="mx-auto mt-5 flex w-fit cursor-pointer items-center rounded-full border border-navy px-6 py-2.5 text-3.5 font-semibold text-navy transition-colors hover:bg-navy hover:text-white peer-checked:hidden peer-focus-visible:ring-2 peer-focus-visible:ring-navy/40"
-                      >
-                        Mostrar todos ({sorted.length})
-                      </label>
-                    )}
-                  </div>
-                )
-              })()}
+              <CompatibilityTable items={product.compatibilities} />
             </div>
           </section>
         )}

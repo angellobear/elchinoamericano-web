@@ -1,4 +1,5 @@
-import { CheckboxField, FieldLabel, SelectInput, TextInput } from '@/modules/admin/shared/components/AdminFormControls'
+import { CheckboxField, FieldLabel, TextInput } from '@/modules/admin/shared/components/AdminFormControls'
+import { SelectField } from '@/components/ui/search-select'
 import { ImageUploadField } from '@/app/admin/_components/ImageUploadField'
 import type { VehicleBrandFormValues } from '@/modules/admin/vehicle-brands/form-schema'
 
@@ -28,12 +29,17 @@ export function VehicleBrandFormFields({
 
       <div>
         <FieldLabel required>Origen</FieldLabel>
-        <SelectInput name="origin" required defaultValue={defaults?.origin ?? ''}>
-          <option value="" disabled>Seleccionar origen...</option>
-          <option value="chinese">China</option>
-          <option value="american">EE.UU.</option>
-          <option value="foreign">Otro (extranjero)</option>
-        </SelectInput>
+        <SelectField
+          name="origin"
+          required
+          defaultValue={defaults?.origin ?? ''}
+          options={[
+            { value: 'chinese', label: 'China' },
+            { value: 'american', label: 'EE.UU.' },
+            { value: 'foreign', label: 'Otro (extranjero)' },
+          ]}
+          placeholder="Seleccionar origen..."
+        />
       </div>
 
       <div>

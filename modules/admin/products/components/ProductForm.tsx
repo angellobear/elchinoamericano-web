@@ -13,6 +13,7 @@ import { ValidatedForm } from '@/modules/admin/shared/components/ValidatedForm'
 import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { parseProductFormData } from '@/modules/admin/products/form-schema'
+import { SelectField } from '@/components/ui/search-select'
 
 interface SelectOption {
   id: number
@@ -64,7 +65,6 @@ interface ProductFormProps {
 }
 
 const inputCls = 'w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-navy/25 focus:border-navy transition-colors duration-150'
-const selectCls = `${inputCls} bg-white`
 
 export function ProductForm({
   action,
@@ -118,41 +118,60 @@ export function ProductForm({
           </div>
           <div>
             <Label>Tipo <Required /></Label>
-            <select name="type" required defaultValue={defaults?.type ?? ''} className={selectCls}>
-              <option value="" disabled>Seleccionar...</option>
-              <option value="original">Original</option>
-              <option value="oem">OEM</option>
-              <option value="aftermarket">Alterno / Aftermarket</option>
-            </select>
+            <SelectField
+              name="type"
+              required
+              defaultValue={defaults?.type ?? ''}
+              options={[
+                { value: 'original', label: 'Original' },
+                { value: 'oem', label: 'OEM' },
+                { value: 'aftermarket', label: 'Alterno / Aftermarket' },
+              ]}
+              placeholder="Seleccionar..."
+            />
           </div>
           <div>
             <Label>Condición</Label>
-            <select name="condition" defaultValue={defaults?.condition ?? 'new'} className={selectCls}>
-              <option value="new">Nuevo</option>
-              <option value="used">Usado</option>
-              <option value="refurbished">Reacondicionado</option>
-            </select>
+            <SelectField
+              name="condition"
+              defaultValue={defaults?.condition ?? 'new'}
+              options={[
+                { value: 'new', label: 'Nuevo' },
+                { value: 'used', label: 'Usado' },
+                { value: 'refurbished', label: 'Reacondicionado' },
+              ]}
+              placeholder="Seleccionar..."
+            />
           </div>
           <div>
             <Label>Categoría</Label>
-            <select name="categoryId" defaultValue={defaults?.categoryId ?? ''} className={selectCls}>
-              <option value="">Sin categoría</option>
-              {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-            </select>
+            <SelectField
+              name="categoryId"
+              defaultValue={defaults?.categoryId ? String(defaults.categoryId) : ''}
+              options={categories.map((category) => ({ value: String(category.id), label: category.name }))}
+              placeholder="Sin categoría"
+              searchPlaceholder="Buscar categoría..."
+            />
           </div>
           <div>
             <Label>Marca de repuesto</Label>
-            <select name="partBrandId" defaultValue={defaults?.partBrandId ?? ''} className={selectCls}>
-              <option value="">Sin marca</option>
-              {partBrands.map((brand) => <option key={brand.id} value={brand.id}>{brand.name}</option>)}
-            </select>
+            <SelectField
+              name="partBrandId"
+              defaultValue={defaults?.partBrandId ? String(defaults.partBrandId) : ''}
+              options={partBrands.map((brand) => ({ value: String(brand.id), label: brand.name }))}
+              placeholder="Sin marca"
+              searchPlaceholder="Buscar marca..."
+            />
           </div>
           <div>
             <Label>Proveedor</Label>
-            <select name="supplierId" defaultValue={defaults?.supplierId ?? ''} className={selectCls}>
-              <option value="">Sin proveedor</option>
-              {suppliers.map((supplier) => <option key={supplier.id} value={supplier.id}>{supplier.name}</option>)}
-            </select>
+            <SelectField
+              name="supplierId"
+              defaultValue={defaults?.supplierId ? String(defaults.supplierId) : ''}
+              options={suppliers.map((supplier) => ({ value: String(supplier.id), label: supplier.name }))}
+              placeholder="Sin proveedor"
+              searchPlaceholder="Buscar proveedor..."
+            />
           </div>
           <div className="flex items-center gap-6 pt-5">
             <CheckField name="isFeatured" label="Destacado" defaultChecked={defaults?.isFeatured ?? false} />
