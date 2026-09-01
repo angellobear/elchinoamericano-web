@@ -16,6 +16,10 @@ export default function CompatibilityTable({ items }: { items: Compatibility[] }
   const sorted = useMemo(
     () =>
       [...items].sort((a, b) => {
+        // Las marcas visibles en la web van primero, luego alfabetico.
+        const va = a.model?.brand?.is_visible_on_web ? 0 : 1
+        const vb = b.model?.brand?.is_visible_on_web ? 0 : 1
+        if (va !== vb) return va - vb
         const ba = a.model?.brand?.name ?? ""
         const bb = b.model?.brand?.name ?? ""
         return ba !== bb ? ba.localeCompare(bb) : (a.model?.name ?? "").localeCompare(b.model?.name ?? "")

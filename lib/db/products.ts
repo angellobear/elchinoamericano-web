@@ -441,6 +441,7 @@ function toPublicProduct(row: any): Product {
           name: c.model.brand.name,
           origin: c.model.brand.origin as VehicleOrigin,
           logo_url: c.model.brand.logoUrl ?? undefined,
+          is_visible_on_web: c.model.brand.isVisibleOnWeb ?? false,
           sort_order: c.model.brand.sortOrder ?? 0,
           is_active: c.model.brand.isActive ?? true,
         } : undefined,
