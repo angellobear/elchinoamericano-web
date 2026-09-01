@@ -3,10 +3,11 @@ import { getProductList, deleteProduct } from '@/lib/db/products'
 import { getCategories } from '@/lib/db/categories'
 import { getVehicleBrands } from '@/lib/db/vehicle-brands'
 import { revalidatePath } from 'next/cache'
-import { Plus, Pencil, Trash2, Package } from 'lucide-react'
+import { Plus, Pencil, Trash2, Package, ExternalLink } from 'lucide-react'
 import { ProductStatusToggle } from '@/modules/admin/products/components/ProductStatusToggle'
 import { ProductFilters } from './_components/ProductFilters'
 import { ProductPagination } from './_components/ProductPagination'
+import { buildProductPath } from '@/lib/product-slugs'
 
 async function handleDelete(id: number) {
   'use server'
@@ -97,7 +98,7 @@ export default async function ProductsPage({
               <th className="text-right px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Precio</th>
               <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Stock</th>
               <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Estado</th>
-              <th className="px-4 py-3.5 w-20"></th>
+              <th className="px-4 py-3.5 w-28"></th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -157,6 +158,15 @@ export default async function ProductsPage({
                 <td className="px-4 py-3.5">
                   <div className="flex items-center justify-end gap-1">
                     <ProductStatusToggle id={p.id} isActive={p.isActive ?? true} />
+                    <Link
+                      href={buildProductPath({ code: p.code, slug: p.slug })}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-brand transition-colors"
+                      title="Ver en el catálogo"
+                    >
+                      <ExternalLink size={13} />
+                    </Link>
                     <Link
                       href={`/admin/products/${p.id}`}
                       className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-navy transition-colors"
