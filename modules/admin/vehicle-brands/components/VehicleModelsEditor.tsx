@@ -108,13 +108,14 @@ export function VehicleModelsEditor({ brand }: { brand: Brand }) {
   const [modelSearch, setModelSearch] = useState('')
 
   const modelQuery = modelSearch.trim().toLowerCase()
-  const visibleModels = modelQuery
-    ? models.filter((model) =>
-        [model.name, model.displacement, model.fuelType, model.transmission, model.driveType, model.bodyType]
-          .filter(Boolean)
-          .some((field) => String(field).toLowerCase().includes(modelQuery)),
-      )
-    : models
+  const visibleModels = [...models]
+    .filter((model) =>
+      !modelQuery ||
+      [model.name, model.displacement, model.fuelType, model.transmission, model.driveType, model.bodyType]
+        .filter(Boolean)
+        .some((field) => String(field).toLowerCase().includes(modelQuery)),
+    )
+    .sort((a, b) => a.name.localeCompare(b.name))
   const [form, setForm] = useState(emptyForm)
   const [formOpen, setFormOpen] = useState(false)
   const [saving, setSaving] = useState(false)
