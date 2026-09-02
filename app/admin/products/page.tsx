@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { getProductList, deleteProduct } from '@/lib/db/products'
+import { getProductList, deleteProduct, getProductById } from '@/lib/db/products'
 import { getCategories } from '@/lib/db/categories'
 import { getVehicleBrands } from '@/lib/db/vehicle-brands'
 import { revalidatePath } from 'next/cache'
@@ -11,8 +11,13 @@ import { buildProductPath } from '@/lib/product-slugs'
 
 async function handleDelete(id: number) {
   'use server'
+  const product = await getProductById(id)
   await deleteProduct(id)
   revalidatePath('/admin/products')
+  // La página pública sigue viva (marcada como dada de baja) — refrescarla ya
+  if (product) revalidatePath(buildProductPath(product))
+  revalidatePath('/catalogo')
+  revalidatePath('/')
 }
 
 export default async function ProductsPage({

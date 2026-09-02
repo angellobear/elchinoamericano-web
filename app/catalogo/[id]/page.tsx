@@ -32,6 +32,15 @@ import CompatibilityTable from "./CompatibilityTable"
 
 export const revalidate = 3600
 
+// Las páginas ya indexadas no deben devolver 404 al desactivar/dar de baja un producto
+const VISIBILITY = { includeInactive: true, withTrashed: true }
+
+function getAvailability(product: Product) {
+  if (product.deleted_at) return "discontinued" as const
+  if (!product.is_active) return "inactive" as const
+  return "available" as const
+}
+
 export async function generateStaticParams() {
   const allProducts = await getPublicProducts()
   return allProducts.map((product) => ({
@@ -46,9 +55,10 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params
   const extractedCode = extractProductCodeFromSegment(id)
+  // Producto inactivo o dado de baja: se sirve igual (200) para no romper URLs indexadas
   const product = extractedCode
-    ? await getPublicProductByCode(extractedCode)
-    : await getPublicProductBySlug(id)
+    ? await getPublicProductByCode(extractedCode, VISIBILITY)
+    : await getPublicProductBySlug(id, VISIBILITY)
   if (!product) return {}
 
   const typeLabel =
@@ -63,6 +73,8 @@ export async function generateMetadata({
   const imageUrl = getProductShareImage(product)
   const imageAlt = getProductShareImageAlt(product)
   const canonicalUrl = getProductUrl(product)
+
+  const availability = getAvailability(product)
 
   const compatKeywords = (product.compatibilities ?? []).flatMap(c =>
     [c.model?.brand?.name, `${c.model?.brand?.name ?? ""} ${c.model?.name ?? ""}`.trim()]
@@ -84,6 +96,7 @@ export async function generateMetadata({
       ...compatKeywords,
     ].filter((value): value is string => Boolean(value)),
     alternates: { canonical: canonicalUrl },
+    robots: availability === "available" ? undefined : { index: false, follow: true },
     openGraph: {
       title,
       description,
@@ -143,7 +156,7 @@ const TYPE_CONFIG: Record<
   },
 }
 
-function buildJsonLd(product: Product) {
+function buildJsonLd(product: Product, availability: ReturnType<typeof getAvailability>) {
   const productUrl = getProductUrl(product)
   const productImage = getProductShareImage(product)
 
@@ -167,9 +180,13 @@ function buildJsonLd(product: Product) {
       price: (product.offer_price ?? product.price).toFixed(2),
       priceCurrency: "USD",
       availability:
-        product.stock > 0
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
+        availability === "discontinued"
+          ? "https://schema.org/Discontinued"
+          : availability === "inactive"
+            ? "https://schema.org/OutOfStock"
+            : product.stock > 0
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
       seller: { "@type": "Organization", name: SITE_NAME, url: SITE_URL },
       areaServed: { "@type": "Country", name: "Ecuador" },
       priceValidUntil: product.discount_until ?? undefined,
@@ -252,9 +269,10 @@ export default async function ProductDetailPage({
 }) {
   const { id } = await params
   const extractedCode = extractProductCodeFromSegment(id)
+  // Producto inactivo o dado de baja: se sirve igual (200) para no romper URLs indexadas
   const product = extractedCode
-    ? await getPublicProductByCode(extractedCode)
-    : await getPublicProductBySlug(id)
+    ? await getPublicProductByCode(extractedCode, VISIBILITY)
+    : await getPublicProductBySlug(id, VISIBILITY)
   if (!product) notFound()
 
   // Redirect if URL doesn't match canonical path
@@ -262,6 +280,21 @@ export default async function ProductDetailPage({
   if (canonicalSegment !== id) {
     permanentRedirect(buildProductPath(product))
   }
+
+  const availability = getAvailability(product)
+  const isUnavailable = availability !== "available"
+  const notice =
+    availability === "discontinued"
+      ? {
+          badge: "Producto dado de baja",
+          title: "Este repuesto ya no se comercializa",
+          text: "Dejamos de distribuir este producto. Escríbenos por WhatsApp y te ayudamos a encontrar un reemplazo equivalente.",
+        }
+      : {
+          badge: "No disponible temporalmente",
+          title: "Producto no disponible temporalmente",
+          text: "Este repuesto no está disponible por ahora. Revisa el catálogo o escríbenos para avisarte cuando vuelva.",
+        }
 
   const typeConfig = TYPE_CONFIG[product.type]
   const categoryName = product.category?.name ?? ""
@@ -305,16 +338,18 @@ export default async function ProductDetailPage({
       <Navbar />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(product)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(product, availability)) }}
       />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(product)) }}
       />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
-      />
+      {!isUnavailable && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
 
       <main className="min-h-screen bg-white pb-24 pt-16 md:pb-0">
         <div className="border-b border-[#e6e9ef] bg-white">
@@ -359,12 +394,30 @@ export default async function ProductDetailPage({
                       -{discountPct}% OFF
                     </span>
                   )}
-                  <ProductCarousel
-                    images={product.images?.map((img) => img.url)}
-                    productName={product.title}
-                    brandName={product.part_brand?.name}
-                    categoryName={categoryName}
-                  />
+                  {isUnavailable ? (
+                    <div className="relative aspect-square bg-slate-100">
+                      <Image
+                        src={getProductDisplayImage(product)}
+                        alt={product.title}
+                        fill
+                        className="object-contain grayscale"
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                      />
+                      {/* overlay: se ve la imagen pero bloquea click, zoom y lightbox */}
+                      <div className="absolute inset-0 flex items-end justify-center bg-navy/45 p-5 select-none">
+                        <p className="rounded-xl bg-navy/90 px-4 py-3 text-center text-3.25 font-bold uppercase tracking-[.06em] text-white">
+                          {notice.badge}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <ProductCarousel
+                      images={product.images?.map((img) => img.url)}
+                      productName={product.title}
+                      brandName={product.part_brand?.name}
+                      categoryName={categoryName}
+                    />
+                  )}
                 </div>
               </div>
 
@@ -419,42 +472,68 @@ export default async function ProductDetailPage({
                   </p>
                 )}
 
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`h-2.25 w-2.25 shrink-0 rounded-full ${product.stock > 0 ? "bg-emerald-500" : "bg-red-500"}`}
-                  />
-                  <span
-                    className={`text-3.5 font-semibold ${product.stock > 0 ? "text-emerald-700" : "text-red-600"}`}
-                  >
-                    {product.stock > 0
-                      ? `En stock — ${product.stock} disponibles`
-                      : "Sin stock"}
-                  </span>
-                </div>
-
-                <a
-                  id={ctaTargetId}
-                  href={whatsappHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-3 rounded-[14px] bg-wa py-5 text-4.5 font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
-                >
-                  <MessageCircle size={22} />
-                  Consultar por WhatsApp
-                </a>
-
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <div className="sm:flex-1">
-                    <AddToCartButton product={product} />
+                {isUnavailable ? (
+                  <div className="rounded-[13px] border border-amber-300 bg-amber-50 p-4">
+                    <p className="text-3.5 font-bold text-amber-900">{notice.title}</p>
+                    <p className="mt-1 text-3.25 leading-relaxed text-amber-800">{notice.text}</p>
+                    <div className="mt-4 flex flex-col gap-3 sm:flex-row">
+                      <Link
+                        href="/catalogo"
+                        className="inline-flex items-center justify-center gap-2 rounded-xl bg-navy px-5 py-3.5 text-sm font-bold text-white transition-colors hover:bg-navy/90"
+                      >
+                        <ShoppingCart size={16} />
+                        Ver catálogo
+                      </Link>
+                      {product.category && (
+                        <Link
+                          href={`/catalogo?categoria=${product.category.key}`}
+                          className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
+                        >
+                          Ver alternativas en {categoryName}
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                  <Link
-                    href="/catalogo"
-                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
+                ) : (
+                  <>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`h-2.25 w-2.25 shrink-0 rounded-full ${product.stock > 0 ? "bg-emerald-500" : "bg-red-500"}`}
+                    />
+                    <span
+                      className={`text-3.5 font-semibold ${product.stock > 0 ? "text-emerald-700" : "text-red-600"}`}
+                    >
+                      {product.stock > 0
+                        ? `En stock — ${product.stock} disponibles`
+                        : "Sin stock"}
+                    </span>
+                  </div>
+
+                  <a
+                    id={ctaTargetId}
+                    href={whatsappHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-3 rounded-[14px] bg-wa py-5 text-4.5 font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
                   >
-                    <ShoppingCart size={16} />
-                    Seguir comprando
-                  </Link>
-                </div>
+                    <MessageCircle size={22} />
+                    Consultar por WhatsApp
+                  </a>
+
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="sm:flex-1">
+                      <AddToCartButton product={product} />
+                    </div>
+                    <Link
+                      href="/catalogo"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
+                    >
+                      <ShoppingCart size={16} />
+                      Seguir comprando
+                    </Link>
+                  </div>
+                  </>
+                )}
 
                 {product.short_description && (
                   <p className="text-3.75 leading-[1.6] text-[#566071]">
@@ -756,12 +835,14 @@ export default async function ProductDetailPage({
           </section>
         )}
 
-        <ProductStickyBar
-          ctaTargetId={ctaTargetId}
-          currentPrice={effectivePrice}
-          originalPrice={product.offer_price ? product.price : undefined}
-          whatsappHref={whatsappHref}
-        />
+        {!isUnavailable && (
+          <ProductStickyBar
+            ctaTargetId={ctaTargetId}
+            currentPrice={effectivePrice}
+            originalPrice={product.offer_price ? product.price : undefined}
+            whatsappHref={whatsappHref}
+          />
+        )}
       </main>
       <Footer />
     </>

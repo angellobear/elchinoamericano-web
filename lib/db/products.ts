@@ -9,6 +9,8 @@ import { logActivitySafe, withAudit } from '@/lib/audit'
 import type { Product, ProductType, VehicleOrigin } from '@/types'
 import {
   buildNotDeletedWhere,
+  buildVisibilityWhere,
+  type ActiveQueryOptions,
   type SoftDeleteQueryOptions,
 } from '@/lib/db/soft-delete'
 
@@ -58,10 +60,10 @@ export async function getProducts(filters?: {
   return rows.map(r => ({ ...r, offerPrice: offerPrice(r.price, r.discountPct, r.discountUntil) }))
 }
 
-export async function getProductBySlug(slug: string) {
+export async function getProductBySlug(slug: string, options?: ActiveQueryOptions) {
   const db = await getDb()
   const row = await db.query.products.findFirst({
-    where: and(eq(products.slug, slug), eq(products.isActive, true), buildNotDeletedWhere(products.deletedAt)),
+    where: and(eq(products.slug, slug), buildVisibilityWhere(products.isActive, products.deletedAt, options)),
     with:  { category: true, partBrand: true, supplier: true, images: true, specs: true, alternateCodes: true, compatibilities: { with: { model: { with: { brand: true } } } } },
   })
   if (!row) return null
@@ -400,6 +402,7 @@ function toPublicProduct(row: any): Product {
     meta_description: row.metaDescription ?? undefined,
     is_featured: row.isFeatured ?? false,
     is_active: row.isActive ?? true,
+    deleted_at: row.deletedAt instanceof Date ? row.deletedAt.toISOString() : (row.deletedAt ?? null),
     images: row.images?.map((img: any) => ({
       id: img.id,
       product_id: img.productId ?? 0,
@@ -473,19 +476,18 @@ export async function getPublicProducts(): Promise<Product[]> {
   }))
 }
 
-export async function getPublicProductBySlug(slug: string): Promise<Product | null> {
-  const row = await getProductBySlug(slug)
+export async function getPublicProductBySlug(slug: string, options?: ActiveQueryOptions): Promise<Product | null> {
+  const row = await getProductBySlug(slug, options)
   if (!row) return null
   return toPublicProduct(row)
 }
 
-export async function getPublicProductByCode(code: string): Promise<Product | null> {
+export async function getPublicProductByCode(code: string, options?: ActiveQueryOptions): Promise<Product | null> {
   const db = await getDb()
   const row = await db.query.products.findFirst({
     where: and(
       sql`lower(${products.code}) = lower(${code})`,
-      eq(products.isActive, true),
-      buildNotDeletedWhere(products.deletedAt),
+      buildVisibilityWhere(products.isActive, products.deletedAt, options),
     ),
     with: {
       category: true, partBrand: true, supplier: true, images: true,

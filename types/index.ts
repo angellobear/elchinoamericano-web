@@ -135,6 +135,7 @@ export interface Product {
   meta_description?: string
   is_featured: boolean
   is_active: boolean
+  deleted_at?: string | null
   created_at?: string
   updated_at?: string
   images?: ProductImage[]
