@@ -519,22 +519,22 @@ export default async function ProductDetailPage({
           {[
             {
               icon: Truck,
-              title: "Envio a todo Ecuador",
+              title: "Envío a todo Ecuador",
               sub: "Entrega 24–72 h",
               iconCls: "text-brand",
               iconBg: "bg-brand/14",
             },
             {
               icon: ShieldCheck,
-              title: "Garantia del proveedor",
-              sub: "Producto verificado",
+              title: "Garantía por defecto de fábrica",
+              sub: "Se verifica al recibir la pieza",
               iconCls: "text-brand",
               iconBg: "bg-brand/14",
             },
             {
               icon: MessageCircle,
               title: "Respuesta < 24 h",
-              sub: "Asesoria por WhatsApp",
+              sub: "Asesoría por WhatsApp",
               iconCls: "text-wa",
               iconBg: "bg-wa/14",
             },

@@ -107,7 +107,7 @@ export const products: Product[] = [
     specs: [
       { label: 'Marca', value: 'Monroe' }, { label: 'Serie', value: 'OESpectrum' },
       { label: 'Tipo', value: 'Gas monotubo presurizado' }, { label: 'Presión de gas', value: '15 bar nitrógeno' },
-      { label: 'Posición', value: 'Delantero (unidad)' }, { label: 'Garantía', value: '2 años / 50.000 km' },
+      { label: 'Posición', value: 'Delantero (unidad)' },
     ],
     compatibilities: [{ product_id: 6, vehicle_model_id: 5, model: { id: 5, brand_id: 3, name: 'Song Plus', displacement: '1.5', fuel_type: 'hybrid', year_start: 2021, year_end: null, is_active: true, brand: VB.byd } }],
   },

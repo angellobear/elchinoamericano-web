@@ -61,7 +61,18 @@ function buildJsonLd(guia: NonNullable<ReturnType<typeof getGuiaBySlug>>) {
     headline: guia.titulo,
     description: guia.descripcion,
     url,
+    mainEntityOfPage: url,
+    inLanguage: "es-EC",
+    keywords: guia.keywords.join(", "),
     datePublished: guia.fechaPublicacion,
+    dateModified: guia.fechaActualizacion ?? guia.fechaPublicacion,
+    author: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: SITE_URL,
+      areaServed: "EC",
+      knowsAbout: "Repuestos automotrices para vehículos chinos y americanos",
+    },
     publisher: {
       "@type": "Organization",
       name: SITE_NAME,
@@ -83,6 +94,11 @@ function buildJsonLd(guia: NonNullable<ReturnType<typeof getGuiaBySlug>>) {
 
   return { breadcrumb, article, faqLd }
 }
+
+const fmtFecha = (iso: string) =>
+  new Intl.DateTimeFormat("es-EC", { day: "numeric", month: "long", year: "numeric" }).format(
+    new Date(`${iso}T12:00:00Z`),
+  )
 
 function renderBloque(bloque: GuiaBloque, index: number) {
   switch (bloque.tipo) {
@@ -146,7 +162,19 @@ export default async function GuiaDetailPage({ params }: Props) {
         </nav>
 
         <article>
-          <h1 className="mb-5 text-3xl font-bold leading-tight text-navy">{guia.titulo}</h1>
+          <h1 className="mb-3 text-3xl font-bold leading-tight text-navy">{guia.titulo}</h1>
+
+          {/* Autoría y fecha — señales E-E-A-T que los buscadores de IA usan para decidir si citan */}
+          <p className="mb-5 text-sm text-gray-500">
+            Por el equipo técnico de {SITE_NAME}, repuestos para vehículos chinos y americanos en
+            Quito, Ecuador
+            <span className="mx-1.5" aria-hidden="true">·</span>
+            <time dateTime={guia.fechaActualizacion ?? guia.fechaPublicacion}>
+              {guia.fechaActualizacion
+                ? `Actualizado el ${fmtFecha(guia.fechaActualizacion)}`
+                : `Publicado el ${fmtFecha(guia.fechaPublicacion)}`}
+            </time>
+          </p>
 
           {/* Respuesta corta — lo que los LLMs y rich snippets citan */}
           <div className="mb-8 rounded-xl border border-navy/10 bg-navy/4 px-6 py-5">

@@ -15,7 +15,7 @@ const STATS = [
 ]
 
 const VALUES = [
-  "Repuestos originales, OEM y alternos con garantía del proveedor",
+  "Repuestos originales, OEM y alternos con garantía por defecto de fábrica",
   "Asesoría personalizada por WhatsApp sin costo adicional",
   `Envíos seguros a todo Ecuador desde ${siteConfig.contact.address.city}`,
   "Precios transparentes, sin sorpresas al momento de la entrega",

@@ -27,6 +27,8 @@ export type Guia = {
   guiasRelacionadas?: { titulo: string; href: string }[]
   ctaWhatsApp?: string
   fechaPublicacion: string
+  /** Solo si la guía se revisó después de publicarse. Alimenta dateModified en el JSON-LD. */
+  fechaActualizacion?: string
 }
 
 export const CATEGORIAS: Record<GuiaCategoria, { label: string; descripcion: string }> = {
@@ -694,7 +696,7 @@ const guiasProblemas: Guia[] = [
     descripcion:
       "Intervalos de cambio de filtro de aceite según tipo de aceite y uso. Por qué siempre debe cambiarse junto con el aceite en vehículos en Ecuador.",
     respuesta_corta:
-      "El filtro de aceite debe cambiarse en cada cambio de aceite, sin excepción. Los intervalos son: cada 5.000 km con aceite mineral, cada 7.500 km con semisintético, y cada 10.000 km con sintético. El costo del filtro es mínimo comparado con el daño que causa circular con aceite sin filtrar: las partículas metálicas y de carbón que el filtro atrapó se mezclan con el aceite nuevo, reduciendo su efectividad desde el primer día. En Ecuador, muchos propietarios de vehículos chinos usan filtros de marcas genéricas desconocidas por precio, lo que acelera el desgaste del motor.",
+      "El filtro de aceite se cambia en cada cambio de aceite, sin excepción. Los intervalos de referencia son: cada 5.000 km con aceite mineral, cada 7.500 km con semisintético y cada 10.000 km con sintético, siempre validando contra el manual de tu versión. Reutilizar el filtro contamina el aceite nuevo desde el primer kilómetro, porque las partículas metálicas y de carbón que retuvo vuelven a circular. Cuando el filtro se satura, la válvula de by-pass se abre y el motor pasa a lubricarse con aceite sin filtrar: ese es el escenario que destruye cojinetes. En uso urbano intenso, en zonas de polvo o en la sierra ecuatoriana conviene acortar el intervalo. Para pedir el filtro correcto envía marca, modelo, año y código de motor, o el número de parte del filtro usado.",
     keywords: [
       "cada cuánto cambiar filtro aceite Ecuador",
       "filtro aceite Chery JAC Ecuador",
@@ -857,7 +859,7 @@ const guiasProblemas: Guia[] = [
     descripcion:
       "Cómo decidir si cambiar solo pastillas o también los discos de freno. Medidas mínimas y cuándo cambiar ambos en Ecuador.",
     respuesta_corta:
-      "La regla práctica: si el disco tiene rayaduras profundas que se sienten con la uña, o está por debajo de su espesor mínimo (marcado en el costado del disco, generalmente 18–20 mm en frenos delanteros), cambia pastillas y discos juntos. Si el disco está en buen estado, solo cambia las pastillas. Colocar pastillas nuevas sobre discos desgastados es el error más común — las pastillas no se asientan bien, el frenado es inferior y las pastillas se desgastan más rápido. Si el chirrido persiste con pastillas nuevas, el disco necesita rectificación o las pastillas son de mala calidad.",
+      "La regla práctica: si el disco tiene rayaduras profundas que se sienten con la uña, o está por debajo del espesor mínimo marcado en su costado (habitualmente 18 a 20 mm en frenos delanteros), cambia pastillas y discos juntos. Si el disco está en buen estado y dentro de espesor, basta con cambiar las pastillas. Colocar pastillas nuevas sobre discos desgastados es el error más común: no se asientan bien, el frenado es inferior y las pastillas se consumen mucho más rápido. Si el chirrido persiste con pastillas nuevas, el disco necesita rectificación o las pastillas son de baja calidad. Un chirrido metálico continuo indica que el testigo de desgaste ya está tocando el disco, y en ese punto no conviene esperar más. Para cotizar envía marca, modelo, año y si el freno es delantero o posterior.",
     keywords: [
       "pastillas o discos freno Ecuador",
       "cuándo cambiar discos freno",
@@ -932,6 +934,132 @@ const guiasProblemas: Guia[] = [
     ctaWhatsApp: "Consultar pastillas y discos de freno para mi vehículo",
     fechaPublicacion: "2026-08-26",
   },
+
+  {
+    slug: "problemas-comunes-ford-ecuador",
+    categoria: "problemas",
+    titulo: "¿Cuáles son los problemas más comunes de los Ford en Ecuador?",
+    descripcion:
+      "Fallas frecuentes en Ford Ranger, F-150, Explorer, EcoSport y Escape en Ecuador: síntomas, causas y qué repuestos suelen necesitarse.",
+    respuesta_corta:
+      "Las fallas más reportadas en vehículos Ford en Ecuador son cinco. Primera, desgaste prematuro de suspensión y dirección —bujes, rótulas, terminales y amortiguadores— por el estado de las vías y el uso con carga. Segunda, fugas y sobrecalentamiento en el sistema de enfriamiento, casi siempre por completar el nivel con agua de llave en lugar de refrigerante. Tercera, check engine por sensores de oxígeno o MAF, que elevan el consumo y provocan marcha inestable. Cuarta, falla de marcha y tirones por bobinas y bujías desgastadas, algo que la altura de Quito agrava porque el sistema de encendido trabaja más exigido. Quinta, problemas de inyección y turbo en el Ranger diésel cuando el filtro de combustible no se cambia a tiempo. Casi todas se previenen respetando los intervalos del manual y usando filtros de calidad.",
+    keywords: [
+      "problemas comunes Ford Ecuador",
+      "fallas Ford Ranger Ecuador",
+      "problemas Ford EcoSport",
+      "fallas comunes Ford Explorer",
+      "check engine Ford Ecuador",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Los Ford tienen buena reputación de robustez en Ecuador, sobre todo en el segmento de pickups. Las fallas que aparecen con más frecuencia tienen menos que ver con defectos de diseño y más con las condiciones de uso locales: vías irregulares, altura, calidad variable del combustible y mantenimiento espaciado.",
+      },
+      {
+        tipo: "h2",
+        texto: "1. Suspensión y dirección desgastadas antes de tiempo",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Es la queja más común en Ranger, F-150 y Explorer. Bujes, rótulas, terminales de dirección y amortiguadores se desgastan más rápido por el estado de las vías y por el uso con carga. Los síntomas son ruidos secos al pasar sobre irregularidades, volante con juego y desgaste irregular de llantas.",
+      },
+      {
+        tipo: "h2",
+        texto: "2. Sistema de enfriamiento",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Fugas de refrigerante, termostato pegado y bomba de agua desgastada. La causa más frecuente en Ecuador es completar el nivel con agua de llave en lugar de refrigerante, lo que acelera la corrosión interna del radiador y de la bomba.",
+      },
+      {
+        tipo: "h2",
+        texto: "3. Check engine por sensores",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Sensor de oxígeno: aumenta el consumo de combustible y enciende la luz del motor.",
+          "Sensor MAF (flujo de aire): marcha inestable y pérdida de potencia.",
+          "Sensor de posición del cigüeñal o del árbol de levas: arranque difícil o apagones intermitentes.",
+          "Sensor de temperatura del refrigerante: ventilador que no arranca o consumo elevado en frío.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "4. Encendido en motores a gasolina",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Bobinas y bujías desgastadas producen falla de marcha, tirones al acelerar y luz del motor parpadeante. En altura el sistema de encendido trabaja más exigido, así que respetar el intervalo de bujías tiene un efecto directo en el desempeño.",
+      },
+      {
+        tipo: "h2",
+        texto: "5. Diésel: inyección, turbo y filtro de combustible",
+      },
+      {
+        tipo: "p",
+        texto:
+          "En las versiones diésel del Ranger, el filtro de combustible es la pieza que más problemas evita. Un filtro saturado somete a los inyectores y a la bomba de alta presión a un esfuerzo innecesario, y esa reparación es de otro orden de costo. Los síntomas de alerta son humo negro, pérdida de potencia y arranque difícil en frío.",
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "No ignores el check engine encendido de forma permanente, y menos aún si parpadea. Una luz parpadeante indica una falla de combustión activa que puede dañar el catalizador en pocos kilómetros.",
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo prevenir la mayoría de estas fallas",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Cambia aceite y filtro de aceite a intervalo, sin estirarlo.",
+          "Cambia el filtro de combustible en diésel según lo especifica el fabricante.",
+          "Usa refrigerante, nunca agua de llave, y revisa el nivel con el motor frío.",
+          "Revisa suspensión y alineación cada 10.000 km o si aparecen ruidos.",
+          "Cambia bujías al intervalo y no mezcles marcas ni grados térmicos.",
+          "Atiende el check engine apenas aparezca, con escáner.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Son confiables los Ford en Ecuador?",
+        respuesta:
+          "Sí, especialmente las pickups. La mayoría de las fallas reportadas se relacionan con mantenimiento espaciado y con el estado de las vías, no con defectos estructurales del vehículo.",
+      },
+      {
+        pregunta: "¿Qué repuestos Ford se cambian con más frecuencia?",
+        respuesta:
+          "Filtros, pastillas y discos de freno, amortiguadores, rótulas y terminales de dirección, bujías y bobinas, y componentes del sistema de enfriamiento como bomba de agua y termostato.",
+      },
+      {
+        pregunta: "¿La altura de Quito afecta al motor de mi Ford?",
+        respuesta:
+          "Afecta el desempeño: a 2.800 metros hay menos densidad de aire, y los motores atmosféricos pierden potencia frente al nivel del mar. Los turbo lo compensan mejor, pero cualquier fuga en la admisión se hace más evidente.",
+      },
+      {
+        pregunta: "¿Dónde consigo estos repuestos Ford en Ecuador?",
+        respuesta:
+          "En El Chino Americano manejamos originales, OEM y alternos para Ford. Escríbenos por WhatsApp con el modelo, año y versión de motor y te confirmamos disponibilidad, precio y número de parte.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Repuestos para Ford", href: "/catalogo/marca/ford" },
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Dónde comprar repuestos Ford en Quito?", href: "/guias/marcas/repuestos-ford-quito" },
+      { titulo: "¿Dónde comprar repuestos Ford en Ecuador?", href: "/guias/marcas/repuestos-ford-ecuador" },
+      { titulo: "Luz del motor encendida — qué hacer primero", href: "/guias/problemas/luz-del-motor-encendida-que-hacer" },
+    ],
+    ctaWhatsApp: "Mi Ford presenta una falla y necesito el repuesto. Modelo, año y síntoma:",
+    fechaPublicacion: "2026-09-01",
+  },
 ]
 
 // ─── GUÍAS DE MARCA ───────────────────────────────────────────────────────────
@@ -944,7 +1072,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para Chery Tiggo 5, Tiggo 7, Tiggo 8, Arrizo 5 y más en Ecuador. Originales, OEM y alternos. Envíos a Quito y todo el país.",
     respuesta_corta:
-      "En El Chino Americano encontrarás repuestos para Chery en Ecuador: Tiggo 5, Tiggo 7, Tiggo 8, Arrizo 5 y QQ. Tenemos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento, filtros y carrocería. Operamos desde Quito y coordinamos envíos a todo el Ecuador en 24 a 72 horas. Puedes cotizar por WhatsApp con el modelo, año y número de parte o descripción del repuesto. Si no tienes el número de parte, con el código de motor y año del vehículo podemos identificarlo.",
+      "En El Chino Americano encontrarás repuestos para Chery en Ecuador: Tiggo 2, Tiggo 4, Tiggo 5, Tiggo 7, Tiggo 8, Arrizo 5 y QQ. Manejamos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento, filtros y carrocería. Operamos desde Quito y despachamos a Guayaquil, Cuenca, Ambato, Loja, Manta, Esmeraldas, Santo Domingo de los Tsáchilas y el resto del país en 24 a 72 horas con guía rastreable. Chery es la marca china con mejor disponibilidad de repuestos en Ecuador por ser la de mayor volumen histórico. Al cotizar ten en cuenta que varias series Chery cambiaron de plataforma manteniendo el mismo nombre comercial: envía modelo exacto, año y código de motor, o el número de parte de la pieza usada, y verificamos la compatibilidad antes de despachar.",
     keywords: [
       "repuestos Chery Ecuador",
       "repuestos Chery Tiggo Ecuador",
@@ -1055,7 +1183,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para JAC T8, JAC S3, JAC J7 y más en Ecuador. Originales y OEM con envíos desde Quito a todo el país.",
     respuesta_corta:
-      "En El Chino Americano tenemos repuestos para JAC en Ecuador: T8 (camioneta), S3 (SUV), J7 (sedán), S2 y T6. Manejamos piezas para motor, frenos, suspensión, sistema de enfriamiento y carrocería en versión original, OEM y alterna. Operamos desde Quito con envíos a todo el Ecuador en 24 a 72 horas. JAC tiene motores de distintas configuraciones según el modelo y año — al cotizar confirma el modelo exacto, año y código de motor para asegurar compatibilidad.",
+      "En El Chino Americano tenemos repuestos para JAC en Ecuador: T8 y T6 (camionetas), S2, S3 y S4 (SUV) y J7 (sedán). Manejamos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento y carrocería. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía de envío rastreable. JAC usa configuraciones de motor distintas según el modelo y el año, y sus camionetas tienen versiones a diésel y a gasolina que no comparten repuestos de motor. Por eso, al cotizar confirma el modelo exacto, el año, el tipo de combustible y el código de motor. Si tienes el número de parte de la pieza usada o el VIN del vehículo, la identificación es inmediata y verificamos la compatibilidad antes de despachar.",
     keywords: [
       "repuestos JAC Ecuador",
       "repuestos JAC T8 Ecuador",
@@ -1156,7 +1284,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para Ford Ranger, F-150, Explorer, Escape y más en Ecuador. Originales, OEM y alternos con envíos desde Quito.",
     respuesta_corta:
-      "En El Chino Americano tenemos repuestos para Ford en Ecuador: Ranger, F-150, Explorer, Escape, Bronco Sport y EcoSport. Manejamos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento y carrocería. Operamos desde Quito con envíos a todo el Ecuador en 24 a 72 horas. Los motores Ford más comunes en Ecuador son el 2.3L EcoBoost y el 2.5L NA — confirma el código de motor al cotizar porque los repuestos varían según el año y la versión del motor.",
+      "En El Chino Americano tenemos repuestos para Ford en Ecuador: Ranger, F-150, Explorer, Escape, EcoSport y Bronco Sport. Manejamos piezas originales de marca Motorcraft, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento y carrocería. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. Ford vende varios modelos con el mismo nombre y motores muy distintos entre generaciones: en el Ranger conviven versiones 2.5 a gasolina, 2.2 y 3.2 diésel y 2.3 EcoBoost, y sus repuestos de motor no son intercambiables. Por eso, al cotizar confirma el año, el tipo de combustible, el código de motor y si es 4x2 o 4x4. Con el VIN o el número de parte de la pieza usada verificamos la compatibilidad antes de despachar.",
     keywords: [
       "repuestos Ford Ecuador",
       "repuestos Ford Ranger Ecuador",
@@ -1255,7 +1383,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para Chevrolet D-MAX, Colorado, Blazer, Silverado y más en Ecuador. Originales y OEM desde Quito con envíos nacionales.",
     respuesta_corta:
-      "En El Chino Americano tenemos repuestos para Chevrolet en Ecuador: D-MAX, Colorado, Blazer, Silverado, Captiva y Trailblazer. Manejamos piezas originales y OEM para motor, frenos, suspensión y sistema de enfriamiento. Operamos desde Quito con envíos a todo el Ecuador en 24 a 72 horas. Chevrolet es la marca americana con mayor presencia en Ecuador, lo que facilita la disponibilidad de repuestos OEM de calidad. Al cotizar confirma el modelo, año y si es diésel o gasolina — la D-MAX, por ejemplo, tiene versiones con motor 2.5L y 3.0L que usan repuestos distintos.",
+      "En El Chino Americano tenemos repuestos para Chevrolet en Ecuador: D-MAX, Colorado, Blazer, Silverado, Captiva y Trailblazer. Manejamos piezas originales de marca AC Delco, OEM y alternas para motor, frenos, suspensión y sistema de enfriamiento. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. Chevrolet es la marca americana con mayor presencia en el parque automotor ecuatoriano, lo que se traduce en muy buena disponibilidad de repuestos OEM y en precios más competitivos que en marcas de menor rotación. Al cotizar confirma el modelo, el año y si el motor es diésel o gasolina: la D-MAX, por ejemplo, tiene versiones 2.5L y 3.0L diésel con códigos 4JK1 y 4JJ1 que usan repuestos de motor distintos. Con el VIN confirmamos la versión exacta.",
     keywords: [
       "repuestos Chevrolet Ecuador",
       "repuestos Chevrolet D-MAX Ecuador",
@@ -1343,7 +1471,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para Great Wall Wingle 5, Wingle 7, Haval H6 y más en Ecuador. Originales y OEM desde Quito con envíos nacionales.",
     respuesta_corta:
-      "En El Chino Americano tenemos repuestos para Great Wall en Ecuador: Wingle 5, Wingle 7 y los modelos Haval (H2, H6). Manejamos piezas para motor, frenos, suspensión y sistema de enfriamiento. Operamos desde Quito con envíos a todo el Ecuador. Great Wall y su marca Haval han crecido en Ecuador en los últimos años, pero algunos repuestos específicos pueden tener disponibilidad limitada — consulta antes de necesitarlos para evitar demoras. Los motores más comunes son el 2.0L GW4D20 (diésel) en la Wingle 5/7 y el 2.0T (turbo gasolina) en los Haval.",
+      "En El Chino Americano tenemos repuestos para Great Wall en Ecuador: Wingle 5 y Wingle 7 (camionetas) y la línea Haval (H2, H6 y Jolion). Manejamos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento y carrocería. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. Los motores más comunes en el país son el 2.0L GW4D20 diésel en las Wingle 5 y 7, y el 2.0 turbo a gasolina en la línea Haval. Great Wall y Haval han crecido con fuerza en los últimos años, pero algunos repuestos específicos todavía se traen bajo pedido: si tu vehículo entra a mantenimiento programado, consulta con anticipación para que el trabajo no se detenga esperando una pieza.",
     keywords: [
       "repuestos Great Wall Ecuador",
       "repuestos Wingle 5 Ecuador",
@@ -1420,7 +1548,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para BYD Song Plus, Atto 3, Dolphin, Seal y más en Ecuador. Originales y OEM desde Quito con envíos nacionales.",
     respuesta_corta:
-      "En El Chino Americano tenemos repuestos para BYD en Ecuador: Song Plus, Atto 3, Dolphin, Seal y los modelos híbridos DMI. Manejamos piezas para el sistema de frenos, suspensión, carrocería y los sistemas convencionales de los modelos híbridos enchufables. Los vehículos eléctricos puros (como el Dolphin y el Atto 3) tienen sistemas de alta tensión que requieren servicio especializado — para esos sistemas contáctanos y te orientamos. Para los sistemas convencionales (frenos, suspensión, carrocería), la disponibilidad es similar a otros modelos chinos.",
+      "En El Chino Americano tenemos repuestos para BYD en Ecuador: Song Plus, Atto 3, Dolphin, Seal y los modelos híbridos enchufables DM-i. Manejamos piezas para frenos, suspensión, dirección, carrocería y los sistemas convencionales de los híbridos. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. Una precisión importante: los modelos eléctricos puros, como el Dolphin y el Atto 3, tienen sistemas de alta tensión —batería de tracción, inversor y cableado naranja— que solo debe intervenir personal certificado con herramienta aislada; para esos componentes te orientamos sobre el canal correcto en lugar de venderte la pieza. En frenos, suspensión y carrocería la disponibilidad es comparable a la de otras marcas chinas. Al cotizar confirma modelo, año y versión.",
     keywords: [
       "repuestos BYD Ecuador",
       "repuestos BYD Song Plus Ecuador",
@@ -1501,7 +1629,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para MG ZS, MG HS, MG RX5 y más en Ecuador. Originales y OEM desde Quito con envíos a todo el país.",
     respuesta_corta:
-      "En El Chino Americano tenemos repuestos para MG en Ecuador: ZS, HS, RX5 y MG 5. Manejamos piezas para motor, frenos, suspensión y carrocería. Operamos desde Quito con envíos a todo el Ecuador. MG (propiedad de SAIC Motor desde 2007) usa plataformas compartidas con otros modelos del grupo, lo que facilita la disponibilidad de repuestos OEM. El modelo más vendido en Ecuador es el MG ZS con motor 1.5L NA — tiene buena disponibilidad de repuestos para los sistemas principales.",
+      "En El Chino Americano tenemos repuestos para MG en Ecuador: ZS, HS, RX5 y MG 5. Manejamos piezas originales, OEM y alternas para motor, frenos, suspensión y carrocería. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. MG pertenece al grupo SAIC Motor desde 2007 y comparte plataformas y proveedores con otros modelos del grupo, lo que amplía la oferta de repuestos OEM equivalentes a un precio menor que el original. El modelo con mayor circulación en Ecuador es el MG ZS con motor 1.5L atmosférico, que tiene buena disponibilidad en los sistemas principales; las versiones turbo y los modelos más recientes pueden requerir pedido. Al cotizar envía modelo, año y código de motor, o el VIN del vehículo.",
     keywords: [
       "repuestos MG Ecuador",
       "repuestos MG ZS Ecuador",
@@ -1578,7 +1706,7 @@ const guiasMarcas: Guia[] = [
     descripcion:
       "Repuestos para DFSK Glory 580, Glory 500, C35 y más en Ecuador. Originales y OEM desde Quito con envíos nacionales.",
     respuesta_corta:
-      "En El Chino Americano tenemos repuestos para DFSK en Ecuador: Glory 580, Glory 500, C35 y Supercab. Manejamos piezas para motor, frenos, suspensión y carrocería. Operamos desde Quito con envíos a todo el Ecuador. DFSK (Dongfeng Sokon) tiene presencia en Ecuador principalmente con la línea Glory (SUVs) y los modelos de carga. Los repuestos para los modelos más vendidos tienen disponibilidad razonable — para modelos de carga o específicos, consulta disponibilidad antes de necesitarlos.",
+      "En El Chino Americano tenemos repuestos para DFSK en Ecuador: Glory 580, Glory 500, C35 y Supercab. Manejamos piezas OEM y alternas para motor, frenos, suspensión y carrocería. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. DFSK (Dongfeng Sokon) tiene presencia en el país sobre todo con la línea Glory de SUV y con los modelos de carga usados por comerciantes y pequeñas flotas. Los repuestos de los modelos de mayor rotación tienen disponibilidad razonable; en los modelos de carga y en referencias específicas conviene consultar con anticipación, porque suelen traerse bajo pedido. Al cotizar envía modelo exacto, año y código de motor, o el número de parte de la pieza usada.",
     keywords: [
       "repuestos DFSK Ecuador",
       "repuestos DFSK Glory Ecuador",
@@ -1645,11 +1773,275 @@ const guiasMarcas: Guia[] = [
     ctaWhatsApp: "Cotizar repuesto DFSK — modelo y año:",
     fechaPublicacion: "2026-08-26",
   },
+
+  {
+    slug: "repuestos-ford-quito",
+    categoria: "marcas",
+    titulo: "¿Dónde comprar repuestos Ford en Quito?",
+    descripcion:
+      "Dónde conseguir repuestos Ford en Quito: sectores donde se concentran los almacenes, cómo cotizar sin desplazarte y qué verificar antes de comprar. Ranger, F-150, Explorer, EcoSport y Escape.",
+    respuesta_corta:
+      "En Quito hay tres canales para comprar repuestos Ford: el concesionario oficial de la marca, los almacenes independientes concentrados en la Av. 10 de Agosto y en el norte de la ciudad, y las tiendas en línea con despacho a domicilio. En El Chino Americano manejamos originales de marca Motorcraft, OEM y alternos para Ranger, F-150, Explorer, EcoSport, Escape y Bronco Sport. Somos un almacén independiente, no el concesionario oficial. Cotizamos por WhatsApp: verificamos la compatibilidad con tu año y versión de motor, te enviamos el número de parte y una foto real de la pieza antes del pago, y entregamos en Quito norte, centro, sur y los valles, o despachamos al resto del Ecuador en 24 a 72 horas con guía rastreable.",
+    keywords: [
+      "repuestos ford quito",
+      "autopartes ford quito",
+      "repuestos ford quito norte",
+      "repuestos ford quito sur",
+      "repuestos ford 10 de agosto quito",
+      "ford repuestos quito ecuador",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Quito concentra la mayor oferta de repuestos Ford del país. La dificultad no es encontrar dónde comprar, sino asegurarte de que la pieza corresponde exactamente a tu versión: Ford vende varios modelos con el mismo nombre y motores muy distintos entre años.",
+      },
+      {
+        tipo: "h2",
+        texto: "Dónde se concentran los almacenes de repuestos Ford en Quito",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Av. 10 de Agosto: la zona tradicional de autopartes de Quito, con la mayor densidad de almacenes.",
+          "Quito norte (sector El Inca, Amazonas y alrededores): almacenes y talleres especializados.",
+          "Quito sur: oferta orientada a pickups y vehículos de trabajo.",
+          "Concesionario oficial de la marca: para piezas que requieren programación o campañas de servicio.",
+          "Tiendas en línea con despacho a domicilio en Quito y provincias.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Modelos Ford con mejor disponibilidad en Quito",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Ford Ranger — el modelo de mayor rotación; confirma si es 2.5 gasolina, 2.2 o 3.2 diésel, o 2.3 EcoBoost.",
+          "Ford F-150 — motores V6 y V8 con repuestos distintos entre generaciones.",
+          "Ford Explorer — disponibilidad buena en piezas de motor, suspensión y frenos.",
+          "Ford EcoSport — alta circulación en Quito, muy buena oferta de OEM y alterno.",
+          "Ford Escape y Bronco Sport — disponibilidad creciente.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Qué verificar antes de comprar un repuesto Ford",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Año exacto del vehículo, no solo el modelo: Ranger 2015 y Ranger 2019 no comparten varias piezas.",
+          "Versión de motor: diésel o gasolina, cilindrada y si es turbo.",
+          "Tracción: 4x2 o 4x4 cambia piezas de suspensión y transmisión.",
+          "VIN del vehículo, que resuelve cualquier duda de versión de fábrica.",
+          "Número de parte de la pieza usada, si puedes verlo.",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "En Ford, la marca original es Motorcraft. Existe además una oferta OEM muy sólida de Bosch, Denso, Motorcraft, Monroe, Gates y TRW: misma calidad de fábrica a menor precio. Pide siempre las dos opciones al cotizar.",
+      },
+      {
+        tipo: "h2",
+        texto: "Comprar sin recorrer almacenes",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Recorrer la 10 de Agosto preguntando por una pieza cuesta medio día y no garantiza que la que te vendan corresponda a tu versión. Cotizando por WhatsApp verificamos la aplicación con tu año y motor, te enviamos el número de parte y la foto de la pieza, y coordinamos la entrega en Quito o el envío a tu ciudad. Toda la conversación queda registrada, lo que te sirve como respaldo de lo acordado.",
+      },
+      {
+        tipo: "h2",
+        texto: "Entrega en Quito y envíos al resto del país",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Coordinamos entrega en Quito norte, centro, sur y los valles, y despachamos a Guayaquil, Cuenca, Ambato, Loja, Manta, Esmeraldas, Santo Domingo de los Tsáchilas y el resto del Ecuador en 24 a 72 horas con guía rastreable.",
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Son ustedes el concesionario oficial Ford en Quito?",
+        respuesta:
+          "No. El Chino Americano es un almacén independiente especializado en repuestos para vehículos chinos y americanos. Manejamos repuestos originales, OEM y alternos para Ford, y siempre te indicamos cuál es cuál antes de la compra.",
+      },
+      {
+        pregunta: "¿Tienen repuestos Ford en el sector de la 10 de Agosto?",
+        respuesta:
+          "Operamos desde Quito con cotización y coordinación por WhatsApp, y entregamos en toda la ciudad. No necesitas recorrer almacenes: te confirmamos disponibilidad, precio y número de parte antes de que te muevas.",
+      },
+      {
+        pregunta: "¿Consiguen repuestos para Ford Ranger diésel?",
+        respuesta:
+          "Sí, es uno de los modelos que más manejamos. Confirma el año y el código de motor (2.2 o 3.2 diésel) para identificar la pieza correcta, porque cambian entre generaciones.",
+      },
+      {
+        pregunta: "¿Cuánto demora un repuesto Ford si no está en stock?",
+        respuesta:
+          "Si la pieza está disponible, la despachamos en 24 a 72 horas. Si hay que traerla bajo pedido, te confirmamos el plazo real en la cotización antes de que decidas.",
+      },
+      {
+        pregunta: "¿Los repuestos Ford tienen garantía?",
+        respuesta:
+          "La garantía aplica al recibir la pieza y por defecto de fábrica: que sea la correcta y llegue en buen estado. Una vez instalada deja de aplicar. Las eléctricas se envían probadas y no tienen garantía una vez conectadas. El detalle está en nuestra guía de garantía.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Repuestos para Ford", href: "/catalogo/marca/ford" },
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Contacto y ubicación", href: "/contacto" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Dónde comprar repuestos Ford en Ecuador?", href: "/guias/marcas/repuestos-ford-ecuador" },
+      { titulo: "Problemas más comunes de los Ford en Ecuador", href: "/guias/problemas/problemas-comunes-ford-ecuador" },
+      { titulo: "¿Concesionario o almacén independiente?", href: "/guias/compra/concesionario-o-almacen-independiente" },
+      { titulo: "¿Es seguro comprar repuestos de auto por internet en Ecuador?", href: "/guias/compra/es-seguro-comprar-repuestos-por-internet-ecuador" },
+    ],
+    ctaWhatsApp: "Busco un repuesto Ford en Quito. Modelo, año y motor de mi vehículo:",
+    fechaPublicacion: "2026-09-01",
+  },
 ]
 
 // ─── GUÍAS GENERALES DE COMPRA ───────────────────────────────────────────────
 
 const guiasCompra: Guia[] = [
+  {
+    slug: "es-seguro-comprar-repuestos-por-internet-ecuador",
+    categoria: "compra",
+    titulo: "¿Es seguro comprar repuestos de auto por internet en Ecuador?",
+    descripcion:
+      "Sí, si verificas al vendedor. Cómo comprobar la compatibilidad antes de pagar, qué datos exigir, señales de alerta y cómo funciona la compra en El Chino Americano.",
+    respuesta_corta:
+      "Sí, comprar repuestos por internet en Ecuador es seguro cuando el vendedor confirma la compatibilidad antes del pago, te muestra el número de parte y una foto real de la pieza, declara si es original, OEM o alterno, y te entrega comprobante y guía de envío rastreable. El riesgo no está en el canal online sino en comprar sin verificar: la falla más frecuente no es el fraude, es recibir una pieza que no encaja porque nadie confirmó el año ni la versión de motor. En El Chino Americano validamos la aplicación del repuesto con los datos de tu vehículo antes de despachar, enviamos foto y número de parte en la cotización, y despachamos desde Quito a todo el Ecuador en 24 a 72 horas con seguimiento. Si un vendedor evita darte estos datos, no compres.",
+    keywords: [
+      "es seguro comprar repuestos por internet en Ecuador",
+      "comprar repuestos online Ecuador confiable",
+      "tiendas online confiables repuestos Ecuador",
+      "comprar autopartes por internet Ecuador",
+      "estafas repuestos online Ecuador",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "La desconfianza al comprar repuestos por internet es razonable: es una pieza que no puedes tocar, para un auto que necesitas de vuelta pronto, y si llega mal el problema es tuyo. Pero el riesgo real no depende del canal, sino de cuánta verificación hace el vendedor antes de cobrarte.",
+      },
+      {
+        tipo: "h2",
+        texto: "¿Qué puede salir mal al comprar un repuesto online?",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Pieza incompatible: el error más frecuente. El modelo coincide, pero el año o la versión de motor no.",
+          "Repuesto no original vendido como original, sin que el anuncio lo aclare.",
+          "Fotos genéricas de catálogo que no corresponden a la pieza que realmente te envían.",
+          "Vendedor que cobra por adelantado y luego deja de responder.",
+          "Envío sin guía ni seguimiento, imposible de reclamar.",
+          "Sin comprobante de compra, no hay forma de hacer valer una garantía.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo verificar que un vendedor de repuestos es confiable",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Antes de transferir, pide estas seis cosas. Un vendedor serio te las da sin problema; uno que las evita es una señal clara.",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Que confirme la compatibilidad con tu año, modelo y versión de motor — no solo con el nombre del modelo.",
+          "El número de parte exacto de la pieza que te va a enviar.",
+          "Una foto real de la pieza en stock, no una imagen de catálogo.",
+          "Si es original, OEM o alterno, dicho de forma explícita.",
+          "Ubicación física verificable y un canal de contacto estable (WhatsApp de empresa, dirección, mapa).",
+          "Comprobante de compra y guía de envío rastreable.",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "Señales de alerta: precio muy por debajo del mercado, presión para pagar de inmediato, negativa a dar el número de parte, cuenta bancaria a nombre de un tercero sin relación con el negocio, o un vendedor que responde 'sí sirve' sin preguntarte el año del vehículo.",
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo funciona la compra en El Chino Americano",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Nos escribes por WhatsApp con marca, modelo, año y el repuesto que buscas. Si tienes el número de parte o el VIN, mejor.",
+          "Verificamos la aplicación del repuesto para tu vehículo antes de cotizar.",
+          "Te enviamos la cotización con foto de la pieza, número de parte y si es original, OEM o alterno.",
+          "Confirmas y acordamos el medio de pago y la dirección de entrega.",
+          "Despachamos con guía de envío rastreable a todo el Ecuador, entre 24 y 72 horas según la ciudad.",
+          "Te acompañamos por el mismo chat de WhatsApp hasta que la pieza esté montada y funcionando.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "¿Es más seguro comprar en una tienda física?",
+      },
+      {
+        tipo: "p",
+        texto:
+          "No necesariamente. En mostrador puedes ver la pieza, pero rara vez alguien valida el número de parte contra tu vehículo, y muchas ventas se hacen 'de memoria' por el nombre del modelo. Comprar online con un asesor que verifica compatibilidad por escrito deja evidencia de lo que se acordó: el chat, la foto y el número de parte quedan registrados. Esa conversación es tu mejor respaldo si algo no coincide.",
+      },
+      {
+        tipo: "h2",
+        texto: "Buenas prácticas de pago",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Paga a una cuenta a nombre del negocio, no de una persona sin relación con la empresa.",
+          "Guarda el comprobante de transferencia y el chat completo de la cotización.",
+          "Pide siempre un documento de venta con el detalle del repuesto y el número de parte.",
+          "Desconfía de quien exige pago total anticipado sin darte antes ninguna verificación.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Qué pasa si el repuesto que recibo no es el correcto?",
+        respuesta:
+          "Escríbenos por el mismo chat de WhatsApp con fotos de la pieza recibida y del número de parte. Como validamos la compatibilidad antes de despachar, la mayoría de los casos se resuelven identificando la variante correcta y coordinando el cambio.",
+      },
+      {
+        pregunta: "¿Cómo sé que la tienda existe de verdad?",
+        respuesta:
+          "El Chino Americano opera desde Quito, Ecuador, con dirección física verificable en Google Maps, catálogo público en línea y atención por WhatsApp en horario comercial. Puedes revisar el catálogo, la página de contacto y la ubicación antes de escribir.",
+      },
+      {
+        pregunta: "¿Puedo pagar contra entrega?",
+        respuesta:
+          "Las condiciones de pago y envío se acuerdan por WhatsApp según la ciudad de destino y el tipo de repuesto. Escríbenos y te indicamos las opciones disponibles para tu caso.",
+      },
+      {
+        pregunta: "¿Los repuestos tienen garantía?",
+        respuesta:
+          "La garantía aplica al inicio y por defecto de fábrica: verificas al recibir que sea la pieza correcta y que no venga fisurada ni dañada. Una vez instalada deja de aplicar. Las eléctricas se envían probadas y no tienen garantía una vez conectadas. Te lo informamos siempre antes de la compra.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Contacto y ubicación", href: "/contacto" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Cómo verificar que un repuesto es original y no falsificado?", href: "/guias/compra/como-verificar-que-un-repuesto-es-original" },
+      { titulo: "Garantía de repuestos: qué cubre y qué no", href: "/guias/compra/garantia-y-devoluciones-de-repuestos" },
+      { titulo: "¿Cómo identificar el repuesto correcto para mi auto?", href: "/guias/compra/como-identificar-el-repuesto-correcto" },
+    ],
+    ctaWhatsApp: "Quiero verificar la compatibilidad de un repuesto antes de comprar:",
+    fechaPublicacion: "2026-09-01",
+  },
+
   {
     slug: "repuestos-autos-chinos-ecuador",
     categoria: "compra",
@@ -1657,7 +2049,7 @@ const guiasCompra: Guia[] = [
     descripcion:
       "Guía completa para comprar repuestos de vehículos chinos (Chery, JAC, BYD, Great Wall, MG, DFSK) en Ecuador. Originales, OEM y alternos con envíos desde Quito.",
     respuesta_corta:
-      "En El Chino Americano puedes comprar repuestos para los principales autos chinos en Ecuador: Chery, JAC, BYD, Great Wall (Haval), MG y DFSK. Tenemos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento y carrocería. Operamos desde Quito con envíos a todo el Ecuador en 24 a 72 horas. Puedes cotizar por WhatsApp con el modelo, año y descripción del repuesto. Si no tienes el número de parte, con el código de motor y año del vehículo lo identificamos.",
+      "En El Chino Americano compras repuestos para las principales marcas chinas en Ecuador: Chery, JAC, BYD, Great Wall (Haval), MG y DFSK. Tenemos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento, filtros y carrocería. Operamos desde Quito y despachamos a Guayaquil, Cuenca, Ambato, Loja, Manta, Esmeraldas, Santo Domingo de los Tsáchilas y el resto del país en 24 a 72 horas con guía rastreable. El punto crítico en marcas chinas es la identificación: varios modelos cambiaron de plataforma manteniendo el mismo nombre comercial, así que el nombre del modelo por sí solo no basta. Cotiza por WhatsApp con modelo exacto, año y código de motor; si no tienes el número de parte, con el VIN o una foto de la pieza usada lo identificamos.",
     keywords: [
       "repuestos autos chinos Ecuador",
       "repuestos vehículos chinos Quito",
@@ -1768,7 +2160,7 @@ const guiasCompra: Guia[] = [
     descripcion:
       "Guía para comprar repuestos Ford, Chevrolet, Dodge, Jeep y Ram en Ecuador. Originales, OEM y alternos con envíos desde Quito a todo el país.",
     respuesta_corta:
-      "En El Chino Americano puedes comprar repuestos para los principales autos americanos en Ecuador: Ford (Ranger, F-150, Explorer), Chevrolet (D-MAX, Colorado, Blazer, Silverado), Dodge, Jeep y Ram. Tenemos piezas originales, OEM y alternas para motor, frenos, suspensión y carrocería. Operamos desde Quito con envíos a todo el Ecuador en 24 a 72 horas. Al cotizar confirma el modelo, año y si el motor es diésel o gasolina — especialmente importante para la D-MAX y el Ranger, que tienen varias versiones de motor.",
+      "En El Chino Americano compras repuestos para las principales marcas americanas en Ecuador: Ford (Ranger, F-150, Explorer, EcoSport), Chevrolet (D-MAX, Colorado, Blazer, Silverado), Dodge, Jeep y Ram. Tenemos piezas originales —Motorcraft en Ford y AC Delco en Chevrolet—, OEM y alternas para motor, frenos, suspensión y carrocería. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. Al cotizar, el dato que más errores evita es el tipo de motor: confirma el año, si es diésel o gasolina y el código de motor, sobre todo en la D-MAX (2.5L y 3.0L diésel, códigos 4JK1 y 4JJ1) y en el Ranger, que convive con versiones 2.5 a gasolina, 2.2 y 3.2 diésel y 2.3 EcoBoost. Con el VIN confirmamos la versión exacta.",
     keywords: [
       "repuestos autos americanos Ecuador",
       "repuestos Ford Chevrolet Ecuador",
@@ -1871,11 +2263,1194 @@ const guiasCompra: Guia[] = [
     ctaWhatsApp: "Cotizar repuesto para mi auto americano — marca, modelo y año:",
     fechaPublicacion: "2026-08-26",
   },
+
+  {
+    slug: "como-verificar-que-un-repuesto-es-original",
+    categoria: "compra",
+    titulo: "¿Cómo verificar que un repuesto es original y no falsificado?",
+    descripcion:
+      "Cómo comprobar la autenticidad de un repuesto automotriz: número de parte, empaque, holograma, acabados y precio. Guía para Ecuador con piezas chinas y americanas.",
+    respuesta_corta:
+      "Revisa cuatro cosas, en este orden. Primero, el número de parte: debe estar grabado o impreso en la pieza misma, no solo en la caja, y coincidir con el catálogo del fabricante y con la aplicación de tu vehículo. Es la prueba más confiable. Segundo, el empaque: logo nítido, código de barras legible, sin errores de ortografía, sin etiquetas pegadas sobre otras y, en marcas como Bosch, Denso, Motorcraft o AC Delco, con holograma o código verificable en el sitio oficial. Tercero, la pieza: acabados limpios, sin rebabas, peso consistente y soldaduras parejas, porque una copia suele usar menos material y se siente más liviana. Cuarto, el precio: un original a mitad del mercado es señal de alerta. Un OEM legítimo también cuesta menos, pero se declara como OEM en lugar de venderse como original.",
+    keywords: [
+      "cómo verificar la autenticidad de repuestos",
+      "repuesto original o falso",
+      "identificar repuestos falsificados Ecuador",
+      "repuestos originales Ecuador cómo saber",
+      "número de parte repuesto verificar",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "La preocupación por los repuestos falsificados es legítima, sobre todo en piezas de seguridad como frenos, suspensión y filtros. Una pieza falsificada no solo dura menos: puede fallar en el peor momento. Estos son los controles que puedes hacer tú mismo, en orden de confiabilidad.",
+      },
+      {
+        tipo: "h2",
+        texto: "1. El número de parte, la prueba más fuerte",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Toda pieza legítima lleva un número de parte grabado, estampado o impreso en la pieza misma, no únicamente en la caja. Ese número debe coincidir con el catálogo del fabricante y con la aplicación de tu vehículo. Si el número solo está en la etiqueta de la caja, o si la pieza tiene un número que no aparece en ningún catálogo, es una señal de alerta.",
+      },
+      {
+        tipo: "h2",
+        texto: "2. Revisa el empaque",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Logo nítido, sin colores desviados ni bordes pixelados por reimpresión.",
+          "Código de barras legible y etiqueta bien adherida, no pegada encima de otra.",
+          "Ortografía correcta: los empaques falsificados suelen tener errores en el texto.",
+          "Holograma o código de verificación en las marcas que lo usan (Bosch, Denso, Motorcraft, AC Delco y varias marcas OEM chinas).",
+          "Caja sin señales de reempaque, cinta reabierta o piezas sueltas dentro.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "3. Inspecciona la pieza",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Acabados limpios: sin rebabas de fundición, sin bordes cortantes, sin pintura corrida.",
+          "Peso consistente: una pieza falsificada suele usar menos material y se siente notablemente más liviana.",
+          "Sellos y empaques de caucho flexibles y uniformes, no resecos ni con exceso de rebaba.",
+          "Roscas y agujeros limpios y alineados.",
+          "Soldaduras parejas en piezas metálicas como radiadores, soportes o bombas.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "4. Evalúa el precio con criterio",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Un repuesto original a mitad de precio del mercado casi nunca es una oportunidad. Ahora bien, un precio menor no significa falsificación: un repuesto OEM legítimo cuesta menos que el original con logo de la marca porque lo fabrica el mismo proveedor sin el sello. La diferencia está en que el OEM se declara como OEM. El problema no es el precio bajo, es el precio bajo con etiqueta de original.",
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "En piezas de seguridad —pastillas y discos de freno, rótulas, terminales de dirección, amortiguadores, airbags— no arriesgues. Prefiere original u OEM de marca reconocida y exige el número de parte antes de comprar.",
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo lo verificamos nosotros antes de enviarte la pieza",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Cruzamos el número de parte con la aplicación de tu vehículo (marca, modelo, año y versión de motor).",
+          "Confirmamos la procedencia del repuesto con el proveedor y si corresponde a original, OEM o alterno.",
+          "Te enviamos foto real de la pieza y del número de parte en la cotización, antes de que pagues.",
+          "Declaramos siempre el tipo de repuesto por escrito. No vendemos alterno como si fuera original.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Un repuesto OEM es falsificado?",
+        respuesta:
+          "No. OEM significa que lo fabrica el mismo proveedor que produce la pieza para la línea de montaje, pero se vende sin el logo de la automotriz. Es legítimo y suele ser la mejor relación calidad-precio. Falsificado es otra cosa: una copia que imita la marca sin autorización ni control de calidad.",
+      },
+      {
+        pregunta: "¿Dónde encuentro el número de parte de mi repuesto?",
+        respuesta:
+          "Normalmente está grabado o impreso en la pieza usada que vas a reemplazar. Si no puedes desmontarla, con la marca, modelo, año y código de motor podemos identificarlo por catálogo.",
+      },
+      {
+        pregunta: "¿Puedo verificar el holograma de una marca por internet?",
+        respuesta:
+          "Varias marcas —Bosch, Denso y algunos fabricantes OEM chinos— tienen portales o líneas de verificación de códigos de seguridad. Si tu pieza trae un código raspable, vale la pena validarlo en el sitio oficial de la marca.",
+      },
+      {
+        pregunta: "¿Ustedes venden repuestos originales en Ecuador?",
+        respuesta:
+          "Sí. Manejamos originales, OEM y alternos, y siempre te decimos cuál es cuál antes de la compra para que elijas con la información completa.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Repuestos para Ford", href: "/catalogo/marca/ford" },
+      { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Es seguro comprar repuestos de auto por internet en Ecuador?", href: "/guias/compra/es-seguro-comprar-repuestos-por-internet-ecuador" },
+      { titulo: "Original, OEM o alterno: ¿cuál conviene?", href: "/guias/compra/original-oem-o-alterno-cual-elegir" },
+    ],
+    ctaWhatsApp: "Quiero confirmar el número de parte y la procedencia de un repuesto:",
+    fechaPublicacion: "2026-09-01",
+  },
+
+  {
+    slug: "original-oem-o-alterno-cual-elegir",
+    categoria: "compra",
+    titulo: "Original, OEM o alterno: ¿cuál repuesto conviene comprar?",
+    descripcion:
+      "Diferencias reales entre repuesto original, OEM y alterno, con recomendación por tipo de pieza: frenos, suspensión, motor, filtros y carrocería. Guía para Ecuador.",
+    respuesta_corta:
+      "El original lleva el logo de la automotriz —Motorcraft en Ford, AC Delco en Chevrolet— y es el más caro. El OEM lo fabrica el mismo proveedor que abastece a la línea de montaje (Bosch, Denso, Valeo, NGK, Monroe, TRW, Sachs, Gates) pero se vende sin ese logo: calidad equivalente a un precio sensiblemente menor, y es la opción más inteligente para la mayoría de compras. El alterno lo produce un tercero con especificaciones similares y su calidad depende del fabricante, por lo que la marca importa más que la etiqueta. Regla práctica por tipo de pieza: en frenos, dirección, suspensión, distribución y electrónica elige original u OEM; en filtros, mangueras, correas de accesorios y carrocería, un alterno de marca reconocida rinde bien y te ahorra dinero.",
+    keywords: [
+      "original OEM o alterno cuál elegir",
+      "diferencia repuesto original y OEM",
+      "repuestos aftermarket Ecuador",
+      "OEM vs alterno repuestos",
+      "qué repuesto comprar Ecuador",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Casi toda cotización de repuestos en Ecuador te va a dar estas tres opciones. La diferencia de precio entre ellas puede ser grande, y elegir bien depende menos del presupuesto que del tipo de pieza que vas a cambiar.",
+      },
+      {
+        tipo: "h2",
+        texto: "Qué significa cada uno",
+      },
+      {
+        tipo: "h3",
+        texto: "Original (genuino)",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Pieza vendida bajo la marca de la automotriz, en su empaque oficial: Motorcraft para Ford, AC Delco para Chevrolet, o el empaque de marca en el caso de Chery, JAC, BYD, Great Wall y MG. Es la referencia de calidad y la más cara. Tiene sentido cuando la pieza es crítica, cuando el vehículo está en garantía de fábrica, o cuando no existe una alternativa OEM confiable.",
+      },
+      {
+        tipo: "h3",
+        texto: "OEM",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Misma pieza, mismo fabricante, sin el logo de la automotriz. Empresas como Bosch, Denso, Valeo, NGK, Monroe, TRW, Sachs o Gates producen para las plantas de ensamblaje y también venden bajo su propia marca. Para la mayoría de los casos es la opción más inteligente: calidad equivalente a un precio sensiblemente menor.",
+      },
+      {
+        tipo: "h3",
+        texto: "Alterno",
+      },
+      {
+        tipo: "p",
+        texto:
+          "También llamado alternativo o, en catálogos internacionales, aftermarket. Lo fabrica un tercero con especificaciones similares. El rango de calidad es enorme: hay alternos excelentes y alternos que duran meses. Aquí la marca del fabricante importa más que la etiqueta 'alterno'. Es la opción de menor costo y funciona bien en piezas de desgaste donde una falla no compromete la seguridad.",
+      },
+      {
+        tipo: "h2",
+        texto: "Qué elegir según la pieza",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Frenos (pastillas, discos, mordazas): original u OEM. Es la pieza que decide si frenas a tiempo.",
+          "Dirección y suspensión (rótulas, terminales, amortiguadores, bujes): OEM. Un alterno barato se desajusta rápido y desgasta llantas.",
+          "Sensores y electrónica (sensores de oxígeno, MAF, bobinas, ECU): original u OEM. Los alternos suelen dar lecturas fuera de rango y encender el check engine.",
+          "Distribución (correa, kit, tensor, bomba de agua): OEM de marca reconocida. Una falla aquí destruye el motor.",
+          "Filtros (aire, aceite, combustible, cabina): alterno u OEM de marca conocida rinde perfectamente.",
+          "Correas de accesorios, mangueras, terminales de escape: alterno de marca reconocida.",
+          "Carrocería (faros, parachoques, guardafangos, espejos): alterno es la opción habitual y sensata.",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "Cuidado con el falso ahorro: un alterno de baja calidad en frenos o suspensión suele durar menos de la mitad, y pagas dos veces la mano de obra. En piezas que requieren desarmar el motor, el ahorro inicial casi nunca compensa.",
+      },
+      {
+        tipo: "h2",
+        texto: "El caso particular de los autos chinos",
+      },
+      {
+        tipo: "p",
+        texto:
+          "En marcas como Chery, JAC, BYD, Great Wall, MG y DFSK, muchas piezas originales son fabricadas por proveedores globales conocidos. Eso significa que existe una versión OEM de la misma pieza a mejor precio. También significa lo contrario: hay mucho alterno genérico de origen no verificable. Por eso el número de parte y el proveedor pesan más que la etiqueta del empaque.",
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo pedir la comparación al cotizar",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Pide las tres opciones con precio y marca del fabricante, no solo 'original o alterno'.",
+          "Pregunta el número de parte de cada opción.",
+          "Confirma si la pieza tiene garantía: las eléctricas y electrónicas no la tienen, y en el resto aplica solo antes de instalar.",
+          "Decide considerando el costo de la mano de obra, no solo el precio de la pieza.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿El repuesto OEM es igual al original?",
+        respuesta:
+          "En la mayoría de los casos es la misma pieza fabricada en la misma planta, sin el logo de la automotriz y sin el sobreprecio de la marca. Puede haber diferencias menores de acabado o empaque, pero el desempeño es equivalente.",
+      },
+      {
+        pregunta: "¿Usar repuestos alternos anula la garantía de mi auto?",
+        respuesta:
+          "Depende del concesionario y del país. Si tu vehículo está dentro de la garantía de fábrica, consulta primero con la marca. Fuera de garantía, no hay impedimento para usar OEM o alterno.",
+      },
+      {
+        pregunta: "¿Cuánto más barato es el OEM frente al original?",
+        respuesta:
+          "Varía según la pieza y la marca del vehículo. La diferencia suele ser significativa y por eso es la opción más elegida. Cotiza con nosotros y te damos las opciones lado a lado con precio real y número de parte.",
+      },
+      {
+        pregunta: "¿Ustedes venden las tres opciones?",
+        respuesta:
+          "Sí. Manejamos original, OEM y alterno para vehículos chinos y americanos, y te indicamos cuál es cuál en la cotización para que decidas con la información completa.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Repuestos para autos chinos", href: "/guias/compra/repuestos-autos-chinos-ecuador" },
+      { nombre: "Repuestos para autos americanos", href: "/guias/compra/repuestos-autos-americanos-ecuador" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Cómo verificar que un repuesto es original y no falsificado?", href: "/guias/compra/como-verificar-que-un-repuesto-es-original" },
+      { titulo: "¿Cuánto cuestan los repuestos en Ecuador?", href: "/guias/compra/cuanto-cuestan-los-repuestos-en-ecuador" },
+      { titulo: "¿Es seguro comprar repuestos de auto por internet en Ecuador?", href: "/guias/compra/es-seguro-comprar-repuestos-por-internet-ecuador" },
+    ],
+    ctaWhatsApp: "Quiero comparar precios de original, OEM y alterno para mi repuesto:",
+    fechaPublicacion: "2026-09-01",
+  },
+
+  {
+    slug: "como-identificar-el-repuesto-correcto",
+    categoria: "compra",
+    titulo: "¿Cómo identificar el repuesto correcto para mi auto?",
+    descripcion:
+      "Cómo usar el VIN, el número de parte y el código de motor para comprar el repuesto exacto y evitar piezas incompatibles. Guía práctica para Ecuador.",
+    respuesta_corta:
+      "Necesitas uno de tres datos, en orden de precisión. El número de parte grabado en la pieza que vas a reemplazar es la identificación exacta: fotografíalo completo, con prefijos y sufijos, porque una letra final puede distinguir dos versiones. El VIN —los 17 caracteres que aparecen en la matrícula, en el marco de la puerta del conductor y en la esquina inferior del parabrisas— determina la versión de fábrica de tu vehículo: motor, transmisión y equipamiento. Marca, modelo, año y código de motor son el mínimo indispensable, pero pueden dejar varias variantes abiertas, sobre todo en modelos que cambiaron de plataforma conservando el nombre comercial. Añade si es diésel o gasolina, manual o automático, y 4x2 o 4x4. Con fotos de la pieza usada y el VIN, la identificación es inmediata.",
+    keywords: [
+      "cómo identificar repuestos compatibles",
+      "número de parte auto Ecuador",
+      "VIN para buscar repuestos",
+      "código de motor repuestos",
+      "compatibilidad repuestos vehículo",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "El error más caro al comprar repuestos no es pagar de más: es recibir una pieza que no encaja. Casi siempre ocurre por comprar con el nombre del modelo y nada más. Estos son los datos que eliminan la incertidumbre.",
+      },
+      {
+        tipo: "h2",
+        texto: "1. El número de parte (la identificación exacta)",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Es la referencia definitiva. Está grabado, estampado o impreso en la pieza que vas a reemplazar. Si puedes desmontarla o verla, tómale una foto nítida del número completo, incluyendo prefijos y sufijos: una letra al final puede distinguir dos versiones distintas.",
+      },
+      {
+        tipo: "h2",
+        texto: "2. El VIN (17 caracteres)",
+      },
+      {
+        tipo: "p",
+        texto:
+          "El VIN identifica tu vehículo exacto tal como salió de fábrica: versión, motor, transmisión y equipamiento. Lo encuentras en la matrícula, en la placa del marco de la puerta del conductor, y en la esquina inferior del parabrisas del lado del conductor. Con el VIN se resuelven las dudas de versión que el año no aclara.",
+      },
+      {
+        tipo: "h2",
+        texto: "3. Código de motor, marca, modelo y año",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Si no tienes número de parte ni VIN a mano, el mínimo indispensable es marca, modelo, año y código de motor, además de si es diésel o gasolina, manual o automático, y 4x2 o 4x4. El código de motor suele estar en una placa del block o en la etiqueta del compartimiento del motor.",
+      },
+      {
+        tipo: "h2",
+        texto: "Por qué el año importa tanto",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Un mismo modelo puede tener dos o tres plataformas distintas a lo largo de su vida comercial.",
+          "El año de fabricación y el año de matrícula no siempre coinciden; el VIN resuelve esa diferencia.",
+          "Muchos modelos cambian de proveedor de una pieza a mitad de producción, sin cambiar de generación.",
+          "Las versiones de motor de un mismo modelo llevan repuestos completamente distintos: 2.5 gasolina y 2.3 turbo no comparten casi nada.",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "En vehículos chinos, verificar la versión es especialmente importante. El Chery Tiggo 5, por ejemplo, tuvo varias configuraciones bajo el mismo nombre comercial. Nunca compres solo por el nombre del modelo.",
+      },
+      {
+        tipo: "h2",
+        texto: "Qué enviarnos para que confirmemos la compatibilidad",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Marca, modelo y año del vehículo.",
+          "VIN completo (17 caracteres) si lo tienes a mano.",
+          "Foto del número de parte de la pieza usada, si es posible.",
+          "Foto de la pieza montada en el vehículo — a veces dice más que el número.",
+          "Tipo de motor: cilindrada, diésel o gasolina, y código de motor si lo conoces.",
+        ],
+      },
+      {
+        tipo: "p",
+        texto:
+          "Con esos datos validamos la aplicación antes de cotizar. Es el paso que evita la mayoría de las devoluciones.",
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Dónde encuentro el VIN de mi vehículo?",
+        respuesta:
+          "En la matrícula del vehículo, en la placa metálica del marco de la puerta del conductor y en la esquina inferior del parabrisas del lado del conductor. Son 17 caracteres entre letras y números.",
+      },
+      {
+        pregunta: "¿Puedo comprar sin el número de parte?",
+        respuesta:
+          "Sí. Con marca, modelo, año, código de motor y fotos de la pieza podemos identificar el repuesto por catálogo. El número de parte solo hace el proceso más rápido y seguro.",
+      },
+      {
+        pregunta: "¿Sirve un repuesto de otro año del mismo modelo?",
+        respuesta:
+          "A veces sí y a veces no. Depende de si el fabricante mantuvo la misma pieza entre años. Hay que verificarlo caso por caso; no lo asumas.",
+      },
+      {
+        pregunta: "¿Verifican la compatibilidad antes de enviar?",
+        respuesta:
+          "Sí. Validamos la aplicación del repuesto con los datos de tu vehículo antes de despachar, y te enviamos el número de parte y una foto de la pieza en la cotización.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Contacto", href: "/contacto" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Es seguro comprar repuestos de auto por internet en Ecuador?", href: "/guias/compra/es-seguro-comprar-repuestos-por-internet-ecuador" },
+      { titulo: "Original, OEM o alterno: ¿cuál conviene?", href: "/guias/compra/original-oem-o-alterno-cual-elegir" },
+    ],
+    ctaWhatsApp: "Necesito confirmar qué repuesto corresponde a mi vehículo. Mis datos son:",
+    fechaPublicacion: "2026-09-01",
+  },
+
+  {
+    slug: "cuanto-cuestan-los-repuestos-en-ecuador",
+    categoria: "compra",
+    titulo: "¿Cuánto cuestan los repuestos de auto en Ecuador y qué define el precio?",
+    descripcion:
+      "Qué factores determinan el precio de un repuesto en Ecuador, cómo comparar cotizaciones de forma justa y cómo evitar pagar de más sin sacrificar calidad.",
+    respuesta_corta:
+      "El precio de un repuesto en Ecuador depende de cinco factores. El primero y de mayor peso es el tipo: entre un original y un alterno puede haber varias veces de diferencia, con el OEM en un punto intermedio y calidad equivalente al original. El segundo es la marca y el modelo: los vehículos de baja rotación en el país cuestan más por menor volumen. El tercero es la disponibilidad: una pieza en stock en Quito cuesta menos y llega antes que una importada bajo pedido. El cuarto es la complejidad de la pieza. El quinto es la mano de obra del cambio, que en trabajos como el kit de distribución supera con frecuencia el valor de la pieza. Para comparar cotizaciones exige número de parte, marca del fabricante y garantía: sin esos datos no son comparables.",
+    keywords: [
+      "cuánto cuestan los repuestos en Ecuador",
+      "precios repuestos Ford Ecuador",
+      "precio repuestos autos chinos Ecuador",
+      "son caros los repuestos Ford",
+      "comparar precios repuestos Ecuador",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Preguntar '¿cuánto cuesta?' antes de decir qué pieza, para qué vehículo y de qué tipo, es como pedir el precio de un pasaje sin decir el destino. Esta guía explica qué mueve realmente el precio para que puedas comparar sin que te vendan humo.",
+      },
+      {
+        tipo: "h2",
+        texto: "Los cinco factores que determinan el precio",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Tipo de repuesto: original, OEM o alterno. Es la variable de mayor peso; entre el original y el alterno puede haber una diferencia de varias veces.",
+          "Marca y modelo del vehículo: las marcas premium y los modelos de baja rotación en Ecuador cuestan más por menor volumen.",
+          "Disponibilidad local: una pieza en stock en Quito cuesta menos y llega antes que una que hay que importar bajo pedido.",
+          "Complejidad de la pieza: un sensor electrónico o una bomba de alta presión tienen otro orden de precio que una manguera o un filtro.",
+          "Mano de obra asociada: cambiar una bomba de agua accionada por la correa de distribución implica desarmar el frente del motor. La pieza puede ser lo barato del trabajo.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "¿Son caros los repuestos Ford en Ecuador?",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Los originales Ford, bajo la marca Motorcraft, están en el rango alto. Pero Ford tiene una de las mejores ofertas OEM del mercado: Bosch, Denso, Monroe, Gates y TRW producen para la línea de montaje y venden bajo su propia marca a un precio bastante menor.",
+      },
+      {
+        tipo: "p",
+        texto:
+          "En modelos de alto volumen en Ecuador —Ranger, F-150, Explorer y EcoSport— la disponibilidad es buena y eso mantiene los precios competitivos. En modelos menos comunes o más antiguos el precio sube, porque hay que importar.",
+      },
+      {
+        tipo: "h2",
+        texto: "¿Y los repuestos de autos chinos?",
+      },
+      {
+        tipo: "p",
+        texto:
+          "En general son más económicos que sus equivalentes americanos o europeos, sobre todo en marcas de alta rotación como Chery, JAC y Great Wall. La variable a cuidar no es el precio sino la trazabilidad: hay mucho alterno genérico sin fabricante identificable. Un repuesto barato que dura seis meses termina siendo más caro que uno OEM que dura años, especialmente si el cambio requiere mano de obra.",
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "Los precios de repuestos cambian por tipo de cambio, disponibilidad y lote de importación. Cualquier precio que veas publicado es referencial hasta que se confirma la disponibilidad real. Por eso cotizamos pieza por pieza.",
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo comparar dos cotizaciones de forma justa",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Exige el número de parte en cada cotización. Sin eso no sabes si te están cotizando lo mismo.",
+          "Exige la marca del fabricante, no solo 'original' o 'alterno'.",
+          "Confirma la condición de garantía, que no es igual en todas las piezas.",
+          "Pregunta si el precio incluye envío y a qué plazo.",
+          "Considera la mano de obra: la opción barata que hay que cambiar dos veces no es la barata.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo bajar el costo sin bajar la calidad",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Elige OEM en lugar de original cuando exista: misma calidad, menor precio.",
+          "Agrupa piezas del mismo trabajo en un solo pedido y ahorra en envíos.",
+          "Anticipa el mantenimiento: comprar con tiempo evita el sobreprecio de la urgencia.",
+          "Cambia en conjunto lo que se desarma junto (kit de distribución con bomba de agua, pastillas con discos) y ahorra mano de obra.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Por qué no publican todos los precios en la web?",
+        respuesta:
+          "Los precios del catálogo son referenciales y dependen de la disponibilidad y del lote de importación. Confirmamos el precio final por WhatsApp junto con la disponibilidad real y el número de parte exacto para tu vehículo.",
+      },
+      {
+        pregunta: "¿El repuesto más barato siempre sale más caro?",
+        respuesta:
+          "No siempre, pero en piezas de seguridad y en piezas que requieren desarmar el motor sí suele pasar. En filtros, mangueras o piezas de carrocería, una opción alterna de marca reconocida es una decisión perfectamente sensata.",
+      },
+      {
+        pregunta: "¿Hacen descuento por comprar varias piezas?",
+        respuesta:
+          "Escríbenos con la lista completa del trabajo que vas a hacer. Cotizamos el conjunto y coordinamos un solo envío, lo que reduce el costo total.",
+      },
+      {
+        pregunta: "¿El precio incluye el envío?",
+        respuesta:
+          "El costo de envío se confirma junto con la cotización, según la ciudad de destino y el peso de la pieza. Enviamos a todo el Ecuador desde Quito en 24 a 72 horas.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Repuestos para Ford", href: "/catalogo/marca/ford" },
+      { nombre: "Repuestos para Chevrolet", href: "/catalogo/marca/chevrolet" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "Original, OEM o alterno: ¿cuál conviene?", href: "/guias/compra/original-oem-o-alterno-cual-elegir" },
+      { titulo: "¿Concesionario o almacén independiente?", href: "/guias/compra/concesionario-o-almacen-independiente" },
+      { titulo: "Repuestos al por mayor en Ecuador", href: "/guias/compra/repuestos-al-por-mayor-ecuador" },
+    ],
+    ctaWhatsApp: "Quiero una cotización con precio, número de parte y garantía para:",
+    fechaPublicacion: "2026-09-01",
+  },
+
+  {
+    slug: "garantia-y-devoluciones-de-repuestos",
+    categoria: "compra",
+    titulo: "Garantía de repuestos: qué cubre, qué no, y por qué debes revisar la pieza antes de instalarla",
+    descripcion:
+      "Condiciones de garantía de El Chino Americano: aplica al recibir la pieza y por defecto de fábrica. Las eléctricas se envían probadas. No hay garantía sobre piezas instaladas ni por mala instalación.",
+    respuesta_corta:
+      "En El Chino Americano la garantía aplica al inicio y por defecto de fábrica: es una verificación de entrega, no una garantía de duración. Cubre que la pieza sea la correcta y llegue en buen estado, sin fisuras, sin daños por manipulación y completa. Las piezas eléctricas se envían probadas, y una vez conectadas no tienen garantía. Ninguna pieza tiene garantía una vez instalada o usada, porque a partir de ahí la falla puede venir del montaje, del uso o de otro componente del vehículo en mal estado que afectó a la pieza nueva. Tampoco cubrimos daños por una instalación incorrecta. Por eso revisa el repuesto apenas lo recibas, antes de llevarlo al taller, y avísanos si algo no cuadra.",
+    keywords: [
+      "garantía repuestos Ecuador",
+      "devolución repuestos automotrices",
+      "garantía piezas eléctricas auto",
+      "condiciones de garantía repuestos Quito",
+      "reclamo repuesto defectuoso Ecuador",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "La garantía es la pregunta que casi nadie hace antes de pagar y que todo el mundo hace después. Preferimos decirla completa desde el inicio. La idea de fondo es una sola: nuestra garantía es por defecto de fábrica y se verifica al recibir la pieza, no es una garantía de duración en el tiempo.",
+      },
+      {
+        tipo: "h2",
+        texto: "¿Qué cubre la garantía?",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Cubre el defecto de fábrica, detectable cuando recibes la pieza y antes de instalarla. Se gestiona con la pieza sin montar, en su estado original y con su empaque, junto con el comprobante de compra.",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "La pieza no corresponde a la que se cotizó o al vehículo.",
+          "Llega con una fisura o una grieta de fábrica.",
+          "Llega forzada, golpeada o deformada por manipulación.",
+          "Llega incompleta: faltan pernos, sellos o accesorios incluidos.",
+          "Tiene un defecto de fabricación visible: roscas dañadas, soldaduras abiertas, empaques resecos.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "¿Qué no cubre la garantía?",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Piezas eléctricas y electrónicas una vez conectadas: sensores, bobinas, módulos, ECU, alternadores, motores de arranque y componentes de cableado. Se envían probadas, pero después del montaje no tienen garantía.",
+          "Cualquier pieza ya instalada o usada, sin importar el tiempo transcurrido.",
+          "Fallas por uso inadecuado del vehículo: sobrecarga, conducción en malas condiciones, exigencia fuera de lo previsto para la pieza.",
+          "Daños causados por otro componente en mal estado que afectó a la pieza nueva.",
+          "Mala instalación: no nos hacemos responsables por daños derivados de un montaje incorrecto o realizado sin los torques y procedimientos especificados.",
+          "Desgaste normal de piezas consumibles: pastillas, discos, filtros, correas y bujías tienen vida útil limitada por diseño.",
+          "Piezas manipuladas, pintadas, perforadas o con el número de parte alterado.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "¿Por qué la garantía aplica al inicio y no después?",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Porque un defecto de fábrica se manifiesta desde el primer momento, mientras que una falla posterior casi nunca depende de la pieza. Un ejemplo concreto: compras un amortiguador, llega bien, se instala bien, y a las dos semanas ya no sirve. En ese escenario la causa suele ser el uso al que se sometió el vehículo, o un componente vecino que estaba en mal estado —una base, un buje, un resorte vencido— y que destruyó la pieza nueva. Nada de eso es un defecto de fabricación, y no hay forma de demostrar que lo fuera después del montaje.",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Por eso la garantía se define en el momento de la entrega: ahí sí es posible verificar objetivamente si la pieza es la correcta y si llegó en buen estado.",
+      },
+      {
+        tipo: "h2",
+        texto: "¿Y las piezas eléctricas?",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Las piezas eléctricas y electrónicas se envían probadas: verificamos que funcionen antes de despacharlas, así que salen operativas. Una vez conectadas, sin embargo, no tienen garantía, y la razón es la misma pero más marcada. Un sensor, una bobina o un módulo pueden quemarse por un cortocircuito, una masa deficiente, un voltaje irregular, una conexión invertida o un diagnóstico equivocado que llevó a cambiar la pieza que no era. Ninguna de esas causas es un defecto de fabricación, y ninguna se puede descartar después del montaje.",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Por eso, en electrónica la verificación previa vale más que cualquier garantía: confirma el número de parte, asegúrate de que el diagnóstico esté hecho con escáner y no por descarte, y revisa el estado del cableado y la alimentación antes de conectar la pieza nueva.",
+      },
+      {
+        tipo: "h2",
+        texto: "Revisa la pieza antes de instalarla",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Este es el momento en el que la garantía está viva. La revisión tiene dos objetivos: confirmar que es la pieza correcta y descartar que venga fisurada, forzada o dañada. Dedícale cinco minutos apenas recibas el pedido, antes de llevarlo al taller.",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Compara el número de parte de la pieza con el de la cotización. Deben coincidir, incluidos prefijos y sufijos.",
+          "Revisa que la pieza corresponda físicamente a la que vas a reemplazar: mídela o compárala lado a lado con la usada.",
+          "Busca fisuras, grietas, golpes, deformaciones por manipulación, roscas dañadas o empaques resecos.",
+          "Verifica que el empaque esté completo y que no falten pernos, sellos ni accesorios incluidos.",
+          "Si algo no cuadra, escríbenos por WhatsApp con fotos antes de instalar.",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "La instalación es el punto de no retorno. Desde el momento en que la pieza se monta, la garantía deja de aplicar, sin importar cuánto tiempo pase después. Revisa y consulta antes del montaje.",
+      },
+      {
+        tipo: "h2",
+        texto: "Qué necesitas para gestionar una garantía",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Comprobante de compra con el detalle del repuesto y el número de parte.",
+          "La pieza sin instalar, en su estado original y con su empaque.",
+          "Fotos claras de la pieza, del número de parte y del empaque.",
+          "El chat de WhatsApp de la compra, donde queda registrado lo que se cotizó y se acordó.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo evitamos que llegues a este punto",
+      },
+      {
+        tipo: "p",
+        texto:
+          "La mayoría de los problemas no son piezas defectuosas: son piezas que no correspondían al vehículo. Por eso verificamos la aplicación del repuesto con tu año y versión de motor antes de despachar, probamos las piezas eléctricas antes de enviarlas, y te entregamos el número de parte y una foto real de la pieza en la cotización, para que puedas compararla al recibirla.",
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Las piezas eléctricas tienen garantía?",
+        respuesta:
+          "Las piezas eléctricas y electrónicas se envían probadas: verificamos que funcionen antes de despacharlas. Una vez conectadas no tienen garantía, porque no es posible determinar si la falla vino de la pieza o del sistema del vehículo. Si al recibirla no es la pieza correcta o llega dañada, avísanos antes de instalarla.",
+      },
+      {
+        pregunta: "¿Puedo reclamar la garantía si la pieza ya está instalada?",
+        respuesta:
+          "No. La garantía aplica al recibir la pieza, sin montar y con su empaque. Una vez instalada deja de aplicar, sin importar cuánto tiempo pase. Por eso conviene revisar el repuesto apenas llega y consultarnos antes de llevarlo al taller.",
+      },
+      {
+        pregunta: "Compré un amortiguador, se instaló bien y falló a las dos semanas. ¿Hay garantía?",
+        respuesta:
+          "No. Una falla que aparece después del montaje no es un defecto de fábrica: suele deberse al uso al que se sometió el vehículo o a otro componente en mal estado —una base, un buje o un resorte vencido— que dañó la pieza nueva. La garantía cubre el defecto de fábrica verificable al momento de la entrega.",
+      },
+      {
+        pregunta: "¿Qué pasa si el taller instaló mal la pieza?",
+        respuesta:
+          "No nos hacemos responsables por daños derivados de una instalación incorrecta. La instalación es responsabilidad del taller o de quien realiza el montaje, y conviene que se haga siguiendo los torques y procedimientos que especifica el fabricante.",
+      },
+      {
+        pregunta: "¿Puedo devolver un repuesto que no necesité?",
+        respuesta:
+          "Escríbenos por WhatsApp antes de abrir o instalar la pieza. Las piezas sin usar, en su empaque original y con comprobante de compra son las únicas que se pueden gestionar.",
+      },
+      {
+        pregunta: "¿Qué pasa si la pieza llega dañada por el envío?",
+        respuesta:
+          "Avísanos apenas la recibas, con fotos del empaque y de la pieza antes de manipularla. Todos nuestros envíos salen con guía rastreable, lo que permite gestionar el caso con la transportadora.",
+      },
+      {
+        pregunta: "¿La garantía cubre la mano de obra del taller?",
+        respuesta:
+          "No. La garantía se limita al repuesto, nunca a la mano de obra de instalación ni a los costos derivados del trabajo.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Contacto", href: "/contacto" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Es seguro comprar repuestos de auto por internet en Ecuador?", href: "/guias/compra/es-seguro-comprar-repuestos-por-internet-ecuador" },
+      { titulo: "¿Cómo verificar que un repuesto es original y no falsificado?", href: "/guias/compra/como-verificar-que-un-repuesto-es-original" },
+      { titulo: "¿Cómo identificar el repuesto correcto para mi auto?", href: "/guias/compra/como-identificar-el-repuesto-correcto" },
+    ],
+    ctaWhatsApp: "Quiero consultar las condiciones de garantía de un repuesto antes de comprarlo:",
+    fechaPublicacion: "2026-09-01",
+  },
+
+  {
+    slug: "concesionario-o-almacen-independiente",
+    categoria: "compra",
+    titulo: "¿Concesionario o almacén independiente para comprar repuestos?",
+    descripcion:
+      "Comparación honesta entre comprar repuestos en el concesionario oficial o en un almacén independiente en Ecuador: precio, disponibilidad, garantía y asesoría.",
+    respuesta_corta:
+      "El concesionario oficial conviene en tres casos: cuando el vehículo está dentro de la garantía de fábrica y la marca exige repuesto original; cuando la pieza es electrónica y necesita codificación con equipo de marca, como módulos, llaves o ECU; y cuando el modelo es tan reciente que todavía no existe oferta OEM. El almacén independiente conviene en todo lo demás: ofrece original, OEM y alterno lado a lado, precios menores en piezas equivalentes, mejor disponibilidad en modelos con años de circulación y asesoría directa sin turnos. Un almacén serio entrega lo que realmente importa: compatibilidad verificada contra año y versión, número de parte, declaración del tipo de repuesto, condiciones de garantía dichas con claridad y comprobante de compra. La diferencia real no es oficial contra independiente, sino con verificación contra sin verificación.",
+    keywords: [
+      "concesionario o almacén independiente repuestos",
+      "repuestos concesionario vs independiente Ecuador",
+      "dónde comprar repuestos Ecuador",
+      "almacén de repuestos confiable Quito",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Es una decisión que casi todo propietario enfrenta después de la garantía de fábrica. Las dos opciones son legítimas y cada una tiene un terreno donde gana con claridad.",
+      },
+      {
+        tipo: "h2",
+        texto: "Cuándo conviene el concesionario oficial",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "El vehículo está dentro de la garantía de fábrica y el fabricante exige repuesto original.",
+          "La pieza es electrónica y necesita codificación o programación con equipo de marca (módulos, llaves, ECU).",
+          "Se trata de una campaña de servicio o un llamado a revisión del fabricante.",
+          "Es un modelo muy reciente cuya oferta OEM en el mercado todavía no existe.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cuándo conviene el almacén independiente",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Buscas la opción OEM equivalente a un precio menor que el original.",
+          "El vehículo ya tiene varios años y no está bajo garantía de fábrica.",
+          "Quieres comparar original, OEM y alterno antes de decidir.",
+          "Necesitas disponibilidad rápida sin agenda ni turnos.",
+          "Quieres hablar directamente con quien identifica la pieza, no con una ventanilla.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Lo que debe darte cualquiera de los dos",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Compatibilidad verificada con año, versión y, si es posible, VIN.",
+          "Número de parte de la pieza que te van a entregar.",
+          "Declaración clara de si es original, OEM o alterno.",
+          "Condiciones de garantía dichas con claridad antes de pagar, incluido lo que no cubre.",
+          "Comprobante de compra.",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "El riesgo no está en comprar fuera del concesionario, sino en comprar sin verificación. Un mostrador que responde 'sí sirve' sin preguntarte el año del vehículo es más riesgoso que cualquier canal.",
+      },
+      {
+        tipo: "h2",
+        texto: "Dónde nos ubicamos nosotros",
+      },
+      {
+        tipo: "p",
+        texto:
+          "El Chino Americano es un almacén independiente especializado en vehículos chinos y americanos, con base en Quito y envíos a todo el Ecuador. Trabajamos con original, OEM y alterno; verificamos la aplicación del repuesto antes de despachar; entregamos número de parte y foto real en la cotización; y entregamos comprobante de compra. La garantía cubre defectos de fábrica en piezas sin instalar; las eléctricas se venden sin garantía.",
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Comprar fuera del concesionario anula la garantía de mi auto?",
+        respuesta:
+          "Si tu vehículo está dentro de la garantía de fábrica, consulta las condiciones con la marca antes de cambiar una pieza. Fuera de la garantía de fábrica, no hay ningún impedimento para comprar en un almacén independiente.",
+      },
+      {
+        pregunta: "¿Un almacén independiente vende repuestos originales?",
+        respuesta:
+          "Sí. Nosotros manejamos original, OEM y alterno, y te indicamos cuál es cuál en la cotización para que tomes la decisión con la información completa.",
+      },
+      {
+        pregunta: "¿Por qué el precio es menor fuera del concesionario?",
+        respuesta:
+          "Principalmente porque el repuesto OEM es la misma pieza del fabricante original sin el sobreprecio de la marca de la automotriz, y porque la estructura de costos de un almacén independiente es más liviana.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Contacto y ubicación", href: "/contacto" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "Original, OEM o alterno: ¿cuál conviene?", href: "/guias/compra/original-oem-o-alterno-cual-elegir" },
+      { titulo: "¿Cuánto cuestan los repuestos en Ecuador?", href: "/guias/compra/cuanto-cuestan-los-repuestos-en-ecuador" },
+      { titulo: "¿Es seguro comprar repuestos de auto por internet en Ecuador?", href: "/guias/compra/es-seguro-comprar-repuestos-por-internet-ecuador" },
+    ],
+    ctaWhatsApp: "Quiero comparar la opción original y la OEM para mi repuesto:",
+    fechaPublicacion: "2026-09-01",
+  },
+
+  {
+    slug: "repuestos-al-por-mayor-ecuador",
+    categoria: "compra",
+    titulo: "¿Dónde comprar repuestos de carros al por mayor en Ecuador?",
+    descripcion:
+      "Cómo comprar repuestos al por mayor en Ecuador para talleres, mecánicas y almacenes: qué datos enviar, cómo cotizar volumen y cómo coordinar envíos a provincias.",
+    respuesta_corta:
+      "Un pedido al por mayor se cotiza por lista, no pieza por pieza. Arma una fila por referencia con el número de parte, o con marca, modelo, año y descripción, e indica la cantidad de cada ítem y si necesitas original, OEM o alterno. Con esa lista se arma una cotización de volumen con precio por referencia, disponibilidad y plazo, y se coordina un despacho único. En El Chino Americano atendemos talleres, mecánicas, almacenes de provincia y flotas desde Quito, con envío a todo el Ecuador en 24 a 72 horas y guía rastreable. Para compras recurrentes conviene acordar las referencias de mayor rotación —filtros, pastillas y discos, bujías, correas, amortiguadores, rótulas y kits de distribución— y anticipar disponibilidad en lugar de comprar cada vez con urgencia.",
+    keywords: [
+      "repuestos al por mayor Ecuador",
+      "repuestos por mayor para talleres Ecuador",
+      "distribuidor repuestos automotrices Ecuador",
+      "comprar autopartes al por mayor Quito",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Un taller no compra como un dueño de auto. Necesita rotación previsible, precios de volumen y un proveedor que responda rápido cuando el vehículo del cliente está en el elevador.",
+      },
+      {
+        tipo: "h2",
+        texto: "Quién compra al por mayor",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Talleres y mecánicas especializadas en marcas chinas o americanas.",
+          "Almacenes de repuestos de provincia que se abastecen desde Quito.",
+          "Flotas y empresas con varios vehículos del mismo modelo.",
+          "Servicios de mantenimiento por contrato.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo cotizar un pedido de volumen",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Arma una lista con una fila por referencia: número de parte o marca, modelo, año y descripción.",
+          "Indica la cantidad por referencia y si necesitas original, OEM o alterno.",
+          "Envía la lista por WhatsApp en texto, Excel o foto legible.",
+          "Recibes la cotización consolidada con precio por referencia, disponibilidad y plazo.",
+          "Se coordina un despacho único a tu ciudad con guía rastreable.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Qué referencias conviene mantener en stock",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Para talleres que trabajan marcas chinas y americanas, las referencias de mayor rotación suelen ser filtros (aceite, aire, combustible y cabina), pastillas y discos de freno, bujías, correas de accesorios, amortiguadores, rótulas y terminales de dirección, bombas de agua y kits de distribución. Anticipar estas referencias evita parar un trabajo esperando una pieza.",
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "El error más común en pedidos de volumen es enviar la lista sin el año ni la versión de motor de cada vehículo. Una lista bien armada se cotiza en horas; una lista incompleta se convierte en días de idas y vueltas.",
+      },
+      {
+        tipo: "h2",
+        texto: "Envíos a provincias",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Despachamos desde Quito a Guayaquil, Cuenca, Ambato, Loja, Manta, Esmeraldas, Santo Domingo de los Tsáchilas y el resto del país en 24 a 72 horas según la ciudad, con guía de envío rastreable.",
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Cuál es el pedido mínimo para precio de mayorista?",
+        respuesta:
+          "Depende de las referencias y del volumen por ítem. Envíanos tu lista por WhatsApp y te confirmamos la condición aplicable a ese pedido.",
+      },
+      {
+        pregunta: "¿Atienden talleres fuera de Quito?",
+        respuesta:
+          "Sí. Trabajamos con talleres y almacenes de todo el Ecuador, con envío desde Quito en 24 a 72 horas y guía rastreable.",
+      },
+      {
+        pregunta: "¿Pueden abastecer referencias de forma recurrente?",
+        respuesta:
+          "Sí. Si nos compartes tus referencias de mayor rotación, podemos anticipar disponibilidad y reducir los tiempos de espera en tus trabajos.",
+      },
+      {
+        pregunta: "¿Emiten comprobante para empresas?",
+        respuesta:
+          "Sí. Indícanos los datos de facturación al momento de confirmar el pedido.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+      { nombre: "Contacto", href: "/contacto" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Cuánto cuestan los repuestos en Ecuador?", href: "/guias/compra/cuanto-cuestan-los-repuestos-en-ecuador" },
+      { titulo: "Original, OEM o alterno: ¿cuál conviene?", href: "/guias/compra/original-oem-o-alterno-cual-elegir" },
+    ],
+    ctaWhatsApp: "Tengo un taller y quiero cotizar un pedido al por mayor. Mi lista es:",
+    fechaPublicacion: "2026-09-01",
+  },
+]
+
+// ─── GUÍAS DE MANTENIMIENTO ───────────────────────────────────────────────────
+
+const guiasMantenimiento: Guia[] = [
+  {
+    slug: "filtros-chery-cuales-son-y-cada-cuanto-cambiarlos",
+    categoria: "mantenimiento",
+    titulo: "Filtros Chery: cuáles son, cada cuánto cambiarlos y cómo pedir el correcto",
+    descripcion:
+      "Guía de los cuatro filtros de un Chery (aceite, aire, combustible y cabina): función, intervalos de cambio en Ecuador y qué datos enviar para pedir el filtro exacto.",
+    respuesta_corta:
+      "Un Chery usa cuatro filtros, cada uno con su propio intervalo. El de aceite se cambia en cada cambio de aceite: 5.000 a 7.000 km con semisintético y hasta 10.000 km con sintético. El de aire del motor, cada 15.000 km, o antes si circulas por vías sin asfaltar o zonas de construcción. El de combustible, entre 20.000 y 40.000 km según el modelo; saturado provoca tirones al acelerar y pérdida de potencia en subida. El de cabina o polen, cada 15.000 km o una vez al año, y en Quito conviene revisarlo antes por el polvo y la contaminación urbana. Para pedir el filtro correcto no basta decir Tiggo: Chery ha usado varias plataformas bajo nombres parecidos, así que envía modelo exacto, año y código de motor, o el número de parte del filtro usado.",
+    keywords: [
+      "filtros chery",
+      "filtro de aceite Chery Tiggo",
+      "filtro de aire Chery Ecuador",
+      "filtro de cabina Chery",
+      "cada cuánto cambiar filtros Chery",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Los filtros son el mantenimiento más barato y el que más problemas evita. En un Chery son cuatro, cada uno con una función distinta y un intervalo propio. Cambiarlos a tiempo cuesta poco; no cambiarlos termina en reparaciones de motor.",
+      },
+      {
+        tipo: "h2",
+        texto: "1. Filtro de aceite",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Retiene las partículas metálicas y el hollín que circulan con el aceite. Se cambia siempre junto con el aceite, nunca después: reutilizarlo contamina el aceite nuevo desde el primer kilómetro. El intervalo depende del aceite: con mineral o semisintético, entre 5.000 y 7.000 km; con sintético, hasta 10.000 km según lo indique el manual del vehículo.",
+      },
+      {
+        tipo: "h2",
+        texto: "2. Filtro de aire del motor",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Evita que polvo y arena entren a los cilindros. Un filtro saturado reduce la potencia y aumenta el consumo. El intervalo de referencia es 15.000 km, pero en Ecuador conviene revisarlo antes si circulas por vías sin asfaltar, zonas de construcción o carreteras con polvo. Se revisa a simple vista: si está oscuro y cargado, se cambia.",
+      },
+      {
+        tipo: "h2",
+        texto: "3. Filtro de combustible",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Protege los inyectores y la bomba de combustible de impurezas y agua. El intervalo va de 20.000 a 40.000 km según el modelo. Los síntomas de un filtro saturado son tirones al acelerar, pérdida de potencia en subida y arranque difícil. Es una pieza barata que protege componentes caros.",
+      },
+      {
+        tipo: "h2",
+        texto: "4. Filtro de cabina (polen o aire acondicionado)",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Filtra el aire que entra al habitáculo. No afecta al motor, pero sí a la salud de los ocupantes y al rendimiento del aire acondicionado. El intervalo de referencia es 15.000 km o una vez al año. Si el aire acondicionado sopla poco o hay olor a humedad, casi siempre es este filtro. En Quito, por el polvo y la contaminación urbana, conviene revisarlo antes del intervalo.",
+      },
+      {
+        tipo: "h2",
+        texto: "Modelos Chery más comunes en Ecuador",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Chery Tiggo 2 y Tiggo 2 Pro",
+          "Chery Tiggo 4 y Tiggo 4 Pro",
+          "Chery Tiggo 5 y Tiggo 5X",
+          "Chery Tiggo 7 y Tiggo 7 Pro",
+          "Chery Tiggo 8 y Tiggo 8 Pro",
+          "Chery Arrizo 5 y Arrizo 6",
+          "Chery QQ",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "Decir solo 'filtros para Tiggo' no alcanza. Chery ha usado varias plataformas y motores bajo nombres de modelo parecidos, y las referencias de filtro cambian entre ellas. Envía modelo exacto, año y código de motor, o una foto del número de parte del filtro que vas a reemplazar.",
+      },
+      {
+        tipo: "h2",
+        texto: "Qué enviarnos para cotizar los filtros correctos",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Modelo exacto y año del vehículo (por ejemplo, Tiggo 4 Pro 2022, no solo 'Tiggo').",
+          "Código de motor si lo conoces, o el VIN del vehículo.",
+          "Qué filtros necesitas: aceite, aire, combustible, cabina, o el juego completo.",
+          "Si prefieres original, OEM o alterno de marca reconocida.",
+        ],
+      },
+      {
+        tipo: "p",
+        texto:
+          "Con esos datos verificamos la aplicación, te enviamos los números de parte y cotizamos el juego completo, que casi siempre sale mejor que comprar los filtros por separado.",
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Cada cuánto se cambian los filtros de un Chery Tiggo?",
+        respuesta:
+          "Filtro de aceite en cada cambio de aceite (5.000 a 10.000 km según el aceite), filtro de aire cada 15.000 km, filtro de combustible entre 20.000 y 40.000 km, y filtro de cabina cada 15.000 km o una vez al año. Confirma siempre contra el manual de tu versión.",
+      },
+      {
+        pregunta: "¿Puedo usar filtros alternos en un Chery?",
+        respuesta:
+          "Sí. Los filtros son una de las piezas donde un alterno u OEM de marca reconocida rinde perfectamente. Lo que no conviene es un filtro genérico sin fabricante identificable, porque el medio filtrante es justamente lo que estás pagando.",
+      },
+      {
+        pregunta: "¿Qué pasa si no cambio el filtro de aire a tiempo?",
+        respuesta:
+          "El motor respira menos, pierdes potencia y sube el consumo de combustible. Si el filtro se rompe por saturación, entra polvo directo a los cilindros y el desgaste interno se acelera.",
+      },
+      {
+        pregunta: "¿Tienen filtros Chery en stock en Ecuador?",
+        respuesta:
+          "Sí, es una de las referencias de mayor rotación. Escríbenos por WhatsApp con el modelo exacto y el año y te confirmamos disponibilidad, precio y número de parte. Enviamos a todo el Ecuador desde Quito.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
+      { nombre: "Filtros en el catálogo", href: "/catalogo?categoria=filtros" },
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Cada cuánto cambiar el filtro de aceite?", href: "/guias/problemas/cada-cuanto-cambiar-filtro-de-aceite" },
+      { titulo: "Plan de mantenimiento por kilometraje para autos chinos", href: "/guias/mantenimiento/plan-de-mantenimiento-auto-chino" },
+      { titulo: "¿Dónde comprar repuestos Chery en Ecuador?", href: "/guias/marcas/repuestos-chery-ecuador" },
+    ],
+    ctaWhatsApp: "Necesito cotizar filtros para mi Chery. Modelo y año:",
+    fechaPublicacion: "2026-09-01",
+  },
+
+  {
+    slug: "plan-de-mantenimiento-auto-chino",
+    categoria: "mantenimiento",
+    titulo: "Plan de mantenimiento por kilometraje para autos chinos en Ecuador",
+    descripcion:
+      "Qué revisar y cambiar cada 5.000, 10.000, 20.000, 40.000 y 60.000 km en un Chery, JAC, BYD, Great Wall, MG o DFSK, con las particularidades del uso en Ecuador.",
+    respuesta_corta:
+      "Plan de referencia para un auto chino en Ecuador, siempre validado contra el manual de tu versión. Cada 5.000 a 10.000 km: aceite y filtro de aceite, revisión de niveles, frenos y presión de llantas, y rotación de llantas. Cada 15.000 km: filtro de aire, filtro de cabina, alineación y balanceo. Entre 20.000 y 40.000 km: filtro de combustible, pastillas de freno y revisión de discos y correas de accesorios. Cada 40.000 km: bujías en motores a gasolina, líquido de frenos y revisión completa de suspensión. Entre 60.000 y 100.000 km: kit de distribución junto con la bomba de agua si es accionada por esa correa, y cambio total de refrigerante. Tres factores locales acortan estos intervalos: la altura de la sierra, el polvo de vías sin asfaltar y el tráfico urbano denso.",
+    keywords: [
+      "mantenimiento auto chino Ecuador",
+      "plan de mantenimiento Chery JAC",
+      "mantenimiento por kilometraje vehículo chino",
+      "cada cuánto hacer mantenimiento auto chino",
+    ],
+    contenido: [
+      {
+        tipo: "p",
+        texto:
+          "Los vehículos chinos modernos no requieren un mantenimiento distinto al de cualquier otra marca: requieren que se cumpla. El manual de cada modelo manda, y esta guía sirve como referencia práctica para planificar con anticipación y comprar los repuestos sin urgencia.",
+      },
+      {
+        tipo: "h2",
+        texto: "Cada 5.000 a 10.000 km",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Cambio de aceite de motor y filtro de aceite (5.000 a 7.000 km con semisintético, hasta 10.000 km con sintético).",
+          "Revisión de niveles: refrigerante, líquido de frenos, dirección hidráulica y limpiaparabrisas.",
+          "Revisión visual de pastillas de freno y presión de llantas.",
+          "Rotación de llantas.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cada 15.000 km",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Filtro de aire del motor (antes si circulas en zonas con polvo).",
+          "Filtro de cabina o de polen.",
+          "Alineación y balanceo.",
+          "Revisión de amortiguadores y bujes de suspensión.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cada 20.000 a 40.000 km",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Filtro de combustible, según lo especifique el modelo.",
+          "Cambio de pastillas de freno delanteras si el desgaste lo exige.",
+          "Revisión de discos de freno: espesor y ausencia de alabeo.",
+          "Revisión de correas de accesorios y tensores.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cada 40.000 km",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Bujías en motores a gasolina (el intervalo varía según el tipo de bujía).",
+          "Líquido de frenos: es higroscópico y pierde propiedades con el tiempo, no solo con el kilometraje.",
+          "Revisión completa de suspensión: rótulas, terminales de dirección y bujes.",
+          "Revisión del sistema de enfriamiento y del estado del refrigerante.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Entre 60.000 y 100.000 km",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Kit de distribución (correa, tensor y poleas) junto con la bomba de agua, si la bomba es accionada por esa correa.",
+          "Cambio completo de refrigerante.",
+          "Revisión o cambio de amortiguadores.",
+          "Revisión del embrague en vehículos manuales de uso urbano intenso.",
+          "Revisión del sistema de escape y del catalizador.",
+        ],
+      },
+      {
+        tipo: "aviso",
+        texto:
+          "El kit de distribución no es un mantenimiento opcional. Si la correa se corta en un motor de interferencia, las válvulas chocan con los pistones y la reparación cuesta muchas veces más que el kit. Cámbialo dentro del intervalo del manual, no cuando haga ruido.",
+      },
+      {
+        tipo: "h2",
+        texto: "Tres factores que acortan los intervalos en Ecuador",
+      },
+      {
+        tipo: "ol",
+        items: [
+          "Altura: en Quito y la sierra, el motor y el sistema de encendido trabajan más exigidos. Respetar el intervalo de bujías y filtros de aire tiene un efecto directo en el consumo y la potencia.",
+          "Polvo: vías sin asfaltar y zonas de construcción saturan el filtro de aire mucho antes de los 15.000 km.",
+          "Tráfico urbano: el uso continuo en ciudad desgasta frenos, embrague y aceite más rápido que la misma distancia en carretera.",
+        ],
+      },
+      {
+        tipo: "h2",
+        texto: "Cómo planificar la compra de repuestos",
+      },
+      {
+        tipo: "p",
+        texto:
+          "Comprar con anticipación siempre sale mejor: puedes comparar original, OEM y alterno con calma, agrupar varias piezas en un solo envío y evitar el sobreprecio de la urgencia. Envíanos el modelo, el año y el kilometraje actual y te armamos la lista del próximo mantenimiento con precios y números de parte.",
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Los autos chinos necesitan más mantenimiento que otros?",
+        respuesta:
+          "No necesariamente. Los modelos actuales tienen intervalos comparables a los de otras marcas. Lo que sí cambia es la disponibilidad de repuestos: conviene planificar con anticipación en piezas menos comunes.",
+      },
+      {
+        pregunta: "¿Puedo estirar el cambio de aceite si uso sintético?",
+        respuesta:
+          "Hasta el intervalo que indique el manual de tu versión, sí. Pero en uso urbano intenso o en zonas de polvo, estirarlo es un mal negocio: el aceite se contamina por condiciones de uso, no solo por kilómetros.",
+      },
+      {
+        pregunta: "¿Cada cuánto cambio el kit de distribución en un Chery o JAC?",
+        respuesta:
+          "Depende del motor: el rango habitual está entre 60.000 y 100.000 km. Confirma el intervalo exacto en el manual de tu versión y cambia la bomba de agua al mismo tiempo si es accionada por esa correa, porque la mano de obra es la misma.",
+      },
+      {
+        pregunta: "¿Ustedes venden los kits completos de mantenimiento?",
+        respuesta:
+          "Sí. Escríbenos con el modelo, el año y el kilometraje y te cotizamos el juego completo de lo que toca en ese servicio, con números de parte y en un solo envío.",
+      },
+    ],
+    productosRelacionados: [
+      { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
+      { nombre: "Repuestos para JAC", href: "/catalogo/marca/jac" },
+      { nombre: "Ver todo el catálogo", href: "/catalogo" },
+    ],
+    guiasRelacionadas: [
+      { titulo: "Filtros Chery: cuáles son y cada cuánto cambiarlos", href: "/guias/mantenimiento/filtros-chery-cuales-son-y-cada-cuanto-cambiarlos" },
+      { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
+      { titulo: "¿Dónde comprar repuestos para autos chinos en Ecuador?", href: "/guias/compra/repuestos-autos-chinos-ecuador" },
+    ],
+    ctaWhatsApp: "Quiero cotizar el mantenimiento de mi auto. Modelo, año y kilometraje:",
+    fechaPublicacion: "2026-09-01",
+  },
 ]
 
 // ─── EXPORTS ──────────────────────────────────────────────────────────────────
 
-export const guias: Guia[] = [...guiasProblemas, ...guiasMarcas, ...guiasCompra]
+export const guias: Guia[] = [
+  ...guiasProblemas,
+  ...guiasMarcas,
+  ...guiasCompra,
+  ...guiasMantenimiento,
+]
 
 export function getGuiaBySlug(categoria: string, slug: string): Guia | undefined {
   return guias.find((g) => g.categoria === categoria && g.slug === slug)
