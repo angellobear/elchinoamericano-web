@@ -20,6 +20,7 @@ import {
   getProductDisplayImage,
   getProductSeoDescription,
   getProductSeoTitle,
+  getPartBrandName,
   getProductShareImage,
   getProductShareImageAlt,
   getProductUrl,
@@ -167,11 +168,9 @@ function buildJsonLd(product: Product, availability: ReturnType<typeof getAvaila
     description: product.description ?? product.short_description,
     image: [productImage],
     url: productUrl,
-    sku: product.sku ?? product.code,
-    mpn: product.code,
-    brand: product.part_brand?.name
-      ? { "@type": "Brand", name: product.part_brand.name }
-      : undefined,
+    sku: product.code,
+    mpn: product.sku ?? product.code,
+    brand: { "@type": "Brand", name: getPartBrandName(product) },
     category: product.category?.name,
     itemCondition: "https://schema.org/NewCondition",
     offers: {
@@ -318,7 +317,7 @@ export default async function ProductDetailPage({
   
   const quickFacts = [
     product.sku ? { label: "SKU", value: product.sku } : null,
-    product.part_brand?.name ? { label: "Marca del repuesto", value: product.part_brand.name } : null,
+    { label: "Marca del repuesto", value: getPartBrandName(product) },
     product.category?.name ? { label: "Categoria", value: product.category.name } : null,
     { label: "Tipo", value: typeConfig.label },
     product.short_description ? { label: "Descripción", value: product.short_description } : null,
@@ -440,7 +439,7 @@ export default async function ProductDetailPage({
 
                 <div>
                   <p className="text-3.25 font-semibold uppercase tracking-[.04em] text-[#8a93a3]">
-                    {product.part_brand?.name}
+                    {getPartBrandName(product)}
                   </p>
                   <h1 className="mt-2 font-display text-[clamp(2rem,4.5vw,3.125rem)] font-bold uppercase leading-none text-navy">
                     {product.title}
@@ -818,7 +817,7 @@ export default async function ProductDetailPage({
                       </div>
                       <div className="p-[13px_14px]">
                         <p className="text-2.5 font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
-                          {relatedProduct.part_brand?.name}
+                          {getPartBrandName(relatedProduct)}
                         </p>
                         <h3 className="mt-1 font-display text-4 font-bold uppercase leading-tight text-navy">
                           {relatedProduct.title}

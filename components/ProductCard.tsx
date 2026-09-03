@@ -7,7 +7,7 @@ import { MessageCircle, Package } from "lucide-react"
 import { Product } from "@/types"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { buildProductPath } from "@/lib/product-slugs"
-import { DEFAULT_PRODUCT_IMAGE_PATH, getProductPrimaryImage } from "@/lib/seo"
+import { DEFAULT_PRODUCT_IMAGE_PATH, getPartBrandName, getProductPrimaryImage } from "@/lib/seo"
 
 const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   original: { label: "Original", cls: "bg-navy text-white" },
@@ -81,7 +81,7 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Info */}
       <div className="flex flex-col flex-1 p-[15px_17px_17px] pointer-events-none">
         <p className="text-2.75 font-semibold uppercase tracking-[.06em] text-[#8a93a3]">
-          {product.part_brand?.name}
+          {getPartBrandName(product)}
         </p>
         <h3 className="font-display font-bold text-4.75 uppercase text-navy leading-[1.12] mt-1.25">
           {product.title}

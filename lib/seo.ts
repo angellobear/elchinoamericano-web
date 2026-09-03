@@ -42,6 +42,13 @@ export function getProductPrimaryImage(product: Product) {
   )
 }
 
+export const FALLBACK_PART_BRAND = "ALTERNO"
+
+// ponytail: sin marca registrada = repuesto alterno; Google exige brand junto a mpn
+export function getPartBrandName(product: Product) {
+  return product.part_brand?.name ?? FALLBACK_PART_BRAND
+}
+
 export function getProductDisplayImage(product: Product) {
   return getProductPrimaryImage(product) ?? DEFAULT_PRODUCT_IMAGE_PATH
 }

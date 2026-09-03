@@ -7,7 +7,7 @@ import { useCart } from "@/context/CartContext"
 import { Product } from "@/types"
 import { cn } from "@/lib/utils"
 import { getWhatsAppUrl } from "@/lib/constants"
-import { DEFAULT_PRODUCT_IMAGE_PATH, getProductPrimaryImage } from "@/lib/seo"
+import { DEFAULT_PRODUCT_IMAGE_PATH, getPartBrandName, getProductPrimaryImage } from "@/lib/seo"
 
 interface ProductDetailModalProps {
   product: Product | null
@@ -56,7 +56,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                   )}>
                     {product.type === 'aftermarket' ? 'Alterno' : product.type}
                   </span>
-                  <span className="text-xs text-slate-400 font-medium">{product.part_brand?.name}</span>
+                  <span className="text-xs text-slate-400 font-medium">{getPartBrandName(product)}</span>
                 </div>
                 <button onClick={onClose} className="text-slate-400 hover:text-slate-700 transition-colors p-1 rounded-md hover:bg-slate-100" aria-label="Cerrar">
                   <X size={18} />
@@ -84,7 +84,7 @@ export default function ProductDetailModal({ product, onClose }: ProductDetailMo
                   </div>
                   <div className="flex flex-col gap-2">
                     <h2 className="font-display font-bold text-navy text-2xl leading-tight">{product.title}</h2>
-                    <p className="text-slate-500 text-sm font-medium">{product.part_brand?.name}</p>
+                    <p className="text-slate-500 text-sm font-medium">{getPartBrandName(product)}</p>
                     <div className="flex items-baseline gap-2">
                       {product.offer_price && (
                         <span className="text-slate-400 line-through text-lg">${product.price.toFixed(2)}</span>
