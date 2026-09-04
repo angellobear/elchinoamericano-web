@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { MessageCircle } from "lucide-react"
 import { getWhatsAppUrl } from "@/lib/constants"
+import { trackWhatsApp } from "@/lib/analytics"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 const CURRENT_YEAR = new Date().getFullYear()
 const YEARS = Array.from({ length: 20 }, (_, i) => String(CURRENT_YEAR - i))
@@ -45,6 +46,7 @@ export default function ContactoForm({ brands }: ContactoFormProps) {
       `Repuesto que necesito: ${form.repuesto}.`,
       form.whatsapp ? `Mi WhatsApp: ${form.whatsapp}.` : null,
     ].filter(Boolean)
+    trackWhatsApp("contacto")
     window.open(getWhatsAppUrl(parts.join(" ")), "_blank", "noopener,noreferrer")
   }
 

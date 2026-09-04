@@ -511,6 +511,8 @@ export default async function ProductDetailPage({
                   <a
                     id={ctaTargetId}
                     href={whatsappHref}
+                    data-wa="producto"
+                    data-wa-item={product.sku}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-3 rounded-[14px] bg-wa py-5 text-4.5 font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"

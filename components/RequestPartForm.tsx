@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { PackageSearch, Send, CheckCircle, MessageCircle, ChevronDown } from "lucide-react"
 import { getWhatsAppUrl } from "@/lib/constants"
+import { trackWhatsApp } from "@/lib/analytics"
 
 interface RequestPartFormProps {
   searchQuery?: string
@@ -62,6 +63,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
     ]
       .join("\n")
 
+    trackWhatsApp("catalogo")
     window.open(getWhatsAppUrl(lines), "_blank")
     setSent(true)
     setTimeout(() => setSent(false), 5000)

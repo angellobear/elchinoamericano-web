@@ -170,7 +170,7 @@ export default async function ContactoPage() {
                     </div>
                     <div>
                       <p className="text-3 text-[#9fb0c8]">WhatsApp / Ventas</p>
-                      <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" className="font-bold text-4.25 text-white hover:text-wa transition-colors mt-1 block">
+                      <a href={getWhatsAppUrl()} data-wa="contacto" target="_blank" rel="noopener noreferrer" className="font-bold text-4.25 text-white hover:text-wa transition-colors mt-1 block">
                         {siteConfig.contact.whatsappDisplay}
                       </a>
                     </div>

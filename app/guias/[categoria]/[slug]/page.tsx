@@ -228,6 +228,8 @@ export default async function GuiaDetailPage({ params }: Props) {
           </p>
           <a
             href={waUrl}
+            data-wa="guias"
+            data-wa-item={guia.slug}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-full bg-wa px-6 py-3 text-sm font-semibold text-white hover:opacity-90"

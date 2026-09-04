@@ -154,6 +154,7 @@ export default function Hero({ brands }: HeroProps) {
               </Link>
               <a
                 href={getWhatsAppUrl()}
+                data-wa="home"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Escribir por WhatsApp a El Chino Americano"

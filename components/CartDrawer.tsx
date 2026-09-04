@@ -106,6 +106,7 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             </p>
             <a
               href={buildWhatsAppUrl()}
+              data-wa="carrito"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-semibold text-sm px-4 py-3 rounded-md transition-colors duration-150 active:scale-[0.98]"

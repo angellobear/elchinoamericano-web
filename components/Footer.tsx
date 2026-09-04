@@ -85,6 +85,7 @@ export default async function Footer() {
                 <a
                   key={label}
                   href={href}
+                  {...(isWa ? { "data-wa": "general" } : {})}
                   aria-label={label}
                   title={label}
                   target="_blank"
@@ -170,7 +171,7 @@ export default async function Footer() {
               </li>
               <li className="flex gap-2.5 items-center">
                 <MessageCircle size={17} className="text-wa shrink-0" />
-                <a href={getWhatsAppUrl()} target="_blank" rel="noopener noreferrer" title="Escribir por WhatsApp a El Chino Americano" className="text-white font-semibold text-3.5 hover:text-wa transition-colors">
+                <a href={getWhatsAppUrl()} data-wa="general" target="_blank" rel="noopener noreferrer" title="Escribir por WhatsApp a El Chino Americano" className="text-white font-semibold text-3.5 hover:text-wa transition-colors">
                   {siteConfig.contact.whatsappDisplay}
                 </a>
               </li>

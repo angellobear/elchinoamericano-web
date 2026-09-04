@@ -98,6 +98,8 @@ export default function ProductCard({ product }: { product: Product }) {
           </div>
           <a
             href={getWhatsAppUrl(waMsg)}
+            data-wa="catalogo"
+            data-wa-item={product.code}
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
