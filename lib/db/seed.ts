@@ -1,7 +1,51 @@
 #!/usr/bin/env node
-import { loadDatabaseUrl } from './config-env'
+import { loadDatabaseUrl, parseMysqlUrl } from './config-env'
 
-loadDatabaseUrl('local')
+const { envFile: seedEnvFile, url: seedDatabaseUrl } = loadDatabaseUrl('local')
+
+// ─── Guarda de host ──────────────────────────────────────────────────────────
+// El seed crea cuentas administrativas: solo debe correr contra una base local.
+// Para forzarlo deliberadamente contra otro host exporta SEED_ALLOW_REMOTE=1.
+const LOCAL_DB_HOSTS = ['localhost', '127.0.0.1']
+const seedDbHost = parseMysqlUrl(seedDatabaseUrl).host
+
+if (!LOCAL_DB_HOSTS.includes(seedDbHost) && process.env.SEED_ALLOW_REMOTE !== '1') {
+  console.error(
+    `❌ Seed abortado: DATABASE_URL en ${seedEnvFile} apunta a "${seedDbHost}", que no es local.\n` +
+    '   Este seed crea cuentas administrativas y nunca debe correr contra producción.\n' +
+    `   Apunta DATABASE_URL a localhost o 127.0.0.1, o exporta SEED_ALLOW_REMOTE=1 si de verdad quieres sembrar "${seedDbHost}".`,
+  )
+  process.exit(1)
+}
+
+// ─── Contraseñas del seed ────────────────────────────────────────────────────
+// Las contraseñas nunca se versionan: se leen del entorno y no hay valor por
+// defecto. Si falta alguna, el seed aborta antes de tocar la base.
+const PASSWORD_ENV_VARS = [
+  'SEED_SUPERADMIN_PASSWORD',
+  'SEED_ADMIN_PASSWORD',
+  'SEED_EMPLOYEE_PASSWORD',
+] as const
+
+type PasswordEnvVar = (typeof PASSWORD_ENV_VARS)[number]
+
+const seedPasswords = {} as Record<PasswordEnvVar, string>
+const missingPasswordVars = PASSWORD_ENV_VARS.filter(name => {
+  const value = process.env[name]?.trim()
+  if (!value) return true
+  seedPasswords[name] = value
+  return false
+})
+
+if (missingPasswordVars.length) {
+  console.error(
+    `❌ Seed abortado: faltan las contraseñas de las cuentas administrativas (${missingPasswordVars.join(', ')}).\n` +
+    '   Exporta una contraseña por cuenta antes de correr el seed, por ejemplo:\n' +
+    missingPasswordVars.map(name => `     export ${name}='TuContraseñaSegura'`).join('\n') + '\n' +
+    '   No existe un valor por defecto: el seed no crea cuentas con contraseñas conocidas.',
+  )
+  process.exit(1)
+}
 
 import { sql, inArray } from 'drizzle-orm'
 import bcrypt from 'bcryptjs'
@@ -211,11 +255,15 @@ async function seed() {
   log('proveedores', supplierValues)
 
   // ─── Dev users ───────────────────────────────────────────────────────────────
-  // Cambiar passwords antes de producción
+  // Requiere estas variables de entorno (sin defaults, el seed aborta si faltan):
+  //   SEED_SUPERADMIN_PASSWORD  → superadmin@elchinoamericano.com
+  //   SEED_ADMIN_PASSWORD       → admin@elchinoamericano.com
+  //   SEED_EMPLOYEE_PASSWORD    → vendedor@elchinoamericano.com
+  // Si el usuario ya existe, onDuplicateKeyUpdate NO reescribe su contraseña.
   const devUsers = [
-    { email: 'superadmin@elchinoamericano.com', fullName: 'Super Administrador', password: 'SuperAdmin2025!', role: 'superadmin' },
-    { email: 'admin@elchinoamericano.com',      fullName: 'Administrador',        password: 'Admin2025!',      role: 'admin' },
-    { email: 'vendedor@elchinoamericano.com',   fullName: 'Vendedor Uno',          password: 'Empleado2025!',   role: 'employee' },
+    { email: 'superadmin@elchinoamericano.com', fullName: 'Super Administrador', password: seedPasswords.SEED_SUPERADMIN_PASSWORD, role: 'superadmin' },
+    { email: 'admin@elchinoamericano.com',      fullName: 'Administrador',        password: seedPasswords.SEED_ADMIN_PASSWORD,      role: 'admin' },
+    { email: 'vendedor@elchinoamericano.com',   fullName: 'Vendedor Uno',          password: seedPasswords.SEED_EMPLOYEE_PASSWORD,   role: 'employee' },
   ]
   for (const u of devUsers) {
     const passwordHash = await bcrypt.hash(u.password, 12)
@@ -229,7 +277,7 @@ async function seed() {
     }), { email: sql.raw('email') })
   }
   console.log(`  ✓ ${'usuarios dev'.padEnd(20)} ${devUsers.map(u => u.email).join(', ')}`)
-  console.log('    Passwords: SuperAdmin2025! / Admin2025! / Empleado2025!')
+  console.log('    Passwords: las definidas en SEED_SUPERADMIN_PASSWORD / SEED_ADMIN_PASSWORD / SEED_EMPLOYEE_PASSWORD')
 
   console.log('\n✅ Seed completado exitosamente\n')
 }
