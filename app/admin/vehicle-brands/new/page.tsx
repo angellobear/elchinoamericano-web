@@ -7,11 +7,20 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { VEHICLE_BRAND_PERMISSION_KEYS } from '@/modules/admin/vehicle-brands/types'
 import { parseVehicleBrandFormData } from '@/modules/admin/vehicle-brands/form-schema'
 import { VehicleBrandForm } from '@/modules/admin/vehicle-brands/components/VehicleBrandForm'
 
 async function create(_: ActionState, formData: FormData) {
   'use server'
+
+  const payload = await getJwtPayload()
+  if (!hasModulePermission(payload, VEHICLE_BRAND_PERMISSION_KEYS, 'can_create')) {
+    return errorResult('No tienes permiso para realizar esta acción.')
+  }
+
   try {
     const parsed = parseVehicleBrandFormData(formData, { isActive: true, isVisibleOnWeb: false })
     if (!parsed.success) {

@@ -7,11 +7,20 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { CATEGORY_PERMISSION_KEYS } from '@/modules/admin/categories/types'
 import { parseCategoryFormData } from '@/modules/admin/categories/form-schema'
 import { CategoryForm } from '@/modules/admin/categories/components/CategoryForm'
 
 async function create(_: ActionState, formData: FormData) {
   'use server'
+
+  const payload = await getJwtPayload()
+  if (!hasModulePermission(payload, CATEGORY_PERMISSION_KEYS, 'can_create')) {
+    return errorResult('No tienes permiso para realizar esta acción.')
+  }
+
   try {
     const parsed = parseCategoryFormData(formData, { isActive: true })
     if (!parsed.success) {

@@ -8,10 +8,19 @@ import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { parseSupplierFormData } from '@/modules/admin/suppliers/form-schema'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { SUPPLIER_PERMISSION_KEYS } from '@/modules/admin/suppliers/types'
 import { SupplierForm } from '@/modules/admin/suppliers/components/SupplierForm'
 
 async function save(id: number, _: ActionState, formData: FormData) {
   'use server'
+
+  const payload = await getJwtPayload()
+  if (!hasModulePermission(payload, SUPPLIER_PERMISSION_KEYS, 'can_edit')) {
+    return errorResult('No tienes permiso para realizar esta acción.')
+  }
+
   try {
     const parsed = parseSupplierFormData(formData, { isActive: true })
     if (!parsed.success) {

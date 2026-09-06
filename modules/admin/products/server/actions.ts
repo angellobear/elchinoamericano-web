@@ -7,8 +7,7 @@ import { buildProductPath } from '@/lib/product-slugs'
 import { logger } from '@/lib/logger'
 import { errorResult, successResult } from '@/modules/admin/shared/types/action-result'
 import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
-
-const PRODUCT_PERMISSION_KEYS = ['products'] as const
+import { PRODUCT_PERMISSION_KEYS } from '@/modules/admin/products/types'
 
 async function revalidatePublicProduct(id: number) {
   const product = await getProductById(id, { withTrashed: true })

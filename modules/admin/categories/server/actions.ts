@@ -6,8 +6,7 @@ import { deleteCategory, updateCategory } from '@/lib/db/categories'
 import { logger } from '@/lib/logger'
 import { errorResult, successResult } from '@/modules/admin/shared/types/action-result'
 import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
-
-const CATEGORY_PERMISSION_KEYS = ['categories'] as const
+import { CATEGORY_PERMISSION_KEYS } from '@/modules/admin/categories/types'
 
 export async function toggleCategoryStatusAction(id: number, current: boolean) {
   const payload = await getJwtPayload()

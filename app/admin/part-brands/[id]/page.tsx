@@ -9,27 +9,39 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { PART_BRAND_PERMISSION_KEYS } from '@/modules/admin/part-brands/types'
 import { parsePartBrandFormData } from '@/modules/admin/part-brands/form-schema'
 
 async function save(id: number, _: ActionState, formData: FormData) {
   'use server'
+
+  const payload = await getJwtPayload()
+  if (!hasModulePermission(payload, PART_BRAND_PERMISSION_KEYS, 'can_edit')) {
+    return errorResult('No tienes permiso para realizar esta acción.')
+  }
+
   try {
     const parsed = parsePartBrandFormData(formData, { isActive: true })
     if (!parsed.success) {
       return errorResult(getZodErrorMessage(parsed.error))
     }
 
+    const current = (await getPartBrands(true)).find((b) => b.id === id)
+    if (!current) {
+      return errorResult('No se encontró la marca a editar.')
+    }
+
     const { name, originCountry, isActive } = parsed.data
     const file = formData.get('logo') as File | null
-    const currentUrl = formData.get('logo_current_url') as string
-    const currentPublicId = formData.get('logo_public_id') as string
     const removed = formData.get('logo_removed') === '1'
 
     const { url: logoUrl, publicId: logoPublicId } = await handleImageReplace(
       file && file.size > 0 ? file : null,
       removed,
-      currentPublicId || null,
-      currentUrl || null,
+      current.logoPublicId ?? null,
+      current.logoUrl ?? null,
       'part-brands',
     )
 

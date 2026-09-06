@@ -8,10 +8,19 @@ import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { parsePartBrandFormData } from '@/modules/admin/part-brands/form-schema'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { PART_BRAND_PERMISSION_KEYS } from '@/modules/admin/part-brands/types'
 import { PartBrandForm } from '@/modules/admin/part-brands/components/PartBrandForm'
 
 async function create(_: ActionState, formData: FormData) {
   'use server'
+
+  const payload = await getJwtPayload()
+  if (!hasModulePermission(payload, PART_BRAND_PERMISSION_KEYS, 'can_create')) {
+    return errorResult('No tienes permiso para realizar esta acción.')
+  }
+
   try {
     const parsed = parsePartBrandFormData(formData, { isActive: true })
     if (!parsed.success) {

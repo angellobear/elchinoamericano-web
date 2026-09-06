@@ -8,28 +8,40 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { CATEGORY_PERMISSION_KEYS } from '@/modules/admin/categories/types'
 import { parseCategoryFormData } from '@/modules/admin/categories/form-schema'
 import { CategoryForm } from '@/modules/admin/categories/components/CategoryForm'
 
 async function save(id: number, _: ActionState, formData: FormData) {
   'use server'
+
+  const payload = await getJwtPayload()
+  if (!hasModulePermission(payload, CATEGORY_PERMISSION_KEYS, 'can_edit')) {
+    return errorResult('No tienes permiso para realizar esta acción.')
+  }
+
   try {
     const parsed = parseCategoryFormData(formData, { isActive: true })
     if (!parsed.success) {
       return errorResult(getZodErrorMessage(parsed.error))
     }
 
+    const current = (await getCategories(true)).find((c) => c.id === id)
+    if (!current) {
+      return errorResult('No se encontró la categoría a editar.')
+    }
+
     const { name, description, sortOrder, isActive } = parsed.data
-    const file           = formData.get('image') as File | null
-    const currentUrl     = formData.get('image_current_url') as string
-    const currentPublicId = formData.get('image_public_id') as string
-    const removed        = formData.get('image_removed') === '1'
+    const file    = formData.get('image') as File | null
+    const removed = formData.get('image_removed') === '1'
 
     const { url: imageUrl, publicId: imagePublicId } = await handleImageReplace(
       file && file.size > 0 ? file : null,
       removed,
-      currentPublicId || null,
-      currentUrl || null,
+      current.imagePublicId ?? null,
+      current.imageUrl ?? null,
       'categories',
     )
 

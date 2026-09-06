@@ -21,12 +21,16 @@ import { parseIndexedFormData, parseProductFormData } from '@/modules/admin/prod
 import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHeader'
 import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import { errorResult, successResult, type ActionState } from '@/modules/admin/shared/types/action-result'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { PRODUCT_PERMISSION_KEYS } from '@/modules/admin/products/types'
 
 async function save(productId: number, _: ActionState, formData: FormData) {
   'use server'
 
   const payload = await getJwtPayload()
-  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, PRODUCT_PERMISSION_KEYS, 'can_edit')) {
+    return errorResult('No tienes permiso para realizar esta acción.')
+  }
 
   try {
     const currentProduct = await getProductById(productId)

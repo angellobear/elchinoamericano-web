@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getProductList, deleteProduct, getProductById } from '@/lib/db/products'
 import { getCategories } from '@/lib/db/categories'
 import { getVehicleBrands } from '@/lib/db/vehicle-brands'
@@ -8,9 +9,19 @@ import { ProductStatusToggle } from '@/modules/admin/products/components/Product
 import { ProductFilters } from './_components/ProductFilters'
 import { ProductPagination } from './_components/ProductPagination'
 import { buildProductPath } from '@/lib/product-slugs'
+import { routes } from '@/lib/routes'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { PRODUCT_PERMISSION_KEYS } from '@/modules/admin/products/types'
 
 async function handleDelete(id: number) {
   'use server'
+
+  const payload = await getJwtPayload()
+  if (!hasModulePermission(payload, PRODUCT_PERMISSION_KEYS, 'can_delete')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const product = await getProductById(id)
   await deleteProduct(id)
   revalidatePath('/admin/products')
