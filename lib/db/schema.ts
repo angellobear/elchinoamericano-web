@@ -1,5 +1,6 @@
 import {
   mysqlTable,
+  bigint,
   varchar,
   text,
   boolean,
@@ -43,7 +44,11 @@ export const users = mysqlTable('users', {
   isActive: boolean('is_active').default(true),
   deletedAt: timestamp('deleted_at'),
   lastLoginAt: timestamp('last_login_at'),
-  sessionsRevokedAt: timestamp('sessions_revoked_at'),
+  // Epoch en SEGUNDOS (mismo reloj y misma unidad que el claim `iat` del JWT).
+  // Entero a propósito: un TIMESTAMP arrastraría la zona horaria del servidor
+  // MySQL y la del proceso Node, y cualquier desfase entre ambas rompería la
+  // revocación en silencio (ver isTokenRevoked en lib/auth/check-permission).
+  sessionsRevokedAt: bigint('sessions_revoked_at', { mode: 'number' }),
   createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
   updatedAt: timestamp('updated_at').default(mysqlCurrentTimestamp),
 })

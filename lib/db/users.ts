@@ -55,12 +55,23 @@ export async function createUser(data: { email: string; fullName?: string; passw
 }
 
 /**
+ * Epoch en SEGUNDOS tomado del reloj de Node — el mismo que emite el claim `iat`
+ * del JWT. Deliberadamente NO usa `dbNow()` (`now()` de MySQL): esa marca vendría
+ * del reloj y la zona horaria del servidor MySQL y se compararía contra un `iat`
+ * en epoch UTC de Node, así que cualquier desfase de zona desplazaría la
+ * comparación varias horas y la revocación dejaría de revocar en silencio.
+ */
+function revokedAtEpochNow() {
+  return Math.floor(Date.now() / 1000)
+}
+
+/**
  * Revoca todas las sesiones activas del usuario: cualquier JWT emitido antes de
  * este instante deja de ser válido (ver isTokenRevoked en lib/auth/check-permission).
  */
 export async function revokeUserSessions(id: string) {
   const db = await getDb()
-  await db.update(users).set({ sessionsRevokedAt: dbNow() }).where(eq(users.id, id))
+  await db.update(users).set({ sessionsRevokedAt: revokedAtEpochNow() }).where(eq(users.id, id))
 }
 
 /**
@@ -83,7 +94,7 @@ export async function updateUser(id: string, data: { fullName?: string; roleId?:
     const revoke = shouldRevokeSessions(before, data)
     await tx
       .update(users)
-      .set({ ...data, updatedAt: dbNow(), ...(revoke ? { sessionsRevokedAt: dbNow() } : {}) })
+      .set({ ...data, updatedAt: dbNow(), ...(revoke ? { sessionsRevokedAt: revokedAtEpochNow() } : {}) })
       .where(eq(users.id, id))
     const after = await tx.query.users.findFirst({ where: eq(users.id, id) })
     return { before, after }

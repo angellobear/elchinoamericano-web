@@ -3,6 +3,9 @@ import { loadDatabaseUrl } from '../config-env'
 
 const { url: databaseUrl } = loadDatabaseUrl('local')
 
+// La columna guarda un epoch en SEGUNDOS (BIGINT), no un TIMESTAMP: así la
+// marca y el claim `iat` del JWT viven en la misma unidad y en el mismo reloj,
+// sin conversión de zona horaria entre MySQL y Node.
 async function ensureSessionsRevokedAtColumn(connection: mysql.Connection) {
   const [columns] = await connection.query(
     "SHOW COLUMNS FROM `users` LIKE 'sessions_revoked_at'",
@@ -14,7 +17,7 @@ async function ensureSessionsRevokedAtColumn(connection: mysql.Connection) {
   }
 
   await connection.execute(
-    'ALTER TABLE `users` ADD COLUMN `sessions_revoked_at` TIMESTAMP NULL',
+    'ALTER TABLE `users` ADD COLUMN `sessions_revoked_at` BIGINT NULL',
   )
   console.log('OK: users.sessions_revoked_at agregado')
 }

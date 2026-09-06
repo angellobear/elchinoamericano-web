@@ -12,7 +12,15 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET)
 
 /**
  * Decide si un token debe considerarse revocado comparando su claim `iat`
- * (segundos epoch) contra la marca `users.sessions_revoked_at`.
+ * contra la marca `users.sessions_revoked_at`.
+ *
+ * Ambos valores son epoch en SEGUNDOS producidos por el reloj de Node: el `iat`
+ * lo pone `SignJWT().setIssuedAt()` al emitir el token y la marca la escribe
+ * `revokeUserSessions` con `Math.floor(Date.now() / 1000)`. La columna es un
+ * entero, no un TIMESTAMP, precisamente para que no haya conversión de zona
+ * horaria entre la sesión de MySQL y el proceso Node: un desfase de zona hacia
+ * el pasado haría que la revocación dejara de revocar en silencio (fail-open),
+ * y hacia el futuro invalidaría sesiones legítimas.
  *
  * Reglas:
  * - Sin marca de revocación, el token nunca está revocado.
@@ -20,13 +28,18 @@ const secret = new TextEncoder().encode(process.env.JWT_SECRET)
  *   de probar que el token se emitió después de la revocación.
  * - Con marca de revocación e `iat`, se revoca si fue emitido antes de ella.
  *
+ * El `<` estricto es deliberado. Como ambos valores tienen precisión de un
+ * segundo, un `<=` invalidaría el token de un re-login hecho dentro del mismo
+ * segundo de la revocación. Se acepta a cambio una ventana residual de hasta un
+ * segundo en la que un token emitido en ese mismo segundo sobrevive.
+ *
  * NOTA: `scripts/check-session-revocation.mjs` es un espejo de esta función.
  * Si cambias una, cambia la otra.
  */
-export function isTokenRevoked(iat: number | undefined, sessionsRevokedAt: Date | null): boolean {
-  if (!sessionsRevokedAt) return false
+export function isTokenRevoked(iat: number | undefined, revokedAtEpoch: number | null): boolean {
+  if (!revokedAtEpoch) return false
   if (typeof iat !== 'number' || !Number.isFinite(iat)) return true
-  return iat * 1000 < sessionsRevokedAt.getTime()
+  return iat < revokedAtEpoch
 }
 
 /**
