@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { eq, and, sql } from 'drizzle-orm'
+import { extractBearerToken, tokensMatch } from '@/lib/auth/bearer-token'
 import { getDb } from '@/lib/db/client'
 import { categories, partBrands, suppliers, vehicleBrands, vehicleModels } from '@/lib/db/schema'
 import { createProduct, setSpecs, setImages, setAlternateCodes, setCompatibilities } from '@/lib/db/products'
@@ -100,9 +101,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'PRODUCT_IMPORT_TOKEN no configurado correctamente' }, { status: 500 })
   }
 
-  const authHeader = req.headers.get('authorization') ?? ''
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
-  if (token !== importToken) {
+  const token = extractBearerToken(req.headers.get('authorization'))
+  if (!tokensMatch(token, importToken)) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
 

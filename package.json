@@ -9,6 +9,7 @@
     "lint": "eslint",
     "check:jsonld": "node scripts/check-jsonld-escape.mjs",
     "check:revocation": "node scripts/check-session-revocation.mjs",
+    "check:token": "node scripts/check-token-compare.mjs",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:generate": "drizzle-kit generate",

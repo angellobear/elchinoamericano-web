@@ -1,18 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { timingSafeEqual } from 'node:crypto'
+import { extractBearerToken, tokensMatch } from '@/lib/auth/bearer-token'
 import { buildProductPath } from '@/lib/product-slugs'
 import { SITE_URL } from '@/lib/seo'
 
 const INDEXNOW_KEY = 'c2da09cf3ac8be47650f6b21e7f56906'
-
-function tokensMatch(received: string, expected: string) {
-  const a = Buffer.from(received)
-  const b = Buffer.from(expected)
-  // timingSafeEqual lanza si los buffers difieren en longitud: comparamos antes.
-  if (a.length !== b.length) return false
-  return timingSafeEqual(a, b)
-}
 
 // Solo aceptamos rutas internas simples: sin `//` (protocol-relative) ni `..` (traversal).
 function isSafePath(value: unknown): value is string {
@@ -34,8 +26,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'REVALIDATE_TOKEN no configurado correctamente' }, { status: 500 })
   }
 
-  const authHeader = req.headers.get('authorization') ?? ''
-  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : ''
+  const token = extractBearerToken(req.headers.get('authorization'))
   if (!tokensMatch(token, revalidateToken)) {
     return NextResponse.json({ error: 'No autorizado' }, { status: 401 })
   }
