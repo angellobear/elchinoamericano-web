@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createSupplier } from '@/lib/db/suppliers'
 import { logger } from '@/lib/logger'
 import { routes } from '@/lib/routes'
@@ -39,7 +40,13 @@ async function create(_: ActionState, formData: FormData) {
   return successResult('Proveedor creado', undefined, { redirectTo: routes.admin.suppliers.index })
 }
 
-export default function NewSupplierPage() {
+export default async function NewSupplierPage() {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, SUPPLIER_PERMISSION_KEYS, 'can_create')) {
+    redirect(routes.admin.forbidden)
+  }
+
   return (
     <div className="p-4 md:p-8">
       <AdminPageHeader

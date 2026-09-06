@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getPartBrands, updatePartBrand } from '@/lib/db/part-brands'
 import { handleImageReplace } from '@/lib/cloudinary'
@@ -67,6 +67,12 @@ export default async function EditPartBrandPage({
 }: {
   params: Promise<{ id: string }>
 }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, PART_BRAND_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { id } = await params
   const all = await getPartBrands(true)
   const brand = all.find((b) => b.id === Number(id))

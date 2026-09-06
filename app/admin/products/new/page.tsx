@@ -130,6 +130,9 @@ async function create(_: ActionState, formData: FormData) {
 export default async function NewProductPage() {
   const payload = await getJwtPayload()
   if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, PRODUCT_PERMISSION_KEYS, 'can_create')) {
+    redirect(routes.admin.forbidden)
+  }
 
   const [categories, partBrands, suppliers] = await Promise.all([
     getCategories(),

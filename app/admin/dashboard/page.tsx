@@ -2,6 +2,9 @@ import { getProductStats } from '@/lib/db/products'
 import { getCategories } from '@/lib/db/categories'
 import { Package, PackageX, AlertTriangle, Tag, Boxes, Car, Wrench } from 'lucide-react'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { routes } from '@/lib/routes'
 
 async function getStats() {
   const [ps, cats] = await Promise.all([getProductStats(), getCategories()])
@@ -9,6 +12,9 @@ async function getStats() {
 }
 
 export default async function DashboardPage() {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+
   const stats = await getStats()
 
   const kpis = [

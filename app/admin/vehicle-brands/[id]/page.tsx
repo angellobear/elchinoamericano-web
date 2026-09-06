@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getVehicleBrandById, getVehicleModels, updateVehicleBrand } from '@/lib/db/vehicle-brands'
 import { handleImageReplace } from '@/lib/cloudinary'
@@ -68,6 +68,12 @@ async function save(id: number, _: ActionState, formData: FormData) {
 }
 
 export default async function VehicleBrandPage({ params }: { params: Promise<{ id: string }> }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, VEHICLE_BRAND_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { id } = await params
   const brandId = Number(id)
   const [brand, models] = await Promise.all([

@@ -3,12 +3,23 @@ import { Plus } from 'lucide-react'
 import { SuppliersTable } from '@/modules/admin/suppliers/components/SuppliersTable'
 import { supplierRepository } from '@/modules/admin/suppliers/server/repository'
 import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
+import { redirect } from 'next/navigation'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { routes } from '@/lib/routes'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { SUPPLIER_PERMISSION_KEYS } from '@/modules/admin/suppliers/types'
 
 export default async function SuppliersPage({
   searchParams,
 }: {
   searchParams: Promise<{ search?: string }>
 }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, SUPPLIER_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { search } = await searchParams
   const all = await supplierRepository.listForAdmin()
   const suppliers = search

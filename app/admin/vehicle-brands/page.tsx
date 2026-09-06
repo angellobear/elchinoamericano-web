@@ -3,12 +3,23 @@ import { Plus } from 'lucide-react'
 import { VehicleBrandsTable } from '@/modules/admin/vehicle-brands/components/VehicleBrandsTable'
 import { vehicleBrandRepository } from '@/modules/admin/vehicle-brands/server/repository'
 import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
+import { redirect } from 'next/navigation'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { routes } from '@/lib/routes'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { VEHICLE_BRAND_PERMISSION_KEYS } from '@/modules/admin/vehicle-brands/types'
 
 export default async function VehicleBrandsPage({
   searchParams,
 }: {
   searchParams: Promise<{ search?: string }>
 }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, VEHICLE_BRAND_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { search } = await searchParams
   const all = await vehicleBrandRepository.listForAdmin()
   const brands = search

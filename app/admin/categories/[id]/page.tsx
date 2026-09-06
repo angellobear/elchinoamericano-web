@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getCategories, updateCategory } from '@/lib/db/categories'
 import { handleImageReplace } from '@/lib/cloudinary'
@@ -57,6 +57,12 @@ async function save(id: number, _: ActionState, formData: FormData) {
 }
 
 export default async function EditCategoryPage({ params }: { params: Promise<{ id: string }> }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, CATEGORY_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { id } = await params
   const all = await getCategories(true)
   const cat = all.find(c => c.id === Number(id))

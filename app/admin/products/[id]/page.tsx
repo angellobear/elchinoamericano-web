@@ -140,6 +140,9 @@ export default async function EditProductPage({
 }) {
   const payload = await getJwtPayload()
   if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, PRODUCT_PERMISSION_KEYS, 'can_edit')) {
+    redirect(routes.admin.forbidden)
+  }
 
   const { id } = await params
   const productId = Number(id)

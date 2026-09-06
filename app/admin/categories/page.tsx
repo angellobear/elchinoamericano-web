@@ -4,12 +4,23 @@ import { Plus, Pencil, Tag } from 'lucide-react'
 import { CategoryStatusToggle } from '@/modules/admin/categories/components/CategoryStatusToggle'
 import { CategoryDeleteButton } from '@/modules/admin/categories/components/CategoryDeleteButton'
 import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
+import { redirect } from 'next/navigation'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { routes } from '@/lib/routes'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { CATEGORY_PERMISSION_KEYS } from '@/modules/admin/categories/types'
 
 export default async function CategoriesPage({
   searchParams,
 }: {
   searchParams: Promise<{ search?: string }>
 }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, CATEGORY_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { search } = await searchParams
   const allCategories = await getCategories(true)
   const categories = search

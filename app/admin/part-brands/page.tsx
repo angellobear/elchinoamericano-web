@@ -3,12 +3,23 @@ import { Plus } from 'lucide-react'
 import { PartBrandsTable } from '@/modules/admin/part-brands/components/PartBrandsTable'
 import { partBrandRepository } from '@/modules/admin/part-brands/server/repository'
 import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
+import { redirect } from 'next/navigation'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { routes } from '@/lib/routes'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { PART_BRAND_PERMISSION_KEYS } from '@/modules/admin/part-brands/types'
 
 export default async function PartBrandsPage({
   searchParams,
 }: {
   searchParams: Promise<{ search?: string }>
 }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, PART_BRAND_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { search } = await searchParams
   const all = await partBrandRepository.listForAdmin()
   const brands = search

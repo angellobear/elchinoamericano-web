@@ -36,6 +36,12 @@ export default async function ProductsPage({
 }: {
   searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string; page?: string; limit?: string }>
 }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, PRODUCT_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const params = await searchParams
   const { search, type } = params
   const status = params.status ?? 'active'

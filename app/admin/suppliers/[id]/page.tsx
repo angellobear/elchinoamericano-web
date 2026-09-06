@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { getSuppliers, updateSupplier } from '@/lib/db/suppliers'
 import { logger } from '@/lib/logger'
@@ -41,6 +41,12 @@ async function save(id: number, _: ActionState, formData: FormData) {
 }
 
 export default async function EditSupplierPage({ params }: { params: Promise<{ id: string }> }) {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, SUPPLIER_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const { id } = await params
   const all = await getSuppliers(true)
   const supplier = all.find(s => s.id === Number(id))

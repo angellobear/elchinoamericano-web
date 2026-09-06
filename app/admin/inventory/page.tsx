@@ -1,8 +1,19 @@
 import { getInventory } from '@/lib/db/products'
 import InventoryTable from './InventoryTable'
 import { Boxes, AlertTriangle } from 'lucide-react'
+import { redirect } from 'next/navigation'
+import { getJwtPayload } from '@/lib/auth/check-permission'
+import { routes } from '@/lib/routes'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
+import { INVENTORY_PERMISSION_KEYS } from '@/modules/admin/inventory/types'
 
 export default async function InventoryPage() {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, INVENTORY_PERMISSION_KEYS, 'can_view')) {
+    redirect(routes.admin.forbidden)
+  }
+
   const products = await getInventory()
   const alerts = products.filter(p => p.stock <= (p.minStockAlert ?? 5))
 

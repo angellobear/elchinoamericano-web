@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createVehicleBrand } from '@/lib/db/vehicle-brands'
 import { handleImageReplace } from '@/lib/cloudinary'
 import { logger } from '@/lib/logger'
@@ -55,7 +56,13 @@ async function create(_: ActionState, formData: FormData) {
   return successResult('Marca creada', undefined, { redirectTo: routes.admin.vehicleBrands.index })
 }
 
-export default function NewVehicleBrandPage() {
+export default async function NewVehicleBrandPage() {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, VEHICLE_BRAND_PERMISSION_KEYS, 'can_create')) {
+    redirect(routes.admin.forbidden)
+  }
+
   return (
     <div className="p-4 md:p-8">
       <AdminPageHeader

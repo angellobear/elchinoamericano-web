@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createPartBrand } from '@/lib/db/part-brands'
 import { handleImageReplace } from '@/lib/cloudinary'
 import { logger } from '@/lib/logger'
@@ -46,7 +47,13 @@ async function create(_: ActionState, formData: FormData) {
   return successResult('Marca creada', undefined, { redirectTo: routes.admin.partBrands.index })
 }
 
-export default function NewPartBrandPage() {
+export default async function NewPartBrandPage() {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, PART_BRAND_PERMISSION_KEYS, 'can_create')) {
+    redirect(routes.admin.forbidden)
+  }
+
   return (
     <div className="p-4 md:p-8">
       <AdminPageHeader

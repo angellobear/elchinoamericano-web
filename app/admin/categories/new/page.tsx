@@ -1,4 +1,5 @@
 import { revalidatePath } from 'next/cache'
+import { redirect } from 'next/navigation'
 import { createCategory } from '@/lib/db/categories'
 import { handleImageReplace } from '@/lib/cloudinary'
 import { logger } from '@/lib/logger'
@@ -46,7 +47,13 @@ async function create(_: ActionState, formData: FormData) {
   return successResult('Categoría creada', undefined, { redirectTo: routes.admin.categories.index })
 }
 
-export default function NewCategoryPage() {
+export default async function NewCategoryPage() {
+  const payload = await getJwtPayload()
+  if (!payload) redirect(routes.login)
+  if (!hasModulePermission(payload, CATEGORY_PERMISSION_KEYS, 'can_create')) {
+    redirect(routes.admin.forbidden)
+  }
+
   return (
     <div className="p-4 md:p-8">
       <AdminPageHeader
