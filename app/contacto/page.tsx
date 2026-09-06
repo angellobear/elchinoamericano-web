@@ -13,6 +13,7 @@ import {
   SITE_NAME,
   SITE_URL,
   toAbsoluteUrl,
+  jsonLdScript,
 } from "@/lib/seo"
 import ContactoForm from "./ContactoForm"
 
@@ -118,7 +119,7 @@ export default async function ContactoPage() {
       <Navbar />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(contactJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(contactJsonLd) }}
       />
       <main className="min-h-screen pt-16">
         {/* Header band */}

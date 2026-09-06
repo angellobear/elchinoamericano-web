@@ -10,7 +10,7 @@ import {
   parseCatalogFilters,
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
-import { buildCatalogMetadata, SITE_NAME, SITE_URL } from "@/lib/seo"
+import { buildCatalogMetadata, SITE_NAME, SITE_URL, jsonLdScript } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
 
 export const revalidate = 3600
@@ -138,7 +138,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
       <Navbar />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(collectionJsonLd) }}
       />
       <Suspense
         fallback={

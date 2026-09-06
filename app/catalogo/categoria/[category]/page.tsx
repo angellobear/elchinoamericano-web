@@ -18,6 +18,7 @@ import {
   SITE_NAME,
   SITE_URL,
   buildCatalogMetadata,
+  jsonLdScript,
 } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
 
@@ -155,7 +156,7 @@ export default async function CatalogoCategoriaPage(props: Props) {
       <Navbar />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(collectionJsonLd) }}
       />
       <Suspense
         fallback={

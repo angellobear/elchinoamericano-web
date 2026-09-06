@@ -20,6 +20,7 @@ import {
   SITE_NAME,
   SITE_URL,
   buildCatalogMetadata,
+  jsonLdScript,
 } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
 
@@ -203,7 +204,7 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
       <Navbar />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(collectionJsonLd) }}
       />
       <Suspense
         fallback={

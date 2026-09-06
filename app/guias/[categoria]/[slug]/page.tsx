@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { guias, CATEGORIAS, getGuiaBySlug, type GuiaBloque, type GuiaCategoria } from "@/data/guias"
-import { SITE_NAME, SITE_URL, toAbsoluteUrl } from "@/lib/seo"
+import { SITE_NAME, SITE_URL, toAbsoluteUrl, jsonLdScript } from "@/lib/seo"
 import { getWhatsAppUrl } from "@/lib/constants"
 
 type Props = { params: Promise<{ categoria: string; slug: string }> }
@@ -143,10 +143,10 @@ export default async function GuiaDetailPage({ params }: Props) {
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb) }} />
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(article) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(breadcrumb) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(article) }} />
       {faqLd && (
-        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLdScript(faqLd) }} />
       )}
 
       <main className="mx-auto max-w-3xl px-4 py-12">

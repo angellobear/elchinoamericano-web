@@ -24,6 +24,7 @@ import {
   getProductShareImage,
   getProductShareImageAlt,
   getProductUrl,
+  jsonLdScript,
 } from "@/lib/seo"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { buildProductPath, extractProductCodeFromSegment } from "@/lib/product-slugs"
@@ -337,16 +338,16 @@ export default async function ProductDetailPage({
       <Navbar />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildJsonLd(product, availability)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(buildJsonLd(product, availability)) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(product)) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(buildBreadcrumbJsonLd(product)) }}
       />
       {!isUnavailable && (
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: jsonLdScript(faqJsonLd) }}
         />
       )}
 

@@ -18,6 +18,7 @@ import {
   SITE_URL,
   SITE_LOCALE,
   toAbsoluteUrl,
+  jsonLdScript,
 } from "@/lib/seo"
 
 export const revalidate = 3600
@@ -168,7 +169,7 @@ export default async function Home() {
       <Navbar />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: jsonLdScript(homeJsonLd) }}
       />
       <main>
         <Hero brands={brands} />
