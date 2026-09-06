@@ -69,13 +69,16 @@ export function SidebarNav({ isSuperAdmin, email, role, onLinkClick }: Props) {
             <p className="text-white/35 text-xs capitalize">{role}</p>
           </div>
         </div>
-        <a
-          href="/api/auth/logout"
-          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-white/45 hover:text-white hover:bg-white/8 transition-colors duration-150"
-        >
-          <LogOut size={14} className="shrink-0" />
-          Cerrar sesión
-        </a>
+        {/* POST, no GET: cerrar sesión revoca los tokens del usuario en servidor. */}
+        <form method="post" action="/api/auth/logout">
+          <button
+            type="submit"
+            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-white/45 hover:text-white hover:bg-white/8 transition-colors duration-150"
+          >
+            <LogOut size={14} className="shrink-0" />
+            Cerrar sesión
+          </button>
+        </form>
       </div>
     </>
   )

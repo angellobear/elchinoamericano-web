@@ -43,6 +43,7 @@ export const users = mysqlTable('users', {
   isActive: boolean('is_active').default(true),
   deletedAt: timestamp('deleted_at'),
   lastLoginAt: timestamp('last_login_at'),
+  sessionsRevokedAt: timestamp('sessions_revoked_at'),
   createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
   updatedAt: timestamp('updated_at').default(mysqlCurrentTimestamp),
 })

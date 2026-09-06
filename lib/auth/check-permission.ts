@@ -1,21 +1,75 @@
 import 'server-only'
 
+import { cache } from 'react'
 import { jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
+import { eq } from 'drizzle-orm'
+import { getDb } from '@/lib/db/client'
+import { users } from '@/lib/db/schema'
 import type { JWTPayload, ModulePermissions } from '@/types'
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET)
+
+/**
+ * Decide si un token debe considerarse revocado comparando su claim `iat`
+ * (segundos epoch) contra la marca `users.sessions_revoked_at`.
+ *
+ * Reglas:
+ * - Sin marca de revocación, el token nunca está revocado.
+ * - Con marca de revocación y sin `iat`, se revoca (fail-closed): no hay forma
+ *   de probar que el token se emitió después de la revocación.
+ * - Con marca de revocación e `iat`, se revoca si fue emitido antes de ella.
+ *
+ * NOTA: `scripts/check-session-revocation.mjs` es un espejo de esta función.
+ * Si cambias una, cambia la otra.
+ */
+export function isTokenRevoked(iat: number | undefined, sessionsRevokedAt: Date | null): boolean {
+  if (!sessionsRevokedAt) return false
+  if (typeof iat !== 'number' || !Number.isFinite(iat)) return true
+  return iat * 1000 < sessionsRevokedAt.getTime()
+}
+
+/**
+ * Estado de sesión del usuario, leído de base de datos.
+ * Se envuelve en `cache()` de React para que las múltiples llamadas a
+ * `getJwtPayload()` dentro de un mismo request hagan una sola consulta.
+ * Consulta incluyendo borrados para poder rechazarlos explícitamente.
+ */
+const loadSessionUser = cache(async (userId: string) => {
+  const db = await getDb()
+  return db.query.users.findFirst({
+    where: eq(users.id, userId),
+    columns: { id: true, isActive: true, deletedAt: true, sessionsRevokedAt: true },
+  })
+})
 
 export async function getJwtPayload(): Promise<JWTPayload | null> {
   const cookieStore = await cookies()
   const token = cookieStore.get('admin_token')?.value
   if (!token) return null
+
+  let payload: JWTPayload
   try {
-    const { payload } = await jwtVerify(token, secret)
-    return payload as unknown as JWTPayload
+    const verified = await jwtVerify(token, secret)
+    payload = verified.payload as unknown as JWTPayload
   } catch {
     return null
   }
+
+  if (!payload.userId) return null
+
+  try {
+    const user = await loadSessionUser(payload.userId)
+    if (!user) return null
+    if (user.deletedAt) return null
+    if (!user.isActive) return null
+    if (isTokenRevoked(payload.iat, user.sessionsRevokedAt ?? null)) return null
+  } catch {
+    // Fail-closed: si no podemos verificar el estado del usuario, no hay sesión.
+    return null
+  }
+
+  return payload
 }
 
 // Throws if the current user lacks the required permission

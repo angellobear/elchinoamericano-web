@@ -196,6 +196,9 @@ export interface JWTPayload {
   email: string
   role: string
   permissions: PermissionsMap
+  // Claim estándar "issued at" (segundos epoch). Se usa para invalidar tokens
+  // emitidos antes de users.sessions_revoked_at.
+  iat?: number
 }
 
 // ─────────────────────────────────────────

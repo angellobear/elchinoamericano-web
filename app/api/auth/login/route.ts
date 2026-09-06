@@ -34,6 +34,9 @@ export async function POST(req: NextRequest) {
 
   const token = await new SignJWT({ userId: user.id, email: user.email, role: user.role?.name ?? '', permissions })
     .setProtectedHeader({ alg: 'HS256' })
+    // `iat` es obligatorio: lo compara la revocación de sesiones contra
+    // users.sessions_revoked_at (ver lib/auth/check-permission).
+    .setIssuedAt()
     .setExpirationTime(expiresIn)
     .sign(secret)
 

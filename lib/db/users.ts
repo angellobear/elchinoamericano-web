@@ -54,10 +54,37 @@ export async function createUser(data: { email: string; fullName?: string; passw
   await logActivitySafe('CREATE', 'users', created?.id, undefined, created as Record<string, unknown> | undefined)
 }
 
+/**
+ * Revoca todas las sesiones activas del usuario: cualquier JWT emitido antes de
+ * este instante deja de ser válido (ver isTokenRevoked en lib/auth/check-permission).
+ */
+export async function revokeUserSessions(id: string) {
+  const db = await getDb()
+  await db.update(users).set({ sessionsRevokedAt: dbNow() }).where(eq(users.id, id))
+}
+
+/**
+ * Un cambio de estado sensible (desactivar, cambiar de rol, cambiar contraseña)
+ * debe invalidar los tokens ya emitidos, porque llevan rol y permisos embebidos.
+ */
+function shouldRevokeSessions(
+  before: { isActive: boolean | null; roleId: number | null; passwordHash: string } | undefined,
+  data: { roleId?: number; isActive?: boolean; passwordHash?: string },
+) {
+  if (data.isActive === false && before?.isActive !== false) return true
+  if (data.roleId !== undefined && data.roleId !== before?.roleId) return true
+  if (data.passwordHash !== undefined && data.passwordHash !== before?.passwordHash) return true
+  return false
+}
+
 export async function updateUser(id: string, data: { fullName?: string; roleId?: number; isActive?: boolean; passwordHash?: string; deletedAt?: Date | null | ReturnType<typeof dbNow> }) {
   const { before, after } = await withAudit(async (tx) => {
     const before = await tx.query.users.findFirst({ where: eq(users.id, id) })
-    await tx.update(users).set({ ...data, updatedAt: dbNow() }).where(eq(users.id, id))
+    const revoke = shouldRevokeSessions(before, data)
+    await tx
+      .update(users)
+      .set({ ...data, updatedAt: dbNow(), ...(revoke ? { sessionsRevokedAt: dbNow() } : {}) })
+      .where(eq(users.id, id))
     const after = await tx.query.users.findFirst({ where: eq(users.id, id) })
     return { before, after }
   })

@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "check:jsonld": "node scripts/check-jsonld-escape.mjs",
+    "check:revocation": "node scripts/check-session-revocation.mjs",
     "db:push": "drizzle-kit push",
     "db:migrate": "drizzle-kit migrate",
     "db:generate": "drizzle-kit generate",
@@ -19,7 +21,8 @@
     "db:seed:local": "npx tsx lib/db/seed.ts",
     "db:seed:mysql": "npx tsx lib/db/seed.ts",
     "db:patch:vehicle-brands-web": "npx tsx lib/db/scripts/apply-vehicle-brand-web-visibility.ts",
-    "db:patch:soft-delete:mysql": "npx tsx lib/db/scripts/apply-soft-delete-columns.ts"
+    "db:patch:soft-delete:mysql": "npx tsx lib/db/scripts/apply-soft-delete-columns.ts",
+    "db:patch:sessions-revoked": "npx tsx lib/db/scripts/apply-sessions-revoked-at.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
