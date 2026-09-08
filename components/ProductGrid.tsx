@@ -30,8 +30,8 @@ export default function ProductGrid({ products }: { products: Product[] }) {
             className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
           >
             <AnimatePresence mode="popLayout">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+              {products.map((product, index) => (
+                <ProductCard key={product.id} product={product} priority={index < 4} />
               ))}
             </AnimatePresence>
           </motion.div>

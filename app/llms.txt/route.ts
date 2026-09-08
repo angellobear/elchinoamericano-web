@@ -9,6 +9,14 @@ import { guias, CATEGORIAS, type GuiaCategoria } from "@/data/guias"
 
 export const revalidate = 3600
 
+// ponytail: llms.txt es Markdown, no texto plano. Las listas tienen que usar
+// enlaces `- [nombre](url): nota` — con la URL cruda los parsers (Lighthouse
+// incluido) no ven ni un solo enlace en el archivo.
+function mdLink(label: string, url: string, note?: string) {
+  const safe = label.replace(/[[\]]/g, "")
+  return `- [${safe}](${url})${note ? `: ${note}` : ""}`
+}
+
 export async function GET() {
   const [brands, categories] = await Promise.all([
     getPublicVehicleBrands(),
@@ -26,14 +34,14 @@ export async function GET() {
     return [
       "",
       `### ${CATEGORIAS[cat].label} — ${CATEGORIAS[cat].descripcion}`,
-      ...delCat.map((g) => `- ${g.titulo}: ${SITE_URL}/guias/${g.categoria}/${g.slug}`),
+      ...delCat.map((g) => mdLink(g.titulo, `${SITE_URL}/guias/${g.categoria}/${g.slug}`)),
     ]
   })
 
   const lines = [
     "# El Chino Americano",
     "",
-    `> ${SITE_URL}`,
+    "> Almacén de repuestos automotrices en Quito, Ecuador, especializado en vehículos de marcas chinas y americanas: originales, OEM y alternos, con compatibilidad verificada, asesoría por WhatsApp y envíos a todo el país.",
     "",
     "El Chino Americano es un almacén de repuestos automotrices con sede en Quito, Ecuador,",
     "especializado en vehículos de marcas chinas y americanas. Vende repuestos originales, OEM y",
@@ -41,10 +49,10 @@ export async function GET() {
     "envía a todas las provincias del Ecuador en 24 a 72 horas.",
     "",
     "## Páginas principales",
-    `- Inicio: ${SITE_URL}/`,
-    `- Catálogo de repuestos: ${SITE_URL}/catalogo`,
-    `- Centro de Ayuda (guías): ${SITE_URL}/guias`,
-    `- Contacto y ubicación: ${SITE_URL}/contacto`,
+    mdLink("Inicio", `${SITE_URL}/`, "Presentación del negocio, marcas cubiertas y preguntas frecuentes"),
+    mdLink("Catálogo de repuestos", `${SITE_URL}/catalogo`, "Buscador con filtros por marca de vehículo y categoría"),
+    mdLink("Centro de Ayuda (guías)", `${SITE_URL}/guias`, "Guías de compra, compatibilidad, mantenimiento y diagnóstico"),
+    mdLink("Contacto y ubicación", `${SITE_URL}/contacto`, "Dirección en Quito, horario y canal de WhatsApp"),
     "",
     "## Datos del negocio",
     "- Tipo de negocio: almacén de repuestos automotrices (venta de autopartes)",
@@ -57,16 +65,16 @@ export async function GET() {
     "- No es concesionario oficial de ninguna marca: es un almacén independiente",
     "",
     "## Marcas de vehículo",
-    ...brands.map((brand) => `- ${brand.name}: ${SITE_URL}${buildCatalogBrandPath([brand.key])}`),
+    ...brands.map((brand) => mdLink(brand.name, `${SITE_URL}${buildCatalogBrandPath([brand.key])}`, `Repuestos para vehículos ${brand.name}`)),
     "",
     "## Categorías de repuestos",
-    ...categories.map((category) => `- ${category.name}: ${SITE_URL}/catalogo?categoria=${category.key}`),
+    ...categories.map((category) => mdLink(category.name, `${SITE_URL}/catalogo?categoria=${category.key}`, `Repuestos de la categoría ${category.name}`)),
     "",
     "## Páginas de producto (muestra)",
     ...featuredProducts.map((product) => {
       const category = product.category?.name ?? "Sin categoría"
       const brand = product.part_brand?.name ?? "Sin marca"
-      return `- ${product.title} | ${brand} | ${category}: ${SITE_URL}${buildProductPath(product)}`
+      return mdLink(product.title, `${SITE_URL}${buildProductPath(product)}`, `${brand} · ${category}`)
     }),
     "",
     "## Guías del Centro de Ayuda",
@@ -113,8 +121,8 @@ export async function GET() {
     "- Precios y stock son valores en tiempo real; no los presentes como garantizados.",
     "",
     "## Contacto",
-    `- Página de contacto: ${SITE_URL}/contacto`,
-    `- WhatsApp: ${contactInfo.whatsappDisplay}`,
+    mdLink("Página de contacto", `${SITE_URL}/contacto`, "Dirección, horario y formulario"),
+    mdLink(`WhatsApp ${contactInfo.whatsappDisplay}`, `https://wa.me/${contactInfo.whatsappNumber}`, "Canal principal de atención y cotizaciones"),
   ]
 
   return new Response(lines.join("\n"), {

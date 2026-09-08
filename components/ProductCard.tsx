@@ -15,7 +15,10 @@ const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   aftermarket: { label: "Alterno", cls: "bg-[#4e6280] text-white" },
 }
 
-export default function ProductCard({ product }: { product: Product }) {
+// ponytail: `priority` solo para las primeras cards. En /catalogo el elemento
+// LCP es la imagen de la primera card y salia con loading="lazy": 3.7 s de
+// Load Delay, el 72% de un LCP de 5.1 s.
+export default function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
   const primaryImage = getProductPrimaryImage(product)
   const displayImage = primaryImage ?? DEFAULT_PRODUCT_IMAGE_PATH
   const effectivePrice = product.offer_price ?? product.price
@@ -51,7 +54,7 @@ export default function ProductCard({ product }: { product: Product }) {
           fill
           className={primaryImage ? "object-cover bg-[#f3f5f9]" : "object-contain p-3 bg-[#f3f5f9]"}
           sizes="(max-width: 640px) 50vw, 33vw"
-          loading={primaryImage ? "lazy" : "eager"}
+          {...(priority ? { priority: true } : { loading: primaryImage ? "lazy" : ("eager" as const) })}
         />
         {!primaryImage && (
           <div className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-navy/82 px-3 py-2 text-white">

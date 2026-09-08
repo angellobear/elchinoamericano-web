@@ -19,7 +19,9 @@
     "db:seed:local": "npx tsx lib/db/seed.ts",
     "db:seed:mysql": "npx tsx lib/db/seed.ts",
     "db:patch:vehicle-brands-web": "npx tsx lib/db/scripts/apply-vehicle-brand-web-visibility.ts",
-    "db:patch:soft-delete:mysql": "npx tsx lib/db/scripts/apply-soft-delete-columns.ts"
+    "db:patch:soft-delete:mysql": "npx tsx lib/db/scripts/apply-soft-delete-columns.ts",
+    "check:lcp": "node scripts/check-visible-lcp.mjs",
+    "check:llms": "node scripts/check-llms-txt.mjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

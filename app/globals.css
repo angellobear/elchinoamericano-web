@@ -193,11 +193,89 @@ body {
   animation: pulse-ring 2.2s ease-in-out infinite;
 }
 
+/* ── Entrance / scroll reveals (CSS-only) ────────────────────────────────
+   ponytail: sustituyen a los variants de framer-motion, que dejaban 36 nodos
+   con opacity:0 en el HTML del SSR y retrasaban el LCP hasta la hidratacion.
+
+   IMPORTANTE — above the fold se anima SOLO transform, nunca opacidad.
+   Chrome registra el PRIMER paint de cada elemento como candidato a LCP y
+   descarta los que pintan con opacity:0; no lo reconsidera despues. Un fade-in
+   por CSS sobre el h1 deja la pagina literalmente sin LCP (Lighthouse: NO_LCP).
+   Below the fold si se puede usar opacidad: esos nodos no son candidatos en el
+   primer viewport. */
+@keyframes slide-up {
+  from { transform: translateY(24px); }
+  to   { transform: none; }
+}
+
+@keyframes slide-right {
+  from { transform: translateX(30px); }
+  to   { transform: none; }
+}
+
+@keyframes slide-down {
+  from { transform: translateY(-64px); }
+  to   { transform: none; }
+}
+
+@keyframes pop-in {
+  from { transform: translateY(-16px) scale(0.9); }
+  to   { transform: none; }
+}
+
+.reveal-up    { animation: slide-up .65s cubic-bezier(.22,1,.36,1) both; }
+.reveal-right { animation: slide-right .8s cubic-bezier(.22,1,.36,1) both; }
+.reveal-pop   { animation: pop-in .5s cubic-bezier(.22,1,.36,1) both; }
+.reveal-down  { animation: slide-down .5s cubic-bezier(.22,1,.36,1) both; }
+
+/* Below the fold: scroll-driven nativo, aqui si con fade. Sin soporte
+   (@supports falla) el contenido queda visible tal cual, nunca invisible. */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade-left {
+  from { opacity: 0; transform: translateX(-24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes fade-right {
+  from { opacity: 0; transform: translateX(24px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@supports (animation-timeline: view()) {
+  /* `forwards`, no `both`: con un view-timeline inactivo (pagina sin scroll)
+     la fase "before" no aplica estilos y el contenido queda visible. */
+  .reveal-in,
+  .reveal-in-left,
+  .reveal-in-right {
+    animation: fade-up linear forwards;
+    animation-timeline: view();
+    animation-range: entry 0% cover 28%;
+  }
+  .reveal-in-left  { animation-name: fade-left; }
+  .reveal-in-right { animation-name: fade-right; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
   *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .reveal-up,
+  .reveal-right,
+  .reveal-pop,
+  .reveal-down,
+  .reveal-in,
+  .reveal-in-left,
+  .reveal-in-right {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

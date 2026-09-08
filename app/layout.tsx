@@ -23,7 +23,9 @@ import {
 const barlowCondensed = Barlow_Condensed({
   variable: "--font-barlow-condensed",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  // ponytail: solo 600 y 700 se usan en el codigo (font-display font-semibold|bold).
+  // 400 y 500 eran dos woff2 preloaded que nadie pintaba.
+  weight: ["600", "700"],
 })
 
 const inter = Inter({
@@ -101,6 +103,10 @@ export default function RootLayout({
       <head>
         <meta httpEquiv="content-language" content="es-EC" />
         <meta name="google" content="notranslate" />
+        {/* ponytail: los tres origenes de terceros que la home siempre golpea. */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" />
+        <link rel="preconnect" href="https://scripts.clarity.ms" />
+        <link rel="preconnect" href="https://res.cloudinary.com" />
       </head>
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <CartProvider>{children}</CartProvider>

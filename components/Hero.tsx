@@ -1,13 +1,8 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
-import { motion, useReducedMotion } from "framer-motion"
-import { CreditCard, Layers, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { CreditCard, MessageCircle, Search, ShieldCheck, Truck } from "lucide-react"
 import { buildCatalogBrandPath } from "@/lib/catalog"
-import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
+import { getWhatsAppUrl } from "@/lib/constants"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
 const VEHICLES = [
@@ -41,61 +36,11 @@ const STAT_STRIP = [
   { icon: CreditCard, iconColor: "text-wa", iconBg: "bg-wa/14", title: "Múltiples formas de pago", sub: "Tarjeta, transferencia, efectivo" },
 ]
 
-const EASE = [0.22, 1, 0.36, 1] as const
-
-function HeroSearch({ brands }: { brands: PublicVehicleBrand[] }) {
-  const router = useRouter()
-  const [marca, setMarca] = useState("")
-
-  return (
-    <div className="mt-12.5 bg-[#13294a] border border-white/12 rounded-2xl p-4 flex flex-col sm:flex-row items-center gap-3 shadow-[0_16px_40px_rgba(0,0,0,.28)]">
-      <div className="hidden sm:flex items-center gap-2 shrink-0 pr-1">
-        <Search size={18} className="text-brand" />
-        <span className="font-display font-bold text-lg text-[#f4f7fb] whitespace-nowrap leading-none">
-          Encuentra tu repuesto
-        </span>
-      </div>
-      <select
-        value={marca}
-        onChange={(e) => setMarca(e.target.value)}
-        className="flex-1 w-full bg-navy-dark border border-white/12 rounded-[10px] px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none focus:border-brand cursor-pointer"
-      >
-        <option value="">Marca</option>
-        {brands.map((brand) => (
-          <option key={brand.id} value={brand.key}>{brand.name}</option>
-        ))}
-      </select>
-      <select className="flex-1 w-full bg-navy-dark border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
-        <option>Modelo</option>
-      </select>
-      <select className="w-full sm:w-28 bg-navy-dark border border-white/12 rounded-xl px-4 py-3 text-sm text-[#9fb0c8] focus:outline-none cursor-pointer">
-        <option>Año</option>
-      </select>
-      <button
-        onClick={() => {
-          router.push(marca ? buildCatalogBrandPath([marca]) : "/catalogo")
-        }}
-        className="w-full sm:w-auto shrink-0 inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 text-white font-bold text-sm px-6 py-3 rounded-xl whitespace-nowrap transition-colors"
-      >
-        <Search size={16} />
-        Buscar
-      </button>
-    </div>
-  )
-}
-
 interface HeroProps {
   brands: PublicVehicleBrand[]
 }
 
 export default function Hero({ brands }: HeroProps) {
-  const reduce = useReducedMotion()
-
-  const fadeUp = {
-    hidden: reduce ? {} : { opacity: 0, y: 24 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: EASE } },
-  }
-
   return (
     <section
       className="relative bg-navy overflow-hidden pt-16"
@@ -117,33 +62,30 @@ export default function Hero({ brands }: HeroProps) {
       <div className="relative z-2 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-14">
         <div className="grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-11 items-center">
           {/* Left — text */}
-          <motion.div
-            initial="hidden"
-            animate="visible"
-            variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.11 } } }}
-          >
-            {/* <motion.div variants={fadeUp} className="flex items-center gap-2 mb-5">
-              <span className="h-1.75 w-1.75 rounded-full bg-brand shrink-0" />
-                <span className="text-3.25 font-semibold uppercase tracking-[.16em] text-[#9fb0c8]">
-                  El Chino Americano
-                </span>
-            </motion.div> */}
-            <motion.h1
-              variants={fadeUp}
+          <div>
+            {/* ponytail: el h1 es el elemento LCP, va sin delay para que pinte
+                en el primer frame. Los hermanos escalonan con animation-delay. */}
+            <h1
               id="home-hero-title"
-              className="font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
+              className="reveal-up font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
             >
               El repuesto que tu vehículo necesita, cuando
               <br />
               <span className="text-brand"> lo necesita.</span>
-            </motion.h1>
+            </h1>
 
-            <motion.p variants={fadeUp} className="mt-5 max-w-lg text-[#9fb0c8] text-4.5 leading-[1.55]">
+            <p
+              className="reveal-up mt-5 max-w-lg text-[#9fb0c8] text-4.5 leading-[1.55]"
+              style={{ animationDelay: ".11s" }}
+            >
               Originales, OEM y alternos para marcas chinas y americanas seleccionadas.
               Asesoría experta y envíos a todo el Ecuador.
-            </motion.p>
+            </p>
 
-            <motion.div variants={fadeUp} className="flex flex-wrap gap-3 mt-8">
+            <div
+              className="reveal-up flex flex-wrap gap-3 mt-8"
+              style={{ animationDelay: ".22s" }}
+            >
               <Link
                 href="/catalogo"
                 title="Explorar catálogo de repuestos"
@@ -163,9 +105,9 @@ export default function Hero({ brands }: HeroProps) {
                 <MessageCircle size={18} className="text-wa" />
                 Escríbenos por WhatsApp
               </a>
-            </motion.div>
+            </div>
 
-            <motion.div variants={fadeUp} className="mt-10">
+            <div className="reveal-up mt-10" style={{ animationDelay: ".33s" }}>
               <p className="text-3 font-semibold uppercase tracking-[.16em] text-[#5f7090] mb-3">
                 Trabajamos con
               </p>
@@ -181,14 +123,12 @@ export default function Hero({ brands }: HeroProps) {
                   </Link>
                 ))}
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          <motion.div
-            initial={reduce ? false : { opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: EASE, delay: 0.2 }}
-            className="relative hidden lg:block"
+          <div
+            className="reveal-right relative hidden lg:block"
+            style={{ animationDelay: ".2s" }}
           >
             {/* Vehicle showcase */}
             <div
@@ -198,11 +138,13 @@ export default function Hero({ brands }: HeroProps) {
                 backgroundImage: "radial-gradient(120% 95% at 50% 22%,rgba(40,68,112,.55),rgba(10,22,40,0) 70%),repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 14px,transparent 14px 28px)",
               }}
             >
+              {/* ponytail: sin `priority`. Este bloque es hidden bajo lg, y el
+                  preload gastaba ~37 KB de red movil en una imagen invisible. */}
               {VEHICLES.map(({ src, alt, delay }) => (
                 <div
                   key={src}
                   className="hero-vlayer absolute inset-0"
-                  style={reduce ? { animationDuration: "0.01ms" } : { animationDelay: `${delay}s` }}
+                  style={{ animationDelay: `${delay}s` }}
                 >
                   <Image
                     src={src}
@@ -212,7 +154,6 @@ export default function Hero({ brands }: HeroProps) {
                     className="object-contain"
                     style={{ objectPosition: "center 56%" }}
                     sizes="(min-width: 1024px) 40vw, 100vw"
-                    priority={delay === 0}
                   />
                 </div>
               ))}
@@ -236,7 +177,7 @@ export default function Hero({ brands }: HeroProps) {
                 <div
                   key={src}
                   className="hero-player absolute inset-3"
-                  style={reduce ? { animationDuration: "0.01ms" } : { animationDelay: `${delay}s` }}
+                  style={{ animationDelay: `${delay}s` }}
                 >
                   <Image
                     src={src}
@@ -252,27 +193,20 @@ export default function Hero({ brands }: HeroProps) {
             </div>
 
             {/* top-right badge */}
-            <motion.div
-              initial={reduce ? false : { opacity: 0, y: -16, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ type: "spring", stiffness: 200, damping: 20, delay: 0.6 }}
-              className="absolute top-6 -right-4 bg-navy/70 backdrop-blur-sm border border-white/16 rounded-[14px] p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]"
+            <div
+              className="reveal-pop absolute top-6 -right-4 bg-navy/70 backdrop-blur-sm border border-white/16 rounded-[14px] p-4 shadow-[0_12px_28px_rgba(0,0,0,.35)]"
+              style={{ animationDelay: ".6s" }}
             >
               <p className="font-display font-bold text-white text-7.5 leading-none">&lt; 24 h</p>
               <p className="text-3 text-[#9fb0c8] mt-1.5">Asesoría por WhatsApp</p>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
 
-        {/* Search bar */}
-        {/* <HeroSearch brands={brands} /> */}
-
         {/* Stats strip */}
-        <motion.div
-          initial={reduce ? false : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.5 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-6 pb-8 mt-8 border-t border-white/8"
+        <div
+          className="reveal-up grid grid-cols-2 lg:grid-cols-4 gap-4 pt-6 pb-8 mt-8 border-t border-white/8"
+          style={{ animationDelay: ".9s" }}
         >
           {STAT_STRIP.map(({ icon: Icon, iconColor, iconBg, title, sub }) => (
             <div key={title} className="flex items-center gap-3">
@@ -285,7 +219,7 @@ export default function Hero({ brands }: HeroProps) {
               </div>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   )

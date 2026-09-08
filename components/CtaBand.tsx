@@ -1,15 +1,8 @@
-"use client"
-
 import Link from "next/link"
 import { MessageCircle } from "lucide-react"
-import { motion, useReducedMotion } from "framer-motion"
 import { getWhatsAppUrl } from "@/lib/constants"
 
-const EASE = [0.16, 1, 0.3, 1] as const
-
 export default function CtaBand() {
-  const reduce = useReducedMotion()
-
   return (
     <section className="relative overflow-hidden bg-brand py-16 px-4 sm:px-6 lg:px-8" aria-labelledby="cta-band-title">
       {/* white radial glow */}
@@ -18,33 +11,16 @@ export default function CtaBand() {
         style={{ background: "radial-gradient(circle,rgba(255,255,255,.14) 0%,rgba(255,255,255,0) 65%)" }}
         aria-hidden="true"
       />
-      <motion.div
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, amount: 0.4 }}
-        variants={{ visible: { transition: { staggerChildren: reduce ? 0 : 0.12 } } }}
-        className="relative max-w-7xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10"
-      >
-        <motion.div
-          variants={{
-            hidden: reduce ? {} : { opacity: 0, x: -24 },
-            visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: EASE } },
-          }}
-        >
+      <div className="relative max-w-7xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
+        <div className="reveal-in-left">
           <h2 id="cta-band-title" className="font-display font-bold text-white uppercase leading-[.96] text-[clamp(2.2rem,5vw,3.5rem)]">
             ¿No encuentras tu repuesto?
           </h2>
           <p className="mt-3.5 max-w-lg text-white/92 text-4.25 leading-[1.55]">
             Envíanos la marca, modelo y año de tu vehículo. También puedes mandarnos una foto o número de pieza, y te ayudamos a encontrarlo.
           </p>
-        </motion.div>
-        <motion.div
-          variants={{
-            hidden: reduce ? {} : { opacity: 0, x: 24 },
-            visible: { opacity: 1, x: 0, transition: { duration: 0.6, ease: EASE } },
-          }}
-          className="flex flex-col gap-3 shrink-0"
-        >
+        </div>
+        <div className="reveal-in-right flex flex-col gap-3 shrink-0">
           <a
             href={getWhatsAppUrl()}
             data-wa="home"
@@ -63,8 +39,8 @@ export default function CtaBand() {
           >
             Ver catálogo completo
           </Link>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   )
 }
