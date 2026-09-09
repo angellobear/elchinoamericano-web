@@ -67,7 +67,7 @@ export default function Hero({ brands }: HeroProps) {
                 en el primer frame. Los hermanos escalonan con animation-delay. */}
             <h1
               id="home-hero-title"
-              className="reveal-up font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
+              className="reveal-lcp font-display font-bold text-[#f4f7fb] uppercase leading-[.93] text-[clamp(2.8rem,6vw,4.75rem)]"
             >
               El repuesto que tu vehículo necesita, cuando
               <br />

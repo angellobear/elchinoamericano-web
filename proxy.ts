@@ -11,6 +11,7 @@ const routePermissions: Record<string, { module: string; action: keyof import('@
   '/admin/vehicle-brands':{ module: 'vehicle-brands', action: 'can_view' },
   '/admin/part-brands':   { module: 'part-brands',    action: 'can_view' },
   '/admin/suppliers':     { module: 'suppliers',      action: 'can_view' },
+  '/admin/announcements': { module: 'announcements',  action: 'can_view' },
   '/admin/users':         { module: 'users',           action: 'can_view' },
 }
 

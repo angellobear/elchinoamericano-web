@@ -37,6 +37,11 @@ export const routes = {
       create: '/admin/users/new',
       edit: (id: string) => `/admin/users/${id}`,
     },
+    announcements: {
+      index: '/admin/announcements',
+      create: '/admin/announcements/new',
+      edit: (id: number | string) => `/admin/announcements/${id}`,
+    },
     inventory: {
       index: '/admin/inventory',
     },

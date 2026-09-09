@@ -5,6 +5,7 @@ import {
   boolean,
   timestamp,
   int,
+  date,
   decimal,
   char,
   primaryKey,
@@ -194,6 +195,21 @@ export const stockMovements = mysqlTable('stock_movements', {
   reason: text('reason'),
   userId: char('user_id', { length: 36 }),
   createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
+})
+
+export const announcements = mysqlTable('announcements', {
+  id: int('id').autoincrement().primaryKey(),
+  title: varchar('title', { length: 150 }),
+  description: text('description'),
+  imageUrl: varchar('image_url', { length: 500 }).notNull(),
+  imagePublicId: varchar('image_public_id', { length: 200 }),
+  linkUrl: varchar('link_url', { length: 500 }),
+  startsAt: date('starts_at', { mode: 'string' }).notNull(),
+  endsAt: date('ends_at', { mode: 'string' }).notNull(),
+  isActive: boolean('is_active').default(true),
+  deletedAt: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt: timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
 export const auditLog = mysqlTable('audit_log', {

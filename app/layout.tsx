@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Barlow_Condensed, Inter } from "next/font/google"
 import "./globals.css"
 import { CartProvider } from "@/context/CartContext"
+import { AnnouncementModal } from "@/components/AnnouncementModal"
 import { GoogleAnalytics } from "@/components/GoogleAnalytics"
 import { MicrosoftClarity } from "@/components/MicrosoftClarity"
 import {
@@ -110,6 +111,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <CartProvider>{children}</CartProvider>
+        <AnnouncementModal />
         {GA_ID && <GoogleAnalytics id={GA_ID} />}
         <MicrosoftClarity id="xt16vwz9rk" />
       </body>

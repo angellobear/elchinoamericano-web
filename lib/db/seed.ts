@@ -47,6 +47,7 @@ async function seed() {
     { key: 'vehicle-brands', label: 'Marcas de vehículos', name: 'Marcas vehículos' },
     { key: 'part-brands',    label: 'Marcas de repuestos', name: 'Marcas repuestos' },
     { key: 'suppliers',      label: 'Proveedores',         name: 'Proveedores' },
+    { key: 'announcements',  label: 'Anuncios',            name: 'Anuncios' },
     { key: 'users',          label: 'Usuarios',            name: 'Usuarios' },
   ]
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -58,7 +59,7 @@ async function seed() {
   const modMap = Object.fromEntries(moduleRows.map(m => [m.key, m.id]))
 
   // ─── Permissions ─────────────────────────────────────────────────────────────
-  const allKeys = ['products', 'categories', 'inventory', 'vehicle-brands', 'part-brands', 'suppliers']
+  const allKeys = ['products', 'categories', 'inventory', 'vehicle-brands', 'part-brands', 'suppliers', 'announcements']
   const permRows = [
     ...Object.values(modMap).map(moduleId => ({
       roleId: roleMap['superadmin'], moduleId,
@@ -72,7 +73,7 @@ async function seed() {
     { roleId: roleMap['employee'], moduleId: modMap['inventory'], canView: true,  canCreate: true,  canEdit: true,  canDelete: false },
   ]
   await upsert(db.insert(rolePermissions).values(permRows), { canView: sql.raw('can_view') })
-  console.log(`  ✓ ${'permisos'.padEnd(20)} ${permRows.length} filas (superadmin: 7, admin: 6, employee: 2)`)
+  console.log(`  ✓ ${'permisos'.padEnd(20)} ${permRows.length} filas (superadmin: 8, admin: 7, employee: 2)`)
 
   // ─── Categories ──────────────────────────────────────────────────────────────
   const categoryValues = [

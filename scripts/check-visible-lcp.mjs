@@ -25,22 +25,26 @@ if (hidden.length) {
 }
 // Segunda invariante, aprendida a golpes: Chrome registra el PRIMER paint de
 // cada elemento como candidato a LCP y descarta los que pintan con opacity:0,
-// sin reconsiderarlos. Un fade-in por CSS sobre el h1 deja la pagina sin LCP
-// (Lighthouse: NO_LCP). Las animaciones above-the-fold animan solo transform.
+// sin reconsiderarlos. Un fade sobre el h1 del hero deja la pagina sin LCP
+// (Lighthouse: NO_LCP). Solo el keyframe del elemento LCP debe ir sin opacidad;
+// el resto de la pagina conserva sus fades.
 const cssHref = html.match(/href="([^"]+\.css[^"]*)"/)?.[1]
 if (!cssHref) {
   console.error("FAIL no se encontro la hoja de estilos para auditar los keyframes")
   process.exit(1)
 }
 const css = await (await fetch(new URL(cssHref, url))).text()
-const aboveFold = ["slide-up", "slide-right", "slide-down", "pop-in"]
-const conFade = aboveFold.filter((name) => {
-  const block = css.match(new RegExp(`@keyframes\\s+${name}\\s*\\{[^@]*?\\}\\s*\\}`))?.[0]
-  return block ? /opacity/.test(block) : false
-})
-if (conFade.length) {
-  console.error(`FAIL keyframes above-the-fold con opacity: ${conFade.join(", ")}`)
-  console.error("  Chrome descarta como candidato a LCP el elemento que pinta con opacity:0.")
+if (!/class="[^"]*\breveal-lcp\b/.test(html)) {
+  console.error("FAIL el h1 del hero ya no usa .reveal-lcp")
   process.exit(1)
 }
-console.log(`OK ${url} — h1 visible, 0 nodos en opacity:0, ${aboveFold.length} keyframes above-the-fold sin fade`)
+const lcpKeyframe = css.match(/@keyframes\s+lcp-rise\s*\{[^@]*?\}\s*\}/)?.[0]
+if (!lcpKeyframe) {
+  console.error("FAIL no se encontro el keyframe lcp-rise en el CSS servido")
+  process.exit(1)
+}
+if (/opacity/.test(lcpKeyframe)) {
+  console.error("FAIL lcp-rise anima opacidad; Chrome descartara el h1 como candidato a LCP")
+  process.exit(1)
+}
+console.log(`OK ${url} — h1 visible, 0 nodos en opacity:0, keyframe LCP sin fade`)

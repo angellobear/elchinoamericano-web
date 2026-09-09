@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, Boxes, Tag,
-  Car, Wrench, Truck, Users, LogOut,
+  Car, Wrench, Truck, Users, Megaphone, LogOut,
 } from 'lucide-react'
 
 const NAV = [
@@ -15,6 +15,7 @@ const NAV = [
   { href: '/admin/vehicle-brands', label: 'Marcas Vehículos', icon: Car },
   { href: '/admin/part-brands',    label: 'Marcas Repuestos', icon: Wrench },
   { href: '/admin/suppliers',      label: 'Proveedores',      icon: Truck },
+  { href: '/admin/announcements',  label: 'Anuncios',         icon: Megaphone },
   { href: '/admin/users',          label: 'Usuarios',         icon: Users },
 ]
 

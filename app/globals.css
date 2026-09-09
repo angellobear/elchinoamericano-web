@@ -197,39 +197,49 @@ body {
    ponytail: sustituyen a los variants de framer-motion, que dejaban 36 nodos
    con opacity:0 en el HTML del SSR y retrasaban el LCP hasta la hidratacion.
 
-   IMPORTANTE — above the fold se anima SOLO transform, nunca opacidad.
-   Chrome registra el PRIMER paint de cada elemento como candidato a LCP y
-   descarta los que pintan con opacity:0; no lo reconsidera despues. Un fade-in
-   por CSS sobre el h1 deja la pagina literalmente sin LCP (Lighthouse: NO_LCP).
-   Below the fold si se puede usar opacidad: esos nodos no son candidatos en el
-   primer viewport. */
-@keyframes slide-up {
+   La restriccion aplica SOLO al elemento LCP: Chrome registra el primer paint
+   de cada elemento como candidato y descarta los que pintan con opacity:0, sin
+   reconsiderarlos. Por eso el h1 del hero usa .reveal-lcp (solo transform) y
+   todo lo demas conserva su fade normal. */
+
+/* El h1 del hero. NO agregar opacidad aqui: deja la pagina sin LCP. */
+@keyframes lcp-rise {
   from { transform: translateY(24px); }
   to   { transform: none; }
 }
 
-@keyframes slide-right {
-  from { transform: translateX(30px); }
-  to   { transform: none; }
+.reveal-lcp { animation: lcp-rise .65s cubic-bezier(.22,1,.36,1) both; }
+
+/* Resto del above the fold: fade normal, no son el candidato LCP. */
+@keyframes reveal-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: none; }
 }
 
-@keyframes slide-down {
-  from { transform: translateY(-64px); }
-  to   { transform: none; }
+@keyframes reveal-right {
+  from { opacity: 0; transform: translateX(30px); }
+  to   { opacity: 1; transform: none; }
 }
 
-@keyframes pop-in {
-  from { transform: translateY(-16px) scale(0.9); }
-  to   { transform: none; }
+@keyframes reveal-down {
+  from { opacity: 0; transform: translateY(-64px); }
+  to   { opacity: 1; transform: none; }
 }
 
-.reveal-up    { animation: slide-up .65s cubic-bezier(.22,1,.36,1) both; }
-.reveal-right { animation: slide-right .8s cubic-bezier(.22,1,.36,1) both; }
-.reveal-pop   { animation: pop-in .5s cubic-bezier(.22,1,.36,1) both; }
-.reveal-down  { animation: slide-down .5s cubic-bezier(.22,1,.36,1) both; }
+@keyframes reveal-pop {
+  from { opacity: 0; transform: translateY(-16px) scale(0.9); }
+  to   { opacity: 1; transform: none; }
+}
 
-/* Below the fold: scroll-driven nativo, aqui si con fade. Sin soporte
-   (@supports falla) el contenido queda visible tal cual, nunca invisible. */
+.reveal-up    { animation: reveal-up .65s cubic-bezier(.22,1,.36,1) both; }
+.reveal-right { animation: reveal-right .8s cubic-bezier(.22,1,.36,1) both; }
+.reveal-pop   { animation: reveal-pop .5s cubic-bezier(.22,1,.36,1) both; }
+.reveal-down  { animation: reveal-down .5s cubic-bezier(.22,1,.36,1) both; }
+
+/* Below the fold: scroll-driven nativo. Sin soporte (@supports falla) el
+   contenido queda visible tal cual, nunca invisible. El rango termina dentro
+   de `entry` para que la animacion se sienta "una vez al entrar" y no un
+   scrub largo atado al scroll. */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: none; }
@@ -253,7 +263,7 @@ body {
   .reveal-in-right {
     animation: fade-up linear forwards;
     animation-timeline: view();
-    animation-range: entry 0% cover 28%;
+    animation-range: entry 0% entry 85%;
   }
   .reveal-in-left  { animation-name: fade-left; }
   .reveal-in-right { animation-name: fade-right; }
@@ -267,6 +277,7 @@ body {
     transition-duration: 0.01ms !important;
   }
 
+  .reveal-lcp,
   .reveal-up,
   .reveal-right,
   .reveal-pop,
