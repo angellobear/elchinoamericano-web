@@ -512,7 +512,7 @@ export default async function ProductDetailPage({
                     id={ctaTargetId}
                     href={whatsappHref}
                     data-wa="producto"
-                    data-wa-item={product.sku}
+                    data-wa-item={product.code}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center gap-3 rounded-[14px] bg-wa py-5 text-4.5 font-bold text-[#062b15] shadow-[0_14px_30px_rgba(37,211,102,.28)] transition-all hover:brightness-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-wa"
@@ -842,6 +842,7 @@ export default async function ProductDetailPage({
             currentPrice={effectivePrice}
             originalPrice={product.offer_price ? product.price : undefined}
             whatsappHref={whatsappHref}
+            waItem={product.code}
           />
         )}
       </main>

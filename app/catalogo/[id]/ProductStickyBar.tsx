@@ -9,6 +9,7 @@ interface ProductStickyBarProps {
   currentPrice: number
   originalPrice?: number
   whatsappHref: string
+  waItem: string
 }
 
 export default function ProductStickyBar({
@@ -16,6 +17,7 @@ export default function ProductStickyBar({
   currentPrice,
   originalPrice,
   whatsappHref,
+  waItem,
 }: ProductStickyBarProps) {
   const [visible, setVisible] = useState(false)
 
@@ -60,6 +62,7 @@ export default function ProductStickyBar({
             <a
               href={whatsappHref}
               data-wa="producto"
+              data-wa-item={waItem}
               target="_blank"
               rel="noopener noreferrer"
               className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-wa px-4 py-3 text-3.75 font-bold text-[#062b15]"

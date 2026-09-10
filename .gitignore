@@ -48,3 +48,4 @@ logs/
 # local design/ai prompts
 /prompts
 /reports
+/.playwright-mcp
