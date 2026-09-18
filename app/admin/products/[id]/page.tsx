@@ -1,5 +1,6 @@
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { ExternalLink } from 'lucide-react'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { parseImagesFormData } from '@/app/admin/products/_components/parseImagesFormData'
 import { getCategories } from '@/lib/db/categories'
@@ -166,7 +167,17 @@ export default async function EditProductPage({
             {product.code}
           </span>
           <span className="text-xs text-slate-400">
-            URL: <span className="font-mono text-slate-600">{buildProductPath({ code: product.code, slug: product.slug })}</span>
+            URL:{' '}
+            <a
+              href={buildProductPath({ code: product.code, slug: product.slug })}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Ver en el catálogo"
+              className="inline-flex items-center gap-1 font-mono text-slate-600 hover:text-brand hover:underline transition-colors"
+            >
+              {buildProductPath({ code: product.code, slug: product.slug })}
+              <ExternalLink size={12} />
+            </a>
           </span>
         </div>
       ) : null}

@@ -1,24 +1,13 @@
 import Link from 'next/link'
-import { getProductList, deleteProduct, getProductById } from '@/lib/db/products'
+import { getProductList } from '@/lib/db/products'
 import { getCategories } from '@/lib/db/categories'
 import { getVehicleBrands } from '@/lib/db/vehicle-brands'
-import { revalidatePath } from 'next/cache'
-import { Plus, Pencil, Trash2, Package, ExternalLink } from 'lucide-react'
+import { Plus, Pencil, Package, ExternalLink, Star } from 'lucide-react'
+import { ProductDeleteButton } from '@/modules/admin/products/components/ProductDeleteButton'
 import { ProductStatusToggle } from '@/modules/admin/products/components/ProductStatusToggle'
 import { ProductFilters } from './_components/ProductFilters'
 import { ProductPagination } from './_components/ProductPagination'
 import { buildProductPath } from '@/lib/product-slugs'
-
-async function handleDelete(id: number) {
-  'use server'
-  const product = await getProductById(id)
-  await deleteProduct(id)
-  revalidatePath('/admin/products')
-  // La página pública sigue viva (marcada como dada de baja) — refrescarla ya
-  if (product) revalidatePath(buildProductPath(product))
-  revalidatePath('/catalogo')
-  revalidatePath('/')
-}
 
 export default async function ProductsPage({
   searchParams,
@@ -101,7 +90,6 @@ export default async function ProductsPage({
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Categoría</th>
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Tipo</th>
               <th className="text-right px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Precio</th>
-              <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Stock</th>
               <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Estado</th>
               <th className="px-4 py-3.5 w-28"></th>
             </tr>
@@ -145,20 +133,17 @@ export default async function ProductsPage({
                   )}
                 </td>
                 <td className="px-4 py-3.5 text-center">
-                  <span className={`font-semibold text-sm ${
-                    p.stock === 0 ? 'text-brand' :
-                    p.stock <= 5  ? 'text-amber-500' :
-                                    'text-emerald-600'
-                  }`}>
-                    {p.stock}
-                  </span>
-                </td>
-                <td className="px-4 py-3.5 text-center">
                   <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium ${
                     p.isActive ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'
                   }`}>
                     {p.isActive ? 'Activo' : 'Inactivo'}
                   </span>
+                  {p.isFeatured && (
+                    <span className="mt-1 flex w-fit mx-auto items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-50 text-amber-700">
+                      <Star size={10} className="fill-current" />
+                      Destacado
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3.5">
                   <div className="flex items-center justify-end gap-1">
@@ -179,22 +164,14 @@ export default async function ProductsPage({
                     >
                       <Pencil size={13} />
                     </Link>
-                    <form action={handleDelete.bind(null, p.id)}>
-                      <button
-                        type="submit"
-                        className="p-1.5 rounded-lg hover:bg-red-50 text-slate-400 hover:text-brand transition-colors cursor-pointer"
-                        title="Eliminar"
-                      >
-                        <Trash2 size={13} />
-                      </button>
-                    </form>
+                    <ProductDeleteButton id={p.id} name={p.title} />
                   </div>
                 </td>
               </tr>
             ))}
             {products.length === 0 && (
               <tr>
-                <td colSpan={9} className="py-20 text-center">
+                <td colSpan={8} className="py-20 text-center">
                   <Package size={28} className="mx-auto mb-3 text-slate-300" />
                   <p className="text-slate-400 text-sm">No hay productos que coincidan</p>
                   <Link href="/admin/products/new" className="inline-flex items-center gap-1.5 mt-3 text-xs text-brand font-medium hover:underline">
