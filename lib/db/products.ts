@@ -107,17 +107,19 @@ export async function getProductList(
     categoryId?: number | number[]
     vehicleBrandId?: number | number[]
     isActive?: boolean | 'all'
+    isFeatured?: boolean
     page?: number
     limit?: number
   },
   options?: SoftDeleteQueryOptions,
 ) {
   const db = await getDb()
-  const { search, type, categoryId, vehicleBrandId, isActive = true, page = 1, limit = 10 } = filters ?? {}
+  const { search, type, categoryId, vehicleBrandId, isActive = true, isFeatured, page = 1, limit = 10 } = filters ?? {}
 
   const where = and(
     buildNotDeletedWhere(products.deletedAt, options),
     isActive !== 'all' ? eq(products.isActive, isActive) : undefined,
+    isFeatured ? eq(products.isFeatured, true) : undefined,
     type ? eq(products.type, type) : undefined,
     categoryId
       ? Array.isArray(categoryId)

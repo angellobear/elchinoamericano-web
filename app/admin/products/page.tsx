@@ -12,12 +12,13 @@ import { buildProductPath } from '@/lib/product-slugs'
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string; page?: string; limit?: string }>
+  searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string; featured?: string; page?: string; limit?: string }>
 }) {
   const params = await searchParams
   const { search, type } = params
   const status = params.status ?? 'active'
   const isActive = status === 'all' ? 'all' : status === 'inactive' ? false : true
+  const featured = params.featured === '1'
   const page = Math.max(1, Number(params.page ?? 1))
   const limit = [10, 20, 50, 100].includes(Number(params.limit)) ? Number(params.limit) : 10
 
@@ -35,6 +36,7 @@ export default async function ProductsPage({
       categoryId: categoryIds,
       vehicleBrandId: vehicleBrandIds,
       isActive,
+      isFeatured: featured,
       page,
       limit,
     }),
@@ -49,6 +51,7 @@ export default async function ProductsPage({
   if (params.categoryId) baseParams.categoryId = params.categoryId
   if (params.vehicleBrandId) baseParams.vehicleBrandId = params.vehicleBrandId
   if (status !== 'active') baseParams.status = status
+  if (featured) baseParams.featured = '1'
 
   return (
     <div className="p-4 md:p-8">
@@ -75,6 +78,7 @@ export default async function ProductsPage({
           categoryIds: categoryIds?.map(String),
           vehicleBrandIds: vehicleBrandIds?.map(String),
           status,
+          featured,
           limit: String(limit),
         }}
       />

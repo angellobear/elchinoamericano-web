@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Search, X } from 'lucide-react'
+import { Search, Star, X } from 'lucide-react'
 import { SearchSelect } from '@/components/ui/search-select'
 
 const STORAGE_KEY = 'admin_products_filters'
@@ -18,6 +18,7 @@ interface ProductFiltersProps {
     categoryIds?: string[]
     vehicleBrandIds?: string[]
     status?: string
+    featured?: boolean
     limit?: string
   }
 }
@@ -28,6 +29,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
   const [hasSearch, setHasSearch] = useState(!!defaults.search)
   const [type, setType] = useState(defaults.type ?? '')
   const [status, setStatus] = useState(defaults.status ?? 'active')
+  const [featured, setFeatured] = useState(defaults.featured ?? false)
   const [categoryIds, setCategoryIds] = useState<string[]>(defaults.categoryIds ?? [])
   const [vehicleBrandIds, setVehicleBrandIds] = useState<string[]>(defaults.vehicleBrandIds ?? [])
 
@@ -36,6 +38,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     || categoryIds.length > 0
     || vehicleBrandIds.length > 0
     || (!!status && status !== 'active')
+    || featured
 
   // Restore saved filters on initial load (when URL has no filters)
   useEffect(() => {
@@ -56,6 +59,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     if (t) setType(t)
     const s = params.get('status')
     if (s) setStatus(s)
+    if (params.get('featured') === '1') setFeatured(true)
 
     router.replace(`/admin/products${saved}`)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -69,13 +73,15 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     setVehicleBrandIds(defaults.vehicleBrandIds ?? [])
     setType(defaults.type ?? '')
     setStatus(defaults.status ?? 'active')
+    setFeatured(defaults.featured ?? false)
     setHasSearch(!!defaults.search)
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [defaultCategoryKey, defaultBrandKey, defaults.type, defaults.status, defaults.search])
+  }, [defaultCategoryKey, defaultBrandKey, defaults.type, defaults.status, defaults.featured, defaults.search])
 
   function navigate(overrides?: {
     type?: string
     status?: string
+    featured?: boolean
     categoryIds?: string[]
     vehicleBrandIds?: string[]
   }) {
@@ -83,6 +89,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     const search = inputRef.current?.value ?? ''
     const resolvedType = overrides?.type ?? type
     const resolvedStatus = overrides?.status ?? status
+    const resolvedFeatured = overrides?.featured ?? featured
     const resolvedCategoryIds = overrides?.categoryIds ?? categoryIds
     const resolvedVehicleBrandIds = overrides?.vehicleBrandIds ?? vehicleBrandIds
 
@@ -91,6 +98,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     if (resolvedCategoryIds.length) params.set('categoryId', resolvedCategoryIds.join(','))
     if (resolvedVehicleBrandIds.length) params.set('vehicleBrandId', resolvedVehicleBrandIds.join(','))
     if (resolvedStatus !== 'active') params.set('status', resolvedStatus)
+    if (resolvedFeatured) params.set('featured', '1')
     if (defaults.limit && defaults.limit !== '10') params.set('limit', defaults.limit)
 
     const qs = params.toString()
@@ -170,6 +178,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
               setVehicleBrandIds([])
               setType('')
               setStatus('active')
+              setFeatured(false)
               if (inputRef.current) inputRef.current.value = ''
               setHasSearch(false)
               router.push('/admin/products')
@@ -217,6 +226,19 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
             placeholder="Estado"
           />
         </div>
+        <button
+          type="button"
+          aria-pressed={featured}
+          onClick={() => { setFeatured(!featured); navigate({ featured: !featured }) }}
+          className={`inline-flex items-center gap-1.5 px-3 rounded-lg border text-sm font-medium transition-colors cursor-pointer ${
+            featured
+              ? 'bg-amber-50 border-amber-200 text-amber-700'
+              : 'bg-white border-slate-200 text-slate-500 hover:bg-slate-50'
+          }`}
+        >
+          <Star size={13} className={featured ? 'fill-current' : ''} />
+          Destacados
+        </button>
       </div>
     </div>
   )
