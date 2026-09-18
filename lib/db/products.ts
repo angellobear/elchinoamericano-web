@@ -7,6 +7,7 @@ import { eq, desc, and, sql, inArray } from 'drizzle-orm'
 import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
 import type { Product, ProductType, VehicleOrigin } from '@/types'
+import { sortCatalogProducts } from '@/lib/catalog-products'
 import {
   buildNotDeletedWhere,
   buildVisibilityWhere,
@@ -472,10 +473,10 @@ export async function getPublicProducts(): Promise<Product[]> {
     },
     orderBy: desc(products.createdAt),
   })
-  return rows.map(r => toPublicProduct({
+  return sortCatalogProducts(rows.map(r => toPublicProduct({
     ...r,
     offerPrice: offerPrice(r.price, r.discountPct, r.discountUntil),
-  }))
+  })))
 }
 
 export async function getPublicProductBySlug(slug: string, options?: ActiveQueryOptions): Promise<Product | null> {

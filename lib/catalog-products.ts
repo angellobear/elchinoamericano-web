@@ -47,6 +47,17 @@ export function getCompatibleModelLabels(product: Product, search = "") {
     .map(({ label, score }) => ({ label, matched: best > 0 && score === best }))
 }
 
+// Orden público del catálogo: destacados → con imagen → más recientes por fecha de creación.
+// Se aplica una sola vez en getPublicProducts(); filtrar conserva el orden.
+export function sortCatalogProducts(products: Product[]) {
+  const created = (p: Product) => (p.created_at ? new Date(p.created_at).getTime() : 0)
+  return [...products].sort((a, b) =>
+    Number(!!b.is_featured) - Number(!!a.is_featured) ||
+    Number(!!b.images?.length) - Number(!!a.images?.length) ||
+    created(b) - created(a)
+  )
+}
+
 export function filterCatalogProducts(
   allProducts: Product[],
   search: string,
