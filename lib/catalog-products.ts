@@ -1,6 +1,52 @@
 import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
 import type { Product } from "@/types"
 
+const normalizeSearchText = (text: string) =>
+  text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+
+// Every word of the query must appear somewhere in the product text, including
+// compatible vehicle brands/models ("pastillas jetour x70" → pads listed for the X70).
+export function matchesCatalogSearch(product: Product, search: string) {
+  const tokens = normalizeSearchText(search).split(/\s+/).filter(Boolean)
+  if (tokens.length === 0) return true
+
+  const haystack = normalizeSearchText(
+    [
+      product.title,
+      product.short_title,
+      product.short_description,
+      product.sku,
+      product.code,
+      product.part_brand?.name,
+      ...(product.compatibilities ?? []).flatMap((c) => [c.model?.brand?.name, c.model?.name]),
+    ]
+      .filter(Boolean)
+      .join(" ")
+  )
+  return tokens.every((token) => haystack.includes(token))
+}
+
+// Compatible vehicle labels for the product card. Models that best match the
+// search go first and are flagged so the card can highlight why it showed up.
+export function getCompatibleModelLabels(product: Product, search = "") {
+  const tokens = normalizeSearchText(search).split(/\s+/).filter(Boolean)
+  const labels = [
+    ...new Set(
+      (product.compatibilities ?? [])
+        .filter((c) => c.model?.name)
+        .map((c) => [c.model?.brand?.name, c.model?.name].filter(Boolean).join(" "))
+    ),
+  ]
+  const scored = labels.map((label) => {
+    const text = normalizeSearchText(label)
+    return { label, score: tokens.filter((token) => text.includes(token)).length }
+  })
+  const best = Math.max(0, ...scored.map((item) => item.score))
+  return scored
+    .sort((a, b) => b.score - a.score)
+    .map(({ label, score }) => ({ label, matched: best > 0 && score === best }))
+}
+
 export function filterCatalogProducts(
   allProducts: Product[],
   search: string,
@@ -8,15 +54,8 @@ export function filterCatalogProducts(
   categories: string[],
   carBrands: string[],
 ) {
-  const normalizedSearch = search.trim().toLowerCase()
-
   return allProducts.filter((product) => {
-    const matchesSearch =
-      normalizedSearch === "" ||
-      product.title.toLowerCase().includes(normalizedSearch) ||
-      (product.short_description ?? "").toLowerCase().includes(normalizedSearch) ||
-      (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch) ||
-      product.code.toLowerCase().includes(normalizedSearch)
+    const matchesSearch = matchesCatalogSearch(product, search)
     const matchesQuality =
       qualities.length === 0 || qualities.includes(product.type)
     const matchesCategory =

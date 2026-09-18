@@ -5,7 +5,7 @@ import { PackageSearch } from "lucide-react"
 import ProductCard from "@/components/ProductCard"
 import { Product } from "@/types"
 
-export default function ProductGrid({ products }: { products: Product[] }) {
+export default function ProductGrid({ products, search = "" }: { products: Product[]; search?: string }) {
   return (
     <div className="min-h-100">
       <AnimatePresence mode="popLayout">
@@ -31,7 +31,7 @@ export default function ProductGrid({ products }: { products: Product[] }) {
           >
             <AnimatePresence mode="popLayout">
               {products.map((product, index) => (
-                <ProductCard key={product.id} product={product} priority={index < 4} />
+                <ProductCard key={product.id} product={product} priority={index < 4} search={search} />
               ))}
             </AnimatePresence>
           </motion.div>

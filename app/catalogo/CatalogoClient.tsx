@@ -15,6 +15,7 @@ import ProductGrid from "@/components/ProductGrid"
 import RequestPartForm from "@/components/RequestPartForm"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import type { Product } from "@/types"
+import { filterCatalogProducts } from "@/lib/catalog-products"
 import {
   buildCatalogUrl,
   CATALOG_PAGE_SIZE,
@@ -61,31 +62,7 @@ function sortProducts(products: Product[]) {
 }
 
 function getFilteredProducts(allProducts: Product[], search: string, filters: FilterState) {
-  const normalizedSearch = search.trim().toLowerCase()
-
-  return allProducts.filter((product) => {
-    const matchesSearch =
-      normalizedSearch === "" ||
-      product.title.toLowerCase().includes(normalizedSearch) ||
-      (product.short_title ?? "").toLowerCase().includes(normalizedSearch) ||
-      (product.sku ?? "").toLowerCase().includes(normalizedSearch) ||
-      product.code.toLowerCase().includes(normalizedSearch) ||
-      (product.part_brand?.name ?? "").toLowerCase().includes(normalizedSearch)
-    const matchesQuality =
-      filters.qualities.length === 0 || filters.qualities.includes(product.type)
-    const matchesCategory =
-      filters.categories.length === 0 ||
-      filters.categories.includes(product.category?.key ?? "")
-    const vehicleBrandKeys =
-      product.compatibilities?.map((compatibility) =>
-        compatibility.model?.brand?.name ? toVehicleBrandKey(compatibility.model.brand.name) : ""
-      ) ?? []
-    const matchesBrand =
-      filters.carBrands.length === 0 ||
-      filters.carBrands.some((brand) => vehicleBrandKeys.includes(brand))
-
-    return matchesSearch && matchesQuality && matchesCategory && matchesBrand
-  })
+  return filterCatalogProducts(allProducts, search, filters.qualities, filters.categories, filters.carBrands)
 }
 
 // For each dimension, count available options using all OTHER active filters.
@@ -472,7 +449,7 @@ export default function CatalogoClient({
               <RequestPartForm searchQuery={search} />
             ) : (
               <>
-                <ProductGrid products={paginatedProducts} />
+                <ProductGrid products={paginatedProducts} search={search} />
                 <Pagination page={safePage} totalPages={totalPages} onPage={handlePage} />
               </>
             )}

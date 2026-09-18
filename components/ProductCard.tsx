@@ -3,9 +3,10 @@
 import Link from "next/link"
 import Image from "next/image"
 import { motion } from "framer-motion"
-import { MessageCircle, Package } from "lucide-react"
+import { Car, MessageCircle, Package } from "lucide-react"
 import { Product } from "@/types"
 import { getWhatsAppUrl } from "@/lib/constants"
+import { getCompatibleModelLabels } from "@/lib/catalog-products"
 import { buildProductPath } from "@/lib/product-slugs"
 import { DEFAULT_PRODUCT_IMAGE_PATH, getPartBrandName, getProductPrimaryImage } from "@/lib/seo"
 
@@ -18,7 +19,11 @@ const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
 // ponytail: `priority` solo para las primeras cards. En /catalogo el elemento
 // LCP es la imagen de la primera card y salia con loading="lazy": 3.7 s de
 // Load Delay, el 72% de un LCP de 5.1 s.
-export default function ProductCard({ product, priority = false }: { product: Product; priority?: boolean }) {
+const VISIBLE_COMPAT_MODELS = 2
+
+export default function ProductCard({ product, priority = false, search = "" }: { product: Product; priority?: boolean; search?: string }) {
+  const compatModels = getCompatibleModelLabels(product, search)
+  const hiddenCompatCount = compatModels.length - VISIBLE_COMPAT_MODELS
   const primaryImage = getProductPrimaryImage(product)
   const displayImage = primaryImage ?? DEFAULT_PRODUCT_IMAGE_PATH
   const effectivePrice = product.offer_price ?? product.price
@@ -89,6 +94,29 @@ export default function ProductCard({ product, priority = false }: { product: Pr
         <h3 className="font-display font-bold text-4.75 uppercase text-navy leading-[1.12] mt-1.25">
           {product.title}
         </h3>
+        {/* Fixed height even when empty so prices stay aligned across the grid.
+            The rest of the models live in the detail page (whole card is a link). */}
+        <p className="flex items-center gap-1.5 h-4.5 mt-2 text-3 text-[#6b7485]">
+          {compatModels.length > 0 && (
+            <>
+              <Car size={14} className="shrink-0" aria-hidden="true" />
+              <span className="sr-only">Compatible con:</span>
+              <span className="truncate">
+                {compatModels.slice(0, VISIBLE_COMPAT_MODELS).map((model, index) => (
+                  <span key={model.label}>
+                    {index > 0 && ", "}
+                    {model.matched ? (
+                      <mark className="rounded-xs bg-amber-200 px-0.75 font-bold text-navy">{model.label}</mark>
+                    ) : (
+                      model.label
+                    )}
+                  </span>
+                ))}
+              </span>
+              {hiddenCompatCount > 0 && <span className="shrink-0">+{hiddenCompatCount}</span>}
+            </>
+          )}
+        </p>
 
         <div className="flex items-end justify-between mt-auto pt-4">
           <div>
