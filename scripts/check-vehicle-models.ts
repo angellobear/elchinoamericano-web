@@ -28,7 +28,7 @@ const groups = groupVehicleModels(
   "Ford",
 )
 assert.deepStrictEqual(groups.map((g) => [g.slug, g.name, g.products.length]), [
-  ["ecosport", "Eco Sport", 3],
+  ["ecosport", "EcoSport", 3],
   ["ranger", "Ranger", 1],
 ])
 assert.deepStrictEqual(groups[1].displacements, ["3.2"])

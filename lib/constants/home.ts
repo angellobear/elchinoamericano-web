@@ -1,8 +1,8 @@
 export const homeContent = {
   metadata: {
-    title: "Repuestos automotrices chinos y americanos | El Chino Americano",
+    title: "Repuestos para autos chinos y Ford en Ecuador | El Chino Americano",
     description:
-      "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador. Asesoría por WhatsApp, marcas seleccionadas y envíos a nivel nacional.",
+      "Repuestos originales, OEM y alternos para Ford, Chevrolet y marcas chinas como Chery, JAC y Great Wall. Tienda en Quito, asesoría por WhatsApp y envíos a todo Ecuador.",
     keywords: [
       "repuestos automotrices Ecuador",
       "repuestos chinos Ecuador",
@@ -12,10 +12,10 @@ export const homeContent = {
       "repuestos Chevrolet",
       "repuestos Quito Ecuador",
     ],
-    openGraphTitle: "Repuestos automotrices chinos y americanos | El Chino Americano",
+    openGraphTitle: "Repuestos para autos chinos y Ford en Ecuador | El Chino Americano",
     openGraphDescription:
       "Especialistas en repuestos para vehículos chinos y americanos con atención desde Ecuador y envíos a todo el país.",
-    twitterTitle: "Repuestos automotrices chinos y americanos | El Chino Americano",
+    twitterTitle: "Repuestos para autos chinos y Ford en Ecuador | El Chino Americano",
     twitterDescription:
       "Repuestos originales, OEM y alternos para marcas chinas y americanas con envíos a todo Ecuador.",
     shareImageAlt: "El Chino Americano, repuestos automotrices en Ecuador",
@@ -27,15 +27,6 @@ export const homeContent = {
       "repuestos automotrices Ecuador",
       "repuestos para vehículos chinos",
       "repuestos para vehículos americanos",
-      "repuestos Chery Ecuador",
-      "repuestos BYD Ecuador",
-      "repuestos JAC Ecuador",
-      "repuestos Great Wall Ecuador",
-      "repuestos Haval Ecuador",
-      "repuestos Geely Ecuador",
-      "repuestos Ford Ecuador",
-      "repuestos Chevrolet Ecuador",
-      "repuestos Dodge Ecuador",
       "repuestos originales de fábrica",
       "repuestos OEM",
       "repuestos alternos aftermarket",

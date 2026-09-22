@@ -17,6 +17,7 @@ export function matchesCatalogSearch(product: Product, search: string) {
       product.short_description,
       product.sku,
       product.code,
+      ...(product.alternate_codes ?? []).map((ac) => ac.code),
       product.part_brand?.name,
       ...(product.compatibilities ?? []).flatMap((c) => [c.model?.brand?.name, c.model?.name]),
     ]

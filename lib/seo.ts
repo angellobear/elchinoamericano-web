@@ -25,7 +25,8 @@ export const DEFAULT_KEYWORDS = [
 ]
 export const GEO_REGION = "EC-P"
 export const GEO_PLACENAME = "Quito, Pichincha, Ecuador"
-export const GEO_POSITION = "-0.18070;-78.46780"
+// Pin del local "El Chino Americano - Repuestos" en Google Maps (mismo que contactInfo.map.embedUrl)
+export const GEO_POSITION = "-0.2919618;-78.4825777"
 
 export function toAbsoluteUrl(path: string) {
   if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -185,8 +186,12 @@ export function getProductSeoDescription(product: Product, typeLabel: string) {
   const base = normalizeProductTitle(product)
   const brandText = partBrand && !base.toLowerCase().includes(partBrand.toLowerCase()) ? ` ${partBrand}` : ""
 
+  // ponytail: los números de parte OEM/Ford se buscan tal cual en Google ("FB5Z-18124-U")
+  const oemCodes = (product.alternate_codes ?? []).map((ac) => ac.code).slice(0, 2)
+  const oemText = oemCodes.length ? ` Ref. OEM: ${oemCodes.join(", ")}.` : ""
+
   return collapse(
-    `${base}${brandText} (${typeLabel}).${compatText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}. Envíos a todo Ecuador desde Quito.`,
+    `${base}${brandText} (${typeLabel}).${compatText}${oemText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}. Envíos a todo Ecuador desde Quito.`,
   )
 }
 

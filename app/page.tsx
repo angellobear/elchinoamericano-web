@@ -5,6 +5,10 @@ import WhyUs from "@/components/WhyUs"
 import CtaBand from "@/components/CtaBand"
 import Brands from "@/components/Brands"
 import Footer from "@/components/Footer"
+import FordSpotlight from "@/components/FordSpotlight"
+import { getPublicProducts } from "@/lib/db/products"
+import { filterCatalogProducts } from "@/lib/catalog-products"
+import { groupVehicleModels } from "@/lib/vehicle-models"
 import { siteConfig } from "@/lib/constants"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 import { buildCatalogBrandPath } from "@/lib/catalog"
@@ -60,11 +64,27 @@ export const metadata: Metadata = {
   },
 }
 
+function joinEs(items: string[]) {
+  return items.length <= 1 ? (items[0] ?? "") : `${items.slice(0, -1).join(", ")} y ${items.at(-1)}`
+}
+
+// ponytail: las marcas salen del catálogo real (antes se afirmaban BYD, Lifan, Geely… sin página propia)
+function buildBrandFaqs(brands: { name: string; origin: string }[]) {
+  const chinese = brands.filter((b) => b.origin === "chinese").map((b) => b.name)
+  const american = brands.filter((b) => b.origin === "american").map((b) => b.name)
+  return [
+    {
+      q: "¿Qué marcas de vehículos chinos y americanos manejan?",
+      a: `En marcas chinas tenemos repuestos para ${joinEs(chinese)}. En marcas americanas cubrimos ${joinEs(american)}, con Ford como la marca con más repuestos del catálogo. Para otras marcas, escríbenos por WhatsApp y cotizamos la pieza bajo pedido.`,
+    },
+    {
+      q: "¿Por qué se llaman El Chino Americano?",
+      a: "Por las dos especialidades del almacén: \"El Chino\" por los repuestos para marcas chinas como Chery, JAC y Great Wall, y \"Americano\" por los repuestos para Ford y Chevrolet.",
+    },
+  ]
+}
+
 const FAQ_ITEMS = [
-  {
-    q: "¿Qué marcas de vehículos chinos y americanos manejan?",
-    a: "Trabajamos con repuestos para las principales marcas chinas presentes en Ecuador: Chery, BYD, JAC, Great Wall, Haval, Lifan, Geely y Brilliance, entre otras. En marcas americanas cubremos Chevrolet, Ford, Dodge, Jeep y Ram. Puedes verificar disponibilidad por WhatsApp o buscando por marca en el catálogo.",
-  },
   {
     q: "¿Cuál es la diferencia entre repuesto original, OEM y alterno?",
     a: "Original: fabricado directamente por el proveedor oficial del armador, máxima garantía de compatibilidad. OEM (Original Equipment Manufacturer): misma especificación técnica que el original, fabricado por el proveedor homologado de la marca, a menor precio. Alterno o aftermarket: fabricado por terceros, de buena calidad y relación precio-durabilidad, sin el sello del fabricante original. Los tres tipos están disponibles en El Chino Americano.",
@@ -88,11 +108,14 @@ const FAQ_ITEMS = [
 ] as const
 
 export default async function Home() {
-  const brands = await getVisibleVehicleBrands()
+  const [brands, products] = await Promise.all([getVisibleVehicleBrands(), getPublicProducts()])
+  const fordProducts = filterCatalogProducts(products, "", [], [], ["ford"])
+  const fordModels = groupVehicleModels(fordProducts, "Ford")
+  const faqItems = [...buildBrandFaqs(brands), ...FAQ_ITEMS]
   const homeFaqJsonLd = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: FAQ_ITEMS.map((item) => ({
+    mainEntity: faqItems.map((item) => ({
       "@type": "Question",
       name: item.q,
       acceptedAnswer: { "@type": "Answer", text: item.a },
@@ -128,7 +151,6 @@ export default async function Home() {
           "@type": "PostalAddress",
           addressLocality: siteConfig.contact.address.city,
           addressCountry: siteConfig.contact.address.country,
-          streetAddress: siteConfig.contact.address.full,
         },
         telephone: siteConfig.contact.whatsappDisplay,
         geo: {
@@ -146,7 +168,7 @@ export default async function Home() {
         },
         openingHours: [siteConfig.contact.hours.weekdays.schema, siteConfig.contact.hours.saturday.schema],
         sameAs: Object.values(siteConfig.social),
-        knowsAbout: [...homeStructuredData.knowsAbout],
+        knowsAbout: [...homeStructuredData.knowsAbout, ...brands.map((brand) => `repuestos ${brand.name} Ecuador`)],
       },
       homeFaqJsonLd,
       {
@@ -175,6 +197,7 @@ export default async function Home() {
         <WhyUs />
         <CtaBand />
         <Brands brands={brands} />
+        <FordSpotlight models={fordModels} total={fordProducts.length} />
         <section aria-labelledby="faq-heading" className="border-t border-[#e6e9ef] bg-white">
           <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
             <h2
@@ -184,7 +207,7 @@ export default async function Home() {
               Preguntas frecuentes
             </h2>
             <dl className="divide-y divide-[#e6e9ef]">
-              {FAQ_ITEMS.map(({ q, a }) => (
+              {faqItems.map(({ q, a }) => (
                 <div key={q} className="py-7">
                   <dt className="mb-3 text-4.25 font-bold leading-snug text-navy">{q}</dt>
                   <dd className="text-3.75 leading-[1.65] text-[#566071]">{a}</dd>

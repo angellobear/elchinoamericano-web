@@ -50,3 +50,8 @@ const pump = {
 assert.strictEqual(getProductSeoTitle(pump), "Bomba agua Ford Ranger Magiaty 2017-2020 | El Chino Americano")
 assert(getProductSeoDescription(pump, "Alterno").includes("Compatible con Ford Ranger 3.2 2017-2020."))
 console.log("OK uppercase model names")
+
+// números de parte OEM/Ford entran en la descripción
+const oem = { ...filter, alternate_codes: [{ code: "FL-820S", source: "Motorcraft" }, { code: "AA5Z-6731-A" }, { code: "X" }] } as unknown as Product
+assert(getProductSeoDescription(oem, "Alterno").includes("Ref. OEM: FL-820S, AA5Z-6731-A."))
+console.log("OK OEM codes in description")

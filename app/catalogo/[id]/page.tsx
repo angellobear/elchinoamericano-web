@@ -243,12 +243,18 @@ function buildJsonLd(product: Product, availability: ReturnType<typeof getAvaila
       },
     },
     isAccessoryOrSparePartFor: buildVehicleFitJsonLd(product),
-    additionalProperty:
-      product.specs?.map((spec) => ({
+    additionalProperty: [
+      ...(product.specs?.map((spec) => ({
         "@type": "PropertyValue",
         name: spec.label,
         value: spec.value,
-      })) ?? [],
+      })) ?? []),
+      ...(product.alternate_codes?.map((ac) => ({
+        "@type": "PropertyValue",
+        name: ac.source ? `Número de parte ${ac.source}` : "Número de parte OEM",
+        value: ac.code,
+      })) ?? []),
+    ],
   }
 }
 

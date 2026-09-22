@@ -144,7 +144,7 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Bombas de agua en el catálogo", href: "/catalogo?categoria=enfriamiento" },
+      { nombre: "Bombas de agua en el catálogo", href: "/catalogo/categoria/enfriamiento" },
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
       { nombre: "Repuestos para JAC", href: "/catalogo/marca/jac" },
     ],
@@ -240,7 +240,7 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Repuestos de frenos en el catálogo", href: "/catalogo?categoria=frenos" },
+      { nombre: "Repuestos de frenos en el catálogo", href: "/catalogo/categoria/frenos" },
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
     ],
     guiasRelacionadas: [
@@ -324,7 +324,7 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Suspensión en el catálogo", href: "/catalogo?categoria=suspension" },
+      { nombre: "Suspensión en el catálogo", href: "/catalogo/categoria/suspension" },
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
       { nombre: "Repuestos para JAC", href: "/catalogo/marca/jac" },
     ],
@@ -427,8 +427,8 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Sistema de enfriamiento en el catálogo", href: "/catalogo?categoria=enfriamiento" },
-      { nombre: "Bombas de agua", href: "/catalogo?categoria=enfriamiento" },
+      { nombre: "Sistema de enfriamiento en el catálogo", href: "/catalogo/categoria/enfriamiento" },
+      { nombre: "Bombas de agua", href: "/catalogo/categoria/enfriamiento" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
@@ -505,7 +505,7 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Repuestos eléctricos en el catálogo", href: "/catalogo?categoria=electrico" },
+      { nombre: "Repuestos eléctricos en el catálogo", href: "/catalogo/categoria/electrico" },
     ],
     guiasRelacionadas: [
       { titulo: "Luz del motor encendida — qué hacer primero", href: "/guias/problemas/luz-del-motor-encendida-que-hacer" },
@@ -587,8 +587,8 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Sensores y repuestos eléctricos", href: "/catalogo?categoria=electrico" },
-      { nombre: "Filtros", href: "/catalogo?categoria=filtros" },
+      { nombre: "Sensores y repuestos eléctricos", href: "/catalogo/categoria/electrico" },
+      { nombre: "Filtros", href: "/catalogo/categoria/filtros" },
     ],
     guiasRelacionadas: [
       { titulo: "Mi Chery o JAC arranca con dificultad", href: "/guias/problemas/auto-chino-arranca-con-dificultad" },
@@ -679,7 +679,7 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Suspensión y dirección en el catálogo", href: "/catalogo?categoria=suspension" },
+      { nombre: "Suspensión y dirección en el catálogo", href: "/catalogo/categoria/suspension" },
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
     ],
     guiasRelacionadas: [
@@ -757,8 +757,8 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Filtros en el catálogo", href: "/catalogo?categoria=filtros" },
-      { nombre: "Motor y repuestos internos", href: "/catalogo?categoria=motor" },
+      { nombre: "Filtros en el catálogo", href: "/catalogo/categoria/filtros" },
+      { nombre: "Motor y repuestos internos", href: "/catalogo/categoria/motor" },
     ],
     guiasRelacionadas: [
       { titulo: "Mi Chery o JAC arranca con dificultad", href: "/guias/problemas/auto-chino-arranca-con-dificultad" },
@@ -841,8 +841,8 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Motor y repuestos de encendido", href: "/catalogo?categoria=motor" },
-      { nombre: "Filtros", href: "/catalogo?categoria=filtros" },
+      { nombre: "Motor y repuestos de encendido", href: "/catalogo/categoria/motor" },
+      { nombre: "Filtros", href: "/catalogo/categoria/filtros" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cada cuánto se cambia el filtro de aceite?", href: "/guias/problemas/cada-cuanto-cambiar-filtro-de-aceite" },
@@ -925,7 +925,7 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
-      { nombre: "Frenos en el catálogo", href: "/catalogo?categoria=frenos" },
+      { nombre: "Frenos en el catálogo", href: "/catalogo/categoria/frenos" },
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
     ],
     guiasRelacionadas: [
@@ -1049,6 +1049,10 @@ const guiasProblemas: Guia[] = [
       },
     ],
     productosRelacionados: [
+      { nombre: "Repuestos Ford Explorer", href: "/catalogo/marca/ford/explorer" },
+      { nombre: "Repuestos Ford Ranger", href: "/catalogo/marca/ford/ranger" },
+      { nombre: "Repuestos Ford Escape", href: "/catalogo/marca/ford/escape" },
+      { nombre: "Repuestos Ford EcoSport", href: "/catalogo/marca/ford/ecosport" },
       { nombre: "Repuestos para Ford", href: "/catalogo/marca/ford" },
       { nombre: "Ver todo el catálogo", href: "/catalogo" },
     ],
@@ -1267,7 +1271,7 @@ const guiasMarcas: Guia[] = [
     ],
     productosRelacionados: [
       { nombre: "Ver catálogo de JAC", href: "/catalogo/marca/jac" },
-      { nombre: "Suspensión y dirección", href: "/catalogo?categoria=suspension" },
+      { nombre: "Suspensión y dirección", href: "/catalogo/categoria/suspension" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
@@ -1364,9 +1368,12 @@ const guiasMarcas: Guia[] = [
       },
     ],
     productosRelacionados: [
+      { nombre: "Repuestos Ford Explorer", href: "/catalogo/marca/ford/explorer" },
+      { nombre: "Repuestos Ford Ranger", href: "/catalogo/marca/ford/ranger" },
+      { nombre: "Repuestos Ford Escape", href: "/catalogo/marca/ford/escape" },
+      { nombre: "Repuestos Ford EcoSport", href: "/catalogo/marca/ford/ecosport" },
       { nombre: "Ver catálogo de Ford", href: "/catalogo/marca/ford" },
-      { nombre: "Frenos para Ford", href: "/catalogo/marca/ford" },
-      { nombre: "Sistema de enfriamiento", href: "/catalogo?categoria=enfriamiento" },
+      { nombre: "Sistema de enfriamiento", href: "/catalogo/categoria/enfriamiento" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
@@ -1454,7 +1461,7 @@ const guiasMarcas: Guia[] = [
     ],
     productosRelacionados: [
       { nombre: "Ver catálogo de Chevrolet", href: "/catalogo/marca/chevrolet" },
-      { nombre: "Motor y filtros", href: "/catalogo?categoria=motor" },
+      { nombre: "Motor y filtros", href: "/catalogo/categoria/motor" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
@@ -1531,7 +1538,7 @@ const guiasMarcas: Guia[] = [
     ],
     productosRelacionados: [
       { nombre: "Ver catálogo de Great Wall", href: "/catalogo/marca/great-wall" },
-      { nombre: "Sistema de enfriamiento", href: "/catalogo?categoria=enfriamiento" },
+      { nombre: "Sistema de enfriamiento", href: "/catalogo/categoria/enfriamiento" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
@@ -1613,7 +1620,7 @@ const guiasMarcas: Guia[] = [
     ],
     productosRelacionados: [
       { nombre: "Ver catálogo de BYD", href: "/catalogo/marca/byd" },
-      { nombre: "Frenos en el catálogo", href: "/catalogo?categoria=frenos" },
+      { nombre: "Frenos en el catálogo", href: "/catalogo/categoria/frenos" },
     ],
     guiasRelacionadas: [
       { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrían-pastillas-o-discos" },
@@ -1690,7 +1697,7 @@ const guiasMarcas: Guia[] = [
     ],
     productosRelacionados: [
       { nombre: "Ver catálogo de MG", href: "/catalogo/marca/mg" },
-      { nombre: "Suspensión y dirección", href: "/catalogo?categoria=suspension" },
+      { nombre: "Suspensión y dirección", href: "/catalogo/categoria/suspension" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo identificar si los amortiguadores están gastados?", href: "/guias/problemas/como-identificar-amortiguadores-gastados" },
@@ -1765,7 +1772,7 @@ const guiasMarcas: Guia[] = [
     ],
     productosRelacionados: [
       { nombre: "Ver catálogo de DFSK", href: "/catalogo/marca/dfsk" },
-      { nombre: "Filtros en el catálogo", href: "/catalogo?categoria=filtros" },
+      { nombre: "Filtros en el catálogo", href: "/catalogo/categoria/filtros" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
@@ -1890,6 +1897,10 @@ const guiasMarcas: Guia[] = [
       },
     ],
     productosRelacionados: [
+      { nombre: "Repuestos Ford Explorer", href: "/catalogo/marca/ford/explorer" },
+      { nombre: "Repuestos Ford Ranger", href: "/catalogo/marca/ford/ranger" },
+      { nombre: "Repuestos Ford Escape", href: "/catalogo/marca/ford/escape" },
+      { nombre: "Repuestos Ford EcoSport", href: "/catalogo/marca/ford/ecosport" },
       { nombre: "Repuestos para Ford", href: "/catalogo/marca/ford" },
       { nombre: "Ver todo el catálogo", href: "/catalogo" },
       { nombre: "Contacto y ubicación", href: "/contacto" },
@@ -3281,7 +3292,7 @@ const guiasMantenimiento: Guia[] = [
     ],
     productosRelacionados: [
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
-      { nombre: "Filtros en el catálogo", href: "/catalogo?categoria=filtros" },
+      { nombre: "Filtros en el catálogo", href: "/catalogo/categoria/filtros" },
       { nombre: "Ver todo el catálogo", href: "/catalogo" },
     ],
     guiasRelacionadas: [

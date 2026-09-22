@@ -35,6 +35,11 @@ export function vehicleModelSlug(name: string) {
     .replace(/^-|-$/g, "")
 }
 
+// Nombre comercial cuando el casing automático no alcanza ("ECO SPORT" → "Eco Sport" ≠ "EcoSport")
+const OFFICIAL_MODEL_NAMES: Record<string, string> = {
+  ecosport: "EcoSport",
+}
+
 export interface VehicleModelGroup {
   key: string
   slug: string
@@ -82,7 +87,7 @@ export function groupVehicleModels(products: Product[], brandName: string): Vehi
 
   return [...groups]
     .map(([key, group]) => {
-      const name = [...group.names].sort((a, b) => b[1] - a[1])[0][0]
+      const name = OFFICIAL_MODEL_NAMES[key] ?? [...group.names].sort((a, b) => b[1] - a[1])[0][0]
       // ponytail: slug con menos guiones entre variantes ("ECOSPORT" gana a "ECO SPORT"): es como se busca
       const slug = [...group.names.keys()]
         .map(vehicleModelSlug)

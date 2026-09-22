@@ -1,7 +1,14 @@
 import { getCategories } from "@/lib/db/categories"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { getPublicProducts } from "@/lib/db/products"
-import { buildCatalogBrandPath, buildCatalogCategoryPath } from "@/lib/catalog"
+import {
+  buildCatalogBrandPath,
+  buildCatalogCategoryPath,
+  buildCatalogModelPath,
+  MIN_INDEXABLE_MODEL_PRODUCTS,
+} from "@/lib/catalog"
+import { filterCatalogProducts } from "@/lib/catalog-products"
+import { groupVehicleModels } from "@/lib/vehicle-models"
 import { buildProductPath } from "@/lib/product-slugs"
 import { SITE_URL } from "@/lib/seo"
 import { contactInfo } from "@/lib/constants"
@@ -23,6 +30,19 @@ export async function GET() {
     getCategories(),
     getPublicProducts(),
   ])
+  const byOrigin = (origin: string) => brands.filter((b) => b.origin === origin).map((b) => b.name).join(", ")
+  const brandModelSections = brands.flatMap((brand) => {
+    const models = groupVehicleModels(filterCatalogProducts(products, "", [], [], [brand.key]), brand.name)
+      .filter((m) => m.products.length >= MIN_INDEXABLE_MODEL_PRODUCTS)
+    if (models.length === 0) return []
+    return [
+      "",
+      `### ${brand.name}`,
+      ...models.map((m) =>
+        mdLink(`Repuestos ${brand.name} ${m.name}`, `${SITE_URL}${buildCatalogModelPath(brand.key, m.slug)}`, `${m.products.length} repuestos`),
+      ),
+    ]
+  })
   const featuredProducts = [
     ...products.filter((product) => product.is_featured),
     ...products.filter((product) => !product.is_featured),
@@ -62,11 +82,15 @@ export async function GET() {
     "- Plazo de entrega: 24 a 72 horas según la ciudad, con guía de envío rastreable",
     `- Canal principal de atención: WhatsApp ${contactInfo.whatsappDisplay}`,
     `- Horario: ${contactInfo.hours.weekdays.display}; ${contactInfo.hours.saturday.display}`,
-    "- Especialidad: marcas chinas (Chery, JAC, BYD, Great Wall/Haval, MG, DFSK) y americanas (Ford, Chevrolet, Dodge, Jeep, Ram)",
+    `- Especialidad: marcas chinas (${byOrigin("chinese")}) y americanas (${byOrigin("american")}); Ford es la marca con más repuestos del catálogo`,
+    "- Nombre: \"El Chino\" por las marcas chinas y \"Americano\" por Ford y Chevrolet",
     "- No es concesionario oficial de ninguna marca: es un almacén independiente",
     "",
     "## Marcas de vehículo",
     ...brands.map((brand) => mdLink(brand.name, `${SITE_URL}${buildCatalogBrandPath([brand.key])}`, `Repuestos para vehículos ${brand.name}`)),
+    "",
+    "## Repuestos por modelo de vehículo",
+    ...brandModelSections,
     "",
     "## Categorías de repuestos",
     ...categories.map((category) => mdLink(category.name, `${SITE_URL}${buildCatalogCategoryPath(category.key)}`, `Repuestos de la categoría ${category.name}`)),

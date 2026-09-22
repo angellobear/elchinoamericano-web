@@ -72,7 +72,6 @@ export default async function ContactoPage() {
           "@type": "PostalAddress",
           addressLocality: siteConfig.contact.address.city,
           addressCountry: siteConfig.contact.address.country,
-          streetAddress: siteConfig.contact.address.full,
         },
         contactPoint: {
           "@type": "ContactPoint",
