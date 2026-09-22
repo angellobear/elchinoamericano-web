@@ -1,7 +1,15 @@
 import type { MetadataRoute } from "next"
 import { getPublicProducts } from "@/lib/db/products"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
-import { buildCatalogBrandPath } from "@/lib/catalog"
+import {
+  buildCatalogBrandPath,
+  buildCatalogCategoryPath,
+  buildCatalogModelPath,
+  MIN_INDEXABLE_MODEL_PRODUCTS,
+} from "@/lib/catalog"
+import { getCategories } from "@/lib/db/categories"
+import { filterCatalogProducts } from "@/lib/catalog-products"
+import { groupVehicleModels } from "@/lib/vehicle-models"
 import {
   DEFAULT_PRODUCT_IMAGE_PATH,
   DEFAULT_SHARE_IMAGE_PATH,
@@ -14,7 +22,7 @@ import { guias } from "@/data/guias"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
-  const [products, brands] = await Promise.all([getPublicProducts(), getVisibleVehicleBrands()])
+  const [products, brands, categories] = await Promise.all([getPublicProducts(), getVisibleVehicleBrands(), getCategories()])
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {
@@ -61,6 +69,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     images: brand.logoUrl ? [brand.logoUrl] : [toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)],
   }))
 
+  const modelRoutes: MetadataRoute.Sitemap = brands.flatMap((brand) =>
+    groupVehicleModels(filterCatalogProducts(products, "", [], [], [brand.key]), brand.name)
+      .filter((model) => model.products.length >= MIN_INDEXABLE_MODEL_PRODUCTS)
+      .map((model) => ({
+        url: `${SITE_URL}${buildCatalogModelPath(brand.key, model.slug)}`,
+        lastModified: now,
+        changeFrequency: "daily" as const,
+        priority: 0.85,
+      })),
+  )
+
+  const categoryRoutes: MetadataRoute.Sitemap = categories.map((category) => ({
+    url: `${SITE_URL}${buildCatalogCategoryPath(category.key)}`,
+    lastModified: now,
+    changeFrequency: "daily" as const,
+    priority: 0.8,
+  }))
+
   const productRoutes: MetadataRoute.Sitemap = products.map((product) => ({
     url: `${SITE_URL}${buildProductPath(product)}`,
     lastModified: new Date(product.updated_at ?? product.created_at ?? now),
@@ -69,5 +95,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     images: [toAbsoluteUrl(getProductPrimaryImage(product) ?? DEFAULT_PRODUCT_IMAGE_PATH)],
   }))
 
-  return [...staticRoutes, ...brandRoutes, ...productRoutes, ...guiaRoutes]
+  return [...staticRoutes, ...brandRoutes, ...modelRoutes, ...categoryRoutes, ...productRoutes, ...guiaRoutes]
 }

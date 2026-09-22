@@ -6,11 +6,11 @@ import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
 
 const CATALOG_LINKS = [
-  { label: "Motor", href: "/catalogo?categoria=motor" },
-  { label: "Frenos", href: "/catalogo?categoria=frenos" },
-  { label: "Suspensión", href: "/catalogo?categoria=suspension" },
-  { label: "Eléctrico", href: "/catalogo?categoria=electrico" },
-  { label: "Carrocería", href: "/catalogo?categoria=carroceria" },
+  { label: "Motor", href: "/catalogo/categoria/motor" },
+  { label: "Frenos", href: "/catalogo/categoria/frenos" },
+  { label: "Suspensión", href: "/catalogo/categoria/suspension" },
+  { label: "Eléctrico", href: "/catalogo/categoria/electrico" },
+  { label: "Carrocería", href: "/catalogo/categoria/carroceria" },
 ]
 
 const AYUDA_LINKS = [

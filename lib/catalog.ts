@@ -126,3 +126,10 @@ export function buildCatalogUrl(search: string, filters: FilterState, page: numb
 export function buildCatalogPagePath(basePath: string, page: number) {
   return page > 1 ? `${basePath}?pagina=${page}` : basePath
 }
+
+// Con menos productos la página de modelo existe (breadcrumbs válidos) pero va noindex y fuera del sitemap
+export const MIN_INDEXABLE_MODEL_PRODUCTS = 3
+
+export function buildCatalogModelPath(brandKey: string, modelSlug: string) {
+  return `/catalogo/marca/${brandKey}/${modelSlug}`
+}

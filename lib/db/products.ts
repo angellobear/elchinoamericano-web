@@ -8,6 +8,7 @@ import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
 import type { Product, ProductType, VehicleOrigin } from '@/types'
 import { sortCatalogProducts } from '@/lib/catalog-products'
+import { vehicleModelKey } from '@/lib/vehicle-models'
 import {
   buildNotDeletedWhere,
   buildVisibilityWhere,
@@ -508,6 +509,38 @@ export async function getPublicProductByCode(code: string, options?: ActiveQuery
     offerPrice: offerPrice(row.price, row.discountPct, row.discountUntil),
     equivalencies: eqRows.map(e => e.equivalent),
   })
+}
+
+// Productos que comparten modelo de vehículo con `product`. Agrupa por vehicleModelKey para incluir
+// variantes duplicadas del admin ("ECO SPORT"/"ECOSPORT", "RANGER"/"RANGER 3.2").
+export async function getPublicProductsByVehicleModels(product: Product, limit = 4): Promise<Product[]> {
+  const compats = product.compatibilities ?? []
+  const keys = new Set(compats.map((c) => (c.model?.name ? vehicleModelKey(c.model.name) : '')).filter(Boolean))
+  const brandIds = [...new Set(compats.map((c) => c.model?.brand_id).filter((id): id is number => Boolean(id)))]
+  if (keys.size === 0 || brandIds.length === 0) return []
+
+  const db = await getDb()
+  const models = await db
+    .select({ id: vehicleModels.id, name: vehicleModels.name })
+    .from(vehicleModels)
+    .where(inArray(vehicleModels.brandId, brandIds))
+  const modelIds = models.filter((m) => keys.has(vehicleModelKey(m.name))).map((m) => m.id)
+  if (modelIds.length === 0) return []
+
+  const compatRows = await db
+    .selectDistinct({ productId: productCompatibilities.productId })
+    .from(productCompatibilities)
+    .where(inArray(productCompatibilities.vehicleModelId, modelIds))
+  const ids = compatRows.map((r) => r.productId).filter((id): id is number => id != null && id !== product.id)
+  if (ids.length === 0) return []
+
+  const rows = await db.query.products.findMany({
+    where: and(eq(products.isActive, true), buildNotDeletedWhere(products.deletedAt), inArray(products.id, ids)),
+    with: { category: true, partBrand: true, images: true },
+    limit,
+    orderBy: desc(products.createdAt),
+  })
+  return rows.map(r => toPublicProduct({ ...r, offerPrice: offerPrice(r.price, r.discountPct, r.discountUntil) }))
 }
 
 export async function getPublicProductsByCategory(categoryKey: string, excludeId: number, limit = 4): Promise<Product[]> {

@@ -10,6 +10,7 @@ import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogBrandPath,
+  buildCatalogModelPath,
   buildCatalogPagePath,
   CATALOG_PAGE_SIZE,
   parseCatalogPage,
@@ -23,8 +24,8 @@ import {
   SITE_NAME,
   SITE_URL,
   buildCatalogMetadata,
-  displayVehicleModelName,
 } from "@/lib/seo"
+import { groupVehicleModels } from "@/lib/vehicle-models"
 import { buildProductPath } from "@/lib/product-slugs"
 import { BRAND_CONTENT, getGenericBrandFaqs } from "@/data/brand-content"
 
@@ -136,30 +137,9 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
       : brandNames.slice(0, -1).join(", ") + ` y ${brandNames.at(-1)}`
   const content = matchedBrands.length === 1 ? BRAND_CONTENT[matchedBrands[0].key] : undefined
   const faqs = content?.faqs ?? getGenericBrandFaqs(titleBrandText)
-  const matchedBrandNames = new Set(brandNames)
-  // ponytail: agrupa variantes sucias del admin ("ECO SPORT"/"ECOSPORT", "RANGER"/"RANGER 3.2")
-  // por la primera palabra sin espacios; se muestra la variante con más productos.
-  const modelGroups = new Map<string, { count: number; labels: Map<string, number> }>()
-  for (const product of filteredProducts) {
-    const seen = new Set<string>()
-    for (const compat of product.compatibilities ?? []) {
-      const brandName = compat.model?.brand?.name
-      const modelName = compat.model?.name
-      if (!brandName || !modelName || !matchedBrandNames.has(brandName)) continue
-      const display = displayVehicleModelName(modelName.replace(/\s+\d+(\.\d+)?L?$/i, ""))
-      const label = brandNames.length === 1 ? display : `${brandName} ${display}`
-      const key = label.toLowerCase().replace(/[\s-]+/g, "")
-      if (seen.has(key)) continue
-      seen.add(key)
-      const group = modelGroups.get(key) ?? { count: 0, labels: new Map<string, number>() }
-      group.count += 1
-      group.labels.set(label, (group.labels.get(label) ?? 0) + 1)
-      modelGroups.set(key, group)
-    }
-  }
-  const models = [...modelGroups.values()]
-    .map((group) => [[...group.labels].sort((a, b) => b[1] - a[1])[0][0], group.count] as const)
-    .sort((a, b) => b[1] - a[1])
+  const models = matchedBrands.flatMap((brand) =>
+    groupVehicleModels(filteredProducts, brand.name).map((group) => ({ ...group, brandKey: brand.key })),
+  )
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -287,11 +267,16 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
                 <h2 className="font-display font-bold text-navy text-xl">
                   Modelos {brandNames.length === 1 ? brandNames[0] : ""} en catálogo
                 </h2>
-                {/* ponytail: texto plano hasta que existan las páginas por modelo (fase 2) */}
-                <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-slate-600">
-                  {models.map(([model, count]) => (
-                    <li key={model}>
-                      {model} <span className="text-slate-400">({count})</span>
+                <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+                  {models.map((model) => (
+                    <li key={`${model.brandKey}-${model.key}`}>
+                      <Link
+                        href={buildCatalogModelPath(model.brandKey, model.slug)}
+                        className="text-navy font-medium hover:text-brand transition-colors"
+                      >
+                        {brandNames.length === 1 ? model.name : `${model.brandName} ${model.name}`}
+                      </Link>{" "}
+                      <span className="text-slate-400">({model.products.length})</span>
                     </li>
                   ))}
                 </ul>

@@ -13,7 +13,10 @@ import AddToCartButton from "@/components/AddToCartButton"
 import Footer from "@/components/Footer"
 import Navbar from "@/components/Navbar"
 import ProductCarousel from "@/components/ProductCarousel"
-import { getPublicProducts, getPublicProductByCode, getPublicProductBySlug, getPublicProductsByCategory } from "@/lib/db/products"
+import { getPublicProducts, getPublicProductByCode, getPublicProductBySlug, getPublicProductsByCategory, getPublicProductsByVehicleModels } from "@/lib/db/products"
+import { buildCatalogBrandPath, buildCatalogCategoryPath, buildCatalogModelPath } from "@/lib/catalog"
+import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
+import { displayVehicleModelName, stripDisplacement, vehicleModelSlug } from "@/lib/vehicle-models"
 import {
   SITE_NAME,
   SITE_URL,
@@ -157,6 +160,40 @@ const TYPE_CONFIG: Record<
   },
 }
 
+// Vehículo principal del producto (primera compatibilidad) para breadcrumbs y "Más repuestos para…"
+function getPrimaryVehicle(product: Product) {
+  const model = product.compatibilities?.find((c) => c.model?.name && c.model.brand?.name)?.model
+  if (!model?.brand?.name) return null
+  const brandKey = toVehicleBrandKey(model.brand.name)
+  const modelName = displayVehicleModelName(stripDisplacement(model.name))
+  return {
+    brandName: model.brand.name,
+    brandPath: buildCatalogBrandPath([brandKey]),
+    modelName,
+    modelPath: buildCatalogModelPath(brandKey, vehicleModelSlug(model.name)),
+  }
+}
+
+function buildVehicleFitJsonLd(product: Product) {
+  const seen = new Set<string>()
+  return (product.compatibilities ?? []).flatMap((c) => {
+    const model = c.model
+    if (!model?.name || !model.brand?.name) return []
+    const name = [model.brand.name, displayVehicleModelName(model.name), model.displacement,
+      model.year_start ? `${model.year_start}-${model.year_end ?? "actual"}` : ""].filter(Boolean).join(" ")
+    if (seen.has(name)) return []
+    seen.add(name)
+    return [{
+      "@type": "Vehicle",
+      name,
+      brand: { "@type": "Brand", name: model.brand.name },
+      model: displayVehicleModelName(model.name),
+      ...(model.year_start ? { vehicleModelDate: String(model.year_start) } : {}),
+      ...(model.displacement ? { vehicleEngine: { "@type": "EngineSpecification", name: model.displacement } } : {}),
+    }]
+  })
+}
+
 function buildJsonLd(product: Product, availability: ReturnType<typeof getAvailability>) {
   const productUrl = getProductUrl(product)
   const productImage = getProductShareImage(product)
@@ -205,6 +242,7 @@ function buildJsonLd(product: Product, availability: ReturnType<typeof getAvaila
         returnPolicyCategory: "https://schema.org/MerchantReturnNotPermitted",
       },
     },
+    isAccessoryOrSparePartFor: buildVehicleFitJsonLd(product),
     additionalProperty:
       product.specs?.map((spec) => ({
         "@type": "PropertyValue",
@@ -214,15 +252,23 @@ function buildJsonLd(product: Product, availability: ReturnType<typeof getAvaila
   }
 }
 
-function buildBreadcrumbJsonLd(product: Product) {
+function buildBreadcrumbJsonLd(product: Product, vehicle: ReturnType<typeof getPrimaryVehicle>) {
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Inicio", item: SITE_URL },
-      { "@type": "ListItem", position: 2, name: "Catálogo", item: `${SITE_URL}/catalogo` },
-      { "@type": "ListItem", position: 3, name: product.title, item: getProductUrl(product) },
-    ],
+      { name: "Inicio", item: SITE_URL },
+      { name: "Catálogo", item: `${SITE_URL}/catalogo` },
+      ...(vehicle
+        ? [
+            { name: vehicle.brandName, item: `${SITE_URL}${vehicle.brandPath}` },
+            { name: vehicle.modelName, item: `${SITE_URL}${vehicle.modelPath}` },
+          ]
+        : product.category
+          ? [{ name: product.category.name, item: `${SITE_URL}${buildCatalogCategoryPath(product.category.key)}` }]
+          : []),
+      { name: product.title, item: getProductUrl(product) },
+    ].map((entry, index) => ({ "@type": "ListItem", position: index + 1, ...entry })),
   }
 }
 
@@ -302,9 +348,18 @@ export default async function ProductDetailPage({
     ? Math.round((1 - product.offer_price / product.price) * 100)
     : 0
   
-    const related = product.category?.key
-    ? await getPublicProductsByCategory(product.category.key, product.id)
+  const vehicle = getPrimaryVehicle(product)
+  // ponytail: primero mismo modelo (clusters Ford→Ford), se completa con la categoría hasta 4
+  const byModel = await getPublicProductsByVehicleModels(product)
+  const byCategory = byModel.length < 4 && product.category?.key
+    ? await getPublicProductsByCategory(product.category.key, product.id, 8)
     : []
+  const related = [...byModel, ...byCategory.filter((p) => !byModel.some((m) => m.id === p.id))].slice(0, 4)
+  const relatedHeading = byModel.length > 0 && vehicle
+    ? { label: `Más repuestos para ${vehicle.brandName} ${vehicle.modelName}`, href: vehicle.modelPath }
+    : product.category
+      ? { label: `También de ${categoryName}`, href: buildCatalogCategoryPath(product.category.key) }
+      : { label: "También te puede interesar", href: "/catalogo" }
 
   const whatsappMsg =
     `Hola! Le escribo desde [su ciudad]. Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (SKU: ${product.sku}). Esta disponible? Cuanto es el envio?`
@@ -341,7 +396,7 @@ export default async function ProductDetailPage({
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(product)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(buildBreadcrumbJsonLd(product, vehicle)) }}
       />
       {!isUnavailable && (
         <script
@@ -364,11 +419,22 @@ export default async function ProductDetailPage({
               <Link href="/catalogo" className="transition-colors hover:text-navy">
                 Catálogo
               </Link>
-              {product.category && (
+              {vehicle ? (
+                <>
+                  <ChevronRight size={12} className="shrink-0" />
+                  <Link href={vehicle.brandPath} className="transition-colors hover:text-navy">
+                    {vehicle.brandName}
+                  </Link>
+                  <ChevronRight size={12} className="shrink-0" />
+                  <Link href={vehicle.modelPath} className="transition-colors hover:text-navy">
+                    {vehicle.modelName}
+                  </Link>
+                </>
+              ) : product.category && (
                 <>
                   <ChevronRight size={12} className="shrink-0" />
                   <Link
-                    href={`/catalogo?categoria=${product.category.key}`}
+                    href={buildCatalogCategoryPath(product.category.key)}
                     className="transition-colors hover:text-navy"
                   >
                     {categoryName}
@@ -424,7 +490,7 @@ export default async function ProductDetailPage({
                 <div className="flex flex-wrap gap-2">
                   {product.category && (
                     <Link
-                      href={`/catalogo?categoria=${product.category.key}`}
+                      href={buildCatalogCategoryPath(product.category.key)}
                       className="rounded-[7px] bg-[#e7ebf1] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-navy transition-colors hover:bg-[#d5dbe5]"
                     >
                       {categoryName}
@@ -485,7 +551,7 @@ export default async function ProductDetailPage({
                       </Link>
                       {product.category && (
                         <Link
-                          href={`/catalogo?categoria=${product.category.key}`}
+                          href={buildCatalogCategoryPath(product.category.key)}
                           className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#cdd4de] px-5 py-3.5 text-sm font-bold text-navy transition-colors hover:border-brand hover:text-brand"
                         >
                           Ver alternativas en {categoryName}
@@ -551,7 +617,7 @@ export default async function ProductDetailPage({
                       id="product-quick-summary"
                       className="text-3.25 font-bold uppercase tracking-[.08em] text-navy"
                     >
-                      Resumen rapido
+                      Resumen rápido
                     </h2>
                     <dl className="mt-3 space-y-2">
                       {quickFacts.map((fact) => (
@@ -700,7 +766,7 @@ export default async function ProductDetailPage({
                   <Truck size={21} className="text-brand" strokeWidth={2} />
                 </div>
                 <h2 className="font-display text-9 font-bold uppercase leading-none text-navy">
-                  Sirve para mi vehiculo?
+                  ¿Sirve para mi vehículo?
                 </h2>
               </div>
               <p className="mb-6 text-3.75 text-[#566071]">
@@ -779,16 +845,14 @@ export default async function ProductDetailPage({
             <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <h2 className="font-display text-8 font-bold uppercase leading-none text-navy">
-                  Tambien de {categoryName || "esta categoria"}
+                  {relatedHeading.label}
                 </h2>
-                {product.category && (
-                  <Link
-                    href={`/catalogo?categoria=${product.category.key}`}
-                    className="text-3.5 font-semibold text-brand transition-colors hover:text-brand/75"
-                  >
-                    Ver todos →
-                  </Link>
-                )}
+                <Link
+                  href={relatedHeading.href}
+                  className="text-3.5 font-semibold text-brand transition-colors hover:text-brand/75"
+                >
+                  Ver todos →
+                </Link>
               </div>
               <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                 {related.map((relatedProduct) => {

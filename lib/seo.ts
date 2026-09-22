@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import type { Product } from "@/types"
 import { buildProductPath } from "@/lib/product-slugs"
 import { SITE_NAME, SITE_URL, SITE_LOCALE } from "@/lib/constants/site"
+import { displayVehicleModelName } from "@/lib/vehicle-models"
 
 export { SITE_NAME, SITE_URL, SITE_LOCALE }
 
@@ -79,18 +80,6 @@ function buildCompatSuffix(product: Product): string {
   )]
   const list = models.length <= 4 ? models : brands
   return ` Compatible con: ${list.join(", ")}.`
-}
-
-// ponytail: los modelos se cargaron en MAYÚSCULAS y a veces con cilindrada ("RANGER 3.2").
-// Palabras solo-letras en mayúsculas de 4+ letras → Capitalizadas (QQ, ZS quedan); lo que lleva dígitos (F-150, 3.2, CS55) queda igual.
-export function displayVehicleModelName(name: string) {
-  return name
-    .trim()
-    .split(/\s+/)
-    .map((word) =>
-      /^[A-ZÁÉÍÓÚÑ]{4,}$/.test(word) ? word.charAt(0) + word.slice(1).toLowerCase() : word,
-    )
-    .join(" ")
 }
 
 interface CompatModel {
