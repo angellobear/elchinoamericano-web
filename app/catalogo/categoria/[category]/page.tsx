@@ -9,6 +9,8 @@ import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogCategoryPath,
+  buildCatalogPagePath,
+  parseCatalogPage,
   CATALOG_PAGE_SIZE,
   parseCatalogCategorySlug,
   parseCatalogFilters,
@@ -30,10 +32,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ category: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }): Promise<Metadata> {
-  const { category: categorySlug } = await params
+  const [{ category: categorySlug }, { pagina }] = await Promise.all([params, searchParams])
   const allCategories = await getCategories()
   const requestedKeys = parseCatalogCategorySlug(categorySlug)
   const matchedCategories = allCategories.filter((cat) => requestedKeys.includes(cat.key))
@@ -42,10 +46,11 @@ export async function generateMetadata({
 
   const names = matchedCategories.map((c) => c.name)
   const titleText = names.length === 1 ? names[0] : names.slice(0, -1).join(", ") + ` y ${names.at(-1)}`
-  const canonicalPath = buildCatalogCategoryPath(matchedCategories.map((c) => c.key))
+  const page = parseCatalogPage(typeof pagina === "string" ? pagina : undefined)
+  const canonicalPath = buildCatalogPagePath(buildCatalogCategoryPath(matchedCategories.map((c) => c.key)), page)
 
   return buildCatalogMetadata(
-    `Repuestos de ${titleText} | ${SITE_NAME}`,
+    `Repuestos de ${titleText}${page > 1 ? ` (página ${page})` : ""} | ${SITE_NAME}`,
     `Catálogo de repuestos de ${titleText} para vehículos chinos y americanos en Ecuador. Encuentra opciones originales, OEM y alternas con envíos a todo el país.`,
     canonicalPath,
     {

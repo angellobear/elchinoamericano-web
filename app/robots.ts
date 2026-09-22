@@ -1,24 +1,14 @@
 import type { MetadataRoute } from "next"
 import { SITE_URL } from "@/lib/seo"
 
+const PRIVATE_PATHS = ["/admin/", "/api/", "/login/"]
+
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [
-      {
-        userAgent: "*",
-        allow: "/",
-        disallow: ["/admin/", "/api/", "/login/"],
-      },
-      { userAgent: "Googlebot", allow: "/" },
-      { userAgent: "Bingbot", allow: "/" },
-      { userAgent: "GPTBot", allow: "/" },
-      { userAgent: "ChatGPT-User", allow: "/" },
-      { userAgent: "ClaudeBot", allow: "/" },
-      { userAgent: "Claude-User", allow: "/" },
-      { userAgent: "PerplexityBot", allow: "/" },
-      { userAgent: "CCBot", allow: "/" },
-      { userAgent: "Google-Extended", allow: "/" },
-    ],
+    // ponytail: cada grupo con user-agent propio reemplaza a "*", así que el disallow va en todos
+    rules: ["*", "Googlebot", "Bingbot", "GPTBot", "ChatGPT-User", "ClaudeBot", "Claude-User", "PerplexityBot", "CCBot", "Google-Extended"].map(
+      (userAgent) => ({ userAgent, allow: "/", disallow: PRIVATE_PATHS }),
+    ),
     sitemap: `${SITE_URL}/sitemap.xml`,
     host: SITE_URL,
   }

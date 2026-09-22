@@ -81,6 +81,102 @@ function buildCompatSuffix(product: Product): string {
   return ` Compatible con: ${list.join(", ")}.`
 }
 
+// ponytail: los modelos se cargaron en MAYÚSCULAS y a veces con cilindrada ("RANGER 3.2").
+// Palabras solo-letras en mayúsculas de 4+ letras → Capitalizadas (QQ, ZS quedan); lo que lleva dígitos (F-150, 3.2, CS55) queda igual.
+export function displayVehicleModelName(name: string) {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((word) =>
+      /^[A-ZÁÉÍÓÚÑ]{4,}$/.test(word) ? word.charAt(0) + word.slice(1).toLowerCase() : word,
+    )
+    .join(" ")
+}
+
+interface CompatModel {
+  brand: string
+  model: string
+  label: string
+  years: string
+  displacement: string
+}
+
+function getCompatModels(product: Product): CompatModel[] {
+  const seen = new Set<string>()
+  const result: CompatModel[] = []
+  for (const compat of product.compatibilities ?? []) {
+    const brand = compat.model?.brand?.name ?? ""
+    const model = displayVehicleModelName(compat.model?.name ?? "")
+    const label = `${brand} ${model}`.trim()
+    if (!label || seen.has(label)) continue
+    seen.add(label)
+    const start = compat.model?.year_start
+    const end = compat.model?.year_end
+    result.push({
+      brand,
+      model,
+      label,
+      years: start ? (end ? (end === start ? `${start}` : `${start}-${end}`) : `${start}+`) : "",
+      // "Ranger 3.2" + cilindrada "3.2" → no repetir
+      displacement: compat.model?.displacement && !model.includes(compat.model.displacement) ? compat.model.displacement : "",
+    })
+  }
+  return result
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+}
+
+function collapse(value: string) {
+  return value.replace(/\s+/g, " ").replace(/\.{2,}/g, ".").trim()
+}
+
+// ponytail: muchos títulos se cargaron en MAYÚSCULAS ("FILTRO DE ACEITE PARA FORD-EXPLORER").
+// Se pasa a oración y se restaura el casing real de marca/modelo desde las compatibilidades.
+export function normalizeProductTitle(product: Product) {
+  let title = collapse(product.title)
+  const letters = title.replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ]/g, "")
+  if (letters && letters === letters.toUpperCase()) {
+    title = title.toLowerCase()
+    title = title.charAt(0).toUpperCase() + title.slice(1)
+  }
+  const names = new Set<string>()
+  for (const m of getCompatModels(product)) {
+    if (m.brand) names.add(m.brand)
+    if (m.model) names.add(m.model)
+    for (const word of m.model.split(" ")) if (/^\p{L}{3,}$/u.test(word)) names.add(word)
+  }
+  if (product.part_brand?.name) names.add(product.part_brand.name)
+  for (const name of names) {
+    const pattern = new RegExp(`(^|[^\\p{L}\\p{N}])${escapeRegExp(name)}(?=$|[^\\p{L}\\p{N}])`, "giu")
+    title = title.replace(pattern, (_, prefix: string) => `${prefix}${name}`)
+  }
+  // "Ford-Explorer" → "Ford Explorer"
+  for (const m of getCompatModels(product)) {
+    if (m.brand && m.model) title = title.replace(`${m.brand}-${m.model}`, `${m.brand} ${m.model}`)
+  }
+  return title
+}
+
+const SEO_TITLE_MAX = 65
+
+export function getProductSeoTitle(product: Product) {
+  if (product.meta_title) return product.meta_title
+
+  const base = normalizeProductTitle(product)
+  const parts = [base]
+  const partBrand = product.part_brand?.name
+  if (partBrand && !base.toLowerCase().includes(partBrand.toLowerCase())) parts.push(partBrand)
+  const models = getCompatModels(product)
+  // ponytail: años solo con un único modelo compatible; con varios el título se vuelve ilegible
+  if (models.length === 1 && models[0].years && !/\b(19|20)\d{2}\b/.test(base)) parts.push(models[0].years)
+
+  const core = collapse(parts.join(" "))
+  const withSite = `${core} | ${SITE_NAME}`
+  return withSite.length <= SEO_TITLE_MAX ? withSite : core
+}
+
 export function getProductSeoDescription(product: Product, typeLabel: string) {
   const compatSuffix = buildCompatSuffix(product)
 
@@ -89,15 +185,20 @@ export function getProductSeoDescription(product: Product, typeLabel: string) {
     return compatSuffix ? `${product.meta_description}${compatSuffix}` : product.meta_description
   }
 
-  const shortDescText = product.short_description
-    ? ` Compatible con ${product.short_description}.`
-    : compatSuffix
+  const models = getCompatModels(product)
+  const modelTexts = models.map((m) => collapse([m.label, m.displacement, m.years].filter(Boolean).join(" ")))
+  const compatText = modelTexts.length
+    ? ` Compatible con ${modelTexts.slice(0, 3).join(", ")}${modelTexts.length > 3 ? " y más" : ""}.`
+    : product.short_description
+      ? ` ${product.short_description.replace(/[.\s]+$/, "")}.`
+      : ""
+  const partBrand = product.part_brand?.name
+  const base = normalizeProductTitle(product)
+  const brandText = partBrand && !base.toLowerCase().includes(partBrand.toLowerCase()) ? ` ${partBrand}` : ""
 
-  return `${product.title} ${product.part_brand?.name ?? ""} - ${typeLabel}.${shortDescText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}. Disponible en Ecuador, envios a todo el pais.`
-}
-
-export function getProductSeoTitle(product: Product) {
-  return product.meta_title ?? `${product.title} ${product.part_brand?.name ?? ""} | ${SITE_NAME}`
+  return collapse(
+    `${base}${brandText} (${typeLabel}).${compatText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}. Envíos a todo Ecuador desde Quito.`,
+  )
 }
 
 export function buildCatalogMetadata(

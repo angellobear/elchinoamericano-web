@@ -1,6 +1,7 @@
 "use client"
 
-import { useRef, useState, useTransition } from "react"
+import { useRef, useState, useTransition, type ReactNode } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import {
   ChevronLeft,
@@ -172,27 +173,64 @@ function paginationItems(page: number, total: number): (number | "…")[] {
   return result
 }
 
+const PAGE_LINK_BASE = "w-9.5 h-9.5 flex items-center justify-center border transition-colors"
+const PAGE_ARROW = `${PAGE_LINK_BASE} rounded-md border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy`
+
+function PageLink({ href, onNavigate, className, children, ...rest }: {
+  href: string
+  onNavigate: () => void
+  className: string
+  children: ReactNode
+  "aria-label"?: string
+  "aria-current"?: "page"
+}) {
+  return (
+    <Link
+      href={href}
+      scroll={false}
+      onClick={(event) => {
+        event.preventDefault()
+        onNavigate()
+      }}
+      className={className}
+      {...rest}
+    >
+      {children}
+    </Link>
+  )
+}
+
+// ponytail: <Link> real con href para que Google recorra todas las páginas;
+// el click se intercepta y sigue filtrando en cliente como antes.
 function Pagination({
   page,
   totalPages,
+  hrefFor,
   onPage,
 }: {
   page: number
   totalPages: number
+  hrefFor: (page: number) => string
   onPage: (page: number) => void
 }) {
   if (totalPages <= 1) return null
 
+  const linkProps = (to: number) => ({
+    href: hrefFor(to),
+    onNavigate: () => onPage(to),
+  })
+
   return (
     <nav aria-label="Paginación" className="flex items-center justify-center gap-1 mt-10">
-      <button
-        onClick={() => onPage(page - 1)}
-        disabled={page === 1}
-        aria-label="Página anterior"
-        className="w-9.5 h-9.5 flex items-center justify-center rounded-md border border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-      >
-        <ChevronLeft size={16} />
-      </button>
+      {page > 1 ? (
+        <PageLink {...linkProps(page - 1)} aria-label="Página anterior" className={PAGE_ARROW}>
+          <ChevronLeft size={16} />
+        </PageLink>
+      ) : (
+        <span aria-hidden className={`${PAGE_ARROW} opacity-30`}>
+          <ChevronLeft size={16} />
+        </span>
+      )}
 
       {paginationItems(page, totalPages).map((item, idx) =>
         item === "…" ? (
@@ -200,29 +238,30 @@ function Pagination({
             …
           </span>
         ) : (
-          <button
+          <PageLink
             key={item}
-            onClick={() => onPage(item)}
+            {...linkProps(item)}
             aria-current={item === page ? "page" : undefined}
-            className={`w-9.5 h-9.5 flex items-center justify-center rounded-[9px] text-sm font-semibold transition-colors border ${
+            className={`${PAGE_LINK_BASE} rounded-[9px] text-sm font-semibold ${
               item === page
                 ? "bg-brand border-brand text-white"
                 : "border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy"
             }`}
           >
             {item}
-          </button>
+          </PageLink>
         )
       )}
 
-      <button
-        onClick={() => onPage(page + 1)}
-        disabled={page === totalPages}
-        aria-label="Página siguiente"
-        className="w-9.5 h-9.5 flex items-center justify-center rounded-md border border-[#d6dde6] text-slate-600 hover:border-navy hover:text-navy disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-      >
-        <ChevronRight size={16} />
-      </button>
+      {page < totalPages ? (
+        <PageLink {...linkProps(page + 1)} aria-label="Página siguiente" className={PAGE_ARROW}>
+          <ChevronRight size={16} />
+        </PageLink>
+      ) : (
+        <span aria-hidden className={`${PAGE_ARROW} opacity-30`}>
+          <ChevronRight size={16} />
+        </span>
+      )}
     </nav>
   )
 }
@@ -432,7 +471,12 @@ export default function CatalogoClient({
             ) : (
               <>
                 <ProductGrid products={paginatedProducts} search={search} />
-                <Pagination page={safePage} totalPages={totalPages} onPage={handlePage} />
+                <Pagination
+                  page={safePage}
+                  totalPages={totalPages}
+                  hrefFor={(target) => buildCatalogUrl(search, filters, target)}
+                  onPage={handlePage}
+                />
               </>
             )}
           </div>

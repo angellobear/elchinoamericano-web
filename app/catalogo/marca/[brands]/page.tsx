@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
+import Link from "next/link"
 import { notFound, redirect } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
@@ -9,7 +10,9 @@ import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogBrandPath,
+  buildCatalogPagePath,
   CATALOG_PAGE_SIZE,
+  parseCatalogPage,
   parseCatalogBrandSlug,
   parseCatalogFilters,
 } from "@/lib/catalog"
@@ -20,8 +23,10 @@ import {
   SITE_NAME,
   SITE_URL,
   buildCatalogMetadata,
+  displayVehicleModelName,
 } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
+import { BRAND_CONTENT, getGenericBrandFaqs } from "@/data/brand-content"
 
 export const revalidate = 3600
 
@@ -35,10 +40,12 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: Promise<{ brands: string }>
+  searchParams: Promise<Record<string, string | string[] | undefined>>
 }): Promise<Metadata> {
-  const { brands: brandSlug } = await params
+  const [{ brands: brandSlug }, { pagina }] = await Promise.all([params, searchParams])
   const activeBrands = await getPublicVehicleBrands()
   const requestedKeys = parseCatalogBrandSlug(brandSlug)
   const matchedBrands = activeBrands.filter((brand) => requestedKeys.includes(brand.key))
@@ -50,7 +57,17 @@ export async function generateMetadata({
   const brandNames = matchedBrands.map((brand) => brand.name)
   const titleBrandText =
     brandNames.length === 1 ? brandNames[0] : brandNames.slice(0, -1).join(", ") + ` y ${brandNames.at(-1)}`
-  const canonicalPath = buildCatalogBrandPath(matchedBrands.map((brand) => brand.key))
+  const page = parseCatalogPage(typeof pagina === "string" ? pagina : undefined)
+  const canonicalPath = buildCatalogPagePath(buildCatalogBrandPath(matchedBrands.map((brand) => brand.key)), page)
+  const pageSuffix = page > 1 ? ` (página ${page})` : ""
+  const content = matchedBrands.length === 1 ? BRAND_CONTENT[matchedBrands[0].key] : undefined
+
+  if (content) {
+    return buildCatalogMetadata(`${content.title}${pageSuffix}`, content.metaDescription, canonicalPath, {
+      extraKeywords: [`repuestos ${titleBrandText} Ecuador`, `repuestos ${titleBrandText} Quito`, `repuestos ${titleBrandText}`],
+      imageAlt: content.h1,
+    })
+  }
 
   const description =
     brandNames.length === 1
@@ -58,7 +75,7 @@ export async function generateMetadata({
       : `Explora repuestos automotrices para ${titleBrandText} en Ecuador. Compara opciones originales, OEM y alternas en un solo catálogo.`
 
   return buildCatalogMetadata(
-    `Repuestos para ${titleBrandText} | ${SITE_NAME}`,
+    `Repuestos para ${titleBrandText}${pageSuffix} | ${SITE_NAME}`,
     description,
     canonicalPath,
     {
@@ -117,6 +134,32 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
     brandNames.length === 1
       ? brandNames[0]
       : brandNames.slice(0, -1).join(", ") + ` y ${brandNames.at(-1)}`
+  const content = matchedBrands.length === 1 ? BRAND_CONTENT[matchedBrands[0].key] : undefined
+  const faqs = content?.faqs ?? getGenericBrandFaqs(titleBrandText)
+  const matchedBrandNames = new Set(brandNames)
+  // ponytail: agrupa variantes sucias del admin ("ECO SPORT"/"ECOSPORT", "RANGER"/"RANGER 3.2")
+  // por la primera palabra sin espacios; se muestra la variante con más productos.
+  const modelGroups = new Map<string, { count: number; labels: Map<string, number> }>()
+  for (const product of filteredProducts) {
+    const seen = new Set<string>()
+    for (const compat of product.compatibilities ?? []) {
+      const brandName = compat.model?.brand?.name
+      const modelName = compat.model?.name
+      if (!brandName || !modelName || !matchedBrandNames.has(brandName)) continue
+      const display = displayVehicleModelName(modelName.replace(/\s+\d+(\.\d+)?L?$/i, ""))
+      const label = brandNames.length === 1 ? display : `${brandName} ${display}`
+      const key = label.toLowerCase().replace(/[\s-]+/g, "")
+      if (seen.has(key)) continue
+      seen.add(key)
+      const group = modelGroups.get(key) ?? { count: 0, labels: new Map<string, number>() }
+      group.count += 1
+      group.labels.set(label, (group.labels.get(label) ?? 0) + 1)
+      modelGroups.set(key, group)
+    }
+  }
+  const models = [...modelGroups.values()]
+    .map((group) => [[...group.labels].sort((a, b) => b[1] - a[1])[0][0], group.count] as const)
+    .sort((a, b) => b[1] - a[1])
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -124,9 +167,9 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
         "@type": "CollectionPage",
         "@id": `${SITE_URL}${canonicalPath}#page`,
         name:
-          brandNames.length === 1
+          content?.h1 ?? (brandNames.length === 1
             ? `Repuestos para ${brandNames[0]}`
-            : `Repuestos para ${brandNames.join(", ")}`,
+            : `Repuestos para ${brandNames.join(", ")}`),
         description:
           brandNames.length === 1
             ? `Catálogo de repuestos para ${brandNames[0]} en Ecuador.`
@@ -168,32 +211,11 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
       },
       {
         "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: `¿Qué repuestos para ${titleBrandText} están disponibles?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Disponemos de repuestos originales, OEM y alternos para ${titleBrandText} en Ecuador. Encuentra filtros, frenos, suspensión, motor y más en nuestro catálogo con envíos a todo el país.`,
-            },
-          },
-          {
-            "@type": "Question",
-            name: `¿Hacen envíos de repuestos para ${titleBrandText} a todo Ecuador?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Sí. Coordinamos envíos a Quito, Santo Domingo de los Tsáchilas y todo el Ecuador. Consúltanos por WhatsApp para disponibilidad y precio.`,
-            },
-          },
-          {
-            "@type": "Question",
-            name: `¿Cómo verifico si el repuesto para ${titleBrandText} es compatible con mi vehículo?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Puedes escribirnos por WhatsApp con la marca, modelo, año y número de pieza o una foto del repuesto. También puedes buscar en el catálogo filtrando por categoría para confirmar compatibilidad.`,
-            },
-          },
-        ],
+        mainEntity: faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: { "@type": "Answer", text: faq.answer },
+        })),
       },
     ],
   }
@@ -219,20 +241,79 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
           products={allProducts}
           breadcrumbLabel={brandNames.length === 1 ? brandNames[0] : `Marcas: ${titleBrandText}`}
           headerDescription={
-            brandNames.length === 1
+            content?.headerDescription ?? (brandNames.length === 1
               ? `Catálogo especializado en repuestos para ${brandNames[0]}. Filtra por categoría, precio y encuentra alternativas originales, OEM y alternas.`
-              : `Catálogo especializado en repuestos para ${titleBrandText}. Compara compatibilidades y filtra por categoría o precio desde una sola landing.`
+              : `Catálogo especializado en repuestos para ${titleBrandText}. Compara compatibilidades y filtra por categoría o precio desde una sola landing.`)
           }
           headerTitle={
-            brandNames.length === 1
+            content?.h1 ?? (brandNames.length === 1
               ? `Repuestos para ${brandNames[0]}`
-              : `Repuestos para ${titleBrandText}`
+              : `Repuestos para ${titleBrandText}`)
           }
           initialFilters={sanitizedFilters}
           initialPage={safePage}
           initialSearch={search}
         />
       </Suspense>
+      <section className="bg-[#f6f8fb] px-4 sm:px-6 lg:px-8 pb-16">
+        <div className="max-w-7xl mx-auto grid gap-6 lg:grid-cols-[2fr_1fr]">
+          <div className="bg-white rounded-[14px] border border-slate-200 p-6 sm:p-8">
+            <h2 className="font-display font-bold text-navy text-2xl">
+              {content?.introHeading ?? `Repuestos para ${titleBrandText} en Ecuador`}
+            </h2>
+            {(content?.intro ?? [
+              `Catálogo de repuestos originales, OEM y alternos para ${titleBrandText}, con despacho desde Quito a todo Ecuador y asesoría por WhatsApp para confirmar compatibilidad.`,
+            ]).map((paragraph) => (
+              <p key={paragraph} className="mt-3 text-slate-600 leading-relaxed">{paragraph}</p>
+            ))}
+
+            <h2 className="font-display font-bold text-navy text-2xl mt-10">Preguntas frecuentes</h2>
+            <div className="mt-4 divide-y divide-slate-200 border-y border-slate-200">
+              {faqs.map((faq) => (
+                <details key={faq.question} className="group py-4">
+                  <summary className="cursor-pointer list-none font-semibold text-navy flex justify-between gap-4">
+                    <h3>{faq.question}</h3>
+                    <span aria-hidden className="text-brand transition-transform group-open:rotate-45">+</span>
+                  </summary>
+                  <p className="mt-2 text-slate-600 leading-relaxed">{faq.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+
+          <aside className="space-y-6">
+            {models.length > 0 && (
+              <div className="bg-white rounded-[14px] border border-slate-200 p-6">
+                <h2 className="font-display font-bold text-navy text-xl">
+                  Modelos {brandNames.length === 1 ? brandNames[0] : ""} en catálogo
+                </h2>
+                {/* ponytail: texto plano hasta que existan las páginas por modelo (fase 2) */}
+                <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-slate-600">
+                  {models.map(([model, count]) => (
+                    <li key={model}>
+                      {model} <span className="text-slate-400">({count})</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {content?.guides.length ? (
+              <div className="bg-white rounded-[14px] border border-slate-200 p-6">
+                <h2 className="font-display font-bold text-navy text-xl">Guías {brandNames[0]}</h2>
+                <ul className="mt-3 space-y-2 text-sm">
+                  {content.guides.map((guide) => (
+                    <li key={guide.href}>
+                      <Link href={guide.href} className="text-brand font-semibold hover:underline">
+                        {guide.titulo}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+          </aside>
+        </div>
+      </section>
       <Footer />
     </>
   )

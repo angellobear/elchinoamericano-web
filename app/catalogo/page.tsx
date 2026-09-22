@@ -6,8 +6,10 @@ import { getCategories } from "@/lib/db/categories"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { getPublicProducts } from "@/lib/db/products"
 import {
+  buildCatalogPagePath,
   CATALOG_PAGE_SIZE,
   parseCatalogFilters,
+  parseCatalogPage,
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
 import { buildCatalogMetadata, SITE_NAME, SITE_URL } from "@/lib/seo"
@@ -15,16 +17,23 @@ import { buildProductPath } from "@/lib/product-slugs"
 
 export const revalidate = 3600
 
-export const metadata = buildCatalogMetadata(
-  "Catálogo de Repuestos | El Chino Americano",
-  "Explora nuestro catálogo de repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y precio con envíos a todo Ecuador.",
-  "/catalogo",
-  {
-    extraKeywords: ["catalogo de repuestos Ecuador", "repuestos por marca Ecuador", "repuestos por categoria Ecuador"],
-    ogDescription: "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador.",
-    imageAlt: "Catálogo de repuestos El Chino Americano",
-  },
-)
+const CATALOG_DESCRIPTION =
+  "Explora nuestro catálogo de repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y precio con envíos a todo Ecuador."
+
+export async function generateMetadata(props: PageProps<"/catalogo">) {
+  const { pagina } = await props.searchParams
+  const page = parseCatalogPage(typeof pagina === "string" ? pagina : undefined)
+  return buildCatalogMetadata(
+    `Catálogo de Repuestos${page > 1 ? ` (página ${page})` : ""} | El Chino Americano`,
+    CATALOG_DESCRIPTION,
+    buildCatalogPagePath("/catalogo", page),
+    {
+      extraKeywords: ["catalogo de repuestos Ecuador", "repuestos por marca Ecuador", "repuestos por categoria Ecuador"],
+      ogDescription: "Encuentra repuestos originales, OEM y alternos para vehículos chinos y americanos en Ecuador.",
+      imageAlt: "Catálogo de repuestos El Chino Americano",
+    },
+  )
+}
 
 export default async function CatalogoPage(props: PageProps<"/catalogo">) {
   const resolvedSearchParams = await props.searchParams
@@ -63,7 +72,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
         "@type": "CollectionPage",
         "@id": `${SITE_URL}/catalogo#page`,
         name: "Catálogo de Repuestos",
-        description: metadata.description,
+        description: CATALOG_DESCRIPTION,
         url: `${SITE_URL}/catalogo`,
         isPartOf: {
           "@type": "WebSite",

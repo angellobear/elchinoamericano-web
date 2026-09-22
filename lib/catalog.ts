@@ -121,3 +121,8 @@ export function buildCatalogUrl(search: string, filters: FilterState, page: numb
   const queryString = params.toString()
   return queryString ? `${basePath}?${queryString}` : basePath
 }
+
+// ponytail: solo ?pagina forma parte del canónico; filtros y búsqueda siguen apuntando a la ruta base
+export function buildCatalogPagePath(basePath: string, page: number) {
+  return page > 1 ? `${basePath}?pagina=${page}` : basePath
+}

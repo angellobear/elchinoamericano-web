@@ -1,7 +1,7 @@
-import { products } from "@/data/products"
 import { getCategories } from "@/lib/db/categories"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
-import { buildCatalogBrandPath } from "@/lib/catalog"
+import { getPublicProducts } from "@/lib/db/products"
+import { buildCatalogBrandPath, buildCatalogCategoryPath } from "@/lib/catalog"
 import { buildProductPath } from "@/lib/product-slugs"
 import { SITE_URL } from "@/lib/seo"
 import { contactInfo } from "@/lib/constants"
@@ -18,9 +18,10 @@ function mdLink(label: string, url: string, note?: string) {
 }
 
 export async function GET() {
-  const [brands, categories] = await Promise.all([
+  const [brands, categories, products] = await Promise.all([
     getPublicVehicleBrands(),
     getCategories(),
+    getPublicProducts(),
   ])
   const featuredProducts = [
     ...products.filter((product) => product.is_featured),
@@ -68,7 +69,7 @@ export async function GET() {
     ...brands.map((brand) => mdLink(brand.name, `${SITE_URL}${buildCatalogBrandPath([brand.key])}`, `Repuestos para vehículos ${brand.name}`)),
     "",
     "## Categorías de repuestos",
-    ...categories.map((category) => mdLink(category.name, `${SITE_URL}/catalogo?categoria=${category.key}`, `Repuestos de la categoría ${category.name}`)),
+    ...categories.map((category) => mdLink(category.name, `${SITE_URL}${buildCatalogCategoryPath(category.key)}`, `Repuestos de la categoría ${category.name}`)),
     "",
     "## Páginas de producto (muestra)",
     ...featuredProducts.map((product) => {
