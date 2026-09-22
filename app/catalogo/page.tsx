@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import { permanentRedirect } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import CatalogoClient from "./CatalogoClient"
@@ -7,11 +8,14 @@ import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
 import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogPagePath,
+  buildCatalogUrl,
   CATALOG_PAGE_SIZE,
   parseCatalogFilters,
   parseCatalogPage,
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
+import { normalizeVehicleBrand } from "@/lib/vehicle-brand-aliases"
+import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
 import { buildCatalogMetadata, SITE_NAME, SITE_URL } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
 
@@ -50,7 +54,13 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
     ...filters,
     qualities: filters.qualities.filter((q) => validQualityIds.has(q)),
     categories: filters.categories.filter((category) => activeCategoryKeys.has(category)),
-    carBrands: filters.carBrands.filter((brand) => activeBrandKeys.has(brand)),
+    carBrands: filters.carBrands
+      .map((brand) => toVehicleBrandKey(normalizeVehicleBrand(brand)))
+      .filter((brand) => activeBrandKeys.has(brand)),
+  }
+  // URLs viejas (?marca=ford, ?categoria=motor) → 308 a la ruta limpia para no perder lo ya indexado
+  if (sanitizedFilters.carBrands.length > 0 || sanitizedFilters.categories.length > 0) {
+    permanentRedirect(buildCatalogUrl(search, sanitizedFilters, page))
   }
   const filteredProducts = filterCatalogProducts(
     allProducts,
