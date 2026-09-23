@@ -149,6 +149,7 @@ export default async function Home() {
         },
         address: {
           "@type": "PostalAddress",
+          streetAddress: siteConfig.contact.address.street,
           addressLocality: siteConfig.contact.address.city,
           addressCountry: siteConfig.contact.address.country,
         },

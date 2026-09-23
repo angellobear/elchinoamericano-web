@@ -77,7 +77,7 @@ export async function GET() {
     "",
     "## Datos del negocio",
     "- Tipo de negocio: almacén de repuestos automotrices (venta de autopartes)",
-    `- Ciudad base: ${contactInfo.address.city}, ${contactInfo.address.country}`,
+    `- Dirección: ${contactInfo.address.full}`,
     "- Cobertura: todo el Ecuador (Quito, Guayaquil, Cuenca, Ambato, Loja, Manta, Esmeraldas, Santo Domingo de los Tsáchilas y demás provincias)",
     "- Plazo de entrega: 24 a 72 horas según la ciudad, con guía de envío rastreable",
     `- Canal principal de atención: WhatsApp ${contactInfo.whatsappDisplay}`,

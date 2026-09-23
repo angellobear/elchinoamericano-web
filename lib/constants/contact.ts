@@ -2,9 +2,11 @@ export const contactInfo = {
   whatsappNumber: "593984878153",
   whatsappDisplay: "+593 984 878 153",
   address: {
+    // Igual que el Google Business Profile (NAP consistente)
+    street: "Av. Camilo Ponce Enríquez",
     city: "Quito",
     country: "Ecuador",
-    full: "Quito, Ecuador",
+    full: "Av. Camilo Ponce Enríquez, Quito, Ecuador",
   },
   hours: {
     weekdays: { display: "Lun–Vie · 8:30–17:30", schema: "Mo-Fr 08:30-17:30" },

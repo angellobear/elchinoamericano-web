@@ -70,6 +70,7 @@ export default async function ContactoPage() {
         areaServed: "EC",
         address: {
           "@type": "PostalAddress",
+          streetAddress: siteConfig.contact.address.street,
           addressLocality: siteConfig.contact.address.city,
           addressCountry: siteConfig.contact.address.country,
         },
