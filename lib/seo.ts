@@ -51,13 +51,6 @@ export function getPartBrandName(product: Product) {
   return product.part_brand?.name ?? FALLBACK_PART_BRAND
 }
 
-// Número de parte solo si aporta algo distinto al SKU
-export function getPartNumber(product: Product) {
-  const norm = (v?: string) => (v ?? "").replace(/[\s-]/g, "").toUpperCase()
-  const pn = product.part_number?.trim()
-  return pn && norm(pn) !== norm(product.sku) ? pn : undefined
-}
-
 export function getProductDisplayImage(product: Product) {
   return getProductPrimaryImage(product) ?? DEFAULT_PRODUCT_IMAGE_PATH
 }
@@ -176,7 +169,6 @@ export function getProductSeoTitle(product: Product) {
 
 export function getProductSeoDescription(product: Product, typeLabel: string) {
   const compatSuffix = buildCompatSuffix(product)
-  // SEO/GEO: siempre, aunque sea igual al SKU (solo la UI lo oculta)
   const partNumber = product.part_number?.trim()
   const partText = partNumber ? ` N° de parte: ${partNumber}.` : ""
 

@@ -27,7 +27,6 @@ import {
   getProductShareImage,
   getProductShareImageAlt,
   getProductUrl,
-  getPartNumber,
 } from "@/lib/seo"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { buildProductPath, extractProductCodeFromSegment } from "@/lib/product-slugs"
@@ -369,7 +368,7 @@ export default async function ProductDetailPage({
       ? { label: `También de ${categoryName}`, href: buildCatalogCategoryPath(product.category.key) }
       : { label: "También te puede interesar", href: "/catalogo" }
 
-  const partNumber = getPartNumber(product)
+  const partNumber = product.part_number?.trim()
   const whatsappMsg =
     `Hola! Le escribo desde [su ciudad]. Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (SKU: ${product.sku}). Esta disponible? Cuanto es el envio?`
 
