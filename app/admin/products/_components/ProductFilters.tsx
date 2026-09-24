@@ -20,6 +20,7 @@ interface ProductFiltersProps {
     status?: string
     featured?: boolean
     limit?: string
+    sort?: string
   }
 }
 
@@ -100,6 +101,7 @@ export function ProductFilters({ categories, vehicleBrands, defaults }: ProductF
     if (resolvedStatus !== 'active') params.set('status', resolvedStatus)
     if (resolvedFeatured) params.set('featured', '1')
     if (defaults.limit && defaults.limit !== '10') params.set('limit', defaults.limit)
+    if (defaults.sort && defaults.sort !== 'code_desc') params.set('sort', defaults.sort)
 
     const qs = params.toString()
     const url = qs ? `/admin/products?${qs}` : '/admin/products'

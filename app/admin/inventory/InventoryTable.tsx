@@ -1,13 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertTriangle, ArrowRightLeft } from 'lucide-react'
+import { AlertTriangle, ArrowRightLeft, Search } from 'lucide-react'
 import { StockModal } from './StockModal'
 
 interface InventoryProduct {
   id: number
   code: string | null
   title: string
+  sku: string | null
+  replacementCode: string | null
   stock: number
   minStockAlert: number | null
   category: { name: string } | null
@@ -16,6 +18,13 @@ interface InventoryProduct {
 export default function InventoryTable({ products }: { products: InventoryProduct[] }) {
   const [selectedProductId, setSelectedProductId] = useState<number | null>(null)
   const [rows, setRows] = useState(products)
+  const [query, setQuery] = useState('')
+  const q = query.trim().toLowerCase()
+  const visibleRows = q
+    ? rows.filter((p) =>
+        [p.code, p.title, p.sku, p.replacementCode, p.category?.name].some((v) => v?.toLowerCase().includes(q)),
+      )
+    : rows
 
   function handleMovementSuccess(productId: number, newStock: number) {
     setRows((currentRows) =>
@@ -26,7 +35,18 @@ export default function InventoryTable({ products }: { products: InventoryProduc
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="relative w-full sm:max-w-md">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por código, nombre, SKU o categoría..."
+            aria-label="Buscar en inventario"
+            className="w-full border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy transition-colors"
+          />
+        </div>
         <StockModal
           products={rows}
           selectedProductId={selectedProductId}
@@ -51,7 +71,14 @@ export default function InventoryTable({ products }: { products: InventoryProduc
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {rows.map((product) => {
+            {visibleRows.length === 0 && (
+              <tr>
+                <td colSpan={5} className="py-12 text-center text-sm text-gray-400">
+                  Ningún producto coincide con &quot;{query}&quot;
+                </td>
+              </tr>
+            )}
+            {visibleRows.map((product) => {
               const threshold = product.minStockAlert ?? 5
               const isLow = product.stock <= threshold
 

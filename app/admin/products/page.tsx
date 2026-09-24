@@ -1,18 +1,36 @@
 import Link from 'next/link'
-import { getProductList } from '@/lib/db/products'
+import { getProductList, PRODUCT_LIST_SORTS, type ProductListSort } from '@/lib/db/products'
 import { getCategories } from '@/lib/db/categories'
 import { getVehicleBrands } from '@/lib/db/vehicle-brands'
-import { Plus, Pencil, Package, ExternalLink, Star } from 'lucide-react'
+import { Plus, Pencil, Package, ExternalLink, Star, ArrowUp, ArrowDown, ArrowUpDown } from 'lucide-react'
 import { ProductDeleteButton } from '@/modules/admin/products/components/ProductDeleteButton'
 import { ProductStatusToggle } from '@/modules/admin/products/components/ProductStatusToggle'
 import { ProductFilters } from './_components/ProductFilters'
 import { ProductPagination } from './_components/ProductPagination'
 import { buildProductPath } from '@/lib/product-slugs'
 
+type SortField = 'code' | 'title' | 'category'
+
+function SortHeader({ field, label, sort, href }: { field: SortField; label: string; sort: ProductListSort; href: string }) {
+  const [current, dir] = sort.split('_')
+  const Icon = current !== field ? ArrowUpDown : dir === 'asc' ? ArrowUp : ArrowDown
+  return (
+    <th
+      className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider"
+      aria-sort={current === field ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+    >
+      <Link href={href} className={`inline-flex items-center gap-1 hover:text-navy transition-colors ${current === field ? 'text-navy' : ''}`}>
+        {label}
+        <Icon size={12} />
+      </Link>
+    </th>
+  )
+}
+
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string; featured?: string; page?: string; limit?: string }>
+  searchParams: Promise<{ search?: string; type?: string; categoryId?: string; vehicleBrandId?: string; status?: string; featured?: string; page?: string; limit?: string; sort?: string }>
 }) {
   const params = await searchParams
   const { search, type } = params
@@ -21,6 +39,9 @@ export default async function ProductsPage({
   const featured = params.featured === '1'
   const page = Math.max(1, Number(params.page ?? 1))
   const limit = [10, 20, 50, 100].includes(Number(params.limit)) ? Number(params.limit) : 10
+  const sort: ProductListSort = PRODUCT_LIST_SORTS.includes(params.sort as ProductListSort)
+    ? (params.sort as ProductListSort)
+    : 'code_desc'
 
   const categoryIds = params.categoryId
     ? params.categoryId.split(',').map(Number).filter(Boolean)
@@ -39,6 +60,7 @@ export default async function ProductsPage({
       isFeatured: featured,
       page,
       limit,
+      sort,
     }),
     getCategories(),
     getVehicleBrands(),
@@ -52,6 +74,18 @@ export default async function ProductsPage({
   if (params.vehicleBrandId) baseParams.vehicleBrandId = params.vehicleBrandId
   if (status !== 'active') baseParams.status = status
   if (featured) baseParams.featured = '1'
+  if (sort !== 'code_desc') baseParams.sort = sort
+
+  // Clicking the active column flips direction; a new column starts ascending (code starts newest-first)
+  function sortHref(field: SortField) {
+    const [current, dir] = sort.split('_')
+    const next = current === field ? (dir === 'asc' ? 'desc' : 'asc') : field === 'code' ? 'desc' : 'asc'
+    const qs = new URLSearchParams({ ...baseParams, sort: `${field}_${next}` })
+    if (limit !== 10) qs.set('limit', String(limit))
+    if (`${field}_${next}` === 'code_desc') qs.delete('sort')
+    const str = qs.toString()
+    return str ? `/admin/products?${str}` : '/admin/products'
+  }
 
   return (
     <div className="p-4 md:p-8">
@@ -80,6 +114,7 @@ export default async function ProductsPage({
           status,
           featured,
           limit: String(limit),
+          sort,
         }}
       />
 
@@ -88,10 +123,10 @@ export default async function ProductsPage({
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-slate-50 border-b border-slate-100">
-              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Código</th>
-              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Producto</th>
+              <SortHeader field="code" sort={sort} href={sortHref('code')} label="Código" />
+              <SortHeader field="title" sort={sort} href={sortHref('title')} label="Producto" />
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">SKU / Repuesto</th>
-              <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Categoría</th>
+              <SortHeader field="category" sort={sort} href={sortHref('category')} label="Categoría" />
               <th className="text-left px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Tipo</th>
               <th className="text-right px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Precio</th>
               <th className="text-center px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider">Estado</th>

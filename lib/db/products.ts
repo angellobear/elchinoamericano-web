@@ -95,10 +95,30 @@ export async function getInventory(options?: SoftDeleteQueryOptions) {
   const db = await getDb()
   return db.query.products.findMany({
     where: and(eq(products.isActive, true), buildNotDeletedWhere(products.deletedAt, options)),
-    columns: { id: true, code: true, title: true, stock: true, minStockAlert: true, isActive: true },
+    columns: { id: true, code: true, title: true, sku: true, replacementCode: true, stock: true, minStockAlert: true, isActive: true },
     with: { category: { columns: { name: true } } },
-    orderBy: products.stock,
+    orderBy: codeOrder('desc'),
   })
+}
+
+// Codes are CA-0001…: length first so CA-10000 sorts after CA-9999
+function codeOrder(dir: 'asc' | 'desc') {
+  const by = dir === 'asc' ? asc : desc
+  return [by(sql`length(${products.code})`), by(products.code)]
+}
+
+export const PRODUCT_LIST_SORTS = ['code_desc', 'code_asc', 'title_asc', 'title_desc', 'category_asc', 'category_desc'] as const
+export type ProductListSort = (typeof PRODUCT_LIST_SORTS)[number]
+
+function productListOrder(sort: ProductListSort) {
+  const [field, dir] = sort.split('_') as ['code' | 'title' | 'category', 'asc' | 'desc']
+  const by = dir === 'asc' ? asc : desc
+  if (field === 'title') return [by(products.title), ...codeOrder('desc')]
+  if (field === 'category') {
+    // Literal alias: relational queries rewrite interpolated columns to the root table alias
+    return [by(sql`(select c.name from categories c where c.id = ${products.categoryId})`), ...codeOrder('desc')]
+  }
+  return codeOrder(dir)
 }
 
 // For admin product list
@@ -112,11 +132,12 @@ export async function getProductList(
     isFeatured?: boolean
     page?: number
     limit?: number
+    sort?: ProductListSort
   },
   options?: SoftDeleteQueryOptions,
 ) {
   const db = await getDb()
-  const { search, type, categoryId, vehicleBrandId, isActive = true, isFeatured, page = 1, limit = 10 } = filters ?? {}
+  const { search, type, categoryId, vehicleBrandId, isActive = true, isFeatured, page = 1, limit = 10, sort = 'code_desc' } = filters ?? {}
 
   const where = and(
     buildNotDeletedWhere(products.deletedAt, options),
@@ -157,8 +178,7 @@ export async function getProductList(
     db.query.products.findMany({
       where,
       with: { category: true, partBrand: true },
-      // Admin-only: order by code (CA-0001…). Length first so CA-10000 sorts after CA-9999.
-      orderBy: [sql`length(${products.code})`, asc(products.code)],
+      orderBy: productListOrder(sort),
       limit,
       offset: (page - 1) * limit,
     }),
