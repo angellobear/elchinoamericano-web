@@ -331,28 +331,6 @@ export async function setImages(
   await logActivitySafe('UPDATE', 'product_images', productId, { entries: before }, { entries: after })
 }
 
-/** Agrega una imagen al final. Si es principal (o la primera), desmarca las demás. */
-export async function addImage(
-  productId: number,
-  image: { url: string; cloudinaryPublicId: string; altText?: string; isPrimary?: boolean }
-) {
-  const { before, after } = await withAudit(async (tx) => {
-    const before = await tx.query.productImages.findMany({
-      where: eq(productImages.productId, productId),
-    })
-    const isPrimary = image.isPrimary || before.length === 0
-    if (isPrimary) await tx.update(productImages).set({ isPrimary: false }).where(eq(productImages.productId, productId))
-    const sortOrder = before.reduce((max, img) => Math.max(max, (img.sortOrder ?? 0) + 1), 0)
-    await tx.insert(productImages).values({ ...image, productId, isPrimary, sortOrder })
-    const after = await tx.query.productImages.findMany({
-      where: eq(productImages.productId, productId),
-    })
-    return { before, after }
-  })
-
-  await logActivitySafe('UPDATE', 'product_images', productId, { entries: before }, { entries: after })
-}
-
 // ─── Stock ───────────────────────────────────────────────────────────────────
 
 export async function updateStock(productId: number, newStock: number, userId: string, reason?: string) {

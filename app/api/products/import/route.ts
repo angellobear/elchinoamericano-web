@@ -7,6 +7,7 @@ import { createProduct, setSpecs, setImages, setAlternateCodes, setCompatibiliti
 import { createVehicleBrand, createVehicleModel } from '@/lib/db/vehicle-brands'
 import { buildSlugWithSku } from '@/lib/product-slugs'
 import { normalizeVehicleBrand } from '@/lib/vehicle-brand-aliases'
+import { publicIdFromUrl } from '@/lib/cloudinary'
 
 const bodySchema = z.object({
   // Required
@@ -188,6 +189,8 @@ export async function POST(req: NextRequest) {
       data.images?.length
         ? setImages(id, data.images.map((img, i) => ({
             url: img.url,
+            // URLs de /api/products/images quedan ligadas a Cloudinary (el admin puede borrarlas allá)
+            cloudinaryPublicId: publicIdFromUrl(img.url),
             altText: img.altText,
             isPrimary: img.isPrimary ?? i === 0,
             sortOrder: i,

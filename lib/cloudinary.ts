@@ -30,6 +30,16 @@ export async function uploadImage(file: File, folder = 'uploads'): Promise<{ url
   return { url: data.secure_url, publicId: data.public_id }
 }
 
+/**
+ * publicId de una URL de NUESTRA cuenta de Cloudinary (sin transformaciones), o null si es externa.
+ * .../<cloud>/image/upload/v123/products/abc.jpg → products/abc
+ */
+export function publicIdFromUrl(url: string): string | null {
+  const prefix = `https://res.cloudinary.com/${CLOUD}/image/upload/`
+  if (!url.startsWith(prefix)) return null
+  return url.slice(prefix.length).replace(/^v\d+\//, '').replace(/\.[a-z0-9]+$/i, '') || null
+}
+
 /** Elimina una imagen de Cloudinary por su publicId. */
 export async function deleteImage(publicId: string): Promise<void> {
   const ts = Math.round(Date.now() / 1000)

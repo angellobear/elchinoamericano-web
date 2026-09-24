@@ -203,25 +203,28 @@ Y en producción (variables de entorno del servidor / Vercel / etc.), configurar
 
 ## Subir imágenes: `POST /api/products/images`
 
-Flujo separado del import: **una imagen por petición** (límite de body en Vercel ~4.5 MB). Sube el archivo a Cloudinary (`products/`) y lo agrega al final de las imágenes del producto. Usa el mismo `Authorization: Bearer <PRODUCT_IMPORT_TOKEN>`.
+Sube **una imagen por petición** a Cloudinary (`products/`) y devuelve su URL. **No requiere que el producto exista**: la URL se usa después en `images` del import. Así ninguna petición pasa el límite de body de Vercel (~4.5 MB). Usa el mismo `Authorization: Bearer <PRODUCT_IMPORT_TOKEN>`.
 
 `multipart/form-data`:
 
-| Campo       | Requerido | Descripción |
-|-------------|-----------|-------------|
-| `file`      | sí        | Imagen (`image/*`, máx. 4 MB) |
-| `code`      | uno de los dos | Código del producto (`CA-0123`, lo devuelve el import) |
-| `sku`       | uno de los dos | SKU. Si hay varios productos con ese SKU → 409, usa `code` |
-| `altText`   | no        | Texto alternativo |
-| `isPrimary` | no        | `"true"` para marcarla principal. La primera imagen de un producto siempre queda como principal |
+| Campo  | Requerido | Descripción |
+|--------|-----------|-------------|
+| `file` | sí        | Imagen (`image/*`, máx. 4 MB) |
 
 ```bash
 curl -X POST https://elchinoamericano.com/api/products/images \
   -H "Authorization: Bearer $PRODUCT_IMPORT_TOKEN" \
-  -F "sku=BWP-TC-001" -F "altText=Bomba de agua frente" -F "file=@./bwp-tc-001-front.jpg"
+  -F "file=@./bwp-tc-001-front.jpg"
 ```
 
-Respuesta: `{ "success": true, "productId": 123, "url": "https://res.cloudinary.com/..." }`.
-Errores: 400 (falta file/code/sku), 401, 404 (producto no existe), 409 (SKU ambiguo), 413 (>4 MB), 415 (no es imagen), 500.
+Respuesta: `{ "success": true, "url": "https://res.cloudinary.com/.../products/abc.jpg", "publicId": "products/abc" }`.
+Errores: 400 (falta file), 401, 413 (>4 MB), 415 (no es imagen), 502 (falló Cloudinary).
 
-Para varias imágenes: una petición por archivo, en el orden deseado.
+### Flujo completo
+
+1. Subir cada foto a `/api/products/images` y guardar las `url`.
+2. Crear el producto con `/api/products/import` pasando esas URLs en `images` (en el orden deseado; la primera es principal salvo que otra tenga `isPrimary: true`).
+
+Las URLs de nuestra cuenta de Cloudinary quedan ligadas a su `publicId` automáticamente, así que al borrarlas desde el admin también se borran de Cloudinary. URLs externas se guardan tal cual.
+
+> Imágenes subidas que nunca se usan en un producto quedan en Cloudinary (`products/`); bórralas desde Cloudinary si hace falta.
