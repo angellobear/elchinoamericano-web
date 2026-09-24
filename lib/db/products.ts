@@ -3,7 +3,7 @@ import {
   products, productImages, productSpecs, productAlternateCodes,
   productEquivalencies, productCompatibilities, stockMovements, vehicleModels,
 } from './schema'
-import { eq, desc, and, sql, inArray } from 'drizzle-orm'
+import { eq, asc, desc, and, sql, inArray } from 'drizzle-orm'
 import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
 import type { Product, ProductType, VehicleOrigin } from '@/types'
@@ -157,7 +157,8 @@ export async function getProductList(
     db.query.products.findMany({
       where,
       with: { category: true, partBrand: true },
-      orderBy: desc(products.createdAt),
+      // Admin-only: order by code (CA-0001…). Length first so CA-10000 sorts after CA-9999.
+      orderBy: [sql`length(${products.code})`, asc(products.code)],
       limit,
       offset: (page - 1) * limit,
     }),
