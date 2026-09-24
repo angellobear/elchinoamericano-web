@@ -27,6 +27,7 @@ import {
   getProductShareImage,
   getProductShareImageAlt,
   getProductUrl,
+  getPartNumber,
 } from "@/lib/seo"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { buildProductPath, extractProductCodeFromSegment } from "@/lib/product-slugs"
@@ -93,6 +94,7 @@ export async function generateMetadata({
       product.part_brand?.name,
       product.category?.name,
       product.sku,
+      getPartNumber(product),
       product.code,
       ...(product.alternate_codes?.map(ac => ac.code) ?? []),
       "repuestos automotrices",
@@ -206,7 +208,7 @@ function buildJsonLd(product: Product, availability: ReturnType<typeof getAvaila
     image: [productImage],
     url: productUrl,
     sku: product.code,
-    mpn: product.sku ?? product.code,
+    mpn: getPartNumber(product) ?? product.sku ?? product.code,
     brand: { "@type": "Brand", name: getPartBrandName(product) },
     category: product.category?.name,
     itemCondition: "https://schema.org/NewCondition",
@@ -367,8 +369,9 @@ export default async function ProductDetailPage({
       ? { label: `También de ${categoryName}`, href: buildCatalogCategoryPath(product.category.key) }
       : { label: "También te puede interesar", href: "/catalogo" }
 
+  const partNumber = getPartNumber(product)
   const whatsappMsg =
-    `Hola! Le escribo desde [su ciudad]. Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (SKU: ${product.sku}). Esta disponible? Cuanto es el envio?`
+    `Hola! Le escribo desde [su ciudad]. Me interesa el repuesto: ${product.title} ${product.part_brand?.name ?? ""} (SKU: ${product.sku}${partNumber ? ` / N° parte: ${partNumber}` : ""}). Esta disponible? Cuanto es el envio?`
 
   const whatsappHref = getWhatsAppUrl(whatsappMsg)
   const ctaTargetId = "product-whatsapp-cta"
@@ -378,6 +381,7 @@ export default async function ProductDetailPage({
   
   const quickFacts = [
     product.sku ? { label: "SKU", value: product.sku } : null,
+    partNumber ? { label: "Número de parte", value: partNumber } : null,
     { label: "Marca del repuesto", value: getPartBrandName(product) },
     product.category?.name ? { label: "Categoria", value: product.category.name } : null,
     { label: "Tipo", value: typeConfig.label },
@@ -518,6 +522,7 @@ export default async function ProductDetailPage({
                   </h1>
                   <p className="mt-3 font-mono text-3.25 text-[#9aa3b2]">
                     {`SKU ${product.sku ?? product.code}`}
+                    {partNumber && ` · N° parte ${partNumber}`}
                   </p>
                 </div>
 

@@ -110,6 +110,7 @@ export interface Product {
   id: number
   code: string
   sku?: string
+  part_number?: string          // replacement_code (número de parte del fabricante)
   title: string
   short_title?: string
   description?: string

@@ -396,6 +396,7 @@ function toPublicProduct(row: any): Product {
     id: row.id,
     code: row.code ?? '',
     sku: row.sku ?? undefined,
+    part_number: row.replacementCode ?? undefined,
     title: row.title,
     short_title: row.shortTitle ?? undefined,
     description: row.description ?? undefined,

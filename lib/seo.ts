@@ -51,6 +51,13 @@ export function getPartBrandName(product: Product) {
   return product.part_brand?.name ?? FALLBACK_PART_BRAND
 }
 
+// Número de parte solo si aporta algo distinto al SKU
+export function getPartNumber(product: Product) {
+  const norm = (v?: string) => (v ?? "").replace(/[\s-]/g, "").toUpperCase()
+  const pn = product.part_number?.trim()
+  return pn && norm(pn) !== norm(product.sku) ? pn : undefined
+}
+
 export function getProductDisplayImage(product: Product) {
   return getProductPrimaryImage(product) ?? DEFAULT_PRODUCT_IMAGE_PATH
 }
@@ -169,10 +176,12 @@ export function getProductSeoTitle(product: Product) {
 
 export function getProductSeoDescription(product: Product, typeLabel: string) {
   const compatSuffix = buildCompatSuffix(product)
+  const partNumber = getPartNumber(product)
+  const partText = partNumber ? ` N° de parte: ${partNumber}.` : ""
 
   if (product.meta_description) {
     // Concatenate — never override
-    return compatSuffix ? `${product.meta_description}${compatSuffix}` : product.meta_description
+    return `${product.meta_description}${compatSuffix}${partText}`
   }
 
   const models = getCompatModels(product)
@@ -191,7 +200,7 @@ export function getProductSeoDescription(product: Product, typeLabel: string) {
   const oemText = oemCodes.length ? ` Ref. OEM: ${oemCodes.join(", ")}.` : ""
 
   return collapse(
-    `${base}${brandText} (${typeLabel}).${compatText}${oemText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}. Envíos a todo Ecuador desde Quito.`,
+    `${base}${brandText} (${typeLabel}).${compatText}${partText}${oemText} Precio referencial: $${(product.offer_price ?? product.price).toFixed(2)}. Envíos a todo Ecuador desde Quito.`,
   )
 }
 
