@@ -63,7 +63,7 @@ openssl rand -base64 32
 | `partBrandName`    | `string`                                    | Nombre exacto de la marca de la pieza. Si no existe, se omite  | —        |
 | `supplierName`     | `string`                                    | Nombre exacto del proveedor. Si no existe, se omite            | —        |
 | `specs`            | `Array<{ label: string, value: string }>`   | Especificaciones técnicas                                     | —         |
-| `images`           | `Array<{ url, altText?, isPrimary? }>`      | Imágenes del producto (URLs directas, sin subir a Cloudinary)  | —        |
+| `images`           | `Array<{ url, altText?, isPrimary? }>`      | Imágenes del producto (URLs directas, sin subir a Cloudinary). Para subir archivos usa `POST /api/products/images` (ver abajo) | —        |
 | `alternateCodes`   | `Array<{ code: string, source?: string }>`  | Códigos alternativos / referencias cruzadas                   | —         |
 | `compatibilities`  | `Array<CompatEntry>` (ver abajo)            | Vehículos compatibles — marca/modelo se crean si no existen   | —         |
 
@@ -198,3 +198,30 @@ Y en producción (variables de entorno del servidor / Vercel / etc.), configurar
 - Las imágenes se almacenan con URL directa (sin subir a Cloudinary). Para imágenes alojadas en Cloudinary, proporcionar la URL completa.
 - La categoría, marca y proveedor se resuelven por nombre exacto. Si no se encuentra coincidencia, el campo se guarda como vacío (`null`) sin reportar error.
 - El endpoint no tiene límite de tasa por defecto — implementar a nivel de infraestructura si es necesario.
+
+---
+
+## Subir imágenes: `POST /api/products/images`
+
+Flujo separado del import: **una imagen por petición** (límite de body en Vercel ~4.5 MB). Sube el archivo a Cloudinary (`products/`) y lo agrega al final de las imágenes del producto. Usa el mismo `Authorization: Bearer <PRODUCT_IMPORT_TOKEN>`.
+
+`multipart/form-data`:
+
+| Campo       | Requerido | Descripción |
+|-------------|-----------|-------------|
+| `file`      | sí        | Imagen (`image/*`, máx. 4 MB) |
+| `code`      | uno de los dos | Código del producto (`CA-0123`, lo devuelve el import) |
+| `sku`       | uno de los dos | SKU. Si hay varios productos con ese SKU → 409, usa `code` |
+| `altText`   | no        | Texto alternativo |
+| `isPrimary` | no        | `"true"` para marcarla principal. La primera imagen de un producto siempre queda como principal |
+
+```bash
+curl -X POST https://elchinoamericano.com/api/products/images \
+  -H "Authorization: Bearer $PRODUCT_IMPORT_TOKEN" \
+  -F "sku=BWP-TC-001" -F "altText=Bomba de agua frente" -F "file=@./bwp-tc-001-front.jpg"
+```
+
+Respuesta: `{ "success": true, "productId": 123, "url": "https://res.cloudinary.com/..." }`.
+Errores: 400 (falta file/code/sku), 401, 404 (producto no existe), 409 (SKU ambiguo), 413 (>4 MB), 415 (no es imagen), 500.
+
+Para varias imágenes: una petición por archivo, en el orden deseado.

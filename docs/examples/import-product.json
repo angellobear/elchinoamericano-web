@@ -1,0 +1,24 @@
+{
+  "title": "Producto de prueba API - Bomba de agua",
+  "sku": "TEST-API-IMG-001",
+  "type": "aftermarket",
+  "price": 45.5,
+  "shortDescription": "Producto de prueba para validar la API de importación e imágenes.",
+  "description": "Producto de prueba. Eliminar después de validar.",
+  "stock": 0,
+  "isActive": false,
+  "categoryName": "Motor",
+  "partBrandName": "GMB",
+  "specs": [
+    { "label": "Material", "value": "Aluminio" }
+  ],
+  "images": [
+    { "url": "https://res.cloudinary.com/demo/image/upload/sample.jpg", "altText": "Imagen por URL", "isPrimary": true }
+  ],
+  "alternateCodes": [
+    { "code": "TEST-ALT-001", "source": "Prueba" }
+  ],
+  "compatibilities": [
+    { "brandName": "Ford", "modelName": "Explorer", "yearStart": 2011, "yearEnd": 2019 }
+  ]
+}
