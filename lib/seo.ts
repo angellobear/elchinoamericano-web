@@ -176,7 +176,8 @@ export function getProductSeoTitle(product: Product) {
 
 export function getProductSeoDescription(product: Product, typeLabel: string) {
   const compatSuffix = buildCompatSuffix(product)
-  const partNumber = getPartNumber(product)
+  // SEO/GEO: siempre, aunque sea igual al SKU (solo la UI lo oculta)
+  const partNumber = product.part_number?.trim()
   const partText = partNumber ? ` N° de parte: ${partNumber}.` : ""
 
   if (product.meta_description) {
