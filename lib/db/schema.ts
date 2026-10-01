@@ -8,9 +8,12 @@ import {
   date,
   decimal,
   char,
+  json,
   primaryKey,
 } from 'drizzle-orm/mysql-core'
 import { relations, sql } from 'drizzle-orm'
+// Relativo y solo de tipo: drizzle-kit carga este archivo sin el alias "@/".
+import type { DeliveryPhoto } from '../orders'
 
 const mysqlCurrentTimestamp = sql`CURRENT_TIMESTAMP`
 
@@ -197,6 +200,47 @@ export const stockMovements = mysqlTable('stock_movements', {
   createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
 })
 
+export const orders = mysqlTable('orders', {
+  id: int('id').autoincrement().primaryKey(),
+  publicToken: char('public_token', { length: 43 }).unique().notNull(),
+  customerName: varchar('customer_name', { length: 150 }),
+  customerIdNumber: varchar('customer_id_number', { length: 20 }),
+  customerPhone: varchar('customer_phone', { length: 30 }),
+  discount: decimal('discount', { precision: 10, scale: 2 }).notNull().default('0.00'),
+  invoiceNumber: varchar('invoice_number', { length: 50 }),
+  notes: text('notes'),
+  estimatedDate: date('estimated_date', { mode: 'string' }),
+  status: varchar('status', { length: 20 }).notNull().default('pending'),
+  deliveredAt: date('delivered_at', { mode: 'string' }),
+  receivedByName: varchar('received_by_name', { length: 150 }),
+  receivedByIdNumber: varchar('received_by_id_number', { length: 20 }),
+  deliveryPhotos: json('delivery_photos').$type<DeliveryPhoto[]>(),
+  createdBy: char('created_by', { length: 36 }),
+  createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
+  updatedAt: timestamp('updated_at').default(mysqlCurrentTimestamp),
+})
+
+export const orderItems = mysqlTable('order_items', {
+  id: int('id').autoincrement().primaryKey(),
+  orderId: int('order_id').notNull().references(() => orders.id),
+  productId: int('product_id').references(() => products.id),
+  description: varchar('description', { length: 255 }).notNull(),
+  quantity: int('quantity').notNull().default(1),
+  unitPrice: decimal('unit_price', { precision: 10, scale: 2 }).notNull(),
+})
+
+export const orderPayments = mysqlTable('order_payments', {
+  id: int('id').autoincrement().primaryKey(),
+  orderId: int('order_id').notNull().references(() => orders.id),
+  amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  method: varchar('method', { length: 20 }).notNull(),
+  reference: varchar('reference', { length: 100 }),
+  paidAt: date('paid_at', { mode: 'string' }).notNull(),
+  userId: char('user_id', { length: 36 }),
+  voidedAt: timestamp('voided_at'),
+  createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
+})
+
 export const announcements = mysqlTable('announcements', {
   id: int('id').autoincrement().primaryKey(),
   title: varchar('title', { length: 150 }),
@@ -273,4 +317,18 @@ export const productSpecsRelations = relations(productSpecs, ({ one }) => ({
 
 export const productAlternateCodesRelations = relations(productAlternateCodes, ({ one }) => ({
   product: one(products, { fields: [productAlternateCodes.productId], references: [products.id] }),
+}))
+
+export const ordersRelations = relations(orders, ({ many }) => ({
+  items: many(orderItems),
+  payments: many(orderPayments),
+}))
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, { fields: [orderItems.orderId], references: [orders.id] }),
+  product: one(products, { fields: [orderItems.productId], references: [products.id] }),
+}))
+
+export const orderPaymentsRelations = relations(orderPayments, ({ one }) => ({
+  order: one(orders, { fields: [orderPayments.orderId], references: [orders.id] }),
 }))
