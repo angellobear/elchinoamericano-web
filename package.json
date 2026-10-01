@@ -21,9 +21,11 @@
     "db:patch:vehicle-brands-web": "npx tsx lib/db/scripts/apply-vehicle-brand-web-visibility.ts",
     "db:patch:soft-delete:mysql": "npx tsx lib/db/scripts/apply-soft-delete-columns.ts",
     "db:patch:announcements": "npx tsx lib/db/scripts/apply-announcements-table.ts",
+    "db:patch:orders": "npx tsx lib/db/scripts/apply-orders-tables.ts",
     "check:lcp": "node scripts/check-visible-lcp.mjs",
     "check:llms": "node scripts/check-llms-txt.mjs",
-    "check:announcements": "npx tsx scripts/check-announcement-window.ts"
+    "check:announcements": "npx tsx scripts/check-announcement-window.ts",
+    "check:orders": "npx tsx scripts/check-order-balance.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
