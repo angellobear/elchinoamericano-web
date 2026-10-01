@@ -40,7 +40,7 @@ export function AnnouncementModal() {
 
   useEffect(() => {
     if (asked.current) return
-    if (pathname.startsWith("/admin") || pathname.startsWith("/login")) return
+    if (pathname.startsWith("/admin") || pathname.startsWith("/login") || pathname.startsWith("/pedido")) return
     asked.current = true
 
     let cancelled = false

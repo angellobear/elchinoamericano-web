@@ -60,7 +60,10 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
     status: {
       title: 'Estado de tu pedido',
       number: data.orderNumber,
-      detail: data.deliveredAt ? `${data.statusLabel} el ${formatDate(data.deliveredAt)}` : data.statusLabel,
+      detail:
+        data.status === ORDER_STATUS.delivered
+          ? `${data.statusLabel} el ${formatDate(data.deliveredAt)}`
+          : data.statusLabel,
     },
   }[kind]
 

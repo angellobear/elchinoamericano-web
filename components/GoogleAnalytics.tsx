@@ -22,7 +22,8 @@ export function GoogleAnalytics({ id }: { id: string }) {
   }, [])
 
   if (process.env.NODE_ENV !== "production") return null
-  if (pathname.startsWith("/admin")) return null
+  // /pedido lleva un token secreto en la URL: no debe llegar a terceros.
+  if (pathname.startsWith("/admin") || pathname.startsWith("/pedido")) return null
 
   return (
     <>
