@@ -1,6 +1,7 @@
 export const routes = {
   home: '/',
   login: '/login',
+  publicOrder: (token: string) => `/pedido/${token}`,
   admin: {
     dashboard: '/admin/dashboard',
     forbidden: '/admin/forbidden',
@@ -41,6 +42,14 @@ export const routes = {
       index: '/admin/announcements',
       create: '/admin/announcements/new',
       edit: (id: number | string) => `/admin/announcements/${id}`,
+    },
+    orders: {
+      index: '/admin/orders',
+      create: '/admin/orders/new',
+      detail: (id: number | string) => `/admin/orders/${id}`,
+      edit: (id: number | string) => `/admin/orders/${id}/edit`,
+      receipt: (id: number | string, paymentId: number | string) => `/admin/orders/${id}/recibo/${paymentId}`,
+      delivery: (id: number | string) => `/admin/orders/${id}/entrega`,
     },
     inventory: {
       index: '/admin/inventory',

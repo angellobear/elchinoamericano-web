@@ -13,6 +13,7 @@ import {
   orderSummary,
   toCents,
 } from '@/lib/orders'
+import { parseOrderFormData, parsePaymentFormData } from '@/modules/admin/orders/form-schema'
 
 const order = {
   id: 123,
@@ -85,5 +86,43 @@ assert.equal(pub.payments[0].reference, null, 'la vista pública no expone la re
 const anonymous = buildOrderDocument({ ...order, customerName: null, customerIdNumber: null })
 assert.equal(anonymous.customerName, 'Consumidor final')
 assert.equal(anonymous.customerIdNumber, null)
+
+function orderForm(overrides: Record<string, string>) {
+  const formData = new FormData()
+  formData.set('discount', '0')
+  formData.set('items', JSON.stringify([{ productId: null, description: 'Filtro', quantity: 1, unitPrice: '10.00' }]))
+  for (const [key, value] of Object.entries(overrides)) formData.set(key, value)
+  return formData
+}
+
+const consumidorFinal = parseOrderFormData(orderForm({}))
+assert.equal(consumidorFinal.success, true, 'un pedido sin datos de cliente es válido')
+assert.equal(consumidorFinal.data?.customerName, undefined)
+
+assert.equal(parseOrderFormData(orderForm({ items: '[]' })).success, false, 'sin ítems no hay pedido')
+assert.equal(parseOrderFormData(orderForm({ items: 'no es json' })).success, false)
+assert.equal(parseOrderFormData(orderForm({ discount: '10.01' })).success, false, 'descuento mayor al subtotal')
+assert.equal(parseOrderFormData(orderForm({ discount: '10.00' })).success, true, 'descuento igual al subtotal')
+assert.equal(parseOrderFormData(orderForm({ discount: '5%' })).success, false, 'el descuento es en dólares, no porcentaje')
+assert.equal(
+  parseOrderFormData(orderForm({ items: JSON.stringify([{ productId: null, description: 'X', quantity: 0, unitPrice: '1.00' }]) })).success,
+  false,
+  'cantidad mínima 1',
+)
+
+function paymentForm(overrides: Record<string, string>) {
+  const formData = new FormData()
+  formData.set('amount', '25.50')
+  formData.set('method', 'efectivo')
+  formData.set('paidAt', '2026-10-01')
+  for (const [key, value] of Object.entries(overrides)) formData.set(key, value)
+  return formData
+}
+
+assert.equal(parsePaymentFormData(paymentForm({})).success, true)
+assert.equal(parsePaymentFormData(paymentForm({ amount: '0' })).success, false, 'un abono de cero no es válido')
+assert.equal(parsePaymentFormData(paymentForm({ amount: '-5' })).success, false)
+assert.equal(parsePaymentFormData(paymentForm({ method: 'cheque' })).success, false)
+assert.equal(parsePaymentFormData(paymentForm({ paidAt: '' })).success, false)
 
 console.log('✓ dominio de pedidos OK')
