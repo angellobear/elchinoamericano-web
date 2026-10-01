@@ -64,6 +64,8 @@ app/
   login/
     page.tsx
     LoginForm.tsx
+  pedido/
+    [token]/page.tsx
   admin/
     ...
 
@@ -94,6 +96,8 @@ Rules:
 - They must be SEO-friendly.
 - Product pages should include canonical URLs, Open Graph, Twitter metadata, and JSON-LD.
 - Product sharing should use the primary product image when available, otherwise a stable fallback from `public/`.
+
+Exception: `/pedido/[token]` is a private-by-link order status page. It must stay `noindex`, out of the sitemap, and free of third-party analytics. Do not apply SEO work to it.
 
 ## Catalog Rules
 

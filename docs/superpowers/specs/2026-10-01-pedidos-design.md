@@ -204,6 +204,15 @@ Ruta `/pedido/[token]`, solo lectura.
 5. Las fotos se suben desde el admin (no se pegan enlaces externos) y se ven en el enlace público.
 6. Una dependencia nueva, `qrcode`, para el QR.
 
+## Ajustes hechos al implementar
+
+- `delivered_at` y `paid_at` son columnas `DATE` con la fecha de Ecuador, no `TIMESTAMP`, para no depender de la zona horaria del servidor.
+- El n.º de factura se edita en el formulario de entrega (al entregar y después), no en el formulario del pedido.
+- La página pública no carga Google Analytics, Clarity ni el modal de anuncios, para que el token no llegue a terceros.
+- La vista pública tampoco muestra la referencia bancaria de los abonos.
+- Las fotos se limitan a 4 MB cada una (el límite de los server actions es 10 MB en total).
+- Además de `scripts/check-order-balance.ts` hay un chequeo de integración, `scripts/check-orders-db.ts`, que solo corre contra la base local.
+
 ## Fuera de alcance
 
 Facturación electrónica, envío automático por correo/WhatsApp, PDF generado en servidor,
