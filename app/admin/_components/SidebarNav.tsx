@@ -4,13 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, Boxes, Tag,
-  Car, Wrench, Truck, Users, Megaphone, LogOut,
+  Car, Wrench, Truck, Users, Megaphone, ClipboardList, LogOut,
 } from 'lucide-react'
 
 const NAV = [
   { href: '/admin/dashboard',      label: 'Dashboard',        icon: LayoutDashboard },
   { href: '/admin/products',       label: 'Productos',        icon: Package },
   { href: '/admin/inventory',      label: 'Inventario',       icon: Boxes },
+  { href: '/admin/orders',         label: 'Pedidos',          icon: ClipboardList },
   { href: '/admin/categories',     label: 'Categorías',       icon: Tag },
   { href: '/admin/vehicle-brands', label: 'Marcas Vehículos', icon: Car },
   { href: '/admin/part-brands',    label: 'Marcas Repuestos', icon: Wrench },
