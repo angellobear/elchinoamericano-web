@@ -1,10 +1,10 @@
 import mysql from 'mysql2/promise'
-import { loadDatabaseUrl } from '../config-env'
+import { loadPatchDatabaseUrl } from '../config-env'
 
 // Crea las tablas de pedidos y registra su módulo + permisos, sin tocar el resto
 // del esquema (drizzle-kit push intenta reescribir tablas con FKs preexistentes).
 // Idempotente: se puede correr las veces que haga falta.
-const { url: databaseUrl } = loadDatabaseUrl('local')
+const databaseUrl = loadPatchDatabaseUrl()
 
 const statements: [label: string, sql: string][] = [
   ['tabla orders', `
