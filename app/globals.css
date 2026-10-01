@@ -290,3 +290,10 @@ body {
     transform: none !important;
   }
 }
+
+/* Documentos imprimibles (pedidos): margen de hoja uniforme. */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+}

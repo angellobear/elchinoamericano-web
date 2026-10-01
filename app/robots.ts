@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 import { SITE_URL } from "@/lib/seo"
 
-const PRIVATE_PATHS = ["/admin/", "/api/", "/login/"]
+const PRIVATE_PATHS = ["/admin/", "/api/", "/login/", "/pedido/"]
 
 export default function robots(): MetadataRoute.Robots {
   return {

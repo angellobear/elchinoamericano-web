@@ -13,6 +13,7 @@ const SENSITIVE_KEYS = new Set([
   'passwordHash',
   'password_hash',
   'token',
+  'publicToken',
   'secret',
   'apiKey',
   'api_key',

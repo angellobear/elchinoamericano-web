@@ -50,6 +50,20 @@ export function loadDatabaseUrl(target: DbTarget) {
   return { envFile, url }
 }
 
+/**
+ * Base destino de los scripts db:patch:*. Por defecto la local (.env.local); para otro
+ * ambiente se pasa la URL explícita en PATCH_DATABASE_URL, así nunca se aplica a
+ * producción por accidente. Imprime el host para que quede claro dónde se escribe.
+ */
+export function loadPatchDatabaseUrl() {
+  const explicit = process.env.PATCH_DATABASE_URL?.trim()
+  const url = explicit || loadDatabaseUrl('local').url
+  const { host, database } = parseMysqlUrl(url)
+
+  console.log(`Base destino: ${database} en ${host}${explicit ? ' (PATCH_DATABASE_URL)' : ' (.env.local)'}`)
+  return url
+}
+
 export function parseMysqlUrl(url: string) {
   const parsed = new URL(url)
 

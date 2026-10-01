@@ -21,9 +21,12 @@
     "db:patch:vehicle-brands-web": "npx tsx lib/db/scripts/apply-vehicle-brand-web-visibility.ts",
     "db:patch:soft-delete:mysql": "npx tsx lib/db/scripts/apply-soft-delete-columns.ts",
     "db:patch:announcements": "npx tsx lib/db/scripts/apply-announcements-table.ts",
+    "db:patch:orders": "npx tsx lib/db/scripts/apply-orders-tables.ts",
     "check:lcp": "node scripts/check-visible-lcp.mjs",
     "check:llms": "node scripts/check-llms-txt.mjs",
-    "check:announcements": "npx tsx scripts/check-announcement-window.ts"
+    "check:announcements": "npx tsx scripts/check-announcement-window.ts",
+    "check:orders": "npx tsx scripts/check-order-balance.ts",
+    "check:orders:db": "npx tsx -r ./scripts/stub-server-only.cjs scripts/check-orders-db.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
@@ -38,6 +41,7 @@
     "mysql2": "^3.22.5",
     "next": "16.2.9",
     "pino": "^10.3.1",
+    "qrcode": "^1.5.4",
     "radix-ui": "^1.6.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
@@ -49,6 +53,7 @@
     "@tailwindcss/postcss": "^4",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "drizzle-kit": "^0.31.10",

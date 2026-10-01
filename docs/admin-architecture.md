@@ -39,6 +39,8 @@ Current routes include:
 - `app/admin/part-brands/page.tsx`
 - `app/admin/suppliers/page.tsx`
 - `app/admin/inventory/page.tsx`
+- `app/admin/announcements/page.tsx`
+- `app/admin/orders/page.tsx`
 
 Shared route-adjacent components currently present:
 
@@ -89,6 +91,8 @@ Current module areas:
 - `modules/admin/vehicle-brands/**`
 - `modules/admin/part-brands/**`
 - `modules/admin/suppliers/**`
+- `modules/admin/announcements/**`
+- `modules/admin/orders/**`
 - `modules/admin/shared/**`
 
 ### 3. Shared Admin Layer
@@ -243,3 +247,12 @@ This structure should remain flexible enough to support either:
 2. a future separate backend behind repositories
 
 The key principle is to avoid coupling admin UI directly to raw DB calls inside route files or client components.
+
+## Orders Module
+
+- Pure domain (statuses, totals in integer cents, document view model): `lib/orders.ts`. No server imports; covered by `npm run check:orders`.
+- Data access and transactional rules (payments, delivery, stock reversal): `lib/db/orders.ts`. Covered by `npm run check:orders:db`, which only runs against a local database and leaves two cancelled test orders behind.
+- Tables are created with `npm run db:patch:orders` (idempotent), not `drizzle-kit push`.
+- `db:patch:*` scripts target the local database by default. To apply one to another environment, pass its URL explicitly: `PATCH_DATABASE_URL=mysql://... npm run db:patch:orders`. The script prints the target host before writing.
+- One template, `components/orders/OrderDocument.tsx`, renders the payment receipt, the delivery act and the public status page.
+- Public verification route `/pedido/[token]` is deliberately excluded from SEO, sitemap, Google Analytics, Clarity and the announcement modal: the URL carries a secret token.
