@@ -17,7 +17,7 @@ export function MobileAdminHeader({ isSuperAdmin, email, role }: Props) {
   const [open, setOpen] = useState(false)
 
   return (
-    <header className="md:hidden sticky top-0 z-30 h-14 flex items-center gap-3 px-4 bg-navy border-b border-white/10 shrink-0">
+    <header className="md:hidden sticky top-0 z-30 h-14 flex items-center gap-3 px-4 bg-navy border-b border-white/10 shrink-0 print:hidden!">
       <button
         onClick={() => setOpen(true)}
         className="text-white/70 hover:text-white transition-colors p-1"

@@ -18,9 +18,10 @@ export default async function AdminLayout({
 
   return (
     <>
-      <div className="min-h-screen bg-slate-50 md:flex">
+      {/* print:*! — al imprimir un documento (pedidos) solo sale el contenido, sin panel ni scroll interno. */}
+      <div className="min-h-screen bg-slate-50 md:flex print:block! print:min-h-0! print:bg-white!">
         {/* Desktop sidebar */}
-        <aside className="hidden md:flex w-64 shrink-0 bg-navy text-white flex-col border-r border-white/6">
+        <aside className="hidden md:flex w-64 shrink-0 bg-navy text-white flex-col border-r border-white/6 print:hidden!">
           <div className="h-16 px-5 flex items-center gap-3 border-b border-white/10 shrink-0">
             <Link href="/admin/dashboard" className="flex items-center gap-3 min-w-0">
               <div className="relative h-9 w-9 shrink-0">
@@ -45,9 +46,9 @@ export default async function AdminLayout({
         </aside>
 
         {/* Content area */}
-        <div className="flex-1 flex flex-col min-h-screen md:min-h-0 md:overflow-hidden">
+        <div className="flex-1 flex flex-col min-h-screen md:min-h-0 md:overflow-hidden print:block! print:min-h-0! print:overflow-visible!">
           <MobileAdminHeader isSuperAdmin={isSuperAdmin} email={payload.email} role={payload.role} />
-          <main className="flex-1 overflow-auto">
+          <main className="flex-1 overflow-auto print:overflow-visible!">
             {children}
           </main>
         </div>
