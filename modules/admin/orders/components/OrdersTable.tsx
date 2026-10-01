@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { ClipboardList } from 'lucide-react'
+import { ClipboardList, ExternalLink, Eye, Pencil } from 'lucide-react'
 import type { OrderWithRelations } from '@/lib/db/orders'
 import {
+  ORDER_STATUS,
   ORDER_STATUS_LABEL,
   ORDER_STATUS_TONE,
   customerLabel,
@@ -13,6 +14,7 @@ import {
 import { routes } from '@/lib/routes'
 
 const headClass = 'px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider'
+const actionClass = 'p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-navy transition-colors'
 
 export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
   return (
@@ -27,6 +29,7 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
               <th className={`text-right ${headClass}`}>Abonado</th>
               <th className={`text-right ${headClass}`}>Saldo</th>
               <th className={`text-center ${headClass}`}>Estado</th>
+              <th className={`text-right ${headClass}`}>Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -58,12 +61,50 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
                       {ORDER_STATUS_LABEL[status]}
                     </span>
                   </td>
+                  <td className="px-4 py-3.5">
+                    <div className="flex items-center justify-end gap-1">
+                      <Link
+                        href={routes.admin.orders.detail(order.id)}
+                        className={actionClass}
+                        title="Ver pedido"
+                        aria-label={`Ver pedido ${formatDocNumber('PED', order.id)}`}
+                      >
+                        <Eye size={14} />
+                      </Link>
+                      {/* Solo un pedido pendiente se puede editar. */}
+                      {status === ORDER_STATUS.pending ? (
+                        <Link
+                          href={routes.admin.orders.edit(order.id)}
+                          className={actionClass}
+                          title="Editar pedido"
+                          aria-label={`Editar pedido ${formatDocNumber('PED', order.id)}`}
+                        >
+                          <Pencil size={13} />
+                        </Link>
+                      ) : (
+                        <span className="p-1.5 text-slate-200" title="Solo se edita un pedido pendiente">
+                          <Pencil size={13} />
+                        </span>
+                      )}
+                      {/* Ruta relativa: abre la página pública en el mismo dominio donde está el admin. */}
+                      <a
+                        href={routes.publicOrder(order.publicToken)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={actionClass}
+                        title="Abrir página pública"
+                        aria-label={`Abrir página pública del pedido ${formatDocNumber('PED', order.id)}`}
+                      >
+                        <ExternalLink size={13} />
+                      </a>
+                    </div>
+                  </td>
                 </tr>
               )
             })}
             {orders.length === 0 && (
               <tr>
-                <td colSpan={6} className="py-16 text-center">
+                <td colSpan={7} className="py-16 text-center">
                   <ClipboardList size={32} className="mx-auto mb-3 text-slate-300" />
                   <p className="text-slate-400">No hay pedidos</p>
                 </td>
