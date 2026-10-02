@@ -19,8 +19,8 @@ export default async function OrderDeliveryPage({
   if (!Number.isInteger(orderId)) notFound()
 
   const order = await getOrderById(orderId)
-  // El acta solo existe para un pedido entregado.
-  if (!order || order.status !== ORDER_STATUS.delivered) notFound()
+  // Se puede imprimir antes de entregar, para que el cliente la firme; un pedido anulado no tiene acta.
+  if (!order || order.status === ORDER_STATUS.cancelled) notFound()
 
   const qrDataUrl = await QRCode.toDataURL(toAbsoluteUrl(routes.publicOrder(order.publicToken)), {
     margin: 0,
