@@ -5,15 +5,10 @@ import { OrderDocument } from '@/components/orders/OrderDocument'
 import { cache } from 'react'
 import { getOrderByToken } from '@/lib/db/orders'
 import { PUBLIC_TOKEN_PATTERN, buildOrderDocument, formatDocNumber } from '@/lib/orders'
-import {
-  DEFAULT_SHARE_IMAGE_ALT,
-  DEFAULT_SHARE_IMAGE_HEIGHT,
-  DEFAULT_SHARE_IMAGE_PATH,
-  DEFAULT_SHARE_IMAGE_WIDTH,
-  SITE_LOCALE,
-  SITE_NAME,
-  toAbsoluteUrl,
-} from '@/lib/seo'
+import { SITE_LOCALE, SITE_NAME, toAbsoluteUrl } from '@/lib/seo'
+
+// Imagen propia de los enlaces de pedido (public/og-pedido.jpg); el resto del sitio usa la general.
+const SHARE_IMAGE = { path: '/og-pedido.jpg', alt: `Tu pedido en ${SITE_NAME}`, width: 1424, height: 752 }
 
 // Página privada por enlace: nunca se indexa, nunca se cachea y no filtra el token como referrer.
 export const dynamic = 'force-dynamic'
@@ -33,7 +28,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
   // estado o un saldo quedarían desactualizados, y aquí no va ningún dato personal.
   const title = order ? `Tu pedido ${formatDocNumber('PED', order.id)} | ${SITE_NAME}` : `Estado de tu pedido | ${SITE_NAME}`
   const description = `Revisa aquí el detalle de tu pedido, tus abonos y el saldo pendiente. Enlace personal enviado por ${SITE_NAME}.`
-  const image = toAbsoluteUrl(DEFAULT_SHARE_IMAGE_PATH)
+  const image = toAbsoluteUrl(SHARE_IMAGE.path)
 
   return {
     title,
@@ -46,9 +41,7 @@ export async function generateMetadata({ params }: { params: Promise<{ token: st
       siteName: SITE_NAME,
       title,
       description,
-      images: [
-        { url: image, alt: DEFAULT_SHARE_IMAGE_ALT, width: DEFAULT_SHARE_IMAGE_WIDTH, height: DEFAULT_SHARE_IMAGE_HEIGHT },
-      ],
+      images: [{ url: image, alt: SHARE_IMAGE.alt, width: SHARE_IMAGE.width, height: SHARE_IMAGE.height }],
     },
     twitter: { card: 'summary_large_image', title, description, images: [image] },
   }
