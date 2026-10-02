@@ -2,26 +2,54 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { DeliveryPhotos } from '@/components/orders/DeliveryPhotos'
 import { OrderDocument } from '@/components/orders/OrderDocument'
+import { cache } from 'react'
 import { getOrderByToken } from '@/lib/db/orders'
-import { PUBLIC_TOKEN_PATTERN, buildOrderDocument } from '@/lib/orders'
-import { SITE_NAME } from '@/lib/seo'
+import { PUBLIC_TOKEN_PATTERN, buildOrderDocument, formatDocNumber } from '@/lib/orders'
+import { SITE_LOCALE, SITE_NAME, toAbsoluteUrl } from '@/lib/seo'
+
+// Imagen propia de los enlaces de pedido (public/og-pedido.jpg); el resto del sitio usa la general.
+const SHARE_IMAGE = { path: '/og-pedido.jpg', alt: `Tu pedido en ${SITE_NAME}`, width: 1424, height: 752 }
 
 // Página privada por enlace: nunca se indexa, nunca se cachea y no filtra el token como referrer.
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: `Estado de tu pedido | ${SITE_NAME}`,
-  description: 'Consulta el estado, los abonos y el saldo de tu pedido.',
-  robots: { index: false, follow: false, nocache: true },
-  referrer: 'no-referrer',
+// Una sola consulta por petición: la usan la metadata y la página.
+// Un token con formato inválido ni siquiera llega a la base.
+const findOrder = cache(async (token: string) =>
+  PUBLIC_TOKEN_PATTERN.test(token) ? ((await getOrderByToken(token)) ?? null) : null,
+)
+
+export async function generateMetadata({ params }: { params: Promise<{ token: string }> }): Promise<Metadata> {
+  const { token } = await params
+  const order = await findOrder(token)
+
+  // Vista previa al compartir el enlace (WhatsApp, redes): dice de qué pedido se trata para que
+  // el cliente confíe en el enlace. Solo el número: las apps guardan la vista previa, así que un
+  // estado o un saldo quedarían desactualizados, y aquí no va ningún dato personal.
+  const title = order ? `Tu pedido ${formatDocNumber('PED', order.id)} | ${SITE_NAME}` : `Estado de tu pedido | ${SITE_NAME}`
+  const description = `Revisa aquí el detalle de tu pedido, tus abonos y el saldo pendiente. Enlace personal enviado por ${SITE_NAME}.`
+  const image = toAbsoluteUrl(SHARE_IMAGE.path)
+
+  return {
+    title,
+    description,
+    robots: { index: false, follow: false, nocache: true },
+    referrer: 'no-referrer',
+    openGraph: {
+      type: 'website',
+      locale: SITE_LOCALE,
+      siteName: SITE_NAME,
+      title,
+      description,
+      images: [{ url: image, alt: SHARE_IMAGE.alt, width: SHARE_IMAGE.width, height: SHARE_IMAGE.height }],
+    },
+    twitter: { card: 'summary_large_image', title, description, images: [image] },
+  }
 }
 
 export default async function PublicOrderPage({ params }: { params: Promise<{ token: string }> }) {
   const { token } = await params
-  // Un token con formato inválido ni siquiera llega a la base.
-  if (!PUBLIC_TOKEN_PATTERN.test(token)) notFound()
-
-  const order = await getOrderByToken(token)
+  const order = await findOrder(token)
   if (!order) notFound()
 
   const data = buildOrderDocument(order, { publicView: true })
