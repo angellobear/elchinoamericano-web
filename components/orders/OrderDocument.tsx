@@ -54,7 +54,10 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl, children }: Or
     delivery: {
       title: 'Acta de entrega-recepción',
       number: formatDocNumber('ENT', data.orderId),
-      detail: `Pedido ${data.orderNumber} · Entregado el ${formatDate(data.deliveredAt)}`,
+      // Se imprime antes de entregar (para que el cliente firme) y también después.
+      detail: delivered
+        ? `Pedido ${data.orderNumber} · Entregado el ${formatDate(data.deliveredAt)}`
+        : `Pedido ${data.orderNumber}`,
     },
     status: {
       title: 'Estado de tu pedido',

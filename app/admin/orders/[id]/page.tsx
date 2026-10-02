@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import QRCode from 'qrcode'
-import { Download, ExternalLink, Pencil } from 'lucide-react'
+import { ExternalLink, Pencil, Printer } from 'lucide-react'
 import { DeliveryPhotos } from '@/components/orders/DeliveryPhotos'
 import { getOrderById, isDeliveryEditable } from '@/lib/db/orders'
 import {
@@ -35,8 +35,6 @@ import { AdminPageHeader } from '@/modules/admin/shared/components/AdminPageHead
 
 const outlineButton =
   'inline-flex items-center gap-2 px-3 py-2 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors'
-const pdfButton =
-  'inline-flex items-center gap-1.5 px-3 py-1.5 border border-navy/20 text-navy text-sm font-medium rounded-lg hover:bg-navy/5 transition-colors whitespace-nowrap'
 const dangerButton =
   'inline-flex items-center gap-2 px-3 py-2 border border-red-200 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition-colors'
 
@@ -98,6 +96,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         ) : null}
         {isPending ? (
           <DeliveryPanel action={saveDeliveryAction.bind(null, order.id)} delivered={false} defaults={deliveryDefaults} />
+        ) : null}
+        {/* Visible también antes de entregar: se imprime para que el cliente firme el recibí conforme. */}
+        {!isCancelled ? (
+          <Link href={`${routes.admin.orders.delivery(order.id)}?print=1`} className={outlineButton}>
+            <Printer size={14} />
+            Imprimir orden de entrega
+          </Link>
         ) : null}
         {isPending ? (
           <Link href={routes.admin.orders.edit(order.id)} className={outlineButton}>
@@ -273,7 +278,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <div>
               <h2 className="text-sm font-bold text-navy">Entrega</h2>
               <p className="text-xs text-slate-400">
-                El acta es el documento que firma el cliente al recibir. Las fotos no salen en el PDF.
+                La orden de entrega se imprime con el botón de arriba. Las fotos no salen en el PDF.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -284,10 +289,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                   Los datos de entrega ya no se pueden editar (pasó 1 hora desde la entrega).
                 </p>
               )}
-              <Link href={`${routes.admin.orders.delivery(order.id)}?print=1`} className={pdfButton}>
-                <Download size={14} />
-                Acta de entrega PDF
-              </Link>
             </div>
           </div>
 
