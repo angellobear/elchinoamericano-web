@@ -193,6 +193,8 @@ export interface AdminUser {
 
 // JWT payload stored in the httpOnly cookie
 export interface JWTPayload {
+  /** Sesión (tabla `sessions`) que emitió este token. Los tokens anteriores a las sesiones no lo traen. */
+  sid?: string
   userId: string
   email: string
   role: string

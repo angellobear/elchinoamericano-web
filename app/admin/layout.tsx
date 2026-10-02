@@ -5,6 +5,10 @@ import { Toaster } from 'sonner'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { SidebarNav } from './_components/SidebarNav'
 import { MobileAdminHeader } from './_components/MobileAdminHeader'
+import { adminPwaMetadata, adminViewport } from '@/lib/pwa'
+
+export const metadata = adminPwaMetadata
+export const viewport = adminViewport
 
 export default async function AdminLayout({
   children,

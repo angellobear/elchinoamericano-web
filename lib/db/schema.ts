@@ -51,6 +51,20 @@ export const users = mysqlTable('users', {
   updatedAt: timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
 
+// Sesiones del admin: una fila por dispositivo. Solo se guarda el hash del token de renovación.
+export const sessions = mysqlTable('sessions', {
+  id: char('id', { length: 36 }).primaryKey(),
+  userId: char('user_id', { length: 36 }).notNull().references(() => users.id),
+  tokenHash: char('token_hash', { length: 64 }).notNull(),
+  prevTokenHash: char('prev_token_hash', { length: 64 }),
+  rotatedAt: timestamp('rotated_at'),
+  userAgent: varchar('user_agent', { length: 255 }),
+  createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
+  lastUsedAt: timestamp('last_used_at').default(mysqlCurrentTimestamp),
+  expiresAt: timestamp('expires_at').notNull(),
+  revokedAt: timestamp('revoked_at'),
+})
+
 export const vehicleBrands = mysqlTable('vehicle_brands', {
   id: int('id').autoincrement().primaryKey(),
   name: varchar('name', { length: 100 }).notNull(),

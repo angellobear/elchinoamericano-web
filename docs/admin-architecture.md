@@ -256,3 +256,21 @@ The key principle is to avoid coupling admin UI directly to raw DB calls inside 
 - `db:patch:*` scripts target the local database by default. To apply one to another environment, pass its URL explicitly: `PATCH_DATABASE_URL=mysql://... npm run db:patch:orders`. The script prints the target host before writing.
 - One template, `components/orders/OrderDocument.tsx`, renders the payment receipt, the delivery act and the public status page.
 - Public verification route `/pedido/[token]` is deliberately excluded from SEO, sitemap, Google Analytics, Clarity and the announcement modal: the URL carries a secret token.
+
+## Sessions
+
+- Two `httpOnly`, `Secure`, `SameSite=Strict` cookies: `admin_token` (access JWT, 15 minutes) and `admin_refresh` (opaque token, 30 days sliding). Constants live in `lib/auth/tokens.ts`.
+- The refresh token is stored only as a hash in the `sessions` table (`lib/auth/sessions.ts`), one row per device. It rotates on every renewal; the previous token stays valid for 60 seconds so parallel requests do not log the user out.
+- Presenting an already-rotated token outside that window means it was reused by someone else: the whole session is revoked.
+- Renewal happens in `proxy.ts` (Node.js runtime), before pages, `/api/admin/**` routes and server actions run, and the fresh access token is forwarded on the same request. Application code keeps calling `getJwtPayload()` and never deals with renewal.
+- Each renewal re-reads the user and role permissions, so deactivating a user or changing permissions takes effect within 15 minutes without a new login.
+- Logout, password change, deactivation and deletion revoke sessions server-side.
+- The table is created with `npm run db:patch:sessions`. **It must exist in an environment before the code that uses it is deployed**, otherwise nobody can log in.
+- Covered by `npm run check:sessions` (local database only; also exercises the real HTTP flow when a dev server is running on port 3000). It uses its own test user and leaves it deactivated.
+- Expired and revoked rows are never purged; add a cleanup job if the table grows.
+
+## Installable admin (PWA)
+
+- `public/manifest-admin.webmanifest` plus icons in `public/pwa/`, linked only from `app/admin/layout.tsx` and `app/login/page.tsx` through `lib/pwa.ts`. Public pages do not link a manifest, so the storefront never offers installation.
+- The whole admin is in the app (`scope: "/"`, `start_url: "/admin/dashboard"`), not just one module.
+- No service worker: there is no offline mode. The installed app needs a connection, exactly like the admin in a browser tab.

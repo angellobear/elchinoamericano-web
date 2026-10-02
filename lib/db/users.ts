@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs'
 import { randomUUID } from 'crypto'
 import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
+import { revokeUserSessions } from '@/lib/auth/sessions'
 import { buildNotDeletedWhere, type SoftDeleteQueryOptions } from '@/lib/db/soft-delete'
 
 export async function getUsers(options?: SoftDeleteQueryOptions) {
@@ -61,6 +62,9 @@ export async function updateUser(id: string, data: { fullName?: string; roleId?:
     const after = await tx.query.users.findFirst({ where: eq(users.id, id) })
     return { before, after }
   })
+
+  // Contraseña nueva o usuario desactivado/eliminado: sus sesiones abiertas dejan de renovarse.
+  if (data.passwordHash || data.isActive === false) await revokeUserSessions(id)
 
   await logActivitySafe('UPDATE', 'users', id, before as Record<string, unknown> | undefined, after as Record<string, unknown> | undefined)
 }
