@@ -1,10 +1,15 @@
 import { redirect } from 'next/navigation'
 import type { Metadata } from "next"
 import { getJwtPayload } from '@/lib/auth/check-permission'
+import { adminPwaMetadata, adminViewport } from '@/lib/pwa'
 import { routes } from '@/lib/routes'
 import LoginForm from "./LoginForm"
 
+export const viewport = adminViewport
+
 export const metadata: Metadata = {
+  // Instalable también desde el login: es la primera pantalla que ve quien abre el panel.
+  ...adminPwaMetadata,
   title: "Acceso Administrador | El Chino Americano",
   description: "Inicio de sesión para el panel administrativo de El Chino Americano.",
   robots: {

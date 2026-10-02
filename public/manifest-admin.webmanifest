@@ -1,0 +1,23 @@
+{
+  "id": "/admin",
+  "name": "El Chino Americano · Admin",
+  "short_name": "ECA Admin",
+  "description": "Panel de administración de El Chino Americano: pedidos, inventario y catálogo.",
+  "lang": "es-EC",
+  "start_url": "/admin/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0d1f3c",
+  "theme_color": "#0d1f3c",
+  "icons": [
+    { "src": "/pwa/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Pedidos", "url": "/admin/orders", "icons": [{ "src": "/pwa/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Inventario", "url": "/admin/inventory", "icons": [{ "src": "/pwa/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Nuevo producto", "url": "/admin/products/new", "icons": [{ "src": "/pwa/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

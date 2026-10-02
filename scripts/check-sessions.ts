@@ -187,6 +187,7 @@ async function checkHttpFlow(password: string) {
   const normal = await get('/admin/dashboard', issued)
   assert.equal(normal.status, 200)
   assert.deepEqual(setCookies(normal), {}, 'con token de acceso vigente no se renueva nada')
+  assert.match(await normal.text(), /rel="manifest" href="\/manifest-admin\.webmanifest"/, 'el admin enlaza el manifiesto de la PWA')
 
   // Sin token de acceso (vencido): el proxy renueva y la página carga en la misma petición.
   const renewed = await get('/admin/dashboard', { [REFRESH_COOKIE]: issued[REFRESH_COOKIE] })
