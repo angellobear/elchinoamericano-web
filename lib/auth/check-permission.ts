@@ -1,21 +1,13 @@
 import 'server-only'
 
-import { jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 import type { JWTPayload, ModulePermissions } from '@/types'
+import { ACCESS_COOKIE, verifyAccessToken } from './tokens'
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET)
-
+// La renovación de la sesión ocurre en proxy.ts; aquí solo se lee el token de acceso ya vigente.
 export async function getJwtPayload(): Promise<JWTPayload | null> {
   const cookieStore = await cookies()
-  const token = cookieStore.get('admin_token')?.value
-  if (!token) return null
-  try {
-    const { payload } = await jwtVerify(token, secret)
-    return payload as unknown as JWTPayload
-  } catch {
-    return null
-  }
+  return verifyAccessToken(cookieStore.get(ACCESS_COOKIE)?.value)
 }
 
 // Throws if the current user lacks the required permission
