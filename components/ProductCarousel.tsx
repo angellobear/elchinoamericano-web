@@ -229,7 +229,8 @@ export default function ProductCarousel({ images, productName, brandName, catego
   )
 }
 
-function LightBox({
+// Exportado: también lo usan las fotos de evidencia de entrega de los pedidos.
+export function LightBox({
   images,
   current,
   onClose,

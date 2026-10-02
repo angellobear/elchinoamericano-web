@@ -46,6 +46,8 @@ export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
 
 export const MAX_DELIVERY_PHOTOS = 2
 export const MAX_PHOTO_BYTES = 4 * 1024 * 1024
+// Tras entregar, los datos de entrega solo se pueden corregir durante este tiempo.
+export const DELIVERY_EDIT_WINDOW_MINUTES = 60
 export const CONSUMIDOR_FINAL = 'Consumidor final'
 // 32 bytes en base64url = 43 caracteres. Se valida antes de consultar la base.
 export const PUBLIC_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/
@@ -132,6 +134,8 @@ export interface OrderDocumentData {
   status: OrderStatus
   statusLabel: string
   customerName: string
+  /** false cuando `customerName` es el texto por defecto "Consumidor final". */
+  hasCustomerName: boolean
   customerIdNumber: string | null
   customerPhone: string | null
   invoiceNumber: string | null
@@ -178,6 +182,7 @@ export function buildOrderDocument(
     status,
     statusLabel: ORDER_STATUS_LABEL[status],
     customerName: customerLabel(order.customerName),
+    hasCustomerName: Boolean(order.customerName?.trim()),
     customerIdNumber: publicView ? maskIdNumber(order.customerIdNumber) : order.customerIdNumber,
     customerPhone: publicView ? null : order.customerPhone,
     invoiceNumber: order.invoiceNumber,

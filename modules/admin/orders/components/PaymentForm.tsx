@@ -12,16 +12,18 @@ interface PaymentFormProps {
   action: ActionFormHandler
   today: string
   maxAmount: string
+  onSuccess?: () => void
 }
 
 const selectClass =
   'w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-navy/25 focus:border-navy'
 
-export function PaymentForm({ action, today, maxAmount }: PaymentFormProps) {
+export function PaymentForm({ action, today, maxAmount, onSuccess }: PaymentFormProps) {
   return (
     <ValidatedForm
       action={action}
-      className="grid grid-cols-1 sm:grid-cols-5 gap-3 items-end"
+      onSuccess={onSuccess}
+      className="space-y-4"
       validate={(formData) => {
         const parsed = parsePaymentFormData(formData)
         return parsed.success ? null : getZodErrorMessage(parsed.error)
@@ -29,7 +31,8 @@ export function PaymentForm({ action, today, maxAmount }: PaymentFormProps) {
     >
       <div>
         <FieldLabel required>Monto ($)</FieldLabel>
-        <TextInput name="amount" type="number" min={0.01} max={maxAmount} step="0.01" required />
+        <TextInput name="amount" type="number" min={0.01} max={maxAmount} step="0.01" required autoFocus />
+        <p className="text-xs text-slate-400 mt-1">Saldo pendiente: ${maxAmount}</p>
       </div>
       <div>
         <FieldLabel required>Forma de pago</FieldLabel>
@@ -43,13 +46,16 @@ export function PaymentForm({ action, today, maxAmount }: PaymentFormProps) {
       </div>
       <div>
         <FieldLabel>Referencia</FieldLabel>
-        <TextInput name="reference" maxLength={100} placeholder="N.º de comprobante" />
+        <TextInput name="reference" maxLength={100} placeholder="N.º de comprobante (opcional)" />
       </div>
       <div>
         <FieldLabel required>Fecha</FieldLabel>
         <TextInput name="paidAt" type="date" required defaultValue={today} />
       </div>
-      <SubmitButton className="px-4 py-2.5 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-dark active:scale-[0.98] transition-all disabled:opacity-60">
+      <p className="text-xs text-slate-500">
+        Un abono no se puede editar después, solo anular. Revisa el monto y la forma de pago antes de guardar.
+      </p>
+      <SubmitButton className="w-full px-4 py-2.5 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-dark active:scale-[0.98] transition-all disabled:opacity-60">
         Registrar abono
       </SubmitButton>
     </ValidatedForm>

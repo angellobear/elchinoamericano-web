@@ -6,6 +6,7 @@ import { dbNow } from './db-now'
 import { logActivitySafe, withAudit } from '@/lib/audit'
 import { todayInEcuador } from '@/lib/today-ecuador'
 import {
+  DELIVERY_EDIT_WINDOW_MINUTES,
   ORDER_STATUS,
   formatDocNumber,
   orderSummary,
@@ -49,6 +50,7 @@ export type OrderErrorCode =
   | 'NOT_FOUND'
   | 'NOT_PENDING'
   | 'NOT_DELIVERED'
+  | 'DELIVERY_EDIT_EXPIRED'
   | 'CANCELLED'
   | 'TOTAL_BELOW_PAID'
   | 'EXCEEDS_BALANCE'
@@ -276,11 +278,27 @@ export async function deliverOrder(orderId: number, userId: string) {
   await logActivitySafe('UPDATE', 'orders', orderId, { status: ORDER_STATUS.pending }, { status: ORDER_STATUS.delivered }, { userId })
 }
 
+// ponytail: `updated_at` hace de hora de entrega (`delivered_at` es solo fecha). `deliverOrder` lo
+// pone en now() y nada más debe tocarlo después de entregar. Si eso deja de cumplirse, agregar
+// una columna `delivered_time`. La ventana se evalúa en la base para no depender de zonas horarias.
+async function withinDeliveryEditWindow(db: Pick<Tx, 'execute'>, orderId: number) {
+  const [rows] = (await db.execute(
+    sql`SELECT updated_at >= NOW() - INTERVAL ${DELIVERY_EDIT_WINDOW_MINUTES} MINUTE AS editable FROM orders WHERE id = ${orderId} AND status = ${ORDER_STATUS.delivered}`,
+  )) as unknown as [{ editable: number | null }[]]
+  return Boolean(rows[0]?.editable)
+}
+
+export async function isDeliveryEditable(orderId: number): Promise<boolean> {
+  return withinDeliveryEditWindow(await getDb(), orderId)
+}
+
 export async function updateDeliveryInfo(orderId: number, input: DeliveryInfoInput) {
   await withAudit(async (tx) => {
     const order = await lockOrder(tx, orderId)
     if (order.status !== ORDER_STATUS.delivered) throw new OrderError('NOT_DELIVERED')
+    if (!(await withinDeliveryEditWindow(tx, orderId))) throw new OrderError('DELIVERY_EDIT_EXPIRED')
 
+    // Sin `updatedAt`: ver la nota de arriba.
     await tx
       .update(orders)
       .set({
@@ -288,7 +306,6 @@ export async function updateDeliveryInfo(orderId: number, input: DeliveryInfoInp
         receivedByIdNumber: input.receivedByIdNumber,
         invoiceNumber: input.invoiceNumber,
         deliveryPhotos: input.deliveryPhotos,
-        updatedAt: dbNow(),
       })
       .where(eq(orders.id, orderId))
   })

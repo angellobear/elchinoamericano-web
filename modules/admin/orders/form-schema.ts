@@ -77,7 +77,11 @@ export function parsePaymentFormData(formData: FormData) {
 }
 
 export const deliveryFormSchema = z.object({
-  receivedByName: z.string().max(150, 'El nombre de quien recibe es demasiado largo.').optional(),
+  // Obligatorio: es lo mínimo que respalda una entrega y evita marcarla por accidente.
+  receivedByName: z
+    .string({ error: 'Indica quién recibe el pedido.' })
+    .min(1, 'Indica quién recibe el pedido.')
+    .max(150, 'El nombre de quien recibe es demasiado largo.'),
   receivedByIdNumber: z.string().max(20, 'La cédula de quien recibe es demasiado larga.').optional(),
   invoiceNumber: z.string().max(50, 'El número de factura es demasiado largo.').optional(),
 })

@@ -10,6 +10,7 @@ import {
   createOrder,
   deliverOrder,
   getOrderById,
+  isDeliveryEditable,
   updateDeliveryInfo,
   updateOrder,
   voidPayment,
@@ -38,6 +39,7 @@ const ORDER_ERROR_MESSAGE: Record<OrderErrorCode, string> = {
   NOT_FOUND: 'El pedido no existe.',
   NOT_PENDING: 'Solo se puede hacer esto mientras el pedido está pendiente.',
   NOT_DELIVERED: 'El pedido todavía no está entregado.',
+  DELIVERY_EDIT_EXPIRED: 'Los datos de entrega solo se pueden editar durante la primera hora después de la entrega.',
   CANCELLED: 'El pedido está anulado.',
   TOTAL_BELOW_PAID: 'El total no puede quedar por debajo de lo ya abonado.',
   EXCEEDS_BALANCE: 'El abono supera el saldo pendiente.',
@@ -181,6 +183,10 @@ export async function saveDeliveryAction(orderId: number, _: ActionState, formDa
     const order = await getOrderById(orderId)
     if (!order) return errorResult(ORDER_ERROR_MESSAGE.NOT_FOUND)
     if (order.status === ORDER_STATUS.cancelled) return errorResult(ORDER_ERROR_MESSAGE.CANCELLED)
+    // Se revisa antes de tocar las fotos: una edición vencida no debe subir ni borrar nada.
+    if (order.status === ORDER_STATUS.delivered && !(await isDeliveryEditable(orderId))) {
+      return errorResult(ORDER_ERROR_MESSAGE.DELIVERY_EDIT_EXPIRED)
+    }
 
     // Primero la entrega: si falla por stock, no se sube ninguna foto.
     if (order.status === ORDER_STATUS.pending) {
