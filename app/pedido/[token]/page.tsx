@@ -29,13 +29,14 @@ export default async function PublicOrderPage({ params }: { params: Promise<{ to
   return (
     <main className="flex-1 bg-slate-50 px-4 py-8">
       <div className="mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white p-5 sm:p-8">
-        <OrderDocument kind="status" data={data} />
-        {data.photos.length > 0 ? (
-          <section className="mt-6 border-t border-slate-100 pt-5 print:hidden">
-            <p className="text-xs uppercase tracking-wide text-slate-400 mb-2">Evidencia de entrega</p>
-            <DeliveryPhotos photos={data.photos} />
-          </section>
-        ) : null}
+        <OrderDocument kind="status" data={data}>
+          {data.photos.length > 0 ? (
+            <section className="mt-6 border-t border-slate-100 pt-5 print:hidden">
+              <p className="text-xs uppercase tracking-wide text-slate-400 mb-2">Evidencia de entrega</p>
+              <DeliveryPhotos photos={data.photos} />
+            </section>
+          ) : null}
+        </OrderDocument>
       </div>
       <p className="mx-auto mt-4 max-w-3xl text-center text-xs text-slate-400">
         Este enlace es personal. Compártelo solo con quien deba ver tu pedido.

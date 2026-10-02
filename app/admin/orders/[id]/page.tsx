@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import QRCode from 'qrcode'
 import { Download, ExternalLink, Pencil } from 'lucide-react'
 import { DeliveryPhotos } from '@/components/orders/DeliveryPhotos'
-import { getOrderById } from '@/lib/db/orders'
+import { getOrderById, isDeliveryEditable } from '@/lib/db/orders'
 import {
   ORDER_STATUS,
   ORDER_STATUS_LABEL,
@@ -54,6 +54,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const isDelivered = status === ORDER_STATUS.delivered
   const isCancelled = status === ORDER_STATUS.cancelled
   const photos = (order.deliveryPhotos ?? []).map((photo) => photo.url)
+  const deliveryEditable = isDelivered && (await isDeliveryEditable(order.id))
 
   const publicPath = routes.publicOrder(order.publicToken)
   // El QR siempre lleva el dominio público, que es el que escanea el cliente.
@@ -212,10 +213,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       </div>
 
       <FormCard>
-        <h2 className="text-sm font-bold text-navy">Abonos</h2>
-        <p className="text-xs text-slate-400 mb-3">
-          Cada abono tiene su recibo en PDF para entregar o enviar al cliente.
-        </p>
+        <h2 className="text-sm font-bold text-navy mb-3">Abonos</h2>
         {order.payments.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -247,13 +245,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                           <span className="block text-right text-xs text-slate-400">Anulado</span>
                         ) : (
                           <div className="flex items-center justify-end gap-3">
-                            <Link
-                              href={`${routes.admin.orders.receipt(order.id, payment.id)}?print=1`}
-                              className={pdfButton}
-                            >
-                              <Download size={14} />
-                              Recibo PDF
-                            </Link>
+                            {/* Recibo PDF oculto a pedido del negocio; la ruta `routes.admin.orders.receipt` sigue existiendo. */}
                             <ConfirmActionButton
                               action={voidPaymentAction.bind(null, order.id, payment.id)}
                               trigger="Anular"
@@ -284,8 +276,14 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                 El acta es el documento que firma el cliente al recibir. Las fotos no salen en el PDF.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2">
-              <DeliveryPanel action={saveDeliveryAction.bind(null, order.id)} delivered defaults={deliveryDefaults} />
+            <div className="flex flex-wrap items-center gap-2">
+              {deliveryEditable ? (
+                <DeliveryPanel action={saveDeliveryAction.bind(null, order.id)} delivered defaults={deliveryDefaults} />
+              ) : (
+                <p className="text-xs text-slate-400">
+                  Los datos de entrega ya no se pueden editar (pasó 1 hora desde la entrega).
+                </p>
+              )}
               <Link href={`${routes.admin.orders.delivery(order.id)}?print=1`} className={pdfButton}>
                 <Download size={14} />
                 Acta de entrega PDF

@@ -16,6 +16,7 @@ import {
   deliverOrder,
   getOrderById,
   getOrderByToken,
+  isDeliveryEditable,
   listOrders,
   updateDeliveryInfo,
   updateOrder,
@@ -122,6 +123,15 @@ async function main() {
   ;({ order } = await summaryOf(id))
   assert.equal(order.invoiceNumber, '001-001-000000001')
   assert.deepEqual(order.deliveryPhotos, [])
+
+  // Los datos de entrega solo se editan durante la primera hora (updated_at hace de hora de entrega).
+  assert.equal(await isDeliveryEditable(id), true, 'recién entregado se puede editar')
+  await db.execute(sql`UPDATE orders SET updated_at = NOW() - INTERVAL 2 HOUR WHERE id = ${id}`)
+  assert.equal(await isDeliveryEditable(id), false, 'pasada la hora ya no se puede editar')
+  await rejectsWith('DELIVERY_EDIT_EXPIRED', () =>
+    updateDeliveryInfo(id, { receivedByName: 'Otro', receivedByIdNumber: null, invoiceNumber: null, deliveryPhotos: [] }),
+  )
+  assert.equal((await summaryOf(id)).order.receivedByName, 'Quien recibe', 'la edición rechazada no cambia nada')
 
   // Anulación de un pedido entregado: la mercadería vuelve al inventario.
   await cancelOrder(id, USER)

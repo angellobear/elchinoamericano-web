@@ -10,7 +10,7 @@ import type { ActionFormHandler } from '@/modules/admin/shared/types/action-resu
 
 // Un solo Dialog: en móvil es un modal centrado; desde md se ancla a la derecha como drawer.
 const panelClass =
-  'max-h-[92dvh] overflow-y-auto md:top-0 md:right-0 md:left-auto md:h-dvh md:max-h-none md:w-full md:max-w-md md:translate-x-0 md:translate-y-0 md:rounded-none md:border-y-0 md:border-r-0 md:data-[state=open]:zoom-in-100 md:data-[state=closed]:zoom-out-100 md:data-[state=open]:slide-in-from-right md:data-[state=closed]:slide-out-to-right'
+  'max-h-[92dvh] overflow-y-auto md:top-0 md:right-0 md:left-auto md:h-dvh md:max-h-none md:content-start md:w-full md:max-w-md md:translate-x-0 md:translate-y-0 md:rounded-none md:border-y-0 md:border-r-0 md:data-[state=open]:zoom-in-100 md:data-[state=closed]:zoom-out-100 md:data-[state=open]:slide-in-from-right md:data-[state=closed]:slide-out-to-right'
 
 const primaryTrigger =
   'inline-flex items-center gap-2 px-4 py-2 text-white text-sm font-semibold rounded-lg active:scale-[0.98] transition-all'
@@ -58,7 +58,7 @@ export function PaymentPanel({ action, today, maxAmount }: PaymentPanelProps) {
         open={open}
         onOpenChange={setOpen}
         title="Registrar abono"
-        description="Al guardar se genera el recibo de abono para el cliente."
+        description="Registra un pago recibido del cliente; se descuenta del saldo pendiente."
       >
         <PaymentForm action={action} today={today} maxAmount={maxAmount} onSuccess={() => setOpen(false)} />
       </Panel>

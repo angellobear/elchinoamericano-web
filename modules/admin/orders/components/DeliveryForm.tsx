@@ -78,8 +78,9 @@ export function DeliveryForm({ action, delivered, defaults, onSuccess }: Deliver
       {!delivered ? (
         <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-2">
           <p className="text-xs text-amber-800">
-            El pedido pasará a &quot;Entregado&quot; y ya no se podrá editar. Se descuenta del inventario cada ítem
-            que viene del catálogo; si falta stock, no se entrega nada.
+            El pedido pasará a &quot;Entregado&quot; y sus ítems ya no se podrán editar; estos datos de entrega solo
+            se pueden corregir durante la primera hora. Se descuenta del inventario cada ítem que viene del catálogo;
+            si falta stock, no se entrega nada.
           </p>
           {/* Sin `name`: solo obliga a confirmar en el navegador, no viaja al servidor. */}
           <CheckboxField required label="Confirmo que el pedido fue entregado al cliente" />

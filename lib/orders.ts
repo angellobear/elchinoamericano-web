@@ -46,6 +46,8 @@ export const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
 
 export const MAX_DELIVERY_PHOTOS = 2
 export const MAX_PHOTO_BYTES = 4 * 1024 * 1024
+// Tras entregar, los datos de entrega solo se pueden corregir durante este tiempo.
+export const DELIVERY_EDIT_WINDOW_MINUTES = 60
 export const CONSUMIDOR_FINAL = 'Consumidor final'
 // 32 bytes en base64url = 43 caracteres. Se valida antes de consultar la base.
 export const PUBLIC_TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/

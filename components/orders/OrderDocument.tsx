@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import Image from 'next/image'
 import { contactInfo } from '@/lib/constants/contact'
 import { SITE_NAME } from '@/lib/constants/site'
@@ -11,6 +12,8 @@ interface OrderDocumentProps {
   /** Solo para `receipt`: el abono que respalda este recibo. */
   paymentId?: number
   qrDataUrl?: string
+  /** Se pinta después de firmas y QR, justo antes de la línea legal. */
+  children?: ReactNode
 }
 
 const LEGAL = 'Este documento no tiene validez tributaria.'
@@ -35,7 +38,7 @@ function Row({ label, value, strong = false }: { label: string; value: string; s
  * Regla general: un dato opcional solo se pinta si existe. Las fotos de evidencia no van
  * aquí (no salen en el PDF); se muestran aparte con `DeliveryPhotos`.
  */
-export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumentProps) {
+export function OrderDocument({ kind, data, paymentId, qrDataUrl, children }: OrderDocumentProps) {
   const payment = kind === 'receipt' ? data.payments.find((item) => item.id === paymentId) : undefined
   const previousCents = payment
     ? data.payments.filter((item) => item.id < payment.id).reduce((sum, item) => sum + item.amountCents, 0)
@@ -217,8 +220,6 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
               </div>
             </div>
           ) : null}
-
-          <p className="mt-4 text-xs text-slate-500">{LEGAL}</p>
         </div>
 
         {qrDataUrl ? (
@@ -229,6 +230,10 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
           </div>
         ) : null}
       </footer>
+
+      {children}
+
+      <p className="mt-4 text-center text-xs text-slate-500">{LEGAL}</p>
     </article>
   )
 }
