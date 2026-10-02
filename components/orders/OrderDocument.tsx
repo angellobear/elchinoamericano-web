@@ -13,7 +13,7 @@ interface OrderDocumentProps {
   qrDataUrl?: string
 }
 
-const LEGAL = 'Este documento no constituye comprobante de venta.'
+const LEGAL = 'Este documento no tiene validez tributaria.'
 
 function Row({ label, value, strong = false }: { label: string; value: string; strong?: boolean }) {
   return (
@@ -30,21 +30,17 @@ function Row({ label, value, strong = false }: { label: string; value: string; s
   )
 }
 
-function Field({ label, value }: { label: string; value: string }) {
-  return (
-    <div>
-      <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
-      <p className="text-slate-800">{value}</p>
-    </div>
-  )
-}
-
-/** Plantilla única: recibo de abono, acta de entrega-recepción y estado público del pedido. */
+/**
+ * Plantilla única: recibo de abono, acta de entrega-recepción y estado público del pedido.
+ * Regla general: un dato opcional solo se pinta si existe. Las fotos de evidencia no van
+ * aquí (no salen en el PDF); se muestran aparte con `DeliveryPhotos`.
+ */
 export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumentProps) {
   const payment = kind === 'receipt' ? data.payments.find((item) => item.id === paymentId) : undefined
   const previousCents = payment
     ? data.payments.filter((item) => item.id < payment.id).reduce((sum, item) => sum + item.amountCents, 0)
     : 0
+  const delivered = data.status === ORDER_STATUS.delivered
 
   const heading = {
     receipt: {
@@ -60,12 +56,23 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
     status: {
       title: 'Estado de tu pedido',
       number: data.orderNumber,
-      detail:
-        data.status === ORDER_STATUS.delivered
-          ? `${data.statusLabel} el ${formatDate(data.deliveredAt)}`
-          : data.statusLabel,
+      detail: delivered ? `${data.statusLabel} el ${formatDate(data.deliveredAt)}` : data.statusLabel,
     },
   }[kind]
+
+  // "Cliente" siempre sale (como mínimo "Consumidor final"); el resto solo si existe.
+  const fields = [
+    ['Cliente', data.customerName],
+    ['Cédula / RUC', data.customerIdNumber],
+    ['Teléfono', data.customerPhone],
+    ['Factura n.º', data.invoiceNumber],
+  ].filter((field): field is [string, string] => Boolean(field[1]))
+
+  // Quién firma el "Recibí conforme": en el acta, quien recibió; en el recibo, el cliente.
+  const signer =
+    kind === 'delivery'
+      ? { name: data.receivedByName, idNumber: data.receivedByIdNumber }
+      : { name: data.hasCustomerName ? data.customerName : null, idNumber: data.customerIdNumber }
 
   return (
     <article className="text-sm text-slate-800">
@@ -93,14 +100,13 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
         </div>
       </header>
 
-      <section className="grid grid-cols-1 sm:grid-cols-3 print:grid-cols-3 gap-4 my-5">
-        <Field label="Cliente" value={data.customerName} />
-        <Field label="Cédula / RUC" value={data.customerIdNumber ?? '—'} />
-        {kind === 'receipt' ? (
-          <Field label="Teléfono" value={data.customerPhone ?? '—'} />
-        ) : (
-          <Field label="Factura n.º" value={data.invoiceNumber ?? '—'} />
-        )}
+      <section className="flex flex-wrap gap-x-10 gap-y-3 my-5">
+        {fields.map(([label, value]) => (
+          <div key={label}>
+            <p className="text-xs uppercase tracking-wide text-slate-400">{label}</p>
+            <p className="text-slate-800">{value}</p>
+          </div>
+        ))}
       </section>
 
       <table className="w-full">
@@ -128,13 +134,11 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
         <div className="rounded-lg border border-slate-200 p-3">
           {payment ? (
             <>
-              <p className="text-xs uppercase tracking-wide text-slate-400">Este abono</p>
+              <p className="text-xs uppercase tracking-wide text-slate-400">Pago recibido</p>
               <p>
-                {payment.method}
+                {payment.date} · {payment.method}
                 {payment.reference ? ` · ref. ${payment.reference}` : ''}
               </p>
-              <p className="text-xs uppercase tracking-wide text-slate-400 mt-2">Fecha estimada de entrega</p>
-              <p>{formatDate(data.estimatedDate)}</p>
             </>
           ) : (
             <>
@@ -148,11 +152,14 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
                   <span className="tabular-nums">{item.amount}</span>
                 </div>
               ))}
-              {kind === 'status' && data.status === ORDER_STATUS.pending ? (
-                <p className="text-xs text-slate-500 mt-2">Fecha estimada de entrega: {formatDate(data.estimatedDate)}</p>
-              ) : null}
             </>
           )}
+          {!delivered && data.estimatedDate ? (
+            <>
+              <p className="text-xs uppercase tracking-wide text-slate-400 mt-2">Fecha estimada de entrega</p>
+              <p>{formatDate(data.estimatedDate)}</p>
+            </>
+          ) : null}
         </div>
 
         <div>
@@ -166,7 +173,7 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
           {payment ? (
             <>
               <Row label="Abonos anteriores" value={formatMoney(previousCents)} />
-              <Row label="Este abono" value={payment.amount} />
+              <Row label="Abono recibido" value={payment.amount} />
               <Row
                 label="Saldo pendiente"
                 value={formatMoney(data.totalCents - previousCents - payment.amountCents)}
@@ -182,24 +189,11 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
         </div>
       </section>
 
-      {kind !== 'receipt' && data.photos.length > 0 ? (
-        <section className="mt-5">
-          <p className="text-xs uppercase tracking-wide text-slate-400 mb-2">Fotos de la entrega</p>
-          <div className="flex flex-wrap gap-3">
-            {data.photos.map((url) => (
-              <Image
-                key={url}
-                src={url}
-                alt="Foto de la entrega"
-                width={320}
-                height={240}
-                // eager: una imagen lazy puede no haber cargado cuando se manda a imprimir.
-                loading="eager"
-                className="h-40 w-52 rounded-lg border border-slate-200 object-cover"
-              />
-            ))}
-          </div>
-        </section>
+      {kind === 'status' && delivered && data.receivedByName ? (
+        <p className="mt-4 text-slate-600">
+          Recibido por: {data.receivedByName}
+          {data.receivedByIdNumber ? ` · Cédula ${data.receivedByIdNumber}` : ''}
+        </p>
       ) : null}
 
       {data.notes ? <p className="mt-5 text-xs text-slate-600 whitespace-pre-line">{data.notes}</p> : null}
@@ -210,35 +204,21 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl }: OrderDocumen
 
       <footer className="mt-4 flex items-end justify-between gap-6">
         <div className="flex-1">
-          {kind === 'receipt' ? (
-            <div className="mt-14 w-64 border-t border-slate-400 pt-1 text-xs text-slate-500">
-              Firma y sello del local
-            </div>
-          ) : null}
-          {kind === 'delivery' ? (
+          {kind !== 'status' ? (
             <div className="mt-14 grid grid-cols-2 gap-8 text-xs text-slate-500">
-              <div className="border-t border-slate-400 pt-1">
-                Entregué conforme
-                <br />
-                Nombre:
-              </div>
+              <div className="border-t border-slate-400 pt-1">Firma y sello del local</div>
+              {/* Nombre y cédula quedan como líneas para llenar a mano si no se conocen. */}
               <div className="border-t border-slate-400 pt-1">
                 Recibí conforme
                 <br />
-                Nombre: {data.receivedByName ?? ''}
+                Nombre: {signer.name ?? ''}
                 <br />
-                Cédula: {data.receivedByIdNumber ?? ''}
+                Cédula: {signer.idNumber ?? ''}
               </div>
             </div>
           ) : null}
-          {kind === 'status' && data.receivedByName ? (
-            <p className="text-xs text-slate-500">Recibido por: {data.receivedByName}</p>
-          ) : null}
 
-          <p className="mt-4 text-xs text-slate-500">
-            {LEGAL}
-            {kind === 'receipt' ? ' La factura se emitirá al momento de la entrega.' : ''}
-          </p>
+          <p className="mt-4 text-xs text-slate-500">{LEGAL}</p>
         </div>
 
         {qrDataUrl ? (

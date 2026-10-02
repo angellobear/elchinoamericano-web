@@ -132,6 +132,8 @@ export interface OrderDocumentData {
   status: OrderStatus
   statusLabel: string
   customerName: string
+  /** false cuando `customerName` es el texto por defecto "Consumidor final". */
+  hasCustomerName: boolean
   customerIdNumber: string | null
   customerPhone: string | null
   invoiceNumber: string | null
@@ -178,6 +180,7 @@ export function buildOrderDocument(
     status,
     statusLabel: ORDER_STATUS_LABEL[status],
     customerName: customerLabel(order.customerName),
+    hasCustomerName: Boolean(order.customerName?.trim()),
     customerIdNumber: publicView ? maskIdNumber(order.customerIdNumber) : order.customerIdNumber,
     customerPhone: publicView ? null : order.customerPhone,
     invoiceNumber: order.invoiceNumber,

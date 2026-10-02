@@ -13,7 +13,7 @@ import {
   orderSummary,
   toCents,
 } from '@/lib/orders'
-import { parseOrderFormData, parsePaymentFormData } from '@/modules/admin/orders/form-schema'
+import { parseDeliveryFormData, parseOrderFormData, parsePaymentFormData } from '@/modules/admin/orders/form-schema'
 
 const order = {
   id: 123,
@@ -124,5 +124,22 @@ assert.equal(parsePaymentFormData(paymentForm({ amount: '0' })).success, false, 
 assert.equal(parsePaymentFormData(paymentForm({ amount: '-5' })).success, false)
 assert.equal(parsePaymentFormData(paymentForm({ method: 'cheque' })).success, false)
 assert.equal(parsePaymentFormData(paymentForm({ paidAt: '' })).success, false)
+
+// Una entrega exige al menos el nombre de quien recibe; factura y cédula son opcionales.
+const emptyDelivery = new FormData()
+assert.equal(parseDeliveryFormData(emptyDelivery).success, false, 'no se entrega sin decir quién recibe')
+const blankDelivery = new FormData()
+blankDelivery.set('receivedByName', '   ')
+assert.equal(parseDeliveryFormData(blankDelivery).success, false, 'un nombre en blanco no cuenta')
+const delivery = new FormData()
+delivery.set('receivedByName', 'Ana Pérez')
+const parsedDelivery = parseDeliveryFormData(delivery)
+assert.equal(parsedDelivery.success, true)
+assert.equal(parsedDelivery.data?.invoiceNumber, undefined, 'la factura es opcional')
+
+// Documentos: solo aparece lo que existe.
+assert.equal(admin.hasCustomerName, true)
+assert.equal(anonymous.hasCustomerName, false, '"Consumidor final" no es un nombre para firmar')
+assert.equal(admin.invoiceNumber, null, 'sin factura, la plantilla no pinta el campo')
 
 console.log('✓ dominio de pedidos OK')

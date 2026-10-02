@@ -10,13 +10,20 @@ interface ValidatedFormProps {
   children: ReactNode
   className?: string
   validate: (formData: FormData) => string | null
+  /** Se llama una vez cuando la acción termina bien; útil para cerrar un modal. */
+  onSuccess?: () => void
 }
 
-export function ValidatedForm({ action, children, className, validate }: ValidatedFormProps) {
+export function ValidatedForm({ action, children, className, validate, onSuccess }: ValidatedFormProps) {
   const router = useRouter()
   const [pendingState, formAction] = useActionState<ActionResult | null, FormData>(action, null)
   const [isRedirecting, startTransition] = useTransition()
   const handledState = useRef<ActionResult | null>(null)
+  // Ref para no re-disparar el efecto si el padre pasa una función nueva en cada render.
+  const onSuccessRef = useRef(onSuccess)
+  useEffect(() => {
+    onSuccessRef.current = onSuccess
+  })
 
   useEffect(() => {
     if (!pendingState || handledState.current === pendingState) return
@@ -25,6 +32,7 @@ export function ValidatedForm({ action, children, className, validate }: Validat
 
     if (pendingState.ok) {
       toast.success(pendingState.message)
+      onSuccessRef.current?.()
     } else {
       toast.error(pendingState.message)
     }

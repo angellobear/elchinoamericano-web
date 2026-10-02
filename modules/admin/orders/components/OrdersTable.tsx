@@ -14,7 +14,8 @@ import {
 import { routes } from '@/lib/routes'
 
 const headClass = 'px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider'
-const actionClass = 'p-1.5 rounded-lg text-slate-400 hover:bg-slate-100 hover:text-navy transition-colors'
+// p-2 + icono de 16px: área táctil cómoda también en móvil.
+const actionClass = 'p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-navy transition-colors'
 
 export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
   return (
@@ -25,8 +26,9 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
             <tr className="bg-slate-50 border-b border-slate-100">
               <th className={`text-left ${headClass}`}>Pedido</th>
               <th className={`text-left ${headClass}`}>Cliente</th>
-              <th className={`text-right ${headClass}`}>Total</th>
-              <th className={`text-right ${headClass}`}>Abonado</th>
+              {/* En pantallas chicas quedan solo Pedido, Cliente, Saldo, Estado y Acciones. */}
+              <th className={`hidden md:table-cell text-right ${headClass}`}>Total</th>
+              <th className={`hidden md:table-cell text-right ${headClass}`}>Abonado</th>
               <th className={`text-right ${headClass}`}>Saldo</th>
               <th className={`text-center ${headClass}`}>Estado</th>
               <th className={`text-right ${headClass}`}>Acciones</th>
@@ -53,8 +55,10 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
                       <p className="text-xs text-slate-400">{order.customerIdNumber}</p>
                     ) : null}
                   </td>
-                  <td className="px-4 py-3.5 text-right tabular-nums">{formatMoney(summary.total)}</td>
-                  <td className="px-4 py-3.5 text-right tabular-nums text-slate-500">{formatMoney(summary.paid)}</td>
+                  <td className="hidden md:table-cell px-4 py-3.5 text-right tabular-nums">{formatMoney(summary.total)}</td>
+                  <td className="hidden md:table-cell px-4 py-3.5 text-right tabular-nums text-slate-500">
+                    {formatMoney(summary.paid)}
+                  </td>
                   <td className="px-4 py-3.5 text-right tabular-nums font-medium">{formatMoney(summary.balance)}</td>
                   <td className="px-4 py-3.5 text-center">
                     <span className={`inline-flex px-2 py-0.5 rounded-md text-xs font-medium ${ORDER_STATUS_TONE[status]}`}>
@@ -62,14 +66,14 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
                     </span>
                   </td>
                   <td className="px-4 py-3.5">
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex items-center justify-end gap-0.5">
                       <Link
                         href={routes.admin.orders.detail(order.id)}
                         className={actionClass}
                         title="Ver pedido"
                         aria-label={`Ver pedido ${formatDocNumber('PED', order.id)}`}
                       >
-                        <Eye size={14} />
+                        <Eye size={16} />
                       </Link>
                       {/* Solo un pedido pendiente se puede editar. */}
                       {status === ORDER_STATUS.pending ? (
@@ -79,11 +83,11 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
                           title="Editar pedido"
                           aria-label={`Editar pedido ${formatDocNumber('PED', order.id)}`}
                         >
-                          <Pencil size={13} />
+                          <Pencil size={15} />
                         </Link>
                       ) : (
-                        <span className="p-1.5 text-slate-200" title="Solo se edita un pedido pendiente">
-                          <Pencil size={13} />
+                        <span className="p-2 text-slate-200" title="Solo se edita un pedido pendiente">
+                          <Pencil size={15} />
                         </span>
                       )}
                       {/* Ruta relativa: abre la página pública en el mismo dominio donde está el admin. */}
@@ -95,7 +99,7 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
                         title="Abrir página pública"
                         aria-label={`Abrir página pública del pedido ${formatDocNumber('PED', order.id)}`}
                       >
-                        <ExternalLink size={13} />
+                        <ExternalLink size={15} />
                       </a>
                     </div>
                   </td>

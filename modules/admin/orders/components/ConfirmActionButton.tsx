@@ -12,9 +12,17 @@ interface ConfirmActionButtonProps {
   title: string
   description: string
   confirmLabel: string
+  triggerClassName?: string
 }
 
-export function ConfirmActionButton({ action, trigger, title, description, confirmLabel }: ConfirmActionButtonProps) {
+export function ConfirmActionButton({
+  action,
+  trigger,
+  title,
+  description,
+  confirmLabel,
+  triggerClassName = 'text-sm font-medium text-red-600 hover:underline',
+}: ConfirmActionButtonProps) {
   const [open, setOpen] = useState(false)
   const [pending, startTransition] = useTransition()
   const router = useRouter()
@@ -36,7 +44,7 @@ export function ConfirmActionButton({ action, trigger, title, description, confi
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className="text-sm font-medium text-red-600 hover:underline">
+      <button type="button" onClick={() => setOpen(true)} className={triggerClassName}>
         {trigger}
       </button>
 
