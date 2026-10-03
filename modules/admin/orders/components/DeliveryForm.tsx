@@ -14,7 +14,6 @@ interface DeliveryFormProps {
   delivered: boolean
   defaults: {
     receivedByName?: string
-    invoiceNumber?: string
     photos: DeliveryPhoto[]
   }
   onSuccess?: () => void
@@ -49,18 +48,6 @@ export function DeliveryForm({ action, delivered, defaults, onSuccess }: Deliver
           placeholder="Nombre de la persona que recibe"
         />
       </div>
-      {/* La factura no se pide al entregar (puede emitirse después): solo al editar los datos de entrega. */}
-      {delivered ? (
-        <div>
-          <FieldLabel>N.º de factura</FieldLabel>
-          <TextInput
-            name="invoiceNumber"
-            maxLength={50}
-            defaultValue={defaults.invoiceNumber ?? ''}
-            placeholder="Solo si se emitió factura"
-          />
-        </div>
-      ) : null}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {Array.from({ length: MAX_DELIVERY_PHOTOS }, (_, slot) => (

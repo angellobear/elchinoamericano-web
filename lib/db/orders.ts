@@ -313,6 +313,23 @@ export async function updateDeliveryInfo(orderId: number, input: DeliveryInfoInp
   await logActivitySafe('UPDATE', 'orders', orderId, undefined, { ...input })
 }
 
+/**
+ * La factura va aparte de la entrega: se registra o corrige en cualquier momento (antes o después
+ * de entregar, sin la ventana de 1 hora) mientras el pedido no esté anulado.
+ */
+export async function updateInvoiceNumber(orderId: number, invoiceNumber: string | null) {
+  const before = await withAudit(async (tx) => {
+    const order = await lockOrder(tx, orderId)
+    if (order.status === ORDER_STATUS.cancelled) throw new OrderError('CANCELLED')
+
+    // Sin `updatedAt`: en un pedido entregado guarda la hora de entrega (ver la nota de arriba).
+    await tx.update(orders).set({ invoiceNumber }).where(eq(orders.id, orderId))
+    return order.invoiceNumber
+  })
+
+  await logActivitySafe('UPDATE', 'orders', orderId, { invoiceNumber: before }, { invoiceNumber })
+}
+
 export async function cancelOrder(orderId: number, userId: string) {
   const previous = await withAudit(async (tx) => {
     const order = await lockOrder(tx, orderId)
