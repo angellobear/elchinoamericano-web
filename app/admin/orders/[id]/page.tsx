@@ -61,7 +61,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   const deliveryDefaults = {
     receivedByName: order.receivedByName ?? undefined,
-    receivedByIdNumber: order.receivedByIdNumber ?? undefined,
     invoiceNumber: order.invoiceNumber ?? undefined,
     photos: order.deliveryPhotos ?? [],
   }

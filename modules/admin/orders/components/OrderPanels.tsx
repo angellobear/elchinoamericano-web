@@ -71,7 +71,6 @@ interface DeliveryPanelProps {
   delivered: boolean
   defaults: {
     receivedByName?: string
-    receivedByIdNumber?: string
     invoiceNumber?: string
     photos: DeliveryPhoto[]
   }

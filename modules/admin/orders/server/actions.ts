@@ -209,8 +209,10 @@ export async function saveDeliveryAction(orderId: number, _: ActionState, formDa
 
     await updateDeliveryInfo(orderId, {
       receivedByName: parsed.data.receivedByName ?? null,
-      receivedByIdNumber: parsed.data.receivedByIdNumber ?? null,
-      invoiceNumber: parsed.data.invoiceNumber ?? null,
+      // La cédula ya no se pide; se conserva la que hubiera de antes.
+      receivedByIdNumber: order.receivedByIdNumber,
+      // La factura solo viene al editar; al entregar no se envía y no debe borrar nada.
+      invoiceNumber: formData.has('invoiceNumber') ? (parsed.data.invoiceNumber ?? null) : order.invoiceNumber,
       deliveryPhotos,
     })
   } catch (err) {
