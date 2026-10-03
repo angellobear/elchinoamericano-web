@@ -14,8 +14,6 @@ interface DeliveryFormProps {
   delivered: boolean
   defaults: {
     receivedByName?: string
-    receivedByIdNumber?: string
-    invoiceNumber?: string
     photos: DeliveryPhoto[]
   }
   onSuccess?: () => void
@@ -30,8 +28,10 @@ export function DeliveryForm({ action, delivered, defaults, onSuccess }: Deliver
       validate={(formData) => {
         for (let slot = 0; slot < MAX_DELIVERY_PHOTOS; slot++) {
           const file = formData.get(`photo${slot}`)
-          // El límite del server action es 10 MB en total; 4 MB por foto lo mantiene holgado.
-          if (file instanceof File && file.size > MAX_PHOTO_BYTES) return 'Cada foto puede pesar máximo 4 MB.'
+          // Las fotos se reducen en el navegador al elegirlas; esto solo atrapa una que no se pudo reducir.
+          if (file instanceof File && file.size > MAX_PHOTO_BYTES) {
+            return 'Una foto pesa más de 4 MB y no se pudo reducir. Espera a que termine de optimizarse o elige otra foto.'
+          }
         }
 
         const parsed = parseDeliveryFormData(formData)
@@ -48,19 +48,6 @@ export function DeliveryForm({ action, delivered, defaults, onSuccess }: Deliver
           placeholder="Nombre de la persona que recibe"
         />
       </div>
-      <div>
-        <FieldLabel>Cédula de quien recibe</FieldLabel>
-        <TextInput name="receivedByIdNumber" maxLength={20} defaultValue={defaults.receivedByIdNumber ?? ''} />
-      </div>
-      <div>
-        <FieldLabel>N.º de factura</FieldLabel>
-        <TextInput
-          name="invoiceNumber"
-          maxLength={50}
-          defaultValue={defaults.invoiceNumber ?? ''}
-          placeholder="Solo si se emitió factura"
-        />
-      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {Array.from({ length: MAX_DELIVERY_PHOTOS }, (_, slot) => (
@@ -71,6 +58,7 @@ export function DeliveryForm({ action, delivered, defaults, onSuccess }: Deliver
             label={`Foto de evidencia ${slot + 1} (opcional)`}
             currentUrl={defaults.photos[slot]?.url}
             currentPublicId={defaults.photos[slot]?.publicId}
+            compress
           />
         ))}
       </div>

@@ -2,19 +2,23 @@
 
 import { useState, useRef } from 'react'
 import { ImagePlus, X } from 'lucide-react'
+import { compressImage } from '@/lib/compress-image'
 
 interface Props {
   name: string
   currentUrl?: string | null
   currentPublicId?: string | null
   label?: string
+  /** Reduce la foto en el navegador antes de subirla (fotos de teléfono). Sin esto, se sube tal cual. */
+  compress?: boolean
 }
 
 // Componente controlado: el padre debe llamar uploadPendingImage() antes de guardar
 // Aquí solo maneja el preview local. El upload real ocurre en el submit del form.
-export function ImageUploadField({ name, currentUrl, currentPublicId, label = 'Imagen' }: Props) {
+export function ImageUploadField({ name, currentUrl, currentPublicId, label = 'Imagen', compress = false }: Props) {
   const [preview, setPreview] = useState<string | null>(null)
   const [removed, setRemoved] = useState(false)
+  const [optimizing, setOptimizing] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const displayUrl = removed ? null : (preview ?? currentUrl)
@@ -61,15 +65,29 @@ export function ImageUploadField({ name, currentUrl, currentPublicId, label = 'I
         name={name}
         accept="image/*"
         className="hidden"
-        onChange={e => {
-          const file = e.target.files?.[0]
-          if (file) {
-            setRemoved(false)
-            setPreview(URL.createObjectURL(file))
+        onChange={async e => {
+          const input = e.currentTarget
+          const file = input.files?.[0]
+          if (!file) return
+
+          setRemoved(false)
+          setPreview(URL.createObjectURL(file))
+          if (!compress) return
+
+          // Se reemplaza el archivo del input por la versión reducida: es la que viaja al guardar.
+          setOptimizing(true)
+          const smaller = await compressImage(file)
+          if (smaller !== file) {
+            const transfer = new DataTransfer()
+            transfer.items.add(smaller)
+            input.files = transfer.files
           }
+          setOptimizing(false)
         }}
       />
-      <p className="text-xs text-gray-400">La imagen se sube al guardar el formulario</p>
+      <p className="text-xs text-gray-400">
+        {optimizing ? 'Optimizando foto…' : 'La imagen se sube al guardar el formulario'}
+      </p>
     </div>
   )
 }

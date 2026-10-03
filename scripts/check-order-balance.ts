@@ -13,7 +13,12 @@ import {
   orderSummary,
   toCents,
 } from '@/lib/orders'
-import { parseDeliveryFormData, parseOrderFormData, parsePaymentFormData } from '@/modules/admin/orders/form-schema'
+import {
+  parseDeliveryFormData,
+  parseInvoiceFormData,
+  parseOrderFormData,
+  parsePaymentFormData,
+} from '@/modules/admin/orders/form-schema'
 
 const order = {
   id: 123,
@@ -125,7 +130,7 @@ assert.equal(parsePaymentFormData(paymentForm({ amount: '-5' })).success, false)
 assert.equal(parsePaymentFormData(paymentForm({ method: 'cheque' })).success, false)
 assert.equal(parsePaymentFormData(paymentForm({ paidAt: '' })).success, false)
 
-// Una entrega exige al menos el nombre de quien recibe; factura y cédula son opcionales.
+// Una entrega exige el nombre de quien recibe; la factura va aparte.
 const emptyDelivery = new FormData()
 assert.equal(parseDeliveryFormData(emptyDelivery).success, false, 'no se entrega sin decir quién recibe')
 const blankDelivery = new FormData()
@@ -133,9 +138,18 @@ blankDelivery.set('receivedByName', '   ')
 assert.equal(parseDeliveryFormData(blankDelivery).success, false, 'un nombre en blanco no cuenta')
 const delivery = new FormData()
 delivery.set('receivedByName', 'Ana Pérez')
-const parsedDelivery = parseDeliveryFormData(delivery)
-assert.equal(parsedDelivery.success, true)
-assert.equal(parsedDelivery.data?.invoiceNumber, undefined, 'la factura es opcional')
+assert.equal(parseDeliveryFormData(delivery).success, true)
+
+// La factura se registra aparte; vacía significa quitarla.
+const noInvoice = parseInvoiceFormData(new FormData())
+assert.equal(noInvoice.success, true)
+assert.equal(noInvoice.data?.invoiceNumber, undefined, 'sin número se quita la factura')
+const invoice = new FormData()
+invoice.set('invoiceNumber', ' 001-001-000000123 ')
+assert.equal(parseInvoiceFormData(invoice).data?.invoiceNumber, '001-001-000000123', 'se recortan espacios')
+const longInvoice = new FormData()
+longInvoice.set('invoiceNumber', 'x'.repeat(51))
+assert.equal(parseInvoiceFormData(longInvoice).success, false, 'máximo 50 caracteres')
 
 // Documentos: solo aparece lo que existe.
 assert.equal(admin.hasCustomerName, true)

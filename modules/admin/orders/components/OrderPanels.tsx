@@ -1,11 +1,16 @@
 'use client'
 
 import { useState, type ReactNode } from 'react'
-import { HandCoins, PackageCheck, Pencil } from 'lucide-react'
+import { HandCoins, PackageCheck, Pencil, ReceiptText } from 'lucide-react'
+import { SubmitButton } from '@/app/admin/_components/SubmitButton'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import type { DeliveryPhoto } from '@/lib/orders'
 import { DeliveryForm } from '@/modules/admin/orders/components/DeliveryForm'
 import { PaymentForm } from '@/modules/admin/orders/components/PaymentForm'
+import { parseInvoiceFormData } from '@/modules/admin/orders/form-schema'
+import { FieldLabel, TextInput } from '@/modules/admin/shared/components/AdminFormControls'
+import { ValidatedForm } from '@/modules/admin/shared/components/ValidatedForm'
+import { getZodErrorMessage } from '@/modules/admin/shared/server/zod'
 import type { ActionFormHandler } from '@/modules/admin/shared/types/action-result'
 
 // Un solo Dialog: en móvil es un modal centrado; desde md se ancla a la derecha como drawer.
@@ -71,8 +76,6 @@ interface DeliveryPanelProps {
   delivered: boolean
   defaults: {
     receivedByName?: string
-    receivedByIdNumber?: string
-    invoiceNumber?: string
     photos: DeliveryPhoto[]
   }
 }
@@ -104,6 +107,55 @@ export function DeliveryPanel({ action, delivered, defaults }: DeliveryPanelProp
         }
       >
         <DeliveryForm action={action} delivered={delivered} defaults={defaults} onSuccess={() => setOpen(false)} />
+      </Panel>
+    </>
+  )
+}
+
+interface InvoicePanelProps {
+  action: ActionFormHandler
+  invoiceNumber: string | null
+}
+
+/** La factura va aparte de la entrega: se registra cuando se emita, antes o después de entregar. */
+export function InvoicePanel({ action, invoiceNumber }: InvoicePanelProps) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <>
+      <button type="button" onClick={() => setOpen(true)} className={outlineTrigger}>
+        <ReceiptText size={14} />
+        {invoiceNumber ? `Factura ${invoiceNumber}` : 'Registrar factura'}
+      </button>
+      <Panel
+        open={open}
+        onOpenChange={setOpen}
+        title={invoiceNumber ? 'Factura' : 'Registrar factura'}
+        description="Número de la factura emitida para este pedido. Se puede registrar en cualquier momento; déjalo vacío para quitarla."
+      >
+        <ValidatedForm
+          action={action}
+          onSuccess={() => setOpen(false)}
+          className="space-y-4"
+          validate={(formData) => {
+            const parsed = parseInvoiceFormData(formData)
+            return parsed.success ? null : getZodErrorMessage(parsed.error)
+          }}
+        >
+          <div>
+            <FieldLabel>N.º de factura</FieldLabel>
+            <TextInput
+              name="invoiceNumber"
+              maxLength={50}
+              defaultValue={invoiceNumber ?? ''}
+              placeholder="001-001-000000000"
+              autoFocus
+            />
+          </div>
+          <SubmitButton className="w-full px-5 py-2.5 bg-navy text-white text-sm font-semibold rounded-lg hover:bg-navy-dark active:scale-[0.98] transition-all disabled:opacity-60">
+            Guardar factura
+          </SubmitButton>
+        </ValidatedForm>
       </Panel>
     </>
   )

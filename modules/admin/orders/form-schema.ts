@@ -82,14 +82,19 @@ export const deliveryFormSchema = z.object({
     .string({ error: 'Indica quién recibe el pedido.' })
     .min(1, 'Indica quién recibe el pedido.')
     .max(150, 'El nombre de quien recibe es demasiado largo.'),
-  receivedByIdNumber: z.string().max(20, 'La cédula de quien recibe es demasiado larga.').optional(),
-  invoiceNumber: z.string().max(50, 'El número de factura es demasiado largo.').optional(),
 })
 
 export function parseDeliveryFormData(formData: FormData) {
   return deliveryFormSchema.safeParse({
     receivedByName: getOptionalString(formData, 'receivedByName'),
-    receivedByIdNumber: getOptionalString(formData, 'receivedByIdNumber'),
-    invoiceNumber: getOptionalString(formData, 'invoiceNumber'),
   })
+}
+
+export const invoiceFormSchema = z.object({
+  // Vacío = quitar la factura registrada.
+  invoiceNumber: z.string().max(50, 'El número de factura es demasiado largo.').optional(),
+})
+
+export function parseInvoiceFormData(formData: FormData) {
+  return invoiceFormSchema.safeParse({ invoiceNumber: getOptionalString(formData, 'invoiceNumber') })
 }

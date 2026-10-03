@@ -23,11 +23,12 @@ import { toAbsoluteUrl } from '@/lib/seo'
 import { todayInEcuador } from '@/lib/today-ecuador'
 import { ConfirmActionButton } from '@/modules/admin/orders/components/ConfirmActionButton'
 import { CopyLinkButton } from '@/modules/admin/orders/components/CopyLinkButton'
-import { DeliveryPanel, PaymentPanel } from '@/modules/admin/orders/components/OrderPanels'
+import { DeliveryPanel, InvoicePanel, PaymentPanel } from '@/modules/admin/orders/components/OrderPanels'
 import {
   addPaymentAction,
   cancelOrderAction,
   saveDeliveryAction,
+  saveInvoiceAction,
   voidPaymentAction,
 } from '@/modules/admin/orders/server/actions'
 import { FormCard } from '@/modules/admin/shared/components/AdminFormControls'
@@ -61,8 +62,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   const deliveryDefaults = {
     receivedByName: order.receivedByName ?? undefined,
-    receivedByIdNumber: order.receivedByIdNumber ?? undefined,
-    invoiceNumber: order.invoiceNumber ?? undefined,
     photos: order.deliveryPhotos ?? [],
   }
 
@@ -71,7 +70,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     ['Fecha de entrega', order.deliveredAt ? formatDate(order.deliveredAt) : null],
     ['Recibido por', order.receivedByName],
     ['Cédula', order.receivedByIdNumber],
-    ['Factura n.º', order.invoiceNumber],
   ].filter((field): field is [string, string] => Boolean(field[1]))
 
   return (
@@ -103,6 +101,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <Printer size={14} />
             Imprimir orden de entrega
           </Link>
+        ) : null}
+        {/* La factura va aparte de la entrega: se registra cuando se emita, sin límite de tiempo. */}
+        {!isCancelled ? (
+          <InvoicePanel action={saveInvoiceAction.bind(null, order.id)} invoiceNumber={order.invoiceNumber} />
         ) : null}
         {isPending ? (
           <Link href={routes.admin.orders.edit(order.id)} className={outlineButton}>

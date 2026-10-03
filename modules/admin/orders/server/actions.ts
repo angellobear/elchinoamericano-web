@@ -12,6 +12,7 @@ import {
   getOrderById,
   isDeliveryEditable,
   updateDeliveryInfo,
+  updateInvoiceNumber,
   updateOrder,
   voidPayment,
   type OrderErrorCode,
@@ -22,6 +23,7 @@ import { MAX_DELIVERY_PHOTOS, MAX_PHOTO_BYTES, ORDER_STATUS, type DeliveryPhoto 
 import { routes } from '@/lib/routes'
 import {
   parseDeliveryFormData,
+  parseInvoiceFormData,
   parseOrderFormData,
   parsePaymentFormData,
 } from '@/modules/admin/orders/form-schema'
@@ -209,8 +211,10 @@ export async function saveDeliveryAction(orderId: number, _: ActionState, formDa
 
     await updateDeliveryInfo(orderId, {
       receivedByName: parsed.data.receivedByName ?? null,
-      receivedByIdNumber: parsed.data.receivedByIdNumber ?? null,
-      invoiceNumber: parsed.data.invoiceNumber ?? null,
+      // La cédula ya no se pide; se conserva la que hubiera de antes.
+      receivedByIdNumber: order.receivedByIdNumber,
+      // La factura se maneja aparte (saveInvoiceAction); aquí no se toca.
+      invoiceNumber: order.invoiceNumber,
       deliveryPhotos,
     })
   } catch (err) {
@@ -220,6 +224,24 @@ export async function saveDeliveryAction(orderId: number, _: ActionState, formDa
   revalidateOrder(orderId)
   revalidatePath(routes.admin.inventory.index)
   return successResult('Entrega guardada')
+}
+
+/** Registra, corrige o quita el n.º de factura. Independiente de la entrega y sin límite de tiempo. */
+export async function saveInvoiceAction(orderId: number, _: ActionState, formData: FormData) {
+  const auth = await authorize('can_edit')
+  if (!auth.payload) return auth.error
+
+  const parsed = parseInvoiceFormData(formData)
+  if (!parsed.success) return errorResult(getZodErrorMessage(parsed.error))
+
+  try {
+    await updateInvoiceNumber(orderId, parsed.data.invoiceNumber ?? null)
+  } catch (err) {
+    return failure(err, 'No se pudo guardar la factura.')
+  }
+
+  revalidateOrder(orderId)
+  return successResult(parsed.data.invoiceNumber ? 'Factura guardada' : 'Factura quitada')
 }
 
 export async function searchOrderProductsAction(query: string): Promise<OrderProductOption[]> {
