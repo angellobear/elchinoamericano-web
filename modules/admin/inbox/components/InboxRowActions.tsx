@@ -20,11 +20,13 @@ interface Props {
   canDelete: boolean
   /** En el detalle se muestran con texto; en la tabla, solo íconos. */
   withLabels?: boolean
+  /** En el detalle: al marcar no leído o eliminar se vuelve a la bandeja. */
+  backHref?: string
 }
 
 const iconBtn = 'inline-flex items-center gap-1.5 p-1.5 rounded-md text-slate-400 hover:text-navy hover:bg-slate-100 transition-colors disabled:opacity-40 text-sm'
 
-export function InboxRowActions({ id, isRead, isHidden, canEdit, canDelete, withLabels = false }: Props) {
+export function InboxRowActions({ id, isRead, isHidden, canEdit, canDelete, withLabels = false, backHref }: Props) {
   const [pending, startTransition] = useTransition()
   const router = useRouter()
 
@@ -36,12 +38,25 @@ export function InboxRowActions({ id, isRead, isHidden, canEdit, canDelete, with
     })
   }
 
+  function toggleRead() {
+    startTransition(async () => {
+      const result = await setInboxReadAction(id, !isRead)
+      if (!result.ok) toast.error(result.message)
+      else if (isRead && backHref) {
+        toast.success(result.message)
+        router.push(backHref)
+        return
+      }
+      router.refresh()
+    })
+  }
+
   return (
     <div className="flex items-center justify-end gap-1">
       {canEdit && (
         <>
           <button type="button" disabled={pending} className={iconBtn}
-            onClick={() => run(() => setInboxReadAction(id, !isRead))}
+            onClick={toggleRead}
             aria-label={isRead ? 'Marcar como no leído' : 'Marcar como leído'}
             title={isRead ? 'Marcar como no leído' : 'Marcar como leído'}>
             {isRead ? <Mail size={15} /> : <MailOpen size={15} />}
@@ -58,7 +73,11 @@ export function InboxRowActions({ id, isRead, isHidden, canEdit, canDelete, with
       )}
       {canDelete && (
         <ConfirmActionButton
-          action={() => deleteInboxMessageAction(id)}
+          action={async () => {
+            const r = await deleteInboxMessageAction(id)
+            if (r.ok && backHref) router.push(backHref)
+            return r
+          }}
           trigger={<><Trash2 size={15} />{withLabels && 'Eliminar'}</>}
           triggerLabel="Eliminar"
           triggerClassName={`${iconBtn} hover:text-red-600! hover:bg-red-50!`}

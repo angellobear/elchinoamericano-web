@@ -117,6 +117,7 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
             canEdit={canEdit}
             canDelete={canDelete}
             withLabels
+            backHref={routes.admin.inbox.index}
           />
         </div>
       </div>
