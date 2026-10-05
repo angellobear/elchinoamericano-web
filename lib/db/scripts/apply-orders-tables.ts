@@ -40,7 +40,7 @@ const statements: [label: string, sql: string][] = [
       \`quantity\` int NOT NULL DEFAULT 1,
       \`unit_price\` decimal(10,2) NOT NULL,
       CONSTRAINT \`order_items_id\` PRIMARY KEY(\`id\`),
-      CONSTRAINT \`order_items_order_id_fk\` FOREIGN KEY (\`order_id\`) REFERENCES \`orders\`(\`id\`),
+      CONSTRAINT \`order_items_order_id_fk\` FOREIGN KEY (\`order_id\`) REFERENCES \`orders\`(\`id\`) ON DELETE CASCADE,
       CONSTRAINT \`order_items_product_id_fk\` FOREIGN KEY (\`product_id\`) REFERENCES \`products\`(\`id\`)
     )`],
 
@@ -63,18 +63,14 @@ const statements: [label: string, sql: string][] = [
     INSERT INTO \`modules\` (\`key\`, \`label\`) VALUES ('orders', 'Pedidos')
     ON DUPLICATE KEY UPDATE \`label\` = VALUES(\`label\`)`],
 
+  // INSERT IGNORE: crea los permisos si faltan, sin pisar los que ya se ajustaron a mano.
   ['permisos superadmin/admin', `
-    INSERT INTO \`role_permissions\` (\`role_id\`, \`module_id\`, \`can_view\`, \`can_create\`, \`can_edit\`, \`can_delete\`)
+    INSERT IGNORE INTO \`role_permissions\` (\`role_id\`, \`module_id\`, \`can_view\`, \`can_create\`, \`can_edit\`, \`can_delete\`)
     SELECT r.\`id\`, m.\`id\`, 1, 1, 1, CASE WHEN r.\`name\` = 'superadmin' THEN 1 ELSE 0 END
     FROM \`roles\` r
     CROSS JOIN \`modules\` m
     WHERE m.\`key\` = 'orders'
-      AND r.\`name\` IN ('superadmin', 'admin')
-    ON DUPLICATE KEY UPDATE
-      \`can_view\`   = VALUES(\`can_view\`),
-      \`can_create\` = VALUES(\`can_create\`),
-      \`can_edit\`   = VALUES(\`can_edit\`),
-      \`can_delete\` = VALUES(\`can_delete\`)`],
+      AND r.\`name\` IN ('superadmin', 'admin')`],
 ]
 
 async function main() {
@@ -95,6 +91,20 @@ async function main() {
       await connection.query('ALTER TABLE `orders` ADD COLUMN `deleted_at` timestamp NULL AFTER `delivery_photos`')
     }
     console.log('OK: columna orders.deleted_at')
+
+    // Ítems en cascada: al borrar físicamente un pedido se borran sus ítems. Solo cambia la regla
+    // de la llave foránea (se quita y se vuelve a crear); no toca datos. Se salta si ya está.
+    const [itemsFk] = await connection.query(
+      `SELECT DELETE_RULE AS rule FROM information_schema.REFERENTIAL_CONSTRAINTS
+       WHERE CONSTRAINT_SCHEMA = DATABASE() AND CONSTRAINT_NAME = 'order_items_order_id_fk'`,
+    )
+    if ((itemsFk as { rule: string }[])[0]?.rule !== 'CASCADE') {
+      await connection.query('ALTER TABLE `order_items` DROP FOREIGN KEY `order_items_order_id_fk`')
+      await connection.query(
+        'ALTER TABLE `order_items` ADD CONSTRAINT `order_items_order_id_fk` FOREIGN KEY (`order_id`) REFERENCES `orders`(`id`) ON DELETE CASCADE',
+      )
+    }
+    console.log('OK: order_items en cascada al borrar el pedido')
 
     const [rows] = await connection.query(
       `SELECT r.name AS rol, p.can_view, p.can_create, p.can_edit, p.can_delete
