@@ -269,6 +269,18 @@ The key principle is to avoid coupling admin UI directly to raw DB calls inside 
 - Covered by `npm run check:sessions` (local database only; also exercises the real HTTP flow when a dev server is running on port 3000). It uses its own test user and leaves it deactivated.
 - Expired and revoked rows are never purged; add a cleanup job if the table grows.
 
+## Bandeja (inbox)
+
+Leads del sitio público: solicitudes de repuesto no encontrado (`RequestPartForm`) y pedidos del carrito (`CartDrawer`).
+
+- Tabla `inbox_messages` (parche: `npm run db:patch:inbox`). `payload` JSON según `type` (`part_request` | `cart`).
+- Entrada pública: `modules/inbox/server/actions.ts` → `submitInboxMessage` (honeypot `website`, 5 envíos/IP/10 min, precios del carrito recalculados en servidor).
+- Lógica pura y su check: `modules/inbox/schema.ts`, `npm run check:inbox`.
+- Admin: `app/admin/inbox` (listado y detalle), acciones en `modules/admin/inbox/server/actions.ts`, repositorio `lib/db/inbox.ts`.
+- Estado leído compartido (`read_at`), ocultar reversible (`hidden_at`), borrado lógico (`deleted_at`, auditado).
+- Badge: `app/admin/layout.tsx` → `countUnread()`.
+- Futuro: Cloudflare Turnstile, notificaciones, estados de lead, convertir a Pedido.
+
 ## Installable admin (PWA)
 
 - `public/manifest-admin.webmanifest` plus icons in `public/pwa/`, linked only from `app/admin/layout.tsx` and `app/login/page.tsx` through `lib/pwa.ts`. Public pages do not link a manifest, so the storefront never offers installation.
