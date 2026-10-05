@@ -44,6 +44,8 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl, children }: Or
     ? data.payments.filter((item) => item.id < payment.id).reduce((sum, item) => sum + item.amountCents, 0)
     : 0
   const delivered = data.status === ORDER_STATUS.delivered
+  const paidCents = data.payments.reduce((sum, item) => sum + item.amountCents, 0)
+  const balanceCents = data.totalCents - paidCents
 
   const heading = {
     receipt: {
@@ -175,7 +177,8 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl, children }: Or
               <Row label="Descuento" value={`−${data.discount}`} />
             </>
           ) : null}
-          <Row label="Total" value={data.total} />
+          {/* En la orden de entrega y en la página pública lo destacado es el total; el saldo va discreto. */}
+          <Row label="Total" value={data.total} strong={!payment} />
           {payment ? (
             <>
               <Row label="Abonos anteriores" value={formatMoney(previousCents)} />
@@ -186,12 +189,12 @@ export function OrderDocument({ kind, data, paymentId, qrDataUrl, children }: Or
                 strong
               />
             </>
-          ) : (
-            <>
-              <Row label="Total abonado" value={data.paid} />
-              <Row label="Saldo pendiente" value={data.balance} strong />
-            </>
-          )}
+          ) : balanceCents > 0 ? (
+            // Solo si falta pagar algo; pagado por completo (en uno o varios abonos) no se menciona.
+            <p className="mt-2 text-right text-xs text-slate-500 tabular-nums">
+              {paidCents > 0 ? `Abonado ${data.paid} · ` : ''}Saldo pendiente {data.balance}
+            </p>
+          ) : null}
         </div>
       </section>
 
