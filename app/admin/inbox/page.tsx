@@ -113,9 +113,9 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
         </ul>
       )}
 
-      {pages > 1 && (
+      {(pages > 1 || page > 1) && (
         <nav className="flex items-center justify-center gap-3 mt-4 text-sm">
-          {page > 1 && <Link href={pageHref(page - 1)} className="text-navy font-medium hover:underline">← Anterior</Link>}
+          {page > 1 && <Link href={pageHref(Math.min(page - 1, pages))} className="text-navy font-medium hover:underline">← Anterior</Link>}
           <span className="text-slate-400">Página {page} de {pages}</span>
           {page < pages && <Link href={pageHref(page + 1)} className="text-navy font-medium hover:underline">Siguiente →</Link>}
         </nav>

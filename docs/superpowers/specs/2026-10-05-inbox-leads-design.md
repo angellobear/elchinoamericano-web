@@ -82,7 +82,7 @@ Fallo de red o servidor: mensaje en el formulario, **se conservan los datos** y 
 
 ### Badge
 
-`app/admin/layout.tsx` llama `countUnread()` (no leídos, no ocultos, no eliminados, sin filtro de fecha) y lo pasa a `SidebarNav` y `MobileAdminHeader`. Pastilla roja junto a "Bandeja" (`99+` si excede); en móvil también un punto en el botón de menú. Se actualiza en cada navegación y tras cada acción (`revalidatePath('/admin', 'layout')`). Sin tiempo real.
+`app/admin/layout.tsx` llama `countUnread()` (no leídos, no ocultos, no eliminados, sin filtro de fecha) y lo pasa a `SidebarNav` y `MobileAdminHeader`. Pastilla roja junto a "Bandeja" (`99+` si excede); en móvil también un punto en el botón de menú. Se actualiza al cargar el panel y tras cada acción de la bandeja (incluido abrir un lead); no en cada navegación del cliente ni en tiempo real.
 
 ### Listado
 

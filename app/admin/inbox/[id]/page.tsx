@@ -2,9 +2,10 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, MessageCircle } from 'lucide-react'
 import { getJwtPayload } from '@/lib/auth/check-permission'
-import { getInboxMessage, setInboxRead } from '@/lib/db/inbox'
+import { getInboxMessage } from '@/lib/db/inbox'
 import { buildProductPath } from '@/lib/product-slugs'
 import { routes } from '@/lib/routes'
+import { MarkReadOnOpen } from '@/modules/admin/inbox/components/MarkReadOnOpen'
 import { InboxRowActions } from '@/modules/admin/inbox/components/InboxRowActions'
 import { INBOX_PERMISSION_KEYS } from '@/modules/admin/inbox/types'
 import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
@@ -23,10 +24,6 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
   const canEdit = hasModulePermission(payload, INBOX_PERMISSION_KEYS, 'can_edit')
   const canDelete = hasModulePermission(payload, INBOX_PERMISSION_KEYS, 'can_delete')
 
-  // ponytail: se marca leído al abrir. El badge del layout se renderiza en paralelo
-  // y puede ir un número atrás hasta la siguiente navegación.
-  if (canEdit && !message.readAt) await setInboxRead(message.id, true)
-
   const isCart = message.type === 'cart'
   const cart = message.payload as CartPayload
   const part = message.payload as PartRequestPayload
@@ -42,6 +39,8 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="p-4 md:p-8 max-w-3xl">
+      {/* Se marca leído desde el cliente: hacerlo en el render deshacía "No leído" al re-renderizar tras la acción. */}
+      {canEdit && !message.readAt && <MarkReadOnOpen id={message.id} />}
       <Link href={routes.admin.inbox.index} className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-navy mb-4">
         <ArrowLeft size={14} /> Bandeja
       </Link>
@@ -112,7 +111,7 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
         <div className="border-t border-slate-100 pt-4">
           <InboxRowActions
             id={message.id}
-            isRead
+            isRead={!!message.readAt}
             isHidden={!!message.hiddenAt}
             canEdit={canEdit}
             canDelete={canDelete}

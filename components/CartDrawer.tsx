@@ -25,7 +25,11 @@ const CONTACT_KEY = "eca_contact"
 function readContact(): { name: string; phone: string } {
   try {
     const raw = localStorage.getItem(CONTACT_KEY)
-    return raw ? JSON.parse(raw) : { name: "", phone: "" }
+    const parsed = raw ? JSON.parse(raw) : null
+    if (parsed && typeof parsed.name === "string" && typeof parsed.phone === "string") {
+      return { name: parsed.name, phone: parsed.phone }
+    }
+    return { name: "", phone: "" }
   } catch {
     return { name: "", phone: "" }
   }

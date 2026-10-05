@@ -153,5 +153,6 @@ export function summarizeInbox(type: InboxType, payload: InboxPayload) {
 export function customerWhatsAppUrl(phone: string, text: string) {
   let digits = phone.replace(/\D/g, '')
   if (digits.length === 10 && digits.startsWith('0')) digits = `593${digits.slice(1)}`
+  if (digits.length === 9 && digits.startsWith('9')) digits = `593${digits}`
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
 }

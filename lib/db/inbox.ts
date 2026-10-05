@@ -4,7 +4,7 @@ import { inboxMessages, products } from './schema'
 import { dbNow } from './db-now'
 import { offerPrice } from './products'
 import { logActivitySafe } from '@/lib/audit'
-import { INBOX_PAGE_SIZE, type InboxPayload, type InboxType, type PricedProduct } from '@/modules/inbox/schema'
+import { INBOX_PAGE_SIZE, normalizePhone, type InboxPayload, type InboxType, type PricedProduct } from '@/modules/inbox/schema'
 
 export type InboxRow = typeof inboxMessages.$inferSelect
 
@@ -17,6 +17,8 @@ export interface InboxFilters {
   search?: string
 }
 
+const escapeLike = (s: string) => s.replace(/[\\%_]/g, '\\$&')
+
 function buildWhere(f: InboxFilters) {
   const term = f.search?.trim()
   return and(
@@ -26,7 +28,12 @@ function buildWhere(f: InboxFilters) {
     f.type ? eq(inboxMessages.type, f.type) : undefined,
     f.unreadOnly ? isNull(inboxMessages.readAt) : undefined,
     f.includeHidden ? undefined : isNull(inboxMessages.hiddenAt),
-    term ? or(like(inboxMessages.name, `%${term}%`), like(inboxMessages.phone, `%${term}%`)) : undefined,
+    term
+      ? or(
+          like(inboxMessages.name, `%${escapeLike(term)}%`),
+          like(inboxMessages.phone, `%${escapeLike(normalizePhone(term))}%`),
+        )
+      : undefined,
   )
 }
 

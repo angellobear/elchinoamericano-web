@@ -278,7 +278,8 @@ Leads del sitio público: solicitudes de repuesto no encontrado (`RequestPartFor
 - Lógica pura y su check: `modules/inbox/schema.ts`, `npm run check:inbox`.
 - Admin: `app/admin/inbox` (listado y detalle), acciones en `modules/admin/inbox/server/actions.ts`, repositorio `lib/db/inbox.ts`.
 - Estado leído compartido (`read_at`), ocultar reversible (`hidden_at`), borrado lógico (`deleted_at`, auditado).
-- Badge: `app/admin/layout.tsx` → `countUnread()`.
+- Badge: `app/admin/layout.tsx` → `countUnread()`. Se actualiza al cargar el panel y tras cada acción de la bandeja (incluido abrir un lead); no en cada navegación del cliente ni en tiempo real.
+- **La tabla y el permiso deben existir en producción antes de desplegar este código**: correr `PATCH_DATABASE_URL=<prod> npm run db:patch:inbox` antes del merge (el código anterior ignora la tabla) y luego cerrar sesión y volver a entrar para que el JWT traiga el permiso `inbox`. Sin esto, ambos formularios públicos devuelven error (con WhatsApp como alternativa) y /admin/inbox redirige a forbidden.
 - Futuro: Cloudflare Turnstile, notificaciones, estados de lead, convertir a Pedido.
 
 ## Installable admin (PWA)

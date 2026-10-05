@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { SidebarNav } from './_components/SidebarNav'
 import { MobileAdminHeader } from './_components/MobileAdminHeader'
+import { logger } from '@/lib/logger'
 import { countUnread } from '@/lib/db/inbox'
 import { INBOX_PERMISSION_KEYS } from '@/modules/admin/inbox/types'
 import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
@@ -24,7 +25,10 @@ export default async function AdminLayout({
   const isSuperAdmin = payload.role === 'superadmin'
   // Si la tabla aún no existe (parche sin aplicar) el panel no debe caerse: badge en 0.
   const unreadCount = hasModulePermission(payload, INBOX_PERMISSION_KEYS, 'can_view')
-    ? await countUnread().catch(() => 0)
+    ? await countUnread().catch((err) => {
+        logger.warn({ err }, 'countUnread failed; badge shows 0')
+        return 0
+      })
     : 0
 
   return (
