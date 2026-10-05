@@ -229,6 +229,8 @@ export const orders = mysqlTable('orders', {
   receivedByName: varchar('received_by_name', { length: 150 }),
   receivedByIdNumber: varchar('received_by_id_number', { length: 20 }),
   deliveryPhotos: json('delivery_photos').$type<DeliveryPhoto[]>(),
+  // Borrado lógico, como el resto del admin: el pedido deja de verse pero queda en la base.
+  deletedAt: timestamp('deleted_at'),
   createdBy: char('created_by', { length: 36 }),
   createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
   updatedAt: timestamp('updated_at').default(mysqlCurrentTimestamp),

@@ -55,6 +55,8 @@ export type OrderErrorCode =
   | 'TOTAL_BELOW_PAID'
   | 'EXCEEDS_BALANCE'
   | 'INSUFFICIENT_STOCK'
+  | 'DELIVERED'
+  | 'HAS_PAYMENTS'
 
 export class OrderError extends Error {
   constructor(
@@ -70,7 +72,7 @@ type Tx = Parameters<Parameters<typeof withAudit>[0]>[0]
 export async function getOrderById(id: number) {
   const db = await getDb()
   return db.query.orders.findFirst({
-    where: eq(orders.id, id),
+    where: and(eq(orders.id, id), isNull(orders.deletedAt)),
     with: { items: true, payments: true },
   })
 }
@@ -80,7 +82,7 @@ export type OrderWithRelations = NonNullable<Awaited<ReturnType<typeof getOrderB
 export async function getOrderByToken(token: string) {
   const db = await getDb()
   return db.query.orders.findFirst({
-    where: eq(orders.publicToken, token),
+    where: and(eq(orders.publicToken, token), isNull(orders.deletedAt)),
     with: { items: true, payments: true },
   })
 }
@@ -94,6 +96,7 @@ export async function listOrders(filters?: { search?: string; status?: OrderStat
 
   return db.query.orders.findMany({
     where: and(
+      isNull(orders.deletedAt),
       filters?.status ? eq(orders.status, filters.status) : undefined,
       search
         ? or(
@@ -113,7 +116,7 @@ export async function listOrders(filters?: { search?: string; status?: OrderStat
 
 async function lockOrder(tx: Tx, id: number) {
   const [order] = await tx.select().from(orders).where(eq(orders.id, id)).for('update')
-  if (!order) throw new OrderError('NOT_FOUND')
+  if (!order || order.deletedAt) throw new OrderError('NOT_FOUND')
   return order
 }
 
@@ -334,15 +337,32 @@ export async function cancelOrder(orderId: number, userId: string) {
   const previous = await withAudit(async (tx) => {
     const order = await lockOrder(tx, orderId)
     if (order.status === ORDER_STATUS.cancelled) throw new OrderError('CANCELLED')
-
-    // Si ya se había entregado, la mercadería vuelve al inventario.
-    if (order.status === ORDER_STATUS.delivered) {
-      await moveStock(tx, orderId, 'entry', `Anulación pedido ${formatDocNumber('PED', orderId)}`, userId)
-    }
+    // Lo entregado ya fue entregado: no se anula (y así tampoco se revierte inventario).
+    if (order.status === ORDER_STATUS.delivered) throw new OrderError('DELIVERED')
 
     await tx.update(orders).set({ status: ORDER_STATUS.cancelled, updatedAt: dbNow() }).where(eq(orders.id, orderId))
     return order.status
   })
 
   await logActivitySafe('UPDATE', 'orders', orderId, { status: previous }, { status: ORDER_STATUS.cancelled }, { userId })
+}
+
+/**
+ * Elimina un pedido (borrado lógico). Solo pendientes o anulados: uno entregado ya fue entregado,
+ * y uno con abonos vigentes guarda dinero recibido, así que primero hay que anular esos abonos.
+ * No mueve inventario: un pendiente aún no lo tocó y un anulado ya no lo tiene comprometido.
+ */
+export async function deleteOrder(orderId: number, userId: string) {
+  const before = await withAudit(async (tx) => {
+    const order = await lockOrder(tx, orderId)
+    if (order.status === ORDER_STATUS.delivered) throw new OrderError('DELIVERED')
+
+    const { summary } = await loadSummary(tx, orderId, order.discount)
+    if (summary.paid > 0) throw new OrderError('HAS_PAYMENTS')
+
+    await tx.update(orders).set({ deletedAt: dbNow(), updatedAt: dbNow() }).where(eq(orders.id, orderId))
+    return order
+  })
+
+  await logActivitySafe('DELETE', 'orders', orderId, before as Record<string, unknown>, { deleted: true }, { userId })
 }

@@ -13,6 +13,7 @@ import {
   addPayment,
   cancelOrder,
   createOrder,
+  deleteOrder,
   deliverOrder,
   getOrderById,
   getOrderByToken,
@@ -133,14 +134,20 @@ async function main() {
   )
   assert.equal((await summaryOf(id)).order.receivedByName, 'Quien recibe', 'la edición rechazada no cambia nada')
 
-  // Anulación de un pedido entregado: la mercadería vuelve al inventario.
-  await cancelOrder(id, USER)
-  assert.equal((await summaryOf(id)).order.status, 'cancelled')
-  assert.equal(await stockOf(product.id), initialStock, 'anular devuelve el stock')
-  await rejectsWith('CANCELLED', () => cancelOrder(id, USER))
-  await rejectsWith('CANCELLED', () =>
-    addPayment(id, { amount: '1.00', method: 'efectivo', reference: null, paidAt: todayInEcuador() }, USER),
+  // Un pedido entregado no se anula ni se elimina.
+  await rejectsWith('DELIVERED', () => cancelOrder(id, USER))
+  await rejectsWith('DELIVERED', () => deleteOrder(id, USER))
+  assert.equal((await summaryOf(id)).order.status, 'delivered', 'sigue entregado')
+  assert.equal(await stockOf(product.id), initialStock - 1, 'el inventario no se revierte')
+
+  // Limpieza del chequeo (solo local): devuelve la unidad entregada y oculta el pedido de prueba.
+  await db.execute(sql`UPDATE products SET stock = stock + 1 WHERE id = ${product.id}`)
+  await db.execute(
+    sql`INSERT INTO stock_movements (product_id, quantity, movement_type, reason, user_id) VALUES (${product.id}, 1, 'entry', 'Limpieza check-orders-db', ${USER})`,
   )
+  await db.execute(sql`UPDATE orders SET deleted_at = NOW() WHERE id = ${id}`)
+  assert.equal(await stockOf(product.id), initialStock, 'la limpieza deja el stock como estaba')
+  assert.equal(await getOrderById(id), undefined, 'un pedido eliminado no se encuentra')
 
   // Sin stock suficiente no se entrega nada.
   const bigId = await createOrder(
@@ -150,11 +157,23 @@ async function main() {
   await rejectsWith('INSUFFICIENT_STOCK', () => deliverOrder(bigId, USER))
   assert.equal((await summaryOf(bigId)).order.status, 'pending', 'el pedido sigue pendiente')
   assert.equal(await stockOf(product.id), initialStock, 'el stock no se tocó')
+
+  // Eliminar: no con abonos vigentes; sí un pendiente sin abonos. Anular un pendiente no mueve stock.
+  await addPayment(bigId, { amount: '1.00', method: 'efectivo', reference: null, paidAt: todayInEcuador() }, USER)
+  await rejectsWith('HAS_PAYMENTS', () => deleteOrder(bigId, USER))
+  const bigPayment = (await summaryOf(bigId)).order.payments[0]
+  await voidPayment(bigId, bigPayment.id)
   await cancelOrder(bigId, USER)
   assert.equal(await stockOf(product.id), initialStock, 'anular un pendiente no mueve stock')
+  await rejectsWith('CANCELLED', () =>
+    addPayment(bigId, { amount: '1.00', method: 'efectivo', reference: null, paidAt: todayInEcuador() }, USER),
+  )
+  await deleteOrder(bigId, USER)
+  assert.equal(await getOrderById(bigId), undefined, 'el pedido eliminado ya no aparece')
+  assert.ok(!(await listOrders()).some((row) => row.id === bigId), 'ni en el listado')
+  await rejectsWith('NOT_FOUND', () => deleteOrder(bigId, USER))
 
-  console.log(`✓ pedidos contra la base local OK (pedidos de prueba ${id} y ${bigId}, anulados)`)
-  console.log(`  enlace público de prueba: /pedido/${order.publicToken}`)
+  console.log(`✓ pedidos contra la base local OK (pedidos de prueba ${id} y ${bigId}, eliminados)`)
 }
 
 main()

@@ -8,6 +8,7 @@ import {
   addPayment,
   cancelOrder,
   createOrder,
+  deleteOrder,
   deliverOrder,
   getOrderById,
   isDeliveryEditable,
@@ -46,6 +47,8 @@ const ORDER_ERROR_MESSAGE: Record<OrderErrorCode, string> = {
   TOTAL_BELOW_PAID: 'El total no puede quedar por debajo de lo ya abonado.',
   EXCEEDS_BALANCE: 'El abono supera el saldo pendiente.',
   INSUFFICIENT_STOCK: 'No hay stock suficiente.',
+  DELIVERED: 'Un pedido entregado no se puede anular ni eliminar: ya fue entregado.',
+  HAS_PAYMENTS: 'El pedido tiene abonos vigentes. Anula primero los abonos para poder eliminarlo.',
 }
 
 // Sin export: en un módulo 'use server' todo lo exportado debe ser async.
@@ -159,8 +162,21 @@ export async function cancelOrderAction(orderId: number) {
   }
 
   revalidateOrder(orderId)
-  revalidatePath(routes.admin.inventory.index)
   return successResult('Pedido anulado')
+}
+
+export async function deleteOrderAction(orderId: number) {
+  const auth = await authorize('can_delete')
+  if (!auth.payload) return auth.error
+
+  try {
+    await deleteOrder(orderId, auth.payload.userId)
+  } catch (err) {
+    return failure(err, 'No se pudo eliminar el pedido.')
+  }
+
+  revalidatePath(routes.admin.orders.index)
+  return successResult('Pedido eliminado')
 }
 
 /** Entrega el pedido si está pendiente y guarda quién recibe, la factura y las fotos. */

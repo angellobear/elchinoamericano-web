@@ -1,10 +1,13 @@
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { AdminSearchInput } from '@/app/admin/_components/AdminSearchInput'
+import { getJwtPayload } from '@/lib/auth/check-permission'
 import { listOrders } from '@/lib/db/orders'
 import { ORDER_STATUSES, ORDER_STATUS_LABEL } from '@/lib/orders'
 import { routes } from '@/lib/routes'
 import { OrdersTable } from '@/modules/admin/orders/components/OrdersTable'
+import { ORDER_PERMISSION_KEYS } from '@/modules/admin/orders/types'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
 
 export default async function OrdersPage({
   searchParams,
@@ -13,7 +16,8 @@ export default async function OrdersPage({
 }) {
   const { search, status } = await searchParams
   const statusFilter = ORDER_STATUSES.find((value) => value === status)
-  const orders = await listOrders({ search, status: statusFilter })
+  const [orders, payload] = await Promise.all([listOrders({ search, status: statusFilter }), getJwtPayload()])
+  const canDelete = hasModulePermission(payload, ORDER_PERMISSION_KEYS, 'can_delete')
 
   const tabs = [
     { label: 'Todos', href: routes.admin.orders.index, active: !statusFilter },
@@ -56,7 +60,7 @@ export default async function OrdersPage({
         ))}
       </div>
 
-      <OrdersTable orders={orders} />
+      <OrdersTable orders={orders} canDelete={canDelete} />
     </div>
   )
 }
