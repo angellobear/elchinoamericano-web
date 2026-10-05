@@ -238,7 +238,8 @@ export const orders = mysqlTable('orders', {
 
 export const orderItems = mysqlTable('order_items', {
   id: int('id').autoincrement().primaryKey(),
-  orderId: int('order_id').notNull().references(() => orders.id),
+  // Los ítems son parte del pedido: si el pedido se borra físicamente, se borran con él.
+  orderId: int('order_id').notNull().references(() => orders.id, { onDelete: 'cascade' }),
   productId: int('product_id').references(() => products.id),
   description: varchar('description', { length: 255 }).notNull(),
   quantity: int('quantity').notNull().default(1),
