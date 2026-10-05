@@ -28,7 +28,8 @@
     "check:announcements": "npx tsx scripts/check-announcement-window.ts",
     "check:orders": "npx tsx scripts/check-order-balance.ts",
     "check:orders:db": "npx tsx -r ./scripts/stub-server-only.cjs scripts/check-orders-db.ts",
-    "check:sessions": "npx tsx scripts/check-sessions.ts"
+    "check:sessions": "npx tsx scripts/check-sessions.ts",
+    "check:inbox": "npx tsx scripts/check-inbox.ts"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
