@@ -108,19 +108,20 @@ export async function getInboxMessage(id: number) {
 
 export async function setInboxRead(id: number, read: boolean) {
   const db = await getDb()
-  await db.update(inboxMessages).set({ readAt: read ? dbNow() : null }).where(eq(inboxMessages.id, id))
+  await db.update(inboxMessages).set({ readAt: read ? dbNow() : null }).where(and(eq(inboxMessages.id, id), isNull(inboxMessages.deletedAt)))
 }
 
 export async function setInboxHidden(id: number, hidden: boolean) {
   const db = await getDb()
-  await db.update(inboxMessages).set({ hiddenAt: hidden ? dbNow() : null }).where(eq(inboxMessages.id, id))
+  await db.update(inboxMessages).set({ hiddenAt: hidden ? dbNow() : null }).where(and(eq(inboxMessages.id, id), isNull(inboxMessages.deletedAt)))
 }
 
 export async function softDeleteInboxMessage(id: number) {
   const db = await getDb()
   const before = await getInboxMessage(id)
-  await db.update(inboxMessages).set({ deletedAt: dbNow() }).where(eq(inboxMessages.id, id))
-  await logActivitySafe('DELETE', 'inbox_messages', id, before as Record<string, unknown> | undefined)
+  if (!before) return
+  await db.update(inboxMessages).set({ deletedAt: dbNow() }).where(and(eq(inboxMessages.id, id), isNull(inboxMessages.deletedAt)))
+  await logActivitySafe('DELETE', 'inbox_messages', id, before as Record<string, unknown>)
 }
 
 export async function markAllInboxRead(filters: InboxFilters) {
