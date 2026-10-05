@@ -55,7 +55,7 @@ Ubicación: `modules/inbox/server/actions.ts` (fuera de `modules/admin` porque l
 ### `RequestPartForm`
 
 - Teléfono pasa a obligatorio (nombre ya lo era).
-- Botón principal: **"Enviar solicitud"** (`useActionState`, deshabilitado mientras envía).
+- Botón principal: **"Enviar solicitud"** (`useTransition`, deshabilitado mientras envía).
 - Éxito: "¡Solicitud recibida! Un asesor te contactará pronto." + link secundario "¿Prefieres escribirnos ya? Abrir WhatsApp" (mismo mensaje armado de hoy).
 - GA: evento `lead_submit` con `source: "repuesto"`. El link de WhatsApp sigue con `trackWhatsApp`.
 
@@ -91,9 +91,9 @@ Fallo de red o servidor: mensaje en el formulario, **se conservan los datos** y 
   - `unread=1`: solo no leídos.
   - `from` / `to` (`<input type="date">`). **Default: últimos 30 días** en hora de Ecuador (`lib/today-ecuador.ts`). Botón "Últimos 30 días" para restablecer.
   - `hidden=1`: incluir ocultos.
-  - `search`: nombre o teléfono (`AdminSearchInput`).
+  - `search`: nombre o teléfono. Todos los filtros viven en un único `<form method="get">` nativo (sin JS), porque `AdminSearchInput` descarta los demás params.
   - `page`: paginación de 50.
-- Fila: badge de tipo (🔍 "Solicitud" slate / 🛒 "Pedido" `brand`), no leídos en negrita con punto, nombre, teléfono, resumen ("Filtro de aceite · Chery Tiggo 5 2020" o "3 productos · $45.20"), fecha relativa.
+- Fila: badge de tipo (🔍 "Solicitud" slate / 🛒 "Pedido" `brand`), no leídos en negrita con punto, nombre, teléfono, resumen ("Filtro de aceite · Chery Tiggo 5 2020" o "3 productos · $45.20"), fecha corta absoluta en hora de Ecuador.
 - Acciones por fila: marcar leído/no leído, ocultar/mostrar, eliminar (confirmación; solo con `can_delete`).
 - Acción masiva: "Marcar todo como leído" sobre el filtro actual.
 
