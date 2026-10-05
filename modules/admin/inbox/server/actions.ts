@@ -7,7 +7,7 @@ import { logger } from '@/lib/logger'
 import { todayInEcuador } from '@/lib/today-ecuador'
 import { errorResult, successResult, type ActionResult } from '@/modules/admin/shared/types/action-result'
 import { hasModulePermission, type PermissionAction } from '@/modules/admin/shared/server/permissions'
-import { filtersFromParams, INBOX_PERMISSION_KEYS, type InboxSearchParams } from '@/modules/admin/inbox/types'
+import { filtersFromParams, INBOX_PERMISSION_KEYS, normalizeInboxParams, type InboxSearchParams } from '@/modules/admin/inbox/types'
 
 // El badge vive en el layout del admin: se revalida todo el árbol /admin.
 async function guarded(action: PermissionAction, denied: string, work: () => Promise<string>): Promise<ActionResult> {
@@ -48,7 +48,7 @@ export async function deleteInboxMessageAction(id: number) {
 
 export async function markAllInboxReadAction(params: InboxSearchParams) {
   return guarded('can_edit', 'No tienes permiso para editar la bandeja.', async () => {
-    await markAllInboxRead(filtersFromParams(params, todayInEcuador()).filters)
+    await markAllInboxRead(filtersFromParams(normalizeInboxParams(params), todayInEcuador()).filters)
     return 'Todo marcado como leído.'
   })
 }

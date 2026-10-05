@@ -12,6 +12,7 @@ import {
   resolveInboxRange,
   summarizeInbox,
 } from '@/modules/inbox/schema'
+import { normalizeInboxParams } from '@/modules/admin/inbox/types'
 
 // Teléfono
 assert.equal(normalizePhone(' +593 99-123 (4567) '), '+593991234567')
@@ -90,5 +91,8 @@ assert.equal(summarizeInbox('cart', snap), '5 productos · $17.72')
 // WhatsApp al cliente: 09xxxxxxxx de Ecuador → 5939xxxxxxxx
 assert.equal(customerWhatsAppUrl('0991234567', 'Hola'), 'https://wa.me/593991234567?text=Hola')
 assert.equal(customerWhatsAppUrl('+593991234567', 'Hola Ana'), 'https://wa.me/593991234567?text=Hola%20Ana')
+
+// Params de URL repetidos: primer valor, solo claves conocidas, sin claves undefined
+assert.deepEqual(normalizeInboxParams({ search: ['a', 'b'], page: '2', foo: 'x', type: undefined }), { search: 'a', page: '2' })
 
 console.log('✓ bandeja OK')

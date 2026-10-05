@@ -6,7 +6,7 @@ import { routes } from '@/lib/routes'
 import { todayInEcuador } from '@/lib/today-ecuador'
 import { InboxRowActions } from '@/modules/admin/inbox/components/InboxRowActions'
 import { MarkAllReadButton } from '@/modules/admin/inbox/components/MarkAllReadButton'
-import { filtersFromParams, INBOX_PERMISSION_KEYS, type InboxSearchParams } from '@/modules/admin/inbox/types'
+import { filtersFromParams, INBOX_PERMISSION_KEYS, normalizeInboxParams } from '@/modules/admin/inbox/types'
 import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
 import { INBOX_PAGE_SIZE, INBOX_TYPE_LABEL, summarizeInbox } from '@/modules/inbox/schema'
 
@@ -16,8 +16,8 @@ const dateFmt = new Intl.DateTimeFormat('es-EC', {
 
 const field = 'px-3 py-2 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy'
 
-export default async function InboxPage({ searchParams }: { searchParams: Promise<InboxSearchParams> }) {
-  const params = await searchParams
+export default async function InboxPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = normalizeInboxParams(await searchParams)
   const { filters, range, page } = filtersFromParams(params, todayInEcuador())
   const [{ rows, total }, payload] = await Promise.all([listInbox(filters, page), getJwtPayload()])
   const canEdit = hasModulePermission(payload, INBOX_PERMISSION_KEYS, 'can_edit')
@@ -25,7 +25,8 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
   const pages = Math.max(1, Math.ceil(total / INBOX_PAGE_SIZE))
 
   const pageHref = (p: number) => {
-    const qs = new URLSearchParams(Object.entries(params).filter(([, v]) => v) as [string, string][])
+    const qs = new URLSearchParams()
+    for (const [k, v] of Object.entries(params)) if (v) qs.set(k, v)
     qs.set('page', String(p))
     return `${routes.admin.inbox.index}?${qs}`
   }
