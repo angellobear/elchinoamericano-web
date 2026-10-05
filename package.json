@@ -23,6 +23,7 @@
     "db:patch:announcements": "npx tsx lib/db/scripts/apply-announcements-table.ts",
     "db:patch:orders": "npx tsx lib/db/scripts/apply-orders-tables.ts",
     "db:patch:sessions": "npx tsx lib/db/scripts/apply-sessions-table.ts",
+    "db:patch:inbox": "npx tsx lib/db/scripts/apply-inbox-table.ts",
     "check:lcp": "node scripts/check-visible-lcp.mjs",
     "check:llms": "node scripts/check-llms-txt.mjs",
     "check:announcements": "npx tsx scripts/check-announcement-window.ts",

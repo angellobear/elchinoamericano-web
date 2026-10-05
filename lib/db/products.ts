@@ -27,7 +27,7 @@ function rethrowReadable(error: unknown): never {
 }
 
 // DECIMAL columns come back as string from the driver — convert for arithmetic
-function offerPrice(price: string, pct?: string | null, until?: Date | null): number | undefined {
+export function offerPrice(price: string, pct?: string | null, until?: Date | null): number | undefined {
   if (!pct) return undefined
   if (until && until <= new Date()) return undefined
   return parseFloat((Number(price) * (1 - Number(pct) / 100)).toFixed(2))

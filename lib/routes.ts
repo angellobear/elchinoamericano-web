@@ -51,6 +51,10 @@ export const routes = {
       receipt: (id: number | string, paymentId: number | string) => `/admin/orders/${id}/recibo/${paymentId}`,
       delivery: (id: number | string) => `/admin/orders/${id}/entrega`,
     },
+    inbox: {
+      index: '/admin/inbox',
+      detail: (id: number | string) => `/admin/inbox/${id}`,
+    },
     inventory: {
       index: '/admin/inventory',
     },
