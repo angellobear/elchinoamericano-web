@@ -61,6 +61,15 @@ assert.equal(snap.items.length, 2, 'el id 99 no existe y se descarta')
 assert.deepEqual(snap.items[1], { id: 2, code: '', title: 'Bujía', slug: 'bujia', qty: 3, unitPrice: 0.1 })
 assert.equal(snap.total, 17.72)
 
+// Carrito con IDs duplicados: fusionar cantidad, respetar máx 99
+const snapDuplicate = buildCartSnapshot(
+  [{ id: 1, qty: 90 }, { id: 1, qty: 90 }],
+  [{ id: 1, code: 'X1', title: 'Producto', slug: 'producto', unitPrice: 1 }],
+)
+assert.equal(snapDuplicate.items.length, 1, 'IDs duplicados se fusionan en uno')
+assert.equal(snapDuplicate.items[0].qty, 99, 'cantidad fusionada se clampea a 99')
+assert.equal(snapDuplicate.total, 99)
+
 // Rango de fechas
 assert.deepEqual(resolveInboxRange({}, '2026-10-05'), { from: '2026-09-06', to: '2026-10-05' }, '30 días con hoy incluido')
 assert.deepEqual(resolveInboxRange({ from: '2026-10-01', to: '2026-10-03' }, '2026-10-05'), { from: '2026-10-01', to: '2026-10-03' })
@@ -68,6 +77,8 @@ assert.deepEqual(resolveInboxRange({ from: '2026-10-03', to: '2026-10-01' }, '20
 assert.deepEqual(resolveInboxRange({ from: 'basura', to: '' }, '2026-10-05'), { from: '2026-09-06', to: '2026-10-05' }, 'inválido usa default')
 assert.equal(addDays('2026-03-01', -1), '2026-02-28')
 assert.equal(ecuadorDayStart('2026-10-05').toISOString(), '2026-10-05T05:00:00.000Z')
+assert.deepEqual(resolveInboxRange({ to: '2026-99-99' }, '2026-10-05'), { from: '2026-09-06', to: '2026-10-05' }, 'fecha imposible (mes) usa default')
+assert.deepEqual(resolveInboxRange({ from: '2026-02-31', to: '2026-10-05' }, '2026-10-05'), { from: '2026-09-06', to: '2026-10-05' }, 'fecha imposible (día) usa default')
 
 // Resumen
 assert.equal(

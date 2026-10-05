@@ -86,8 +86,19 @@ const round2 = (n: number) => Math.round(n * 100) / 100
 /** Arma el snapshot con precios del servidor. Los ids que ya no existen se descartan. */
 export function buildCartSnapshot(requested: { id: number; qty: number }[], rows: PricedProduct[]): CartPayload {
   const byId = new Map(rows.map((row) => [row.id, row]))
-  const items = requested.flatMap(({ id, qty }) => {
+  // Merge duplicate IDs: sum qty and clamp to 99, preserving first-seen order
+  const merged = new Map<number, number>()
+  const order: number[] = []
+  for (const { id, qty } of requested) {
+    if (!merged.has(id)) {
+      order.push(id)
+      merged.set(id, 0)
+    }
+    merged.set(id, Math.min((merged.get(id) ?? 0) + qty, 99))
+  }
+  const items = order.flatMap((id) => {
     const product = byId.get(id)
+    const qty = merged.get(id) ?? 0
     return product
       ? [{ id, code: product.code ?? '', title: product.title, slug: product.slug, qty, unitPrice: product.unitPrice }]
       : []
@@ -103,10 +114,22 @@ export function addDays(date: string, days: number) {
   return d.toISOString().slice(0, 10)
 }
 
+/** Valida que una fecha ISO sea válida (formato correcto y calendario posible) */
+function isValidIsoDate(date: string): boolean {
+  if (!ISO_DATE.test(date)) return false
+  // Round-trip: si es fecha válida, debe convertirse a Date sin error y volver al mismo string
+  try {
+    const d = new Date(`${date}T00:00:00Z`)
+    return d.toISOString().slice(0, 10) === date
+  } catch {
+    return false
+  }
+}
+
 /** Rango del listado. Default: últimos 30 días con hoy incluido. Invertido se corrige. */
 export function resolveInboxRange(params: { from?: string; to?: string }, today: string) {
-  const to = params.to && ISO_DATE.test(params.to) ? params.to : today
-  const from = params.from && ISO_DATE.test(params.from) ? params.from : addDays(to, -29)
+  const to = params.to && isValidIsoDate(params.to) ? params.to : today
+  const from = params.from && isValidIsoDate(params.from) ? params.from : addDays(to, -29)
   return from <= to ? { from, to } : { from: to, to: from }
 }
 
