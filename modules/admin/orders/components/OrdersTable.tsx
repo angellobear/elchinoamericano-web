@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ClipboardList, ExternalLink, Eye, Pencil } from 'lucide-react'
+import { ClipboardList, ExternalLink, Eye, Pencil, Trash2 } from 'lucide-react'
 import type { OrderWithRelations } from '@/lib/db/orders'
 import {
   ORDER_STATUS,
@@ -12,12 +12,20 @@ import {
   type OrderStatus,
 } from '@/lib/orders'
 import { routes } from '@/lib/routes'
+import { ConfirmActionButton } from '@/modules/admin/orders/components/ConfirmActionButton'
+import { deleteOrderAction } from '@/modules/admin/orders/server/actions'
 
 const headClass = 'px-4 py-3.5 font-semibold text-slate-400 text-xs uppercase tracking-wider'
 // p-2 + icono de 16px: área táctil cómoda también en móvil.
 const actionClass = 'p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-navy transition-colors'
 
-export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
+interface OrdersTableProps {
+  orders: OrderWithRelations[]
+  /** Solo quien tiene permiso de eliminar en Pedidos ve el botón. */
+  canDelete: boolean
+}
+
+export function OrdersTable({ orders, canDelete }: OrdersTableProps) {
   return (
     <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
       <div className="overflow-x-auto">
@@ -101,6 +109,23 @@ export function OrdersTable({ orders }: { orders: OrderWithRelations[] }) {
                       >
                         <ExternalLink size={15} />
                       </a>
+                      {canDelete ? (
+                        status === ORDER_STATUS.delivered ? (
+                          <span className="p-2 text-slate-200" title="Un pedido entregado no se puede eliminar">
+                            <Trash2 size={15} />
+                          </span>
+                        ) : (
+                          <ConfirmActionButton
+                            action={deleteOrderAction.bind(null, order.id)}
+                            trigger={<Trash2 size={15} />}
+                            triggerLabel={`Eliminar pedido ${formatDocNumber('PED', order.id)}`}
+                            triggerClassName="p-2 rounded-lg text-slate-500 hover:bg-red-50 hover:text-red-600 transition-colors"
+                            title={`Eliminar ${formatDocNumber('PED', order.id)}`}
+                            description={`El pedido de ${customerLabel(order.customerName)} dejará de aparecer en el listado y su enlace público dejará de funcionar. Si tiene abonos vigentes, primero hay que anularlos.`}
+                            confirmLabel="Eliminar pedido"
+                          />
+                        )
+                      ) : null}
                     </div>
                   </td>
                 </tr>

@@ -86,6 +86,16 @@ async function main() {
       console.log(`OK: ${label}`)
     }
 
+    // MySQL no tiene ADD COLUMN IF NOT EXISTS: se agrega solo si falta (aditivo, no toca datos).
+    const [deletedAtColumn] = await connection.query(
+      `SELECT 1 FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders' AND COLUMN_NAME = 'deleted_at'`,
+    )
+    if ((deletedAtColumn as unknown[]).length === 0) {
+      await connection.query('ALTER TABLE `orders` ADD COLUMN `deleted_at` timestamp NULL AFTER `delivery_photos`')
+    }
+    console.log('OK: columna orders.deleted_at')
+
     const [rows] = await connection.query(
       `SELECT r.name AS rol, p.can_view, p.can_create, p.can_edit, p.can_delete
        FROM role_permissions p

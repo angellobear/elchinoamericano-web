@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, type ReactNode } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
@@ -8,7 +8,9 @@ import type { ActionResult } from '@/modules/admin/shared/types/action-result'
 
 interface ConfirmActionButtonProps {
   action: () => Promise<ActionResult>
-  trigger: string
+  trigger: ReactNode
+  /** Texto accesible cuando el disparador es solo un ícono. */
+  triggerLabel?: string
   title: string
   description: string
   confirmLabel: string
@@ -18,6 +20,7 @@ interface ConfirmActionButtonProps {
 export function ConfirmActionButton({
   action,
   trigger,
+  triggerLabel,
   title,
   description,
   confirmLabel,
@@ -44,7 +47,13 @@ export function ConfirmActionButton({
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={triggerClassName}>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className={triggerClassName}
+        aria-label={triggerLabel}
+        title={triggerLabel}
+      >
         {trigger}
       </button>
 

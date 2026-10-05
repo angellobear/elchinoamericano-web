@@ -112,18 +112,15 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             Editar pedido
           </Link>
         ) : null}
-        {!isCancelled ? (
+        {/* Un pedido entregado ya fue entregado: no se anula. */}
+        {isPending ? (
           <div className="sm:ml-auto">
             <ConfirmActionButton
               action={cancelOrderAction.bind(null, order.id)}
               trigger="Anular pedido"
               triggerClassName={dangerButton}
               title="Anular pedido"
-              description={
-                isDelivered
-                  ? 'El pedido queda anulado y los productos del catálogo vuelven al inventario. No se puede deshacer.'
-                  : 'El pedido queda anulado. No se puede deshacer.'
-              }
+              description="El pedido queda anulado. No se puede deshacer."
               confirmLabel="Anular pedido"
             />
           </div>
