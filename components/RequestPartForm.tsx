@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { PackageSearch, Send, CheckCircle, MessageCircle, ChevronDown } from "lucide-react"
+import { PackageSearch, Send, ChevronDown } from "lucide-react"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { trackLead, trackWhatsApp } from "@/lib/analytics"
 import { submitInboxMessage } from "@/modules/inbox/server/actions"
@@ -9,6 +9,8 @@ import type { ActionResult } from "@/modules/admin/shared/types/action-result"
 
 interface RequestPartFormProps {
   searchQuery?: string
+  /** Se llama cuando el lead quedó guardado; el catálogo limpia filtros y muestra la confirmación. */
+  onSubmitted: () => void
 }
 
 interface FormData {
@@ -43,7 +45,7 @@ function buildWaMessage(form: FormData) {
   ].join("\n")
 }
 
-export default function RequestPartForm({ searchQuery = "" }: RequestPartFormProps) {
+export default function RequestPartForm({ searchQuery = "", onSubmitted }: RequestPartFormProps) {
   const [form, setForm] = useState<FormData>({
     repuesto: searchQuery,
     marcaVehiculo: "",
@@ -54,7 +56,6 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
     telefono: "",
     nota: "",
   })
-  const [sent, setSent] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [website, setWebsite] = useState("")
   const [pending, startTransition] = useTransition()
@@ -88,7 +89,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
         return
       }
       trackLead("repuesto")
-      setSent(true)
+      onSubmitted()
     })
   }
 
@@ -98,40 +99,6 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
   }
 
   const isValid = form.repuesto.trim() && form.nombre.trim() && form.marcaVehiculo.trim() && form.telefono.trim()
-
-  if (sent) {
-    return (
-      <div className="flex flex-col items-center gap-4 py-16 text-center">
-        <div className="w-16 h-16 bg-wa/10 rounded-full flex items-center justify-center">
-          <CheckCircle size={32} className="text-wa" />
-        </div>
-        <div>
-          <p className="font-display font-bold text-navy text-xl">¡Solicitud recibida!</p>
-          <p className="text-slate-500 text-sm mt-1 max-w-xs mx-auto">
-            Un asesor te contactará pronto.
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={openWhatsApp}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-wa hover:text-wa/80 transition-colors"
-        >
-          <MessageCircle size={16} />
-          ¿Prefieres escribirnos ya? Abrir WhatsApp
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setForm({ repuesto: searchQuery, marcaVehiculo: "", modelo: "", anio: "", cilindraje: "", nombre: "", telefono: "", nota: "" })
-            setSent(false)
-          }}
-          className="text-sm text-brand font-semibold hover:text-brand/75 transition-colors"
-        >
-          Hacer otra consulta
-        </button>
-      </div>
-    )
-  }
 
   return (
     <div className="flex flex-col gap-8">
