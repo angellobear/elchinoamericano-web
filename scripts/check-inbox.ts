@@ -91,6 +91,7 @@ assert.equal(summarizeInbox('cart', snap), '5 productos · $17.72')
 // WhatsApp al cliente: 09xxxxxxxx de Ecuador → 5939xxxxxxxx
 assert.equal(customerWhatsAppUrl('0991234567', 'Hola'), 'https://wa.me/593991234567?text=Hola')
 assert.equal(customerWhatsAppUrl('991234567', 'Hola'), 'https://wa.me/593991234567?text=Hola')
+assert.equal(customerWhatsAppUrl('022345678', 'Hola'), 'https://wa.me/59322345678?text=Hola', 'fijo de Ecuador')
 assert.equal(customerWhatsAppUrl('+593991234567', 'Hola Ana'), 'https://wa.me/593991234567?text=Hola%20Ana')
 
 // Params de URL repetidos: primer valor, solo claves conocidas, sin claves undefined

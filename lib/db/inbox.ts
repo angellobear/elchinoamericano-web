@@ -21,6 +21,8 @@ const escapeLike = (s: string) => s.replace(/[\\%_]/g, '\\$&')
 
 function buildWhere(f: InboxFilters) {
   const term = f.search?.trim()
+  // Un término solo de signos ("-", "()") queda vacío al normalizar: no se busca por teléfono.
+  const phoneTerm = term ? normalizePhone(term) : ''
   return and(
     isNull(inboxMessages.deletedAt),
     gte(inboxMessages.createdAt, f.from),
@@ -31,7 +33,7 @@ function buildWhere(f: InboxFilters) {
     term
       ? or(
           like(inboxMessages.name, `%${escapeLike(term)}%`),
-          like(inboxMessages.phone, `%${escapeLike(normalizePhone(term))}%`),
+          phoneTerm ? like(inboxMessages.phone, `%${escapeLike(phoneTerm)}%`) : undefined,
         )
       : undefined,
   )

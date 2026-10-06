@@ -43,6 +43,8 @@ export function InboxRowActions({ id, isRead, isHidden, canEdit, canDelete, with
       const result = await setInboxReadAction(id, !isRead)
       if (!result.ok) toast.error(result.message)
       else if (isRead && backHref) {
+        // Salir del detalle de inmediato: si se re-renderizara, MarkReadOnOpen lo volvería a
+        // marcar leído. No meter un await entre la acción y este push.
         toast.success(result.message)
         router.push(backHref)
         return

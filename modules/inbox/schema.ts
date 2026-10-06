@@ -154,5 +154,7 @@ export function customerWhatsAppUrl(phone: string, text: string) {
   let digits = phone.replace(/\D/g, '')
   if (digits.length === 10 && digits.startsWith('0')) digits = `593${digits.slice(1)}`
   if (digits.length === 9 && digits.startsWith('9')) digits = `593${digits}`
+  // Fijo de Ecuador (02xxxxxxx): solo sirve si ese número tiene WhatsApp Business.
+  else if (digits.length === 9 && digits.startsWith('0')) digits = `593${digits.slice(1)}`
   return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
 }

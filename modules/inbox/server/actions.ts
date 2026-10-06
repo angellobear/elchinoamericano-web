@@ -21,7 +21,7 @@ async function clientIp() {
 /** Registra un lead del sitio público en la bandeja del admin. */
 export async function submitInboxMessage(input: InboxSubmissionInput & { website?: string }): Promise<ActionResult> {
   // Honeypot: un bot llena el campo oculto. Se responde "ok" para que no reintente.
-  if (input.website) return successResult('Recibido.')
+  if (input?.website) return successResult('Recibido.')
 
   const parsed = inboxSubmissionSchema.safeParse(input)
   if (!parsed.success) {
