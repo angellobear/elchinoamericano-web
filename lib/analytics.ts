@@ -16,3 +16,9 @@ export function trackWhatsApp(source: string, item?: string) {
     wa_page: window.location.pathname,
   })
 }
+
+/** Envia el evento `lead_submit` a GA4 cuando un lead queda guardado en la bandeja. */
+export function trackLead(source: "repuesto" | "carrito") {
+  if (process.env.NODE_ENV !== "production") console.log("[lead]", source)
+  window.gtag?.("event", "lead_submit", { lead_source: source, wa_page: window.location.pathname })
+}

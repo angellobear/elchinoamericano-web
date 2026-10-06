@@ -4,11 +4,12 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Package, Boxes, Tag,
-  Car, Wrench, Truck, Users, Megaphone, ClipboardList, LogOut,
+  Car, Wrench, Truck, Users, Megaphone, ClipboardList, LogOut, Inbox,
 } from 'lucide-react'
 
 const NAV = [
   { href: '/admin/dashboard',      label: 'Dashboard',        icon: LayoutDashboard },
+  { href: '/admin/inbox',          label: 'Bandeja',          icon: Inbox },
   { href: '/admin/products',       label: 'Productos',        icon: Package },
   { href: '/admin/inventory',      label: 'Inventario',       icon: Boxes },
   { href: '/admin/orders',         label: 'Pedidos',          icon: ClipboardList },
@@ -24,10 +25,11 @@ interface Props {
   isSuperAdmin: boolean
   email: string
   role: string
+  unreadCount?: number
   onLinkClick?: () => void
 }
 
-export function SidebarNav({ isSuperAdmin, email, role, onLinkClick }: Props) {
+export function SidebarNav({ isSuperAdmin, email, role, unreadCount = 0, onLinkClick }: Props) {
   const pathname = usePathname()
   const visible = NAV.filter(i => i.href !== '/admin/users' || isSuperAdmin)
 
@@ -53,6 +55,11 @@ export function SidebarNav({ isSuperAdmin, email, role, onLinkClick }: Props) {
                 <Icon size={15} />
               </span>
               {label}
+              {href === '/admin/inbox' && unreadCount > 0 && (
+                <span className="ml-auto min-w-5 h-5 px-1.5 rounded-full bg-brand text-white text-xs font-bold flex items-center justify-center">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              )}
             </Link>
           )
         })}

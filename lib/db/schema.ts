@@ -10,10 +10,13 @@ import {
   char,
   json,
   primaryKey,
+  mysqlEnum,
+  index,
 } from 'drizzle-orm/mysql-core'
 import { relations, sql } from 'drizzle-orm'
 // Relativo y solo de tipo: drizzle-kit carga este archivo sin el alias "@/".
 import type { DeliveryPhoto } from '../orders'
+import type { InboxPayload } from '../../modules/inbox/schema'
 
 const mysqlCurrentTimestamp = sql`CURRENT_TIMESTAMP`
 
@@ -272,6 +275,25 @@ export const announcements = mysqlTable('announcements', {
   createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
   updatedAt: timestamp('updated_at').default(mysqlCurrentTimestamp),
 })
+
+// Bandeja de leads: solicitudes de repuesto y pedidos de carrito desde el sitio público.
+// Relativo y solo de tipo, igual que DeliveryPhoto: drizzle-kit no resuelve "@/".
+export const inboxMessages = mysqlTable('inbox_messages', {
+  id: int('id').autoincrement().primaryKey(),
+  type: mysqlEnum('type', ['part_request', 'cart']).notNull(),
+  name: varchar('name', { length: 120 }).notNull(),
+  phone: varchar('phone', { length: 30 }).notNull(),
+  payload: json('payload').$type<InboxPayload>().notNull(),
+  ip: varchar('ip', { length: 45 }),
+  readAt: timestamp('read_at'),
+  hiddenAt: timestamp('hidden_at'),
+  deletedAt: timestamp('deleted_at'),
+  createdAt: timestamp('created_at').default(mysqlCurrentTimestamp),
+}, (t) => ({
+  createdIdx: index('inbox_created_idx').on(t.createdAt),
+  unreadIdx: index('inbox_unread_idx').on(t.readAt, t.hiddenAt),
+  ipIdx: index('inbox_ip_idx').on(t.ip, t.createdAt),
+}))
 
 export const auditLog = mysqlTable('audit_log', {
   id: int('id').autoincrement().primaryKey(),

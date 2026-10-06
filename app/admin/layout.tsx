@@ -5,6 +5,10 @@ import { Toaster } from 'sonner'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { SidebarNav } from './_components/SidebarNav'
 import { MobileAdminHeader } from './_components/MobileAdminHeader'
+import { logger } from '@/lib/logger'
+import { countUnread } from '@/lib/db/inbox'
+import { INBOX_PERMISSION_KEYS } from '@/modules/admin/inbox/types'
+import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
 import { adminPwaMetadata, adminViewport } from '@/lib/pwa'
 
 export const metadata = adminPwaMetadata
@@ -19,6 +23,13 @@ export default async function AdminLayout({
   if (!payload) redirect('/login')
 
   const isSuperAdmin = payload.role === 'superadmin'
+  // Si la tabla aún no existe (parche sin aplicar) el panel no debe caerse: badge en 0.
+  const unreadCount = hasModulePermission(payload, INBOX_PERMISSION_KEYS, 'can_view')
+    ? await countUnread().catch((err) => {
+        logger.warn({ err }, 'countUnread failed; badge shows 0')
+        return 0
+      })
+    : 0
 
   return (
     <>
@@ -46,12 +57,12 @@ export default async function AdminLayout({
               </div>
             </Link>
           </div>
-          <SidebarNav isSuperAdmin={isSuperAdmin} email={payload.email} role={payload.role} />
+          <SidebarNav isSuperAdmin={isSuperAdmin} email={payload.email} role={payload.role} unreadCount={unreadCount} />
         </aside>
 
         {/* Content area */}
         <div className="flex-1 flex flex-col min-h-screen md:min-h-0 md:overflow-hidden print:block! print:min-h-0! print:overflow-visible!">
-          <MobileAdminHeader isSuperAdmin={isSuperAdmin} email={payload.email} role={payload.role} />
+          <MobileAdminHeader isSuperAdmin={isSuperAdmin} email={payload.email} role={payload.role} unreadCount={unreadCount} />
           <main className="flex-1 overflow-auto print:overflow-visible!">
             {children}
           </main>

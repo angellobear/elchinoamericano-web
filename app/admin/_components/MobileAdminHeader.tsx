@@ -11,19 +11,21 @@ interface Props {
   isSuperAdmin: boolean
   email: string
   role: string
+  unreadCount: number
 }
 
-export function MobileAdminHeader({ isSuperAdmin, email, role }: Props) {
+export function MobileAdminHeader({ isSuperAdmin, email, role, unreadCount }: Props) {
   const [open, setOpen] = useState(false)
 
   return (
     <header className="md:hidden sticky top-0 z-30 h-14 flex items-center gap-3 px-4 bg-navy border-b border-white/10 shrink-0 print:hidden!">
       <button
         onClick={() => setOpen(true)}
-        className="text-white/70 hover:text-white transition-colors p-1"
-        aria-label="Abrir menú"
+        className="relative text-white/70 hover:text-white transition-colors p-1"
+        aria-label={unreadCount > 0 ? `Abrir menú (${unreadCount} sin leer)` : 'Abrir menú'}
       >
         <Menu size={20} />
+        {unreadCount > 0 && <span className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-brand" />}
       </button>
 
       <Link href="/admin/dashboard" className="flex items-center gap-2 min-w-0">
@@ -69,6 +71,7 @@ export function MobileAdminHeader({ isSuperAdmin, email, role }: Props) {
             isSuperAdmin={isSuperAdmin}
             email={email}
             role={role}
+            unreadCount={unreadCount}
             onLinkClick={() => setOpen(false)}
           />
         </SheetContent>
