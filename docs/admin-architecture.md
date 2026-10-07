@@ -271,6 +271,8 @@ The key principle is to avoid coupling admin UI directly to raw DB calls inside 
 
 ## Bandeja (inbox)
 
+> **Pausada en el sitio público** (hasta nuevo aviso): `RequestPartForm` y `CartDrawer` volvieron al envío directo por WhatsApp. El admin, la tabla y la acción `submitInboxMessage` siguen activos. Reactivar: `git checkout 4b50c68 -- components/RequestPartForm.tsx components/CartDrawer.tsx app/catalogo/CatalogoClient.tsx`.
+
 Leads del sitio público: solicitudes de repuesto no encontrado (`RequestPartForm`) y pedidos del carrito (`CartDrawer`).
 
 - Tabla `inbox_messages` (parche: `npm run db:patch:inbox`). `payload` JSON según `type` (`part_request` | `cart`).

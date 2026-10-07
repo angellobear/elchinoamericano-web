@@ -1,16 +1,16 @@
 "use client"
 
-import { useState, useTransition } from "react"
-import { PackageSearch, Send, ChevronDown } from "lucide-react"
+// ponytail: Bandeja de leads pausada en el sitio público hasta nuevo aviso; vuelve el envío
+// directo por WhatsApp. Para reactivarla:
+//   git checkout 4b50c68 -- components/RequestPartForm.tsx components/CartDrawer.tsx app/catalogo/CatalogoClient.tsx
+
+import { useState } from "react"
+import { PackageSearch, Send, CheckCircle, MessageCircle, ChevronDown } from "lucide-react"
 import { getWhatsAppUrl } from "@/lib/constants"
-import { trackLead, trackWhatsApp } from "@/lib/analytics"
-import { submitInboxMessage } from "@/modules/inbox/server/actions"
-import type { ActionResult } from "@/modules/admin/shared/types/action-result"
+import { trackWhatsApp } from "@/lib/analytics"
 
 interface RequestPartFormProps {
   searchQuery?: string
-  /** Se llama cuando el lead quedó guardado; el catálogo limpia filtros y muestra la confirmación. */
-  onSubmitted: () => void
 }
 
 interface FormData {
@@ -27,25 +27,7 @@ interface FormData {
 const CURRENT_YEAR = new Date().getFullYear()
 const YEARS = Array.from({ length: 25 }, (_, i) => CURRENT_YEAR - i)
 
-function buildWaMessage(form: FormData) {
-  const vehiculoStr = [form.marcaVehiculo, form.modelo, form.anio, form.cilindraje].filter(Boolean).join(" ")
-  return [
-    `Hola! Necesito un repuesto que no encuentro en el catálogo.`,
-    ``,
-    `🔧 Repuesto necesario: ${form.repuesto}`,
-    vehiculoStr && `🚗 Vehículo: ${vehiculoStr}`,
-    ``,
-    `📋 Mis datos:`,
-    `• Nombre: ${form.nombre}`,
-    form.telefono && `• Teléfono: ${form.telefono}`,
-    form.nota && ``,
-    form.nota && `📝 Nota adicional: ${form.nota}`,
-    ``,
-    `¿Pueden ayudarme a conseguirlo?`,
-  ].join("\n")
-}
-
-export default function RequestPartForm({ searchQuery = "", onSubmitted }: RequestPartFormProps) {
+export default function RequestPartForm({ searchQuery = "" }: RequestPartFormProps) {
   const [form, setForm] = useState<FormData>({
     repuesto: searchQuery,
     marcaVehiculo: "",
@@ -56,9 +38,7 @@ export default function RequestPartForm({ searchQuery = "", onSubmitted }: Reque
     telefono: "",
     nota: "",
   })
-  const [error, setError] = useState<string | null>(null)
-  const [website, setWebsite] = useState("")
-  const [pending, startTransition] = useTransition()
+  const [sent, setSent] = useState(false)
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
@@ -66,39 +46,56 @@ export default function RequestPartForm({ searchQuery = "", onSubmitted }: Reque
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError(null)
-    startTransition(async () => {
-      const result: ActionResult = await submitInboxMessage({
-        type: "part_request",
-        name: form.nombre,
-        phone: form.telefono,
-        website,
-        payload: {
-          repuesto: form.repuesto,
-          marcaVehiculo: form.marcaVehiculo,
-          modelo: form.modelo,
-          anio: form.anio,
-          cilindraje: form.cilindraje,
-          nota: form.nota,
-          searchQuery,
-        },
-      }).catch(() => ({ ok: false, message: "No pudimos enviar tu solicitud. Revisa tu conexión." }))
 
-      if (!result.ok) {
-        setError(result.message)
-        return
-      }
-      trackLead("repuesto")
-      onSubmitted()
-    })
-  }
+    const vehiculoStr = [form.marcaVehiculo, form.modelo, form.anio, form.cilindraje]
+      .filter(Boolean)
+      .join(" ")
 
-  function openWhatsApp() {
+    const lines = [
+      `Hola! Necesito un repuesto que no encuentro en el catálogo.`,
+      ``,
+      `🔧 Repuesto necesario: ${form.repuesto}`,
+      vehiculoStr && `🚗 Vehículo: ${vehiculoStr}`,
+      ``,
+      `📋 Mis datos:`,
+      `• Nombre: ${form.nombre}`,
+      form.telefono && `• Teléfono: ${form.telefono}`,
+      form.nota && ``,
+      form.nota && `📝 Nota adicional: ${form.nota}`,
+      ``,
+      `¿Pueden ayudarme a conseguirlo?`,
+    ]
+      .join("\n")
+
     trackWhatsApp("catalogo")
-    window.open(getWhatsAppUrl(buildWaMessage(form)), "_blank")
+    window.open(getWhatsAppUrl(lines), "_blank")
+    setSent(true)
+    setTimeout(() => setSent(false), 5000)
   }
 
-  const isValid = form.repuesto.trim() && form.nombre.trim() && form.marcaVehiculo.trim() && form.telefono.trim()
+  const isValid = form.repuesto.trim() && form.nombre.trim() && form.marcaVehiculo.trim()
+
+  if (sent) {
+    return (
+      <div className="flex flex-col items-center gap-4 py-16 text-center">
+        <div className="w-16 h-16 bg-wa/10 rounded-full flex items-center justify-center">
+          <CheckCircle size={32} className="text-wa" />
+        </div>
+        <div>
+          <p className="font-display font-bold text-navy text-xl">¡Solicitud enviada!</p>
+          <p className="text-slate-500 text-sm mt-1 max-w-xs mx-auto">
+            Te redirigimos a WhatsApp. Responderemos en menos de 24 horas en días laborables.
+          </p>
+        </div>
+        <button
+          onClick={() => setSent(false)}
+          className="text-sm text-brand font-semibold hover:text-brand/75 transition-colors"
+        >
+          Hacer otra consulta
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -126,23 +123,17 @@ export default function RequestPartForm({ searchQuery = "", onSubmitted }: Reque
             Lo buscamos por ti
           </p>
           <p className="text-white/60 text-sm">
-            Déjanos tus datos y un asesor te contacta.
+            Completa el formulario y te contactamos por WhatsApp.
           </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0 text-wa">
+          <MessageCircle size={18} />
+          <span className="text-sm font-bold text-wa">WhatsApp</span>
         </div>
       </div>
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-        <input
-          type="text"
-          name="website"
-          value={website}
-          onChange={(e) => setWebsite(e.target.value)}
-          tabIndex={-1}
-          autoComplete="off"
-          aria-hidden="true"
-          className="hidden"
-        />
         {/* Repuesto needed */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="req-repuesto" className="text-sm font-bold text-slate-700">
@@ -257,13 +248,12 @@ export default function RequestPartForm({ searchQuery = "", onSubmitted }: Reque
             </div>
             <div className="flex flex-col gap-1.5">
               <label htmlFor="req-telefono" className="text-sm font-semibold text-slate-700">
-                Teléfono / WhatsApp <span className="text-brand">*</span>
+                Teléfono / WhatsApp
               </label>
               <input
                 id="req-telefono"
                 name="telefono"
                 type="tel"
-                required
                 value={form.telefono}
                 onChange={handleChange}
                 placeholder="+593 9XX XXX XXX"
@@ -289,22 +279,13 @@ export default function RequestPartForm({ searchQuery = "", onSubmitted }: Reque
           />
         </div>
 
-        {error && (
-          <div role="alert" className="flex flex-col gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2.5 text-sm text-red-700">
-            <p>{error}</p>
-            <button type="button" onClick={openWhatsApp} className="self-start font-semibold text-wa hover:text-wa/80">
-              Enviar por WhatsApp
-            </button>
-          </div>
-        )}
-
         <button
           type="submit"
-          disabled={!isValid || pending}
-          className="inline-flex items-center justify-center gap-2 bg-brand hover:bg-brand/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm px-6 py-3.5 rounded-lg transition-colors duration-150 active:scale-[0.97] min-h-12 w-full sm:w-auto"
+          disabled={!isValid}
+          className="inline-flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold text-sm px-6 py-3.5 rounded-lg transition-colors duration-150 active:scale-[0.97] min-h-12 w-full sm:w-auto"
         >
           <Send size={16} />
-          {pending ? "Enviando…" : "Enviar solicitud"}
+          Solicitar por WhatsApp
         </button>
 
         <p className="text-xs text-slate-400">

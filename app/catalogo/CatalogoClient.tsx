@@ -14,7 +14,6 @@ import { AnimatePresence, motion } from "framer-motion"
 import CatalogFilters from "@/components/CatalogFilters"
 import ProductGrid from "@/components/ProductGrid"
 import RequestPartForm from "@/components/RequestPartForm"
-import LeadReceivedDialog from "@/components/LeadReceivedDialog"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import type { Product } from "@/types"
 import { filterCatalogProducts } from "@/lib/catalog-products"
@@ -284,7 +283,6 @@ export default function CatalogoClient({
   const [search, setSearch] = useState(initialSearch)
   const [filters, setFilters] = useState(initialFilters)
   const [page, setPage] = useState(initialPage)
-  const [leadSent, setLeadSent] = useState(false)
   const searchSyncTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const filteredProducts = getFilteredProducts(products, search, filters)
@@ -327,18 +325,6 @@ export default function CatalogoClient({
     setSearch("")
     setPage(1)
     syncRoute("", DEFAULT_CATALOG_FILTERS, 1)
-  }
-
-  // ponytail: replaceState y no el router; el `key` de page.tsx remontaría este componente y
-  // se perdería el modal. Los productos ya están todos en el cliente, filtrar no necesita servidor.
-  function handleLeadSent() {
-    if (searchSyncTimer.current) clearTimeout(searchSyncTimer.current)
-    setFilters(DEFAULT_CATALOG_FILTERS)
-    setSearch("")
-    setPage(1)
-    window.history.replaceState(null, "", buildCatalogUrl("", DEFAULT_CATALOG_FILTERS, 1))
-    window.scrollTo({ top: 0, behavior: "smooth" })
-    setLeadSent(true)
   }
 
   function handlePage(nextPage: number) {
@@ -481,10 +467,7 @@ export default function CatalogoClient({
             </AnimatePresence>
 
             {filteredProducts.length === 0 ? (
-              <RequestPartForm
-                searchQuery={search}
-                onSubmitted={handleLeadSent}
-              />
+              <RequestPartForm searchQuery={search} />
             ) : (
               <>
                 <ProductGrid products={paginatedProducts} search={search} />
@@ -499,13 +482,6 @@ export default function CatalogoClient({
           </div>
         </div>
       </div>
-
-      <LeadReceivedDialog
-        open={leadSent}
-        onClose={() => setLeadSent(false)}
-        title="¡Solicitud recibida!"
-        description="Un asesor te contactará pronto por WhatsApp o llamada para ayudarte a conseguir tu repuesto."
-      />
     </main>
   )
 }
