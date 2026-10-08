@@ -19,7 +19,7 @@ import { toVehicleBrandKey } from "@/lib/vehicle-brands-public"
 import { buildCatalogMetadata, SITE_NAME, SITE_URL } from "@/lib/seo"
 import { buildProductPath } from "@/lib/product-slugs"
 
-export const revalidate = 3600
+export const revalidate = 86400 // 1 día: los guardados del admin revalidan al instante; esto solo refresca stock y listados (ISR Writes son limitados en Vercel Hobby)
 
 const CATALOG_DESCRIPTION =
   "Explora nuestro catálogo de repuestos originales, OEM y alternos para vehículos chinos y americanos. Filtra por marca, categoría y precio con envíos a todo Ecuador."

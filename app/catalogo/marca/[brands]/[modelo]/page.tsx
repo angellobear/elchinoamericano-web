@@ -23,7 +23,7 @@ import {
 import { BRAND_CONTENT, type BrandFaq } from "@/data/brand-content"
 import type { Product } from "@/types"
 
-export const revalidate = 3600
+export const revalidate = 86400 // 1 día: los guardados del admin revalidan al instante; esto solo refresca stock y listados (ISR Writes son limitados en Vercel Hobby)
 
 type Params = { brands: string; modelo: string }
 
