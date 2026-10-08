@@ -131,7 +131,11 @@ export default async function CatalogoModeloPage({ params }: { params: Promise<P
         name: `Repuestos ${fullName}`,
         url: `${SITE_URL}${path}`,
         isPartOf: { "@type": "WebSite", name: SITE_NAME, url: SITE_URL },
-        about: { "@type": "Vehicle", name: fullName, brand: { "@type": "Brand", name: brand.name }, model: model.name },
+        // Not "Vehicle": it's a Product subtype, so Google demands offers/review/aggregateRating on it.
+        about: [
+          { "@type": "Brand", name: brand.name },
+          { "@type": "Thing", name: fullName },
+        ],
         mainEntity: {
           "@type": "ItemList",
           numberOfItems: model.products.length,
