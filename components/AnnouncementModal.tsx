@@ -74,7 +74,7 @@ export function AnnouncementModal() {
       alt={alt}
       width={800}
       height={800}
-      className="w-full h-auto"
+      className="min-h-0 w-full object-contain"
       priority={false}
     />
   )
@@ -83,7 +83,7 @@ export function AnnouncementModal() {
     <Dialog open={open} onOpenChange={(next) => (next ? setOpen(true) : dismiss())}>
       <DialogContent
         showCloseButton={false}
-        className="p-0 gap-0 overflow-hidden rounded-2xl border-0 sm:max-w-lg"
+        className="flex max-h-[70dvh] flex-col p-0 gap-0 overflow-hidden rounded-2xl border-0 sm:max-w-lg"
       >
         <DialogClose
           className="absolute right-3 top-3 z-10 rounded-full bg-black/55 p-1.5 text-white transition-colors hover:bg-black/75 focus:outline-none focus:ring-2 focus:ring-white/70"
@@ -93,7 +93,8 @@ export function AnnouncementModal() {
         </DialogClose>
 
         {announcement.linkUrl ? (
-          <Link href={announcement.linkUrl} onClick={dismiss}>
+          // ponytail: `contents` deja la imagen como hija flex directa para que se encoja; "Ver más" es el enlace accesible
+          <Link href={announcement.linkUrl} onClick={dismiss} className="contents" tabIndex={-1}>
             {image}
           </Link>
         ) : (
@@ -101,7 +102,7 @@ export function AnnouncementModal() {
         )}
 
         {announcement.title ? (
-          <DialogTitle className="px-5 pt-4 font-display text-xl font-bold text-navy">
+          <DialogTitle className="shrink-0 px-5 pt-4 font-display text-xl font-bold text-navy">
             {announcement.title}
           </DialogTitle>
         ) : (
@@ -109,7 +110,7 @@ export function AnnouncementModal() {
         )}
 
         {announcement.description ? (
-          <DialogDescription className="px-5 pt-2 text-sm text-slate-600">
+          <DialogDescription className="shrink-0 px-5 pt-2 text-sm text-slate-600">
             {announcement.description}
           </DialogDescription>
         ) : (
@@ -118,7 +119,7 @@ export function AnnouncementModal() {
           </DialogDescription>
         )}
 
-        <div className="flex gap-3 p-5">
+        <div className="flex shrink-0 gap-3 p-5">
           {announcement.linkUrl ? (
             <Link
               href={announcement.linkUrl}
