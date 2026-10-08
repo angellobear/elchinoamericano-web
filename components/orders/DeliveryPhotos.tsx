@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import Image from '@/components/CloudImage'
 import { useState } from 'react'
 import { ZoomIn } from 'lucide-react'
 import { LightBox } from '@/components/ProductCarousel'

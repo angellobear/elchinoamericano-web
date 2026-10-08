@@ -1,6 +1,6 @@
 "use client"
 
-import Image from "next/image"
+import Image from "@/components/CloudImage"
 import { motion, AnimatePresence } from "framer-motion"
 import { X, MessageCircle, ShoppingCart, Package } from "lucide-react"
 import { useCart } from "@/context/CartContext"

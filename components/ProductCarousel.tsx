@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import Image from "next/image"
+import Image from "@/components/CloudImage"
 import { ChevronLeft, ChevronRight, Package, ZoomIn } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { DEFAULT_PRODUCT_IMAGE_PATH } from "@/lib/seo"

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import Image from '@/components/CloudImage'
 import { Megaphone, Pencil } from 'lucide-react'
 import { todayInEcuador } from '@/lib/today-ecuador'
 import { routes } from '@/lib/routes'

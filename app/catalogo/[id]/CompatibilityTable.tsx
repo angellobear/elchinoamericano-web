@@ -1,7 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import Image from "next/image"
+import Image from "@/components/CloudImage"
 import { Search, Truck } from "lucide-react"
 import type { Product } from "@/types"
 

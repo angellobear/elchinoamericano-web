@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import Image from "next/image"
+import Image from "@/components/CloudImage"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { X } from "lucide-react"
