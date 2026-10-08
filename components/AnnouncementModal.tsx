@@ -68,13 +68,16 @@ export function AnnouncementModal() {
   if (!announcement) return null
 
   const alt = announcement.title ?? "Anuncio de El Chino Americano"
+  const hasPanel = Boolean(announcement.title || announcement.description || announcement.linkUrl)
+  // ponytail: la imagen manda el ancho del modal (w-auto + tope de alto), así no quedan franjas.
+  // Alto: 80dvh en móvil, 70dvh desde sm. Con panel de texto se reservan 10rem; el panel hace scroll si se pasa.
   const image = (
     <Image
       src={announcement.imageUrl}
       alt={alt}
       width={800}
       height={800}
-      className="min-h-0 w-full object-contain"
+      className={`block h-auto w-auto max-w-[min(calc(100vw-2rem),32rem)] ${hasPanel ? "max-h-[calc(80dvh-10rem)] sm:max-h-[calc(70dvh-10rem)]" : "max-h-[80dvh] sm:max-h-[70dvh]"}`}
       priority={false}
     />
   )
@@ -83,59 +86,43 @@ export function AnnouncementModal() {
     <Dialog open={open} onOpenChange={(next) => (next ? setOpen(true) : dismiss())}>
       <DialogContent
         showCloseButton={false}
-        className="flex max-h-[70dvh] flex-col p-0 gap-0 overflow-hidden rounded-2xl border-0 sm:max-w-lg"
+        overlayClassName="bg-black/65"
+        className="w-fit max-w-[calc(100%-2rem)] gap-0 overflow-hidden rounded-2xl border-0 bg-white p-0 shadow-2xl sm:max-w-lg"
       >
         <DialogClose
-          className="absolute right-3 top-3 z-10 rounded-full bg-black/55 p-1.5 text-white transition-colors hover:bg-black/75 focus:outline-none focus:ring-2 focus:ring-white/70"
+          className="absolute right-3 top-3 z-10 rounded-full border border-white/80 bg-black/30 p-1.5 text-white backdrop-blur-sm transition-colors hover:bg-black/50 focus:outline-none focus:ring-2 focus:ring-white/70"
           aria-label="Cerrar anuncio"
         >
-          <X size={16} />
+          <X size={16} strokeWidth={1.5} />
         </DialogClose>
 
         {announcement.linkUrl ? (
-          // ponytail: `contents` deja la imagen como hija flex directa para que se encoja; "Ver más" es el enlace accesible
-          <Link href={announcement.linkUrl} onClick={dismiss} className="contents" tabIndex={-1}>
+          <Link href={announcement.linkUrl} onClick={dismiss} tabIndex={-1}>
             {image}
           </Link>
         ) : (
           image
         )}
 
-        {announcement.title ? (
-          <DialogTitle className="shrink-0 px-5 pt-4 font-display text-xl font-bold text-navy">
-            {announcement.title}
+        {/* w-0 min-w-full: el texto toma el ancho de la imagen en vez de ensanchar el modal */}
+        <div className={hasPanel ? "w-0 min-w-full max-h-40 overflow-y-auto px-5 py-4" : "sr-only"}>
+          <DialogTitle className={announcement.title ? "font-display text-xl font-bold text-navy" : "sr-only"}>
+            {announcement.title ?? alt}
           </DialogTitle>
-        ) : (
-          <DialogTitle className="sr-only">{alt}</DialogTitle>
-        )}
-
-        {announcement.description ? (
-          <DialogDescription className="shrink-0 px-5 pt-2 text-sm text-slate-600">
-            {announcement.description}
+          <DialogDescription
+            className={announcement.description ? "mt-1 text-sm text-slate-600" : "sr-only"}
+          >
+            {announcement.description ?? "Aviso de El Chino Americano"}
           </DialogDescription>
-        ) : (
-          <DialogDescription className="sr-only">
-            Aviso de El Chino Americano
-          </DialogDescription>
-        )}
-
-        <div className="flex shrink-0 gap-3 p-5">
           {announcement.linkUrl ? (
             <Link
               href={announcement.linkUrl}
               onClick={dismiss}
-              className="flex-1 rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand/90"
+              className="mt-3 block rounded-lg bg-brand px-4 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-brand/90"
             >
               Ver más
             </Link>
           ) : null}
-          <button
-            type="button"
-            onClick={dismiss}
-            className="flex-1 rounded-lg border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50"
-          >
-            Cerrar
-          </button>
         </div>
       </DialogContent>
     </Dialog>
