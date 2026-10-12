@@ -14,32 +14,38 @@ export const INBOX_TYPE_LABEL: Record<InboxType, string> = {
 // Límite por IP y por tipo en la ventana. Los clics de WhatsApp son más frecuentes.
 export const RATE_LIMIT_MAX: Record<InboxType, number> = { part_request: 5, cart: 5, whatsapp: 20 }
 export const RATE_LIMIT_WINDOW_MIN = 10
-// Un registro idéntico (misma IP, tipo, datos) dentro de esta ventana se descarta.
-export const DEDUPE_WINDOW_MIN = 10
+// Un registro idéntico (misma IP, tipo, datos) dentro de esta ventana se descarta. Corta para
+// las consultas anónimas: detrás de una misma IP (CGNAT móvil) puede haber varios clientes.
+export const DEDUPE_WINDOW_MIN: Record<InboxType, number> = { part_request: 10, cart: 10, whatsapp: 2 }
 export const INBOX_PAGE_SIZE = 50
 
 export function normalizePhone(raw: string) {
   return raw.trim().replace(/[\s\-().]/g, '')
 }
 
-const nameField = z.string().trim().min(1, 'Ingresa tu nombre.').max(120, 'El nombre es muy largo.')
+// ponytail: el registro es silencioso; un texto demasiado largo se recorta en vez de perder el lead.
+const clipped = (max: number) => z.string().max(10_000).transform((v) => v.trim().slice(0, max))
+const requiredText = (max: number) => clipped(max).pipe(z.string().min(1))
+const nameField = requiredText(120)
 // ponytail: el registro es silencioso, así que un teléfono raro no se rechaza: se guarda
 // normalizado tal cual lo escribió el cliente (opcional, máx. 30).
 const lenientPhone = z.string().max(40).optional().default('').transform((v) => normalizePhone(v).slice(0, 30))
-const optionalText = (max: number) => z.string().trim().max(max).optional().default('')
+const optionalText = (max: number) => clipped(max).optional().default('')
 
 export const partRequestPayloadSchema = z.object({
-  repuesto: z.string().trim().min(1, 'Indica el repuesto que necesitas.').max(200),
-  marcaVehiculo: z.string().trim().min(1, 'Indica la marca del vehículo.').max(60),
+  repuesto: requiredText(200),
+  marcaVehiculo: optionalText(60),
   modelo: optionalText(60),
   anio: optionalText(4),
   cilindraje: optionalText(30),
   nota: optionalText(500),
   searchQuery: optionalText(200),
+  /** De dónde vino: 'catalogo' (repuesto no encontrado) o 'contacto'. */
+  origen: optionalText(40),
 })
 
 export const whatsappPayloadSchema = z.object({
-  source: z.string().trim().min(1).max(40),
+  source: requiredText(40),
   item: optionalText(100),
   page: optionalText(200),
 })

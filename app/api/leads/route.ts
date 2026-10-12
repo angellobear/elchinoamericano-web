@@ -20,6 +20,7 @@ function sameOrigin(req: NextRequest) {
   return isSameOriginRequest({
     secFetchSite: req.headers.get('sec-fetch-site'),
     origin: req.headers.get('origin'),
+    referer: req.headers.get('referer'),
     host: req.headers.get('x-forwarded-host') ?? req.headers.get('host'),
   })
 }
@@ -40,8 +41,9 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   if (!sameOrigin(req)) return forbidden()
 
+  if (Number(req.headers.get('content-length') ?? 0) > MAX_BODY_BYTES) return new NextResponse(null, { status: 400 })
   const raw = await req.text().catch(() => '')
-  if (!raw || raw.length > MAX_BODY_BYTES) return new NextResponse(null, { status: 400 })
+  if (!raw || Buffer.byteLength(raw) > MAX_BODY_BYTES) return new NextResponse(null, { status: 400 })
 
   let body: { token?: unknown } & Record<string, unknown>
   try {
@@ -51,11 +53,12 @@ export async function POST(req: NextRequest) {
   }
   if (!body || typeof body !== 'object' || !verifyLeadToken(body.token, tokenSecret())) return forbidden()
 
+  const type = typeof body.type === 'string' ? body.type.slice(0, 20) : 'other'
   try {
     const result = await recordLead(body, clientIp(req))
-    if (result !== 'saved') logger.info({ result, type: body.type }, 'Lead not saved')
+    if (result !== 'saved') logger.info({ result, type }, 'Lead not saved')
   } catch (err) {
-    logger.error({ err, type: body.type }, 'Error saving lead')
+    logger.error({ err, type }, 'Error saving lead')
   }
   // Siempre 204: el cliente no espera ni muestra nada.
   return new NextResponse(null, { status: 204, headers: noStore })

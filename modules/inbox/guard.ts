@@ -28,14 +28,21 @@ export function verifyLeadToken(token: unknown, secret: string, now = Date.now()
 }
 
 /**
- * Solo peticiones hechas por nuestras propias páginas. Los navegadores mandan Sec-Fetch-Site;
- * si falta (navegadores viejos) se compara el host de Origin con el host de la petición.
+ * Solo peticiones hechas por nuestras propias páginas. Los navegadores modernos mandan
+ * Sec-Fetch-Site; en los viejos (p. ej. Safari < 16.4) se compara el host de Origin o, si falta
+ * (un GET same-origin no lo manda), el de Referer con el host de la petición.
  */
-export function isSameOriginRequest(h: { secFetchSite: string | null; origin: string | null; host: string | null }) {
+export function isSameOriginRequest(h: {
+  secFetchSite: string | null
+  origin: string | null
+  referer?: string | null
+  host: string | null
+}) {
   if (h.secFetchSite) return h.secFetchSite === 'same-origin'
-  if (!h.origin || !h.host) return false
+  const source = h.origin ?? h.referer
+  if (!source || !h.host) return false
   try {
-    return new URL(h.origin).host === h.host
+    return new URL(source).host === h.host
   } catch {
     return false
   }

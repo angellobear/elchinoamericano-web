@@ -28,7 +28,7 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
   const cart = message.payload as CartPayload
   const part = message.payload as PartRequestPayload
   const wa = message.payload as WhatsAppPayload
-  const subject = isCart ? 'tu pedido' : `tu solicitud de ${part.repuesto}`
+  const subject = isCart ? 'tu pedido' : message.type === 'part_request' ? `tu solicitud de ${part.repuesto}` : 'tu consulta'
   // Solo si dejó teléfono (las consultas por WhatsApp y los carritos son sin teléfono).
   const waUrl = message.phone
     ? customerWhatsAppUrl(message.phone, `Hola ${message.name}, te escribimos de El Chino Americano por ${subject}.`)
@@ -44,6 +44,7 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
             ['Vehículo', [part.marcaVehiculo, part.modelo, part.anio, part.cilindraje].filter(Boolean).join(' ')],
             ['Búsqueda', part.searchQuery],
             ['Nota', part.nota],
+            ['Origen', part.origen === 'contacto' ? 'Formulario de contacto' : part.origen === 'catalogo' ? 'Catálogo (sin resultados)' : ''],
           ]
 
   return (

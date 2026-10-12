@@ -33,7 +33,7 @@ export async function recordLead(input: unknown, ip: string | null): Promise<Rec
     row = { type: 'whatsapp', name: '', phone: '', payload: data.payload, ip }
   }
 
-  if (await hasRecentDuplicate(row, DEDUPE_WINDOW_MIN)) return 'duplicate'
+  if (await hasRecentDuplicate(row, DEDUPE_WINDOW_MIN[row.type])) return 'duplicate'
   if (ip && (await countRecentByIp(ip, row.type, RATE_LIMIT_WINDOW_MIN)) >= RATE_LIMIT_MAX[row.type]) {
     return 'rate_limited'
   }

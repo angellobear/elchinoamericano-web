@@ -17,7 +17,8 @@ export function WhatsAppClickTracker() {
 
     const onClick = (e: MouseEvent) => {
       const link = waLink(e.target)
-      if (!link) return
+      // aria-disabled: el carrito sin nombre bloquea el envío; no cuenta como clic.
+      if (!link || link.getAttribute("aria-disabled") === "true") return
       const source = link.dataset.wa ?? "sin_etiqueta"
       trackWhatsApp(source, link.dataset.waItem)
       // El carrito registra su propio lead (con productos y nombre) desde CartDrawer.
@@ -28,10 +29,15 @@ export function WhatsAppClickTracker() {
     const onIntent = (e: Event) => {
       if (waLink(e.target) && isPublicPage()) prefetchLeadToken()
     }
+    // Token listo antes del primer clic (en el celular, al abrir WhatsApp la pestaña se congela).
+    const warmUp = window.setTimeout(() => {
+      if (isPublicPage()) prefetchLeadToken()
+    }, 1500)
     document.addEventListener("click", onClick)
     document.addEventListener("pointerover", onIntent)
     document.addEventListener("focusin", onIntent)
     return () => {
+      window.clearTimeout(warmUp)
       document.removeEventListener("click", onClick)
       document.removeEventListener("pointerover", onIntent)
       document.removeEventListener("focusin", onIntent)

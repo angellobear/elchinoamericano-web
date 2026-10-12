@@ -78,6 +78,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
         cilindraje: form.cilindraje,
         nota: form.nota,
         searchQuery,
+        origen: "catalogo",
       },
     })
     window.open(getWhatsAppUrl(lines), "_blank")
@@ -154,6 +155,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
           <input
             id="req-repuesto"
             name="repuesto"
+            maxLength={200}
             type="text"
             required
             value={form.repuesto}
@@ -176,6 +178,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-marca"
                 name="marcaVehiculo"
+            maxLength={60}
                 type="text"
                 required
                 value={form.marcaVehiculo}
@@ -191,6 +194,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-modelo"
                 name="modelo"
+            maxLength={60}
                 type="text"
                 value={form.modelo}
                 onChange={handleChange}
@@ -227,6 +231,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-cilindraje"
                 name="cilindraje"
+            maxLength={30}
                 type="text"
                 value={form.cilindraje}
                 onChange={handleChange}
@@ -250,6 +255,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-nombre"
                 name="nombre"
+            maxLength={120}
                 type="text"
                 required
                 value={form.nombre}
@@ -265,6 +271,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-telefono"
                 name="telefono"
+            maxLength={30}
                 type="tel"
                 value={form.telefono}
                 onChange={handleChange}
@@ -283,6 +290,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
           <textarea
             id="req-nota"
             name="nota"
+            maxLength={500}
             rows={2}
             value={form.nota}
             onChange={handleChange}
