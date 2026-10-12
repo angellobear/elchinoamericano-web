@@ -24,10 +24,16 @@ export const defaultWaMessage =
 
 export const waGreeting = "Hola! Le escribo desde [su ciudad]. "
 
+// ponytail: api.whatsapp.com/send directo y no wa.me. La redirección de wa.me convierte los emojis
+// de 4 bytes (🔧 🚗 📋) en "�"; api.whatsapp.com los conserva y abre la app igual.
+export const WHATSAPP_SEND_URL = "https://api.whatsapp.com/send"
+
+export function whatsAppSendUrl(phone: string, text: string) {
+  return `${WHATSAPP_SEND_URL}?phone=${phone}&text=${encodeURIComponent(text)}`
+}
+
 export function getWhatsAppUrl(message?: string) {
-  const baseUrl = `https://wa.me/${contactInfo.whatsappNumber}`
-  const text = message ?? defaultWaMessage
-  return `${baseUrl}?text=${encodeURIComponent(text)}`
+  return whatsAppSendUrl(contactInfo.whatsappNumber, message ?? defaultWaMessage)
 }
 
 export const contactPageContent = {

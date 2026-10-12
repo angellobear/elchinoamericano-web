@@ -4,14 +4,14 @@ import { useEffect } from "react"
 import { trackWhatsApp } from "@/lib/analytics"
 import { prefetchLeadToken, recordLead } from "@/lib/lead-beacon"
 
-/** Escucha los clics a wa.me de todo el sitio: evento GA4 + consulta en la bandeja. */
+/** Escucha los clics a WhatsApp de todo el sitio: evento GA4 + consulta en la bandeja. */
 export function WhatsAppClickTracker() {
-  // ponytail: un listener delegado cubre todos los <a> a wa.me, incluidos los
+  // ponytail: un listener delegado cubre todos los <a> a WhatsApp, incluidos los
   // que viven en Server Components. Cada boton solo declara data-wa="...".
   // El mismo listener registra cada clic como consulta anónima en la bandeja (silencioso).
   useEffect(() => {
     const waLink = (target: EventTarget | null) =>
-      (target as HTMLElement | null)?.closest?.('a[href*="wa.me/"]') as HTMLAnchorElement | null
+      (target as HTMLElement | null)?.closest?.('a[href*="api.whatsapp.com/send"], a[href*="wa.me/"]') as HTMLAnchorElement | null
     // El admin (contactar clientes) y /pedido no son leads del sitio público.
     const isPublicPage = () => !/^\/(admin|pedido)(\/|$)/.test(window.location.pathname)
 
