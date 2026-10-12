@@ -280,7 +280,7 @@ export const announcements = mysqlTable('announcements', {
 // Relativo y solo de tipo, igual que DeliveryPhoto: drizzle-kit no resuelve "@/".
 export const inboxMessages = mysqlTable('inbox_messages', {
   id: int('id').autoincrement().primaryKey(),
-  type: mysqlEnum('type', ['part_request', 'cart']).notNull(),
+  type: mysqlEnum('type', ['part_request', 'cart', 'whatsapp']).notNull(),
   name: varchar('name', { length: 120 }).notNull(),
   phone: varchar('phone', { length: 30 }).notNull(),
   payload: json('payload').$type<InboxPayload>().notNull(),

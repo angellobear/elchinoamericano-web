@@ -1,14 +1,16 @@
 import Link from 'next/link'
-import { PackageSearch, ShoppingCart } from 'lucide-react'
+import { MessageCircle, PackageSearch, ShoppingCart } from 'lucide-react'
 import { getJwtPayload } from '@/lib/auth/check-permission'
 import { listInbox } from '@/lib/db/inbox'
 import { routes } from '@/lib/routes'
 import { todayInEcuador } from '@/lib/today-ecuador'
 import { InboxRowActions } from '@/modules/admin/inbox/components/InboxRowActions'
 import { MarkAllReadButton } from '@/modules/admin/inbox/components/MarkAllReadButton'
-import { filtersFromParams, INBOX_PERMISSION_KEYS, normalizeInboxParams } from '@/modules/admin/inbox/types'
+import { contactLabel, filtersFromParams, INBOX_PERMISSION_KEYS, INBOX_TYPE_BADGE, normalizeInboxParams } from '@/modules/admin/inbox/types'
 import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
 import { INBOX_PAGE_SIZE, INBOX_TYPE_LABEL, summarizeInbox } from '@/modules/inbox/schema'
+
+const TYPE_ICON = { part_request: PackageSearch, cart: ShoppingCart, whatsapp: MessageCircle }
 
 const dateFmt = new Intl.DateTimeFormat('es-EC', {
   timeZone: 'America/Guayaquil', day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit',
@@ -49,6 +51,7 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
             <option value="">Todos</option>
             <option value="part_request">Solicitudes</option>
             <option value="cart">Pedidos de carrito</option>
+            <option value="whatsapp">Consultas por WhatsApp</option>
           </select>
         </label>
         <label className="flex flex-col gap-1 text-xs font-semibold text-slate-500">
@@ -87,19 +90,17 @@ export default async function InboxPage({ searchParams }: { searchParams: Promis
         <ul className="bg-white border border-slate-200 rounded-xl divide-y divide-slate-100">
           {rows.map((row) => {
             const unread = !row.readAt
-            const Icon = row.type === 'cart' ? ShoppingCart : PackageSearch
+            const Icon = TYPE_ICON[row.type]
             return (
               <li key={row.id} className={`flex items-center gap-3 px-4 py-3 ${row.hiddenAt ? 'opacity-50' : ''}`}>
                 <span className={`w-2 h-2 rounded-full shrink-0 ${unread ? 'bg-brand' : 'bg-transparent'}`} aria-label={unread ? 'No leído' : undefined} />
-                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold shrink-0 ${
-                  row.type === 'cart' ? 'bg-brand/10 text-brand' : 'bg-slate-100 text-slate-600'
-                }`}>
+                <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-semibold shrink-0 ${INBOX_TYPE_BADGE[row.type]}`}>
                   <Icon size={12} />
                   {INBOX_TYPE_LABEL[row.type]}
                 </span>
                 <Link href={routes.admin.inbox.detail(row.id)} className="flex-1 min-w-0">
                   <p className={`text-sm truncate ${unread ? 'font-bold text-navy' : 'text-slate-700'}`}>
-                    {row.name} <span className="font-normal text-slate-400">· {row.phone}</span>
+                    {contactLabel(row.name, row.phone)}
                   </p>
                   <p className="text-xs text-slate-500 truncate">{summarizeInbox(row.type, row.payload)}</p>
                 </Link>

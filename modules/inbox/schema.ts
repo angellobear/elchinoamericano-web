@@ -2,31 +2,34 @@ import { z } from 'zod'
 
 // Lógica pura de la bandeja: sin DB ni Next, para poder probarla con tsx.
 
-export const INBOX_TYPES = ['part_request', 'cart'] as const
+export const INBOX_TYPES = ['part_request', 'cart', 'whatsapp'] as const
 export type InboxType = (typeof INBOX_TYPES)[number]
 
 export const INBOX_TYPE_LABEL: Record<InboxType, string> = {
   part_request: 'Solicitud',
   cart: 'Pedido',
+  whatsapp: 'Consulta',
 }
 
-export const RATE_LIMIT_MAX = 5
+// Límite por IP y por tipo en la ventana. Los clics de WhatsApp son más frecuentes.
+export const RATE_LIMIT_MAX: Record<InboxType, number> = { part_request: 5, cart: 5, whatsapp: 20 }
 export const RATE_LIMIT_WINDOW_MIN = 10
+// Un registro idéntico (misma IP, tipo, datos) dentro de esta ventana se descarta.
+export const DEDUPE_WINDOW_MIN = 10
 export const INBOX_PAGE_SIZE = 50
 
 export function normalizePhone(raw: string) {
   return raw.trim().replace(/[\s\-().]/g, '')
 }
 
-const nameField = z.string().trim().min(2, 'Ingresa tu nombre.').max(120, 'El nombre es muy largo.')
-const phoneField = z
-  .string()
-  .transform(normalizePhone)
-  .pipe(z.string().regex(/^\+?\d{7,15}$/, 'Ingresa un teléfono válido (7 a 15 dígitos).'))
+const nameField = z.string().trim().min(1, 'Ingresa tu nombre.').max(120, 'El nombre es muy largo.')
+// ponytail: el registro es silencioso, así que un teléfono raro no se rechaza: se guarda
+// normalizado tal cual lo escribió el cliente (opcional, máx. 30).
+const lenientPhone = z.string().max(40).optional().default('').transform((v) => normalizePhone(v).slice(0, 30))
 const optionalText = (max: number) => z.string().trim().max(max).optional().default('')
 
 export const partRequestPayloadSchema = z.object({
-  repuesto: z.string().trim().min(2, 'Indica el repuesto que necesitas.').max(200),
+  repuesto: z.string().trim().min(1, 'Indica el repuesto que necesitas.').max(200),
   marcaVehiculo: z.string().trim().min(1, 'Indica la marca del vehículo.').max(60),
   modelo: optionalText(60),
   anio: optionalText(4),
@@ -35,27 +38,37 @@ export const partRequestPayloadSchema = z.object({
   searchQuery: optionalText(200),
 })
 
+export const whatsappPayloadSchema = z.object({
+  source: z.string().trim().min(1).max(40),
+  item: optionalText(100),
+  page: optionalText(200),
+})
+
 export const inboxSubmissionSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.literal('part_request'),
     name: nameField,
-    phone: phoneField,
+    phone: lenientPhone,
     payload: partRequestPayloadSchema,
   }),
   z.object({
     type: z.literal('cart'),
     name: nameField,
-    phone: phoneField,
     items: z
       .array(z.object({ id: z.number().int().positive(), qty: z.number().int().min(1).max(99) }))
       .min(1, 'Tu pedido está vacío.')
       .max(50, 'Tu pedido tiene demasiados productos.'),
+  }),
+  z.object({
+    type: z.literal('whatsapp'),
+    payload: whatsappPayloadSchema,
   }),
 ])
 
 export type InboxSubmissionInput = z.input<typeof inboxSubmissionSchema>
 export type InboxSubmission = z.output<typeof inboxSubmissionSchema>
 export type PartRequestPayload = z.output<typeof partRequestPayloadSchema>
+export type WhatsAppPayload = z.output<typeof whatsappPayloadSchema>
 
 export interface CartSnapshotItem {
   id: number
@@ -71,7 +84,7 @@ export interface CartPayload {
   total: number
 }
 
-export type InboxPayload = PartRequestPayload | CartPayload
+export type InboxPayload = PartRequestPayload | CartPayload | WhatsAppPayload
 
 export interface PricedProduct {
   id: number
@@ -139,6 +152,10 @@ export function ecuadorDayStart(date: string) {
 }
 
 export function summarizeInbox(type: InboxType, payload: InboxPayload) {
+  if (type === 'whatsapp') {
+    const wa = payload as WhatsAppPayload
+    return wa.item ? `Botón ${wa.source} · ${wa.item}` : `Botón ${wa.source}`
+  }
   if (type === 'cart') {
     const cart = payload as CartPayload
     const units = cart.items.reduce((sum, item) => sum + item.qty, 0)

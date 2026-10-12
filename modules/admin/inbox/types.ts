@@ -40,3 +40,14 @@ export function filtersFromParams(params: InboxSearchParams, today: string) {
   }
   return { filters, range, page }
 }
+
+export const INBOX_TYPE_BADGE: Record<InboxType, string> = {
+  part_request: 'bg-slate-100 text-slate-600',
+  cart: 'bg-brand/10 text-brand',
+  whatsapp: 'bg-wa/10 text-wa',
+}
+
+/** "Ana · 0991234567", "Ana", o "Sin datos de contacto" (consultas anónimas por WhatsApp). */
+export function contactLabel(name: string, phone: string) {
+  return [name, phone].filter(Boolean).join(' · ') || 'Sin datos de contacto'
+}

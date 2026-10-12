@@ -1,9 +1,6 @@
 "use client"
 
-// ponytail: Bandeja de leads pausada en el sitio público hasta nuevo aviso; vuelve el envío
-// directo por WhatsApp. Para reactivarla:
-//   git checkout 4b50c68 -- components/RequestPartForm.tsx components/CartDrawer.tsx app/catalogo/CatalogoClient.tsx
-
+import { useEffect, useRef, useState } from "react"
 import { Minus, Plus, Trash2, MessageCircle, ShoppingBag, X } from "lucide-react"
 import {
   Sheet,
@@ -13,6 +10,9 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import { useCart } from "@/context/CartContext"
+import { prefetchLeadToken, recordLead } from "@/lib/lead-beacon"
+
+const NAME_KEY = "eca_contact_name"
 
 interface CartDrawerProps {
   open: boolean
@@ -21,6 +21,28 @@ interface CartDrawerProps {
 
 export default function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { cart, dispatch, total, itemCount, buildWhatsAppUrl } = useCart()
+  const [name, setName] = useState("")
+  const nameRef = useRef<HTMLInputElement>(null)
+  const hasName = name.trim().length > 0
+
+  // Una sola vez al montar: leer localStorage en el render rompería la hidratación SSR.
+  useEffect(() => {
+    try {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setName(localStorage.getItem(NAME_KEY) ?? "")
+    } catch {}
+  }, [])
+
+  function handleSend(e: React.MouseEvent<HTMLAnchorElement>) {
+    if (!hasName) {
+      e.preventDefault()
+      nameRef.current?.focus()
+      return
+    }
+    try { localStorage.setItem(NAME_KEY, name.trim()) } catch {}
+    // Registro silencioso en la bandeja; el enlace abre WhatsApp en el mismo clic.
+    recordLead({ type: "cart", name: name.trim(), items: cart.map((i) => ({ id: i.id, qty: i.qty })) })
+  }
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
@@ -108,12 +130,29 @@ export default function CartDrawer({ open, onClose }: CartDrawerProps) {
             <p className="text-2.75 text-slate-400 leading-relaxed">
               El precio final y costo de envío son confirmados por el vendedor.
             </p>
+            <label className="flex flex-col gap-1 text-xs font-semibold text-slate-600">
+              Tu nombre
+              <input
+                ref={nameRef}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onFocus={prefetchLeadToken}
+                autoComplete="name"
+                maxLength={120}
+                placeholder="Para saber a quién atendemos"
+                className="px-3 py-2 text-sm font-normal border border-slate-200 rounded-md focus:outline-none focus:ring-2 focus:ring-navy/20 focus:border-navy"
+              />
+            </label>
             <a
-              href={buildWhatsAppUrl()}
+              href={buildWhatsAppUrl(name)}
               data-wa="carrito"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-semibold text-sm px-4 py-3 rounded-md transition-colors duration-150 active:scale-[0.98]"
+              onClick={handleSend}
+              aria-disabled={!hasName}
+              className={`flex items-center justify-center gap-2 bg-wa hover:bg-wa/90 text-white font-semibold text-sm px-4 py-3 rounded-md transition-colors duration-150 active:scale-[0.98] ${
+                hasName ? "" : "opacity-40 cursor-not-allowed"
+              }`}
             >
               <MessageCircle size={18} />
               Enviar pedido por WhatsApp
