@@ -12,7 +12,8 @@ import {
   resolveInboxRange,
   summarizeInbox,
 } from '@/modules/inbox/schema'
-import { normalizeInboxParams } from '@/modules/admin/inbox/types'
+import { contactLabel, normalizeInboxParams } from '@/modules/admin/inbox/types'
+import { LEAD_TOKEN_TTL_MS, isSameOriginRequest, signLeadToken, verifyLeadToken } from '@/modules/inbox/guard'
 
 // Teléfono
 assert.equal(normalizePhone(' +593 99-123 (4567) '), '+593991234567')
@@ -25,30 +26,74 @@ const okPart = inboxSubmissionSchema.safeParse({
   phone: '099 123 4567',
   payload: { repuesto: 'Filtro de aceite', marcaVehiculo: 'Chery' },
 })
-assert.ok(okPart.success)
+assert.ok(okPart.success && okPart.data.type === 'part_request')
 assert.equal(okPart.data.name, 'Ana')
 assert.equal(okPart.data.phone, '0991234567')
 
-assert.equal(
-  inboxSubmissionSchema.safeParse({ type: 'part_request', name: 'Ana', phone: '12', payload: { repuesto: 'x1', marcaVehiculo: 'Chery' } }).success,
-  false,
-  'teléfono corto se rechaza',
-)
-assert.equal(
-  inboxSubmissionSchema.safeParse({ type: 'part_request', name: 'Ana', phone: '0991234567', payload: { repuesto: 'Filtro', marcaVehiculo: '' } }).success,
-  false,
-  'marca obligatoria',
-)
+// Registro silencioso: el teléfono es opcional y uno raro se guarda tal cual (no se rechaza).
+const noPhone = inboxSubmissionSchema.safeParse({ type: 'part_request', name: 'Ana', payload: { repuesto: 'x', marcaVehiculo: 'Chery' } })
+assert.ok(noPhone.success && noPhone.data.type === 'part_request' && noPhone.data.phone === '', 'sin teléfono es válido')
+const oddPhone = inboxSubmissionSchema.safeParse({ type: 'part_request', name: 'Ana', phone: '12', payload: { repuesto: 'x', marcaVehiculo: 'Chery' } })
+assert.ok(oddPhone.success && oddPhone.data.type === 'part_request' && oddPhone.data.phone === '12', 'teléfono raro se conserva')
+// Formulario de contacto: la marca es opcional; el repuesto no.
+assert.ok(inboxSubmissionSchema.safeParse({ type: 'part_request', name: 'Ana', payload: { repuesto: 'Filtro', origen: 'contacto' } }).success, 'marca opcional')
+assert.equal(inboxSubmissionSchema.safeParse({ type: 'part_request', name: 'Ana', payload: { repuesto: '  ' } }).success, false, 'repuesto obligatorio')
+// Texto demasiado largo se recorta en vez de perder el lead.
+const long = inboxSubmissionSchema.safeParse({ type: 'part_request', name: 'N'.repeat(300), payload: { repuesto: 'R'.repeat(500), nota: 'x'.repeat(900) } })
+assert.ok(long.success && long.data.type === 'part_request', 'textos largos no rechazan')
+assert.equal(long.data.name.length, 120)
+assert.equal(long.data.payload.repuesto.length, 200)
+assert.equal(long.data.payload.nota.length, 500)
 
-// Validación: carrito
-assert.ok(inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', phone: '0991234567', items: [{ id: 1, qty: 2 }] }).success)
-assert.equal(inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', phone: '0991234567', items: [] }).success, false, 'carrito vacío')
-assert.equal(inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', phone: '0991234567', items: [{ id: 1, qty: 100 }] }).success, false, 'qty máx 99')
+// Validación: carrito (nombre obligatorio, sin teléfono)
+const okCart = inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', items: [{ id: 1, qty: 2 }] })
+assert.ok(okCart.success)
+assert.equal(inboxSubmissionSchema.safeParse({ type: 'cart', name: '  ', items: [{ id: 1, qty: 2 }] }).success, false, 'carrito exige nombre')
+assert.equal(inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', items: [] }).success, false, 'carrito vacío')
+assert.equal(inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', items: [{ id: 1, qty: 100 }] }).success, false, 'qty máx 99')
 assert.equal(
-  inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', phone: '0991234567', items: Array.from({ length: 51 }, (_, i) => ({ id: i + 1, qty: 1 })) }).success,
+  inboxSubmissionSchema.safeParse({ type: 'cart', name: 'Ana', items: Array.from({ length: 51 }, (_, i) => ({ id: i + 1, qty: 1 })) }).success,
   false,
   'máx 50 ítems',
 )
+
+// Validación: consulta por WhatsApp (anónima)
+const okWa = inboxSubmissionSchema.safeParse({ type: 'whatsapp', payload: { source: 'catalogo', item: 'CA-0046', page: '/catalogo' } })
+assert.ok(okWa.success)
+assert.equal(inboxSubmissionSchema.safeParse({ type: 'whatsapp', payload: { source: '', page: '/' } }).success, false, 'source obligatorio')
+const longSource = inboxSubmissionSchema.safeParse({ type: 'whatsapp', payload: { source: 'x'.repeat(41), page: '/' } })
+assert.ok(longSource.success && longSource.data.type === 'whatsapp' && longSource.data.payload.source.length === 40, 'source se recorta a 40')
+assert.equal(summarizeInbox('whatsapp', { source: 'catalogo', item: 'CA-0046', page: '/catalogo' }), 'Botón catalogo · CA-0046')
+assert.equal(summarizeInbox('whatsapp', { source: 'general', item: '', page: '/' }), 'Botón general')
+
+// Token de la API interna
+const SECRET = 'test-secret'
+const t0 = 1_700_000_000_000
+const token = signLeadToken(SECRET, t0)
+assert.ok(verifyLeadToken(token, SECRET, t0 + 1000), 'token recién emitido es válido')
+assert.equal(verifyLeadToken(token, SECRET, t0 + LEAD_TOKEN_TTL_MS + 1), false, 'token vencido')
+assert.equal(verifyLeadToken(token, 'otro-secreto', t0 + 1000), false, 'firma con otra llave')
+assert.equal(verifyLeadToken(token.replace(/.$/, (c) => (c === 'A' ? 'B' : 'A')), SECRET, t0 + 1000), false, 'firma alterada')
+const [, sig] = token.split('.')
+assert.equal(verifyLeadToken(`${t0 + 10 * LEAD_TOKEN_TTL_MS}.${sig}`, SECRET, t0), false, 'vencimiento inventado')
+assert.equal(verifyLeadToken(undefined, SECRET, t0), false)
+assert.equal(verifyLeadToken('basura', SECRET, t0), false)
+
+// Origen
+assert.ok(isSameOriginRequest({ secFetchSite: 'same-origin', origin: null, host: 'x.com' }))
+assert.equal(isSameOriginRequest({ secFetchSite: 'cross-site', origin: 'https://x.com', host: 'x.com' }), false, 'Sec-Fetch-Site manda')
+assert.equal(isSameOriginRequest({ secFetchSite: 'none', origin: null, host: 'x.com' }), false, 'navegación directa / curl')
+assert.ok(isSameOriginRequest({ secFetchSite: null, origin: 'https://www.elchinoamericano.com', host: 'www.elchinoamericano.com' }))
+assert.equal(isSameOriginRequest({ secFetchSite: null, origin: 'https://evil.com', host: 'www.elchinoamericano.com' }), false)
+assert.equal(isSameOriginRequest({ secFetchSite: null, origin: null, host: 'x.com' }), false, 'sin encabezados')
+// Navegador viejo, GET same-origin: sin Sec-Fetch-Site ni Origin, pero con Referer propio.
+assert.ok(isSameOriginRequest({ secFetchSite: null, origin: null, referer: 'https://x.com/catalogo?q=a', host: 'x.com' }))
+assert.equal(isSameOriginRequest({ secFetchSite: null, origin: null, referer: 'https://evil.com/', host: 'x.com' }), false)
+
+// Etiqueta de contacto en el admin
+assert.equal(contactLabel('Ana', '0991234567'), 'Ana · 0991234567')
+assert.equal(contactLabel('Ana', ''), 'Ana')
+assert.equal(contactLabel('', ''), 'Sin datos de contacto')
 
 // Snapshot del carrito: precio del servidor, descarta inexistentes, redondea total
 const snap = buildCartSnapshot(
@@ -83,7 +128,7 @@ assert.deepEqual(resolveInboxRange({ from: '2026-02-31', to: '2026-10-05' }, '20
 
 // Resumen
 assert.equal(
-  summarizeInbox('part_request', { repuesto: 'Filtro', marcaVehiculo: 'Chery', modelo: 'Tiggo 5', anio: '2020', cilindraje: '', nota: '', searchQuery: '' }),
+  summarizeInbox('part_request', { repuesto: 'Filtro', marcaVehiculo: 'Chery', modelo: 'Tiggo 5', anio: '2020', cilindraje: '', nota: '', searchQuery: '', origen: '' }),
   'Filtro · Chery Tiggo 5 2020',
 )
 assert.equal(summarizeInbox('cart', snap), '5 productos · $17.72')

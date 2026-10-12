@@ -57,7 +57,7 @@ const CartContext = createContext<{
   dispatch: React.Dispatch<Action>
   total: number
   itemCount: number
-  buildWhatsAppUrl: () => string
+  buildWhatsAppUrl: (name?: string) => string
 } | null>(null)
 
 export function CartProvider({ children }: { children: ReactNode }) {
@@ -65,14 +65,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const total = cart.reduce((s, i) => s + (i.offer_price ?? i.price) * i.qty, 0)
   const itemCount = cart.reduce((s, i) => s + i.qty, 0)
 
-  function buildWhatsAppUrl() {
+  function buildWhatsAppUrl(name?: string) {
     const lines = cart
       .map(
         (i) =>
           `- ${i.title} x${i.qty} => $${((i.offer_price ?? i.price) * i.qty).toFixed(2)}`
       )
       .join("\n")
-    const msg = `Hola! Le escribo desde [su ciudad]. Quiero hacer el siguiente pedido:\n\n${lines}\n\nTotal estimado: $${total.toFixed(2)}\n\nPueden confirmarme disponibilidad y costo de envio?`
+    const greeting = name?.trim() ? `Hola! Soy ${name.trim()}.` : "Hola!"
+    const msg = `${greeting} Le escribo desde [su ciudad]. Quiero hacer el siguiente pedido:\n\n${lines}\n\nTotal estimado: $${total.toFixed(2)}\n\nPueden confirmarme disponibilidad y costo de envio?`
     return getWhatsAppUrl(msg)
   }
 

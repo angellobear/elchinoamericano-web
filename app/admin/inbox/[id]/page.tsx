@@ -7,9 +7,9 @@ import { buildProductPath } from '@/lib/product-slugs'
 import { routes } from '@/lib/routes'
 import { MarkReadOnOpen } from '@/modules/admin/inbox/components/MarkReadOnOpen'
 import { InboxRowActions } from '@/modules/admin/inbox/components/InboxRowActions'
-import { INBOX_PERMISSION_KEYS } from '@/modules/admin/inbox/types'
+import { INBOX_PERMISSION_KEYS, INBOX_TYPE_BADGE } from '@/modules/admin/inbox/types'
 import { hasModulePermission } from '@/modules/admin/shared/server/permissions'
-import { customerWhatsAppUrl, INBOX_TYPE_LABEL, type CartPayload, type PartRequestPayload } from '@/modules/inbox/schema'
+import { customerWhatsAppUrl, INBOX_TYPE_LABEL, type CartPayload, type PartRequestPayload, type WhatsAppPayload } from '@/modules/inbox/schema'
 
 const dateFmt = new Intl.DateTimeFormat('es-EC', { timeZone: 'America/Guayaquil', dateStyle: 'long', timeStyle: 'short' })
 
@@ -27,15 +27,25 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
   const isCart = message.type === 'cart'
   const cart = message.payload as CartPayload
   const part = message.payload as PartRequestPayload
-  const subject = isCart ? 'tu pedido' : `tu solicitud de ${part.repuesto}`
-  const waUrl = customerWhatsAppUrl(message.phone, `Hola ${message.name}, te escribimos de El Chino Americano por ${subject}.`)
+  const wa = message.payload as WhatsAppPayload
+  const subject = isCart ? 'tu pedido' : message.type === 'part_request' ? `tu solicitud de ${part.repuesto}` : 'tu consulta'
+  // Solo si dejó teléfono (las consultas por WhatsApp y los carritos son sin teléfono).
+  const waUrl = message.phone
+    ? customerWhatsAppUrl(message.phone, `Hola ${message.name}, te escribimos de El Chino Americano por ${subject}.`)
+    : null
 
-  const rows: [string, string][] = isCart ? [] : [
-    ['Repuesto', part.repuesto],
-    ['Vehículo', [part.marcaVehiculo, part.modelo, part.anio, part.cilindraje].filter(Boolean).join(' ')],
-    ['Búsqueda', part.searchQuery],
-    ['Nota', part.nota],
-  ]
+  const rows: [string, string][] =
+    message.type === 'whatsapp'
+      ? [['Botón', wa.source], ['Producto', wa.item], ['Página', wa.page]]
+      : isCart
+        ? []
+        : [
+            ['Repuesto', part.repuesto],
+            ['Vehículo', [part.marcaVehiculo, part.modelo, part.anio, part.cilindraje].filter(Boolean).join(' ')],
+            ['Búsqueda', part.searchQuery],
+            ['Nota', part.nota],
+            ['Origen', part.origen === 'contacto' ? 'Formulario de contacto' : part.origen === 'catalogo' ? 'Catálogo (sin resultados)' : ''],
+          ]
 
   return (
     <div className="p-4 md:p-8 max-w-3xl">
@@ -48,23 +58,23 @@ export default async function InboxDetailPage({ params }: { params: Promise<{ id
       <div className="bg-white border border-slate-200 rounded-xl p-5 md:p-6 flex flex-col gap-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-semibold mb-2 ${
-              isCart ? 'bg-brand/10 text-brand' : 'bg-slate-100 text-slate-600'
-            }`}>
+            <span className={`inline-block px-2 py-0.5 rounded-md text-xs font-semibold mb-2 ${INBOX_TYPE_BADGE[message.type]}`}>
               {INBOX_TYPE_LABEL[message.type]}
             </span>
-            <h1 className="text-xl font-bold text-navy">{message.name}</h1>
-            <p className="text-sm text-slate-500">{message.phone}</p>
+            <h1 className="text-xl font-bold text-navy">{message.name || 'Sin datos de contacto'}</h1>
+            {message.phone && <p className="text-sm text-slate-500">{message.phone}</p>}
             <p className="text-xs text-slate-400 mt-1">{message.createdAt ? dateFmt.format(message.createdAt) : ''}</p>
           </div>
-          <a
-            href={waUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-wa hover:bg-wa/90 text-white text-sm font-semibold rounded-lg transition-colors"
-          >
-            <MessageCircle size={16} /> Contactar por WhatsApp
-          </a>
+          {waUrl && (
+            <a
+              href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-wa hover:bg-wa/90 text-white text-sm font-semibold rounded-lg transition-colors"
+            >
+              <MessageCircle size={16} /> Contactar por WhatsApp
+            </a>
+          )}
         </div>
 
         {isCart ? (

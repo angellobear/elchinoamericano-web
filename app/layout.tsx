@@ -4,6 +4,7 @@ import "./globals.css"
 import { CartProvider } from "@/context/CartContext"
 import { AnnouncementModal } from "@/components/AnnouncementModal"
 import { GoogleAnalytics } from "@/components/GoogleAnalytics"
+import { WhatsAppClickTracker } from "@/components/WhatsAppClickTracker"
 import { MicrosoftClarity } from "@/components/MicrosoftClarity"
 import {
   DEFAULT_KEYWORDS,
@@ -112,6 +113,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <CartProvider>{children}</CartProvider>
         <AnnouncementModal />
+        <WhatsAppClickTracker />
         {GA_ID && <GoogleAnalytics id={GA_ID} />}
         <MicrosoftClarity id="xt16vwz9rk" />
       </body>

@@ -10,7 +10,7 @@ const statements: [label: string, sql: string][] = [
   ['tabla inbox_messages', `
     CREATE TABLE IF NOT EXISTS \`inbox_messages\` (
       \`id\` int AUTO_INCREMENT NOT NULL,
-      \`type\` enum('part_request','cart') NOT NULL,
+      \`type\` enum('part_request','cart','whatsapp') NOT NULL,
       \`name\` varchar(120) NOT NULL,
       \`phone\` varchar(30) NOT NULL,
       \`payload\` json NOT NULL,
@@ -24,6 +24,11 @@ const statements: [label: string, sql: string][] = [
       KEY \`inbox_unread_idx\` (\`read_at\`,\`hidden_at\`),
       KEY \`inbox_ip_idx\` (\`ip\`,\`created_at\`)
     )`],
+
+  // Tablas creadas antes de las consultas por WhatsApp: ampliar el enum (idempotente).
+  ['tipo whatsapp en inbox_messages', `
+    ALTER TABLE \`inbox_messages\`
+    MODIFY COLUMN \`type\` enum('part_request','cart','whatsapp') NOT NULL`],
 
   ['módulo inbox', `
     INSERT INTO \`modules\` (\`key\`, \`label\`) VALUES ('inbox', 'Bandeja')

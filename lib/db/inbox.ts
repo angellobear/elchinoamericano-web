@@ -47,16 +47,41 @@ export async function insertInboxMessage(values: {
   ip: string | null
 }) {
   const db = await getDb()
-  await db.insert(inboxMessages).values(values)
+  // ponytail: una consulta por WhatsApp no es accionable (anónima): entra ya leída para no
+  // inflar el badge; sigue visible en el listado.
+  await db.insert(inboxMessages).values({ ...values, readAt: values.type === 'whatsapp' ? dbNow() : null })
 }
 
-export async function countRecentByIp(ip: string, minutes: number) {
+const withinMinutes = (minutes: number) =>
+  sql`${inboxMessages.createdAt} >= now() - interval ${sql.raw(String(Math.trunc(minutes)))} minute`
+
+export async function countRecentByIp(ip: string, type: InboxType, minutes: number) {
   const db = await getDb()
   const [row] = await db
     .select({ n: count() })
     .from(inboxMessages)
-    .where(and(eq(inboxMessages.ip, ip), sql`${inboxMessages.createdAt} >= now() - interval ${minutes} minute`))
+    .where(and(eq(inboxMessages.ip, ip), eq(inboxMessages.type, type), withinMinutes(minutes)))
   return row?.n ?? 0
+}
+
+/** Mismo registro (IP, tipo, nombre, teléfono y datos idénticos) en la ventana: doble clic o reintento. */
+export async function hasRecentDuplicate(
+  values: { type: InboxType; name: string; phone: string; payload: InboxPayload; ip: string | null },
+  minutes: number,
+) {
+  const db = await getDb()
+  const [row] = await db
+    .select({ n: count() })
+    .from(inboxMessages)
+    .where(and(
+      values.ip ? eq(inboxMessages.ip, values.ip) : isNull(inboxMessages.ip),
+      eq(inboxMessages.type, values.type),
+      eq(inboxMessages.name, values.name),
+      eq(inboxMessages.phone, values.phone),
+      sql`${inboxMessages.payload} = CAST(${JSON.stringify(values.payload)} AS JSON)`,
+      withinMinutes(minutes),
+    ))
+  return (row?.n ?? 0) > 0
 }
 
 /** Precio vigente (con descuento activo) de productos activos y no eliminados. */

@@ -1,13 +1,10 @@
 "use client"
 
-// ponytail: Bandeja de leads pausada en el sitio público hasta nuevo aviso; vuelve el envío
-// directo por WhatsApp. Para reactivarla:
-//   git checkout 4b50c68 -- components/RequestPartForm.tsx components/CartDrawer.tsx app/catalogo/CatalogoClient.tsx
-
 import { useState } from "react"
 import { PackageSearch, Send, CheckCircle, MessageCircle, ChevronDown } from "lucide-react"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { trackWhatsApp } from "@/lib/analytics"
+import { prefetchLeadToken, recordLead } from "@/lib/lead-beacon"
 
 interface RequestPartFormProps {
   searchQuery?: string
@@ -68,6 +65,22 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
       .join("\n")
 
     trackWhatsApp("catalogo")
+    // Registro silencioso en la bandeja; WhatsApp se abre en el mismo clic (sin esperar).
+    recordLead({
+      type: "part_request",
+      name: form.nombre,
+      phone: form.telefono,
+      payload: {
+        repuesto: form.repuesto,
+        marcaVehiculo: form.marcaVehiculo,
+        modelo: form.modelo,
+        anio: form.anio,
+        cilindraje: form.cilindraje,
+        nota: form.nota,
+        searchQuery,
+        origen: "catalogo",
+      },
+    })
     window.open(getWhatsAppUrl(lines), "_blank")
     setSent(true)
     setTimeout(() => setSent(false), 5000)
@@ -133,7 +146,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+      <form onSubmit={handleSubmit} onFocus={prefetchLeadToken} className="flex flex-col gap-5">
         {/* Repuesto needed */}
         <div className="flex flex-col gap-1.5">
           <label htmlFor="req-repuesto" className="text-sm font-bold text-slate-700">
@@ -142,6 +155,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
           <input
             id="req-repuesto"
             name="repuesto"
+            maxLength={200}
             type="text"
             required
             value={form.repuesto}
@@ -164,6 +178,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-marca"
                 name="marcaVehiculo"
+            maxLength={60}
                 type="text"
                 required
                 value={form.marcaVehiculo}
@@ -179,6 +194,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-modelo"
                 name="modelo"
+            maxLength={60}
                 type="text"
                 value={form.modelo}
                 onChange={handleChange}
@@ -215,6 +231,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-cilindraje"
                 name="cilindraje"
+            maxLength={30}
                 type="text"
                 value={form.cilindraje}
                 onChange={handleChange}
@@ -238,6 +255,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-nombre"
                 name="nombre"
+            maxLength={120}
                 type="text"
                 required
                 value={form.nombre}
@@ -253,6 +271,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
               <input
                 id="req-telefono"
                 name="telefono"
+            maxLength={30}
                 type="tel"
                 value={form.telefono}
                 onChange={handleChange}
@@ -271,6 +290,7 @@ export default function RequestPartForm({ searchQuery = "" }: RequestPartFormPro
           <textarea
             id="req-nota"
             name="nota"
+            maxLength={500}
             rows={2}
             value={form.nota}
             onChange={handleChange}

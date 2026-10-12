@@ -271,12 +271,12 @@ The key principle is to avoid coupling admin UI directly to raw DB calls inside 
 
 ## Bandeja (inbox)
 
-> **Pausada en el sitio público** (hasta nuevo aviso): `RequestPartForm` y `CartDrawer` volvieron al envío directo por WhatsApp. El admin, la tabla y la acción `submitInboxMessage` siguen activos. Reactivar: `git checkout 4b50c68 -- components/RequestPartForm.tsx components/CartDrawer.tsx app/catalogo/CatalogoClient.tsx`.
+> **Registro silencioso** (desde 2026-10-12): el sitio público sigue enviando directo por WhatsApp y, en el mismo clic, registra el lead en segundo plano (`lib/lead-beacon.ts` → `POST /api/leads`, `fetch` con `keepalive`). El cliente no ve nada ni espera. Registran: el formulario de repuesto no encontrado, el carrito (pide nombre obligatorio) y **todos** los enlaces a `wa.me` vía `components/WhatsAppClickTracker.tsx` (tipo `whatsapp`, anónimo, entra ya leído para no inflar el badge). La API responde 403 si la petición no viene de nuestras páginas (`Sec-Fetch-Site`/`Origin`) o sin token firmado de `GET /api/leads` (`modules/inbox/guard.ts`); además, límite por IP y tipo, y descarta duplicados idénticos en 10 min.
 
 Leads del sitio público: solicitudes de repuesto no encontrado (`RequestPartForm`) y pedidos del carrito (`CartDrawer`).
 
 - Tabla `inbox_messages` (parche: `npm run db:patch:inbox`). `payload` JSON según `type` (`part_request` | `cart`).
-- Entrada pública: `modules/inbox/server/actions.ts` → `submitInboxMessage` (honeypot `website`, 5 envíos/IP/10 min, precios del carrito recalculados en servidor).
+- Entrada pública: `app/api/leads/route.ts` → `modules/inbox/server/record-lead.ts` (límite por IP y tipo, anti-duplicados, precios del carrito recalculados en servidor).
 - Lógica pura y su check: `modules/inbox/schema.ts`, `npm run check:inbox`.
 - Admin: `app/admin/inbox` (listado y detalle), acciones en `modules/admin/inbox/server/actions.ts`, repositorio `lib/db/inbox.ts`.
 - Estado leído compartido (`read_at`), ocultar reversible (`hidden_at`), borrado lógico (`deleted_at`, auditado).
