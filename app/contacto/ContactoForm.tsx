@@ -4,7 +4,6 @@ import { useState } from "react"
 import { MessageCircle } from "lucide-react"
 import { getWhatsAppUrl } from "@/lib/constants"
 import { trackWhatsApp } from "@/lib/analytics"
-import { prefetchLeadToken, recordLead } from "@/lib/lead-beacon"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 const CURRENT_YEAR = new Date().getFullYear()
 const YEARS = Array.from({ length: 20 }, (_, i) => String(CURRENT_YEAR - i))
@@ -48,13 +47,6 @@ export default function ContactoForm({ brands }: ContactoFormProps) {
       form.whatsapp ? `Mi WhatsApp: ${form.whatsapp}.` : null,
     ].filter(Boolean)
     trackWhatsApp("contacto")
-    // Registro silencioso en la bandeja; WhatsApp se abre en el mismo clic (sin esperar).
-    recordLead({
-      type: "part_request",
-      name: form.nombre,
-      phone: form.whatsapp,
-      payload: { repuesto: form.repuesto, marcaVehiculo: form.marca, modelo: form.modelo, anio: form.anio, origen: "contacto" },
-    })
     window.open(getWhatsAppUrl(parts.join(" ")), "_blank", "noopener,noreferrer")
   }
 
@@ -64,7 +56,7 @@ export default function ContactoForm({ brands }: ContactoFormProps) {
     "bg-[#f6f8fb] border border-[#dfe4ec] rounded-[10px] px-[15px] py-[13px] text-3.5 text-slate-700 placeholder:text-[#9aa3b2] focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand transition-colors w-full"
 
   return (
-    <form onSubmit={handleSubmit} onFocus={prefetchLeadToken} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
           <label className="block text-3.25 font-semibold text-navy mb-2">

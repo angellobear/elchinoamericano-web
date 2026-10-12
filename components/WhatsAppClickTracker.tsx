@@ -4,7 +4,10 @@ import { useEffect } from "react"
 import { trackWhatsApp } from "@/lib/analytics"
 import { prefetchLeadToken, recordLead } from "@/lib/lead-beacon"
 
-/** Escucha los clics a WhatsApp de todo el sitio: evento GA4 + consulta en la bandeja. */
+// data-wa de los botones con producto (llevan el código en data-wa-item).
+const PRODUCT_SOURCES = new Set(["catalogo", "producto"])
+
+/** Escucha los clics a WhatsApp de todo el sitio: evento GA4 + consulta de producto en la bandeja. */
 export function WhatsAppClickTracker() {
   // ponytail: un listener delegado cubre todos los <a> a WhatsApp, incluidos los
   // que viven en Server Components. Cada boton solo declara data-wa="...".
@@ -21,13 +24,16 @@ export function WhatsAppClickTracker() {
       if (!link || link.getAttribute("aria-disabled") === "true") return
       const source = link.dataset.wa ?? "sin_etiqueta"
       trackWhatsApp(source, link.dataset.waItem)
-      // El carrito registra su propio lead (con productos y nombre) desde CartDrawer.
-      if (source !== "carrito" && isPublicPage()) {
-        recordLead({ type: "whatsapp", payload: { source, item: link.dataset.waItem, page: window.location.pathname } })
+      // Solo los botones de producto (card, modal, ficha y su barra fija) registran en la bandeja.
+      // Los genéricos (navbar, home, footer, contacto, guías) no. El carrito registra desde CartDrawer.
+      const item = link.dataset.waItem
+      if (PRODUCT_SOURCES.has(source) && item && isPublicPage()) {
+        recordLead({ type: "whatsapp", payload: { source, item, page: window.location.pathname } })
       }
     }
     const onIntent = (e: Event) => {
-      if (waLink(e.target) && isPublicPage()) prefetchLeadToken()
+      const link = waLink(e.target)
+      if (link && PRODUCT_SOURCES.has(link.dataset.wa ?? "") && isPublicPage()) prefetchLeadToken()
     }
     // Token listo antes del primer clic (en el celular, al abrir WhatsApp la pestaña se congela).
     const warmUp = window.setTimeout(() => {
