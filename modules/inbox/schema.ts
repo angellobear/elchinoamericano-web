@@ -172,12 +172,13 @@ export function summarizeInbox(type: InboxType, payload: InboxPayload) {
   return vehicle ? `${part.repuesto} · ${vehicle}` : part.repuesto
 }
 
-/** wa.me exige el número internacional sin "+". Un 09xxxxxxxx de Ecuador pasa a 5939xxxxxxxx. */
+/** WhatsApp exige el número internacional sin "+". Un 09xxxxxxxx de Ecuador pasa a 5939xxxxxxxx. */
 export function customerWhatsAppUrl(phone: string, text: string) {
   let digits = phone.replace(/\D/g, '')
   if (digits.length === 10 && digits.startsWith('0')) digits = `593${digits.slice(1)}`
   if (digits.length === 9 && digits.startsWith('9')) digits = `593${digits}`
   // Fijo de Ecuador (02xxxxxxx): solo sirve si ese número tiene WhatsApp Business.
   else if (digits.length === 9 && digits.startsWith('0')) digits = `593${digits.slice(1)}`
-  return `https://wa.me/${digits}?text=${encodeURIComponent(text)}`
+  // Mismo endpoint que el sitio (api.whatsapp.com): wa.me rompe los emojis en la redirección.
+  return `https://api.whatsapp.com/send?phone=${digits}&text=${encodeURIComponent(text)}`
 }

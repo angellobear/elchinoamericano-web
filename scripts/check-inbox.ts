@@ -13,6 +13,7 @@ import {
   summarizeInbox,
 } from '@/modules/inbox/schema'
 import { contactLabel, normalizeInboxParams } from '@/modules/admin/inbox/types'
+import { contactInfo, getWhatsAppUrl } from '@/lib/constants'
 import { LEAD_TOKEN_TTL_MS, isSameOriginRequest, signLeadToken, verifyLeadToken } from '@/modules/inbox/guard'
 
 // Teléfono
@@ -133,11 +134,17 @@ assert.equal(
 )
 assert.equal(summarizeInbox('cart', snap), '5 productos · $17.72')
 
+// Enlaces de WhatsApp: los emojis de 4 bytes viajan intactos (wa.me los rompía en la redirección)
+assert.equal(
+  getWhatsAppUrl('🔧 Filtro'),
+  `https://api.whatsapp.com/send?phone=${contactInfo.whatsappNumber}&text=%F0%9F%94%A7%20Filtro`,
+)
+
 // WhatsApp al cliente: 09xxxxxxxx de Ecuador → 5939xxxxxxxx
-assert.equal(customerWhatsAppUrl('0991234567', 'Hola'), 'https://wa.me/593991234567?text=Hola')
-assert.equal(customerWhatsAppUrl('991234567', 'Hola'), 'https://wa.me/593991234567?text=Hola')
-assert.equal(customerWhatsAppUrl('022345678', 'Hola'), 'https://wa.me/59322345678?text=Hola', 'fijo de Ecuador')
-assert.equal(customerWhatsAppUrl('+593991234567', 'Hola Ana'), 'https://wa.me/593991234567?text=Hola%20Ana')
+assert.equal(customerWhatsAppUrl('0991234567', 'Hola'), 'https://api.whatsapp.com/send?phone=593991234567&text=Hola')
+assert.equal(customerWhatsAppUrl('991234567', 'Hola'), 'https://api.whatsapp.com/send?phone=593991234567&text=Hola')
+assert.equal(customerWhatsAppUrl('022345678', 'Hola'), 'https://api.whatsapp.com/send?phone=59322345678&text=Hola', 'fijo de Ecuador')
+assert.equal(customerWhatsAppUrl('+593991234567', 'Hola Ana'), 'https://api.whatsapp.com/send?phone=593991234567&text=Hola%20Ana')
 
 // Params de URL repetidos: primer valor, solo claves conocidas, sin claves undefined
 assert.deepEqual(normalizeInboxParams({ search: ['a', 'b'], page: '2', foo: 'x', type: undefined }), { search: 'a', page: '2' })
