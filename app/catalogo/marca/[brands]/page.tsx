@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import Link from "next/link"
-import { notFound, redirect } from "next/navigation"
+import { notFound, permanentRedirect } from "next/navigation"
 import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import CatalogoClient from "@/app/catalogo/CatalogoClient"
@@ -103,7 +103,7 @@ export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marc
     const resolvedKeys = requestedKeys
       .map((k) => toVehicleBrandKey(normalizeVehicleBrand(k)))
       .filter((k) => activeBrands.some((b) => b.key === k))
-    if (resolvedKeys.length > 0) redirect(buildCatalogBrandPath(resolvedKeys))
+    if (resolvedKeys.length > 0) permanentRedirect(buildCatalogBrandPath(resolvedKeys))
     notFound()
   }
 
