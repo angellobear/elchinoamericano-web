@@ -1,4 +1,4 @@
-export type GuiaCategoria = "problemas" | "compra" | "marcas" | "mantenimiento"
+export type GuiaCategoria = "problemas" | "compra" | "marcas" | "mantenimiento" | "instalacion"
 
 export type GuiaBloque =
   | { tipo: "p"; texto: string }
@@ -47,6 +47,10 @@ export const CATEGORIAS: Record<GuiaCategoria, { label: string; descripcion: str
   mantenimiento: {
     label: "Mantenimiento",
     descripcion: "Intervalos y recomendaciones de mantenimiento preventivo",
+  },
+  instalacion: {
+    label: "Instalación y garantía",
+    descripcion: "Procedimientos de instalación que debes seguir para que la garantía del repuesto aplique",
   },
 }
 
@@ -3454,6 +3458,174 @@ const guiasMantenimiento: Guia[] = [
   },
 ]
 
+// ─── GUÍAS DE INSTALACIÓN Y GARANTÍA ──────────────────────────────────────────
+
+const guiasInstalacion: Guia[] = [
+  {
+    slug: "guia-instalacion-turbo-garantia",
+    categoria: "instalacion",
+    titulo: "Guía de instalación de turbocompresor: pasos obligatorios para la garantía",
+    descripcion:
+      "Cómo instalar un turbo nuevo correctamente: limpieza o cambio del tubo de aceite, prelubricación, primer arranque y evidencia que exige la garantía.",
+    respuesta_corta:
+      "La garantía de un turbo nuevo aplica solo si el taller corrige la causa que dañó al anterior. El paso clave es retirar y limpiar el tubo de entrada de aceite y su tornillo, y reemplazarlos si el turbo original tuvo quemaduras de aceite, ruidos o pérdida de potencia: una línea obstruida deja al turbo sin lubricación y lo daña en minutos. Además hay que cambiar aceite y filtro, despejar el retorno de aceite y el respiradero del cárter, revisar admisión y escape, usar juntas nuevas, prelubricar el turbo y hacer un arranque controlado. Conserva la factura, la orden de trabajo y fotos del proceso; sin esa evidencia, la garantía no aplica.",
+    keywords: [
+      "instalación turbo",
+      "cómo instalar turbocompresor",
+      "garantía turbo Ecuador",
+      "tubo de aceite turbo",
+      "prelubricar turbo",
+      "turbo nuevo se dañó",
+    ],
+    contenido: [
+      {
+        tipo: "aviso",
+        texto:
+          "La garantía del turbo aplica solo si la instalación sigue esta guía y conservas la evidencia de la sección 8. Los torques, capacidades y procedimientos específicos se toman del manual del fabricante del vehículo.",
+      },
+      { tipo: "h2", texto: "1. Por qué falla un turbo nuevo" },
+      {
+        tipo: "p",
+        texto:
+          "El turbo gira a más de 100.000 RPM sobre una película de aceite. Casi todas las fallas prematuras vienen de fuera del turbo, y si no se corrige la causa que dañó al anterior, el nuevo fallará igual. Las causas más comunes son:",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Falta de aceite: tubo de entrada o tornillo obstruidos, nivel bajo, bomba o filtro de aceite en mal estado.",
+          "Aceite contaminado: sucio, mezclado con combustible o refrigerante, viscosidad incorrecta o cambio vencido.",
+          "Retorno de aceite restringido o respiradero del cárter (PCV) tapado.",
+          "Objetos extraños: filtro de aire roto, mangueras agrietadas o restos del turbo anterior en el intercooler.",
+          "Escape obstruido (catalizador, DPF, silenciador) o fugas en admisión y escape.",
+          "Mala combustión: inyectores defectuosos, exceso de hollín o sobrecalentamiento.",
+          "Apagar el motor caliente justo después de exigirlo.",
+        ],
+      },
+      { tipo: "h2", texto: "2. Antes de desmontar" },
+      {
+        tipo: "ul",
+        items: [
+          "Anota datos del vehículo (marca, modelo, año, motor, VIN, kilometraje), síntomas y códigos de falla (DTC).",
+          "Fotografía el turbo original montado y, ya retirado, su eje, aletas y carcasas.",
+          "Revisa la holgura axial y radial del eje y anota la causa de la falla.",
+          "Compara el turbo nuevo con el original: número de parte, bridas, conexiones de aceite y agua, actuador y orientación de carcasas.",
+        ],
+      },
+      { tipo: "h2", texto: "3. Sistema de aceite (paso crítico)" },
+      {
+        tipo: "aviso",
+        texto:
+          "Retira y limpia el tubo de entrada de aceite y su tornillo. Reemplázalos si el turbo anterior tuvo quemaduras de aceite, ruidos o pérdida de potencia, si la carbonilla no sale con la limpieza o si el tubo está doblado o aplastado. Un tubo obstruido deja al turbo nuevo sin aceite y lo destruye.",
+      },
+      {
+        tipo: "ul",
+        items: [
+          "Cambia aceite y filtro, con el aceite que indica el fabricante del vehículo.",
+          "Limpia el tubo y el tornillo con solvente y aire comprimido; confirma que el paso esté libre y que el filtro o restrictor interno del tornillo (si tiene) esté limpio.",
+          "Limpia el tubo de retorno: sin dobleces, sin carbonilla y con pendiente hacia el cárter.",
+          "Revisa el respiradero del cárter (PCV) y la presión de aceite del motor. Si la presión es baja, corrígela antes de instalar.",
+        ],
+      },
+      { tipo: "h2", texto: "4. Admisión, escape y refrigeración" },
+      {
+        tipo: "ul",
+        items: [
+          "Cambia o limpia el filtro de aire y revisa los sellos de la caja.",
+          "Revisa mangueras de admisión; lava o reemplaza el intercooler si tiene aceite o fragmentos del turbo anterior.",
+          "Revisa colector, espárragos, catalizador y DPF: sin grietas, fugas ni obstrucciones.",
+          "Revisa válvula blow-off, mangueras de vacío del actuador y sensores (MAP, temperatura, presión).",
+          "Turbo enfriado por agua: líneas de refrigerante limpias y sin fugas; purga el aire al terminar.",
+        ],
+      },
+      { tipo: "h2", texto: "5. Instalación" },
+      {
+        tipo: "ul",
+        items: [
+          "Mantén tapadas las entradas y salidas del turbo hasta el último momento.",
+          "Usa juntas y empaques nuevos; reemplaza espárragos o pernos dañados.",
+          "Prelubrica el turbo: vierte aceite limpio por la entrada de aceite mientras giras el rotor a mano.",
+          "Aprieta al torque del fabricante y conecta los tubos de aceite sin forzarlos ni doblarlos.",
+          "Confirma que no queden herramientas, trapos ni tapones dentro de los ductos.",
+          "No modifiques el actuador, la wastegate ni su calibración.",
+        ],
+      },
+      { tipo: "h2", texto: "6. Primer arranque y prueba" },
+      {
+        tipo: "ol",
+        items: [
+          "Corta el combustible (relé, fusible o bomba, según el modelo) y da marcha hasta que suba la presión de aceite.",
+          "Restablece el combustible, arranca y deja en ralentí 2 a 3 minutos sin acelerar.",
+          "Revisa fugas de aceite, agua, aire y escape, y escucha ruidos anormales. Si hay ruido, apaga y revisa.",
+          "Corrige niveles de aceite y refrigerante y borra los códigos de falla del trabajo.",
+          "Haz una prueba de ruta corta con carga progresiva y revisa fugas otra vez con el motor caliente.",
+        ],
+      },
+      { tipo: "h2", texto: "7. Uso después de la instalación" },
+      {
+        tipo: "ul",
+        items: [
+          "Evita aceleraciones fuertes las primeras horas.",
+          "Tras un uso exigente (carretera, pendientes, carga), deja el motor en ralentí 30 a 60 segundos antes de apagarlo.",
+          "Cambia aceite, filtro de aceite y filtro de aire a tiempo.",
+          "Revisa nivel de aceite, fugas y apriete a los 500–1.000 km.",
+          "Ante humo, pérdida de potencia, silbidos o ruidos metálicos, detén el vehículo y revisa.",
+        ],
+      },
+      { tipo: "h2", texto: "8. Evidencia para la garantía" },
+      {
+        tipo: "ul",
+        items: [
+          "Factura de compra del turbo.",
+          "Comprobante de cambio de aceite y filtro, y del tubo y tornillo de aceite si se reemplazaron.",
+          "Orden de trabajo del taller con vehículo, kilometraje, fecha, trabajos realizados y causa de la falla anterior.",
+          "Fotos: turbo original, tubo de aceite antes y después de la limpieza, y turbo nuevo instalado.",
+        ],
+      },
+      { tipo: "h3", texto: "La garantía no aplica si" },
+      {
+        tipo: "ul",
+        items: [
+          "El tubo o tornillo de aceite no se limpió, o no se reemplazó cuando correspondía.",
+          "El aceite estaba contaminado o no era el indicado.",
+          "El turbo no se prelubricó.",
+          "Hubo fugas de admisión o escape, o ingresaron objetos extraños.",
+          "Se modificó el actuador, la wastegate o la calibración.",
+          "Hubo falta de mantenimiento o mala manipulación.",
+          "No se presenta la evidencia de esta sección.",
+        ],
+      },
+    ],
+    faq: [
+      {
+        pregunta: "¿Por qué se dañó mi turbo nuevo a los pocos días?",
+        respuesta:
+          "Casi siempre por una causa externa que no se corrigió: tubo de entrada de aceite obstruido, aceite contaminado, retorno restringido o ingreso de objetos extraños. Por eso la garantía exige limpiar o reemplazar el tubo de aceite y su tornillo, y cambiar aceite y filtro antes de instalar.",
+      },
+      {
+        pregunta: "¿Tengo que cambiar el tubo de aceite del turbo?",
+        respuesta:
+          "Siempre hay que retirarlo y limpiarlo. Hay que reemplazarlo junto con su tornillo si el turbo anterior tenía quemaduras de aceite, ruidos o pérdida de potencia, si tiene carbonilla que no sale con la limpieza, o si está doblado o dañado.",
+      },
+      {
+        pregunta: "¿Qué necesito para hacer válida la garantía del turbo?",
+        respuesta:
+          "La factura de compra, el comprobante de cambio de aceite y filtro, la orden de trabajo del taller y fotos del proceso, incluido el estado del tubo de aceite antes y después. Sin esa evidencia o si la instalación no siguió esta guía, la garantía no aplica.",
+      },
+      {
+        pregunta: "¿Cuánto tiempo dejo el motor encendido antes de apagarlo?",
+        respuesta:
+          "Si el motor estuvo exigido (carretera, pendientes o carga), deja que funcione en ralentí de 30 a 60 segundos antes de apagarlo para que el turbo se enfríe con aceite circulando.",
+      },
+    ],
+    guiasRelacionadas: [
+      { titulo: "¿Cada cuánto cambiar el filtro de aceite?", href: "/guias/problemas/cada-cuanto-cambiar-filtro-de-aceite" },
+      { titulo: "Luz del motor encendida: qué hacer", href: "/guias/problemas/luz-del-motor-encendida-que-hacer" },
+    ],
+    ctaWhatsApp: "Quiero cotizar un turbo para mi vehículo. Modelo, año y motor:",
+    fechaPublicacion: "2026-10-27",
+  },
+]
+
 // ─── EXPORTS ──────────────────────────────────────────────────────────────────
 
 export const guias: Guia[] = [
@@ -3461,6 +3633,7 @@ export const guias: Guia[] = [
   ...guiasMarcas,
   ...guiasCompra,
   ...guiasMantenimiento,
+  ...guiasInstalacion,
 ]
 
 export function getGuiaBySlug(categoria: string, slug: string): Guia | undefined {

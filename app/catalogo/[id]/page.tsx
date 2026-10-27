@@ -667,6 +667,22 @@ export default async function ProductDetailPage({
                   </div>
                 </div>
 
+                {/* ponytail: detección por título; usar categoría si se crea una de turbos */}
+                {/^turbo/i.test(product.title) && (
+                  <Link
+                    href="/guias/instalacion/guia-instalacion-turbo-garantia"
+                    className="flex gap-3 rounded-[13px] border border-brand/30 bg-brand/5 p-4 transition-colors hover:border-brand"
+                  >
+                    <ShieldCheck size={20} className="mt-0.5 shrink-0 text-brand" strokeWidth={2} />
+                    <div>
+                      <p className="text-3.5 font-bold text-navy">Garantía sujeta a instalación correcta</p>
+                      <p className="mt-0.5 text-3.25 leading-relaxed text-[#566071]">
+                        Antes de instalar, limpia o reemplaza el tubo de aceite del turbo. Ver la guía de instalación →
+                      </p>
+                    </div>
+                  </Link>
+                )}
+
                 <p className="text-3 text-slate-400">
                   El precio final y disponibilidad son confirmados por el vendedor. Envios a todo Ecuador.
                 </p>
