@@ -350,6 +350,9 @@ export default async function ProductDetailPage({
         }
 
   const typeConfig = TYPE_CONFIG[product.type]
+  // ponytail: detección por título; usar categoría si se crea una de turbos
+  // Turbos: no se ofrece garantía (el proveedor no la da)
+  const isTurbo = /^turbo/i.test(product.title)
   const categoryName = product.category?.name ?? ""
   const effectivePrice = product.offer_price ?? product.price
   const discountPct = product.offer_price
@@ -668,8 +671,7 @@ export default async function ProductDetailPage({
                   </div>
                 </div>
 
-                {/* ponytail: detección por título; usar categoría si se crea una de turbos */}
-                {/^turbo/i.test(product.title) && (
+                {isTurbo && (
                   <Link
                     href="/guias/instalacion/como-instalar-un-turbo"
                     className="flex gap-3 rounded-[13px] border border-brand/30 bg-brand/5 p-4 transition-colors hover:border-brand"
@@ -692,7 +694,7 @@ export default async function ProductDetailPage({
           </div>
         </section>
 
-        <section className="grid grid-cols-1 bg-navy sm:grid-cols-3">
+        <section className={`grid grid-cols-1 bg-navy ${isTurbo ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
           {[
             {
               icon: Truck,
@@ -701,13 +703,17 @@ export default async function ProductDetailPage({
               iconCls: "text-brand",
               iconBg: "bg-brand/14",
             },
-            {
-              icon: ShieldCheck,
-              title: "Garantía por defecto de fábrica",
-              sub: "Se verifica al recibir la pieza",
-              iconCls: "text-brand",
-              iconBg: "bg-brand/14",
-            },
+            ...(isTurbo
+              ? []
+              : [
+                  {
+                    icon: ShieldCheck,
+                    title: "Garantía por defecto de fábrica",
+                    sub: "Se verifica al recibir la pieza",
+                    iconCls: "text-brand",
+                    iconBg: "bg-brand/14",
+                  },
+                ]),
             {
               icon: MessageCircle,
               title: "Respuesta < 24 h",
@@ -715,10 +721,10 @@ export default async function ProductDetailPage({
               iconCls: "text-wa",
               iconBg: "bg-wa/14",
             },
-          ].map(({ icon: Icon, title, sub, iconCls, iconBg }, index) => (
+          ].map(({ icon: Icon, title, sub, iconCls, iconBg }, index, arr) => (
             <div
               key={title}
-              className={`flex items-center gap-3.5 px-10 py-6 ${index < 2 ? "sm:border-r border-white/8" : ""}`}
+              className={`flex items-center gap-3.5 px-10 py-6 ${index < arr.length - 1 ? "sm:border-r border-white/8" : ""}`}
             >
               <div
                 className={`flex h-10.5 w-10.5 shrink-0 items-center justify-center rounded-[11px] ${iconBg}`}
