@@ -3534,9 +3534,9 @@ const guiasInstalacion: Guia[] = [
         items: [
           "Usa aceite sintético (full synthetic) apto para motores turbo, salvo que el manual indique otra cosa.",
           "Respeta la viscosidad del manual (por ejemplo 5W-30 o 5W-40). Una viscosidad distinta cambia la presión de aceite que llega al turbo.",
-          "Gasolina turbo: aceite con norma API SP (protege contra la preignición a baja velocidad de los motores turbo de inyección directa) o la norma del fabricante (ACEA, dexos, VW, MB, etc.).",
-          "Diésel turbo: aceite con norma API CK-4 o CJ-4, o ACEA E/C según el manual.",
-          "Diésel con filtro de partículas (DPF): aceite bajo en cenizas (low SAPS, ACEA C2, C3 o C4 según el manual). Un aceite que no lo es tapa el DPF y restringe el escape del turbo.",
+          "Gasolina turbo: aceite con norma API SQ (la más reciente, vigente desde marzo de 2025) o API SP. Ambas protegen contra la preignición a baja velocidad (LSPI), típica de los motores turbo de inyección directa, y los depósitos en el turbo. API SQ sirve donde el manual pide SP o una norma anterior. Si el manual pide una norma del fabricante (dexos, VW, MB, etc.), esa manda.",
+          "Diésel turbo: aceite con norma API CK-4 (la vigente), que sirve donde el manual pide CJ-4 o una norma anterior, o la norma ACEA del manual (B o C en diésel livianos, E en diésel pesados). No uses API FA-4 salvo que el manual lo indique: no es compatible con motores que piden CK-4 o CJ-4.",
+          "Diésel con filtro de partículas (DPF): aceite bajo en cenizas (low SAPS), de la categoría ACEA C que indique el manual (C2, C3, C4, C5 o C6). Un aceite con más cenizas tapa el DPF y restringe el escape del turbo.",
           "Usa una sola marca y tipo de aceite; no mezcles aceites distintos ni agregues aditivos que el fabricante no indique.",
           "Cambia siempre el filtro de aceite junto con el aceite, con un filtro de calidad equivalente al original.",
           "Llena al nivel correcto: ni bajo (falta lubricación) ni alto (el exceso de aceite se va por el respiradero y la admisión).",
@@ -3678,7 +3678,7 @@ const guiasInstalacion: Guia[] = [
       {
         pregunta: "¿Qué aceite debo usar en un motor turbo?",
         respuesta:
-          "El turbo se lubrica con el aceite del motor, así que ese aceite debe ser apto para turbo: normalmente sintético, con la viscosidad del manual (por ejemplo 5W-30 o 5W-40) y la norma que pide el fabricante. En gasolina, API SP o la norma del fabricante; en diésel, API CK-4 o CJ-4 o ACEA E/C; y si el diésel tiene filtro de partículas, un aceite bajo en cenizas (ACEA C2, C3 o C4).",
+          "El turbo se lubrica con el aceite del motor, así que ese aceite debe ser apto para turbo: normalmente sintético, con la viscosidad del manual (por ejemplo 5W-30 o 5W-40) y la norma que pide el fabricante. En gasolina, API SQ o API SP (o la norma del fabricante si el manual la pide); en diésel, API CK-4 o la norma ACEA del manual; y si el diésel tiene filtro de partículas, un aceite bajo en cenizas de la categoría ACEA C que indique el manual.",
       },
       {
         pregunta: "¿Por qué se dañó mi turbo nuevo a los pocos días?",
