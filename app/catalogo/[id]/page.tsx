@@ -680,7 +680,7 @@ export default async function ProductDetailPage({
                     <div>
                       <p className="text-3.5 font-bold text-navy">Antes de instalar tu turbo</p>
                       <p className="mt-0.5 text-3.25 leading-relaxed text-[#566071]">
-                        Limpia o reemplaza el tubo de aceite para que el turbo nuevo no se quede sin lubricación. Ver la guía de instalación →
+                        Usa aceite apto para motor turbo y limpia o reemplaza el tubo de aceite para que el turbo nuevo no se quede sin lubricación. Ver la guía de instalación →
                       </p>
                     </div>
                   </Link>
