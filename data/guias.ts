@@ -49,8 +49,8 @@ export const CATEGORIAS: Record<GuiaCategoria, { label: string; descripcion: str
     descripcion: "Intervalos y recomendaciones de mantenimiento preventivo",
   },
   instalacion: {
-    label: "Instalación y garantía",
-    descripcion: "Procedimientos de instalación que debes seguir para que la garantía del repuesto aplique",
+    label: "Instalación",
+    descripcion: "Procedimientos recomendados para instalar repuestos correctamente",
   },
 }
 
@@ -3462,17 +3462,17 @@ const guiasMantenimiento: Guia[] = [
 
 const guiasInstalacion: Guia[] = [
   {
-    slug: "guia-instalacion-turbo-garantia",
+    slug: "como-instalar-un-turbo",
     categoria: "instalacion",
-    titulo: "Guía de instalación de turbocompresor: pasos obligatorios para la garantía",
+    titulo: "Cómo instalar un turbo nuevo: guía paso a paso",
     descripcion:
-      "Cómo instalar un turbo nuevo correctamente: limpieza o cambio del tubo de aceite, prelubricación, primer arranque y evidencia que exige la garantía.",
+      "Cómo instalar un turbo nuevo correctamente: limpieza o cambio del tubo de aceite, prelubricación, primer arranque y cuidados después de la instalación.",
     respuesta_corta:
-      "La garantía de un turbo nuevo aplica solo si el taller corrige la causa que dañó al anterior. El paso clave es retirar y limpiar el tubo de entrada de aceite y su tornillo, y reemplazarlos si el turbo original tuvo quemaduras de aceite, ruidos o pérdida de potencia: una línea obstruida deja al turbo sin lubricación y lo daña en minutos. Además hay que cambiar aceite y filtro, despejar el retorno de aceite y el respiradero del cárter, revisar admisión y escape, usar juntas nuevas, prelubricar el turbo y hacer un arranque controlado. Conserva la factura, la orden de trabajo y fotos del proceso; sin esa evidencia, la garantía no aplica.",
+      "Para que un turbo nuevo dure, el taller debe corregir primero la causa que dañó al anterior. El paso clave es retirar y limpiar el tubo de entrada de aceite y su tornillo, y reemplazarlos si el turbo original tuvo quemaduras de aceite, ruidos o pérdida de potencia: una línea obstruida deja al turbo sin lubricación y lo daña en minutos. Además hay que cambiar aceite y filtro, despejar el retorno de aceite y el respiradero del cárter, revisar admisión y escape, usar juntas nuevas, prelubricar el turbo y hacer un arranque controlado. Después, evita exigir el motor las primeras horas y déjalo en ralentí unos segundos antes de apagarlo.",
     keywords: [
       "instalación turbo",
       "cómo instalar turbocompresor",
-      "garantía turbo Ecuador",
+      "turbo Ecuador",
       "tubo de aceite turbo",
       "prelubricar turbo",
       "turbo nuevo se dañó",
@@ -3481,7 +3481,7 @@ const guiasInstalacion: Guia[] = [
       {
         tipo: "aviso",
         texto:
-          "La garantía del turbo aplica solo si la instalación sigue esta guía y conservas la evidencia de la sección 8. Los torques, capacidades y procedimientos específicos se toman del manual del fabricante del vehículo.",
+          "Esta guía es general y no reemplaza el manual del fabricante del vehículo: los torques, capacidades y procedimientos específicos se toman de ahí. La instalación debe hacerla un técnico calificado.",
       },
       { tipo: "h2", texto: "1. Por qué falla un turbo nuevo" },
       {
@@ -3571,45 +3571,17 @@ const guiasInstalacion: Guia[] = [
           "Ante humo, pérdida de potencia, silbidos o ruidos metálicos, detén el vehículo y revisa.",
         ],
       },
-      { tipo: "h2", texto: "8. Evidencia para la garantía" },
-      {
-        tipo: "ul",
-        items: [
-          "Factura de compra del turbo.",
-          "Comprobante de cambio de aceite y filtro, y del tubo y tornillo de aceite si se reemplazaron.",
-          "Orden de trabajo del taller con vehículo, kilometraje, fecha, trabajos realizados y causa de la falla anterior.",
-          "Fotos: turbo original, tubo de aceite antes y después de la limpieza, y turbo nuevo instalado.",
-        ],
-      },
-      { tipo: "h3", texto: "La garantía no aplica si" },
-      {
-        tipo: "ul",
-        items: [
-          "El tubo o tornillo de aceite no se limpió, o no se reemplazó cuando correspondía.",
-          "El aceite estaba contaminado o no era el indicado.",
-          "El turbo no se prelubricó.",
-          "Hubo fugas de admisión o escape, o ingresaron objetos extraños.",
-          "Se modificó el actuador, la wastegate o la calibración.",
-          "Hubo falta de mantenimiento o mala manipulación.",
-          "No se presenta la evidencia de esta sección.",
-        ],
-      },
     ],
     faq: [
       {
         pregunta: "¿Por qué se dañó mi turbo nuevo a los pocos días?",
         respuesta:
-          "Casi siempre por una causa externa que no se corrigió: tubo de entrada de aceite obstruido, aceite contaminado, retorno restringido o ingreso de objetos extraños. Por eso la garantía exige limpiar o reemplazar el tubo de aceite y su tornillo, y cambiar aceite y filtro antes de instalar.",
+          "Casi siempre por una causa externa que no se corrigió: tubo de entrada de aceite obstruido, aceite contaminado, retorno restringido o ingreso de objetos extraños. Por eso hay que limpiar o reemplazar el tubo de aceite y su tornillo, y cambiar aceite y filtro antes de instalar.",
       },
       {
         pregunta: "¿Tengo que cambiar el tubo de aceite del turbo?",
         respuesta:
           "Siempre hay que retirarlo y limpiarlo. Hay que reemplazarlo junto con su tornillo si el turbo anterior tenía quemaduras de aceite, ruidos o pérdida de potencia, si tiene carbonilla que no sale con la limpieza, o si está doblado o dañado.",
-      },
-      {
-        pregunta: "¿Qué necesito para hacer válida la garantía del turbo?",
-        respuesta:
-          "La factura de compra, el comprobante de cambio de aceite y filtro, la orden de trabajo del taller y fotos del proceso, incluido el estado del tubo de aceite antes y después. Sin esa evidencia o si la instalación no siguió esta guía, la garantía no aplica.",
       },
       {
         pregunta: "¿Cuánto tiempo dejo el motor encendido antes de apagarlo?",

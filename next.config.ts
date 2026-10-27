@@ -12,6 +12,15 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/guias/instalacion/guia-instalacion-turbo-garantia",
+        destination: "/guias/instalacion/como-instalar-un-turbo",
+        permanent: true,
+      },
+    ];
+  },
   turbopack: {
     root: path.resolve(__dirname),
   },
