@@ -8,6 +8,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   Truck,
+  Wrench,
 } from "lucide-react"
 import AddToCartButton from "@/components/AddToCartButton"
 import Footer from "@/components/Footer"
@@ -670,14 +671,14 @@ export default async function ProductDetailPage({
                 {/* ponytail: detección por título; usar categoría si se crea una de turbos */}
                 {/^turbo/i.test(product.title) && (
                   <Link
-                    href="/guias/instalacion/guia-instalacion-turbo-garantia"
+                    href="/guias/instalacion/como-instalar-un-turbo"
                     className="flex gap-3 rounded-[13px] border border-brand/30 bg-brand/5 p-4 transition-colors hover:border-brand"
                   >
-                    <ShieldCheck size={20} className="mt-0.5 shrink-0 text-brand" strokeWidth={2} />
+                    <Wrench size={20} className="mt-0.5 shrink-0 text-brand" strokeWidth={2} />
                     <div>
-                      <p className="text-3.5 font-bold text-navy">Garantía sujeta a instalación correcta</p>
+                      <p className="text-3.5 font-bold text-navy">Antes de instalar tu turbo</p>
                       <p className="mt-0.5 text-3.25 leading-relaxed text-[#566071]">
-                        Antes de instalar, limpia o reemplaza el tubo de aceite del turbo. Ver la guía de instalación →
+                        Limpia o reemplaza el tubo de aceite para que el turbo nuevo no se quede sin lubricación. Ver la guía de instalación →
                       </p>
                     </div>
                   </Link>
