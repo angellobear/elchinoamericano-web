@@ -19,6 +19,12 @@ const nextConfig: NextConfig = {
         destination: "/guias/instalacion/como-instalar-un-turbo",
         permanent: true,
       },
+      {
+        // slug antiguo con tilde: daba 404
+        source: "/guias/problemas/frenos-chirr%C3%ADan-pastillas-o-discos",
+        destination: "/guias/problemas/frenos-chirrian-pastillas-o-discos",
+        permanent: true,
+      },
     ];
   },
   turbopack: {

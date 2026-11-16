@@ -127,8 +127,9 @@ export function buildCatalogPagePath(basePath: string, page: number) {
   return page > 1 ? `${basePath}?pagina=${page}` : basePath
 }
 
-// Con menos productos la página de modelo existe (breadcrumbs válidos) pero va noindex y fuera del sitemap
-export const MIN_INDEXABLE_MODEL_PRODUCTS = 3
+// Toda página de modelo con al menos un producto se indexa y entra al sitemap: si Google la ve noindex tarda mucho en reindexarla.
+// Bajo este mínimo iría noindex y fuera del sitemap.
+export const MIN_INDEXABLE_MODEL_PRODUCTS = 1
 
 export function buildCatalogModelPath(brandKey: string, modelSlug: string) {
   return `/catalogo/marca/${brandKey}/${modelSlug}`
