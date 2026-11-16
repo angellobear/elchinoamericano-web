@@ -248,7 +248,7 @@ const guiasProblemas: Guia[] = [
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
     ],
     guiasRelacionadas: [
-      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrían-pastillas-o-discos" },
+      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrian-pastillas-o-discos" },
       { titulo: "¿Dónde comprar repuestos Chery en Ecuador?", href: "/guias/marcas/repuestos-chery-ecuador" },
     ],
     ctaWhatsApp: "Consultar pastillas y discos para mi Chery Tiggo",
@@ -857,7 +857,7 @@ const guiasProblemas: Guia[] = [
   },
 
   {
-    slug: "frenos-chirrían-pastillas-o-discos",
+    slug: "frenos-chirrian-pastillas-o-discos",
     categoria: "problemas",
     titulo: "Frenos que chirrían — ¿debo cambiar las pastillas, los discos o ambos?",
     descripcion:
@@ -1381,7 +1381,7 @@ const guiasMarcas: Guia[] = [
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
-      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrían-pastillas-o-discos" },
+      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrian-pastillas-o-discos" },
     ],
     ctaWhatsApp: "Cotizar repuesto Ford — modelo y año:",
     fechaPublicacion: "2026-08-26",
@@ -1469,7 +1469,7 @@ const guiasMarcas: Guia[] = [
     ],
     guiasRelacionadas: [
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
-      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrían-pastillas-o-discos" },
+      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrian-pastillas-o-discos" },
     ],
     ctaWhatsApp: "Cotizar repuesto Chevrolet — modelo y año:",
     fechaPublicacion: "2026-08-26",
@@ -1627,7 +1627,7 @@ const guiasMarcas: Guia[] = [
       { nombre: "Frenos en el catálogo", href: "/catalogo/categoria/frenos" },
     ],
     guiasRelacionadas: [
-      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrían-pastillas-o-discos" },
+      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrian-pastillas-o-discos" },
     ],
     ctaWhatsApp: "Cotizar repuesto BYD — modelo y año:",
     fechaPublicacion: "2026-08-26",
@@ -2273,7 +2273,7 @@ const guiasCompra: Guia[] = [
     guiasRelacionadas: [
       { titulo: "¿Dónde comprar repuestos Ford en Ecuador?", href: "/guias/marcas/repuestos-ford-ecuador" },
       { titulo: "¿Dónde comprar repuestos Chevrolet en Ecuador?", href: "/guias/marcas/repuestos-chevrolet-ecuador" },
-      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrían-pastillas-o-discos" },
+      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrian-pastillas-o-discos" },
     ],
     ctaWhatsApp: "Cotizar repuesto para mi auto americano — marca, modelo y año:",
     fechaPublicacion: "2026-08-26",
