@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { MessageCircle } from "lucide-react"
+import { SantaHat } from "@/components/SantaHat"
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
@@ -72,6 +73,7 @@ export default async function Footer() {
                   className="object-contain"
                   sizes="68px"
                 />
+                <SantaHat />
               </div>
             </Link>
             <p className="text-[#7e8ca3] text-sm leading-relaxed max-w-70">
