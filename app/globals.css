@@ -367,6 +367,21 @@ html:not(.navidad) .xmas {
   box-shadow: 0 0 2px rgba(13, 31, 60, 0.45);
 }
 
+/* Franja de bastón de caramelo (components/CandyStripe.tsx). */
+.candy-stripe {
+  background: repeating-linear-gradient(-45deg, #e03030 0 7px, #fff 7px 14px);
+  box-shadow: 0 1px 2px rgba(13, 31, 60, 0.18);
+}
+
+/* Cards del catálogo: al pasar el mouse el borde rojo pasa a un degradado
+   rojo/verde/dorado como las luces del navbar. */
+html.navidad .xmas-card:hover {
+  border-color: transparent;
+  background:
+    linear-gradient(#fff, #fff) padding-box,
+    linear-gradient(120deg, #e03030, #25d366, #f5c542, #e03030) border-box;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .snowflake {
     display: none;

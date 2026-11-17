@@ -34,6 +34,8 @@ import { buildProductPath, extractProductCodeFromSegment } from "@/lib/product-s
 import type { Product, ProductType } from "@/types"
 import ProductStickyBar from "./ProductStickyBar"
 import CompatibilityTable from "./CompatibilityTable"
+import { SantaHat } from "@/components/SantaHat" // MODO NAVIDEÑO
+import { CandyStripe } from "@/components/CandyStripe" // MODO NAVIDEÑO
 
 export const revalidate = 86400 // 1 día: los guardados del admin revalidan al instante; esto solo refresca stock y listados (ISR Writes son limitados en Vercel Hobby)
 
@@ -467,8 +469,12 @@ export default async function ProductDetailPage({
             <div className="grid grid-cols-1 gap-11 lg:grid-cols-2 lg:gap-14">
               <div className="mx-auto w-full max-w-md lg:max-w-none">
                 <div className="relative overflow-hidden rounded-[18px] border border-[#e6e9ef] bg-white">
+                  {/* MODO NAVIDEÑO */}
+                  <CandyStripe />
                   {discountPct > 0 && (
                     <span className="absolute left-4 top-4 z-10 rounded-[7px] bg-brand px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-white">
+                      {/* MODO NAVIDEÑO */}
+                      <span className="xmas">🎁 Oferta navideña </span>
                       -{discountPct}% OFF
                     </span>
                   )}
@@ -510,9 +516,11 @@ export default async function ProductDetailPage({
                     </Link>
                   )}
                   <span
-                    className={`rounded-[7px] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] ${typeConfig.badgeCls}`}
+                    className={`relative rounded-[7px] px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] ${typeConfig.badgeCls}`}
                   >
                     {typeConfig.label}
+                    {/* MODO NAVIDEÑO */}
+                    <SantaHat style={{ top: -12, right: -10, width: 22, height: 20 }} />
                   </span>
                 </div>
 
@@ -882,6 +890,8 @@ export default async function ProductDetailPage({
             <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
               <div className="mb-6 flex items-center justify-between gap-4">
                 <h2 className="font-display text-8 font-bold uppercase leading-none text-navy">
+                  {/* MODO NAVIDEÑO */}
+                  <span className="xmas" aria-hidden="true">🎄 </span>
                   {relatedHeading.label}
                 </h2>
                 <Link
@@ -900,9 +910,11 @@ export default async function ProductDetailPage({
                     <Link
                       key={relatedProduct.id}
                       href={buildProductPath(relatedProduct)}
-                      className="group flex flex-col overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
+                      className="xmas-card group flex flex-col overflow-hidden rounded-[14px] border border-[#e6e9ef] bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-brand hover:shadow-[0_10px_28px_rgba(13,31,60,.10)]"
                     >
                       <div className="relative flex aspect-[4/3] items-center justify-center overflow-hidden bg-[#f3f5f9]">
+                        {/* MODO NAVIDEÑO */}
+                        <CandyStripe />
                         <Image
                           src={relatedImage}
                           alt={hasRelatedImage ? relatedProduct.title : `${relatedProduct.title} - imagen referencial`}
