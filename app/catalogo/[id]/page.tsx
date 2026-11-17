@@ -471,13 +471,9 @@ export default async function ProductDetailPage({
                 <div className="relative overflow-hidden rounded-[18px] border border-[#e6e9ef] bg-white">
                   {/* MODO NAVIDEÑO */}
                   <CandyStripe />
-                  {discountPct > 0 && (
-                    <span className="absolute left-4 top-4 z-10 rounded-[7px] bg-brand px-2.5 py-1.5 text-2.75 font-bold uppercase tracking-[.05em] text-white">
-                      {/* MODO NAVIDEÑO */}
-                      <span className="xmas">🎁 Oferta navideña </span>
-                      -{discountPct}% OFF
-                    </span>
-                  )}
+                  {/* ponytail: sin etiqueta de descuento sobre la foto. La tapaba la
+                      imagen del carrusel (mismo z-10, posterior en el DOM) y solo se
+                      veía mientras cargaba; el descuento ya se muestra junto al precio. */}
                   {isUnavailable ? (
                     <div className="relative aspect-square bg-slate-100">
                       <Image
@@ -541,7 +537,7 @@ export default async function ProductDetailPage({
                   )}
                 </div>
 
-                <div className="mt-1 flex items-end gap-3">
+                <div className="mt-1 flex flex-wrap items-end gap-3">
                   <span className="font-display text-[clamp(2.5rem,5vw,3.375rem)] font-bold leading-none text-navy">
                     ${effectivePrice.toFixed(2)}
                   </span>
@@ -552,6 +548,8 @@ export default async function ProductDetailPage({
                   )}
                   {discountPct > 0 && (
                     <span className="mb-0.5 rounded-lg bg-brand px-2.5 py-1.5 text-3.25 font-bold text-white">
+                      {/* MODO NAVIDEÑO */}
+                      <span className="xmas">🎁 Oferta navideña · </span>
                       {discountPct}% OFF
                     </span>
                   )}
