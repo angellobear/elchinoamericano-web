@@ -109,6 +109,16 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="preconnect" href="https://scripts.clarity.ms" />
         <link rel="preconnect" href="https://res.cloudinary.com" />
+        {/* ponytail: modo navideño por fecha del cliente (todo diciembre), no en el
+            render: home y fichas son ISR/SSG y una fecha del servidor quedaría
+            congelada en el HTML cacheado. `?navidad` lo fuerza para probar.
+            Las decoraciones viven en CSS bajo `html.navidad` y se montan desde el
+            Navbar, así que guías, admin, login y pedidos quedan sin decorar. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `if(new Date().getMonth()===11||location.search.includes("navidad"))document.documentElement.classList.add("navidad")`,
+          }}
+        />
       </head>
       <body className="min-h-full flex flex-col bg-white text-slate-900">
         <CartProvider>{children}</CartProvider>

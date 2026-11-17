@@ -8,6 +8,8 @@ import Image from "next/image"
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useCart } from "@/context/CartContext"
 import CartDrawer from "@/components/CartDrawer"
+import { ChristmasSnow } from "@/components/ChristmasSnow"
+import { SantaHat } from "@/components/SantaHat"
 import { cn } from "@/lib/utils"
 import { getWhatsAppUrl } from "@/lib/constants"
 
@@ -76,6 +78,7 @@ export default function Navbar() {
                 loading="eager"
                 priority
               />
+              <SantaHat />
             </div>
           </Link>
 
@@ -156,6 +159,7 @@ export default function Navbar() {
                         className="object-contain"
                         sizes="43px"
                       />
+                      <SantaHat />
                     </div>
                   </Link>
                   <nav className="flex flex-col gap-1">
@@ -190,8 +194,10 @@ export default function Navbar() {
             </Sheet>
           </div>
         </div>
+        <div className="xmas xmas-lights absolute inset-x-0 -bottom-2.5 pointer-events-none" aria-hidden="true" />
       </header>
 
+      <ChristmasSnow />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
   )

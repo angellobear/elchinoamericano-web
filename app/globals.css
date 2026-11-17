@@ -291,6 +291,92 @@ body {
   }
 }
 
+/* ── Modo navideño ─────────────────────────────────────────────────────
+   Se activa con html.navidad (script en app/layout.tsx, todo diciembre).
+   Fuera de temporada las decoraciones no se muestran. */
+html:not(.navidad) .xmas {
+  display: none;
+}
+
+/* Nieve del hero: copos CSS, sin canvas ni dependencias. */
+@keyframes snow-fall {
+  from { transform: translate3d(0, -10vh, 0); }
+  to   { transform: translate3d(var(--drift, 20px), 110vh, 0); }
+}
+
+.snowflake {
+  position: absolute;
+  top: 0;
+  border-radius: 9999px;
+  opacity: 0.9;
+  animation: snow-fall linear infinite;
+}
+
+/* Guirnalda de luces bajo el navbar: dos capas (focos pares e impares)
+   que parpadean en contrafase, así se intercalan encendido/apagado.
+   Secuencia cada 22px: rojo, verde, dorado, rojo, verde, dorado. */
+@keyframes xmas-blink {
+  0%, 45% { opacity: 1; }
+  55%, 100% { opacity: 0.15; }
+}
+
+.xmas-lights {
+  height: 10px;
+}
+
+.xmas-lights::before,
+.xmas-lights::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: 132px 10px;
+  background-repeat: repeat-x;
+  animation: xmas-blink 1.6s ease-in-out infinite;
+}
+
+/* pares: rojo, dorado, verde */
+.xmas-lights::before {
+  background-image:
+    radial-gradient(circle, #e03030 3.5px, rgba(224, 48, 48, 0.35) 4.5px, transparent 6.5px),
+    radial-gradient(circle, #f5c542 3.5px, rgba(245, 197, 66, 0.35) 4.5px, transparent 6.5px),
+    radial-gradient(circle, #25d366 3.5px, rgba(37, 211, 102, 0.35) 4.5px, transparent 6.5px);
+  background-position: 0 0, 44px 0, 88px 0;
+}
+
+/* impares: verde, rojo, dorado — medio ciclo desfasados */
+.xmas-lights::after {
+  background-image:
+    radial-gradient(circle, #25d366 3.5px, rgba(37, 211, 102, 0.35) 4.5px, transparent 6.5px),
+    radial-gradient(circle, #e03030 3.5px, rgba(224, 48, 48, 0.35) 4.5px, transparent 6.5px),
+    radial-gradient(circle, #f5c542 3.5px, rgba(245, 197, 66, 0.35) 4.5px, transparent 6.5px);
+  background-position: 22px 0, 66px 0, 110px 0;
+  animation-delay: -0.8s;
+}
+
+/* Nieve de todo el sitio: capa fija sobre el contenido, debajo del navbar
+   y los modales (z-50). La sombra la hace visible sobre fondos blancos. */
+.snow-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.snow-layer .snowflake {
+  box-shadow: 0 0 2px rgba(13, 31, 60, 0.45);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snowflake {
+    display: none;
+  }
+  .xmas-lights::before,
+  .xmas-lights::after {
+    animation: none;
+  }
+}
+
 /* Documentos imprimibles (pedidos): margen de hoja uniforme. */
 @media print {
   @page {
