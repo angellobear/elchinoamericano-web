@@ -291,7 +291,7 @@ body {
   }
 }
 
-/* ── Modo navideño ─────────────────────────────────────────────────────
+/* ── MODO NAVIDEÑO (ver docs/modo-navideno.md) ─────────────────────────────────────────────────────
    Se activa con html.navidad (script en app/layout.tsx, todo diciembre).
    Fuera de temporada las decoraciones no se muestran. */
 html:not(.navidad) .xmas {

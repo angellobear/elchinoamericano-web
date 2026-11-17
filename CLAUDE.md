@@ -5,6 +5,7 @@
 - [docs/admin-architecture.md](/Users/angelloordonez/Documents/Blubear/projects/elchinoamericano-web/docs/admin-architecture.md)
 - [docs/catalog-architecture.md](/Users/angelloordonez/Documents/Blubear/projects/elchinoamericano-web/docs/catalog-architecture.md)
 - [docs/seo-architecture.md](/Users/angelloordonez/Documents/Blubear/projects/elchinoamericano-web/docs/seo-architecture.md)
+- [docs/modo-navideno.md](/Users/angelloordonez/Documents/Blubear/projects/elchinoamericano-web/docs/modo-navideno.md) — decoración de diciembre; todo marcado con `MODO NAVIDEÑO`
 
 ## Core Rules
 

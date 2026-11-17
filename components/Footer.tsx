@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { MessageCircle } from "lucide-react"
-import { SantaHat } from "@/components/SantaHat"
+import { SantaHat } from "@/components/SantaHat" // MODO NAVIDEÑO
 import { buildCatalogBrandPath } from "@/lib/catalog"
 import { getWhatsAppUrl, siteConfig } from "@/lib/constants"
 import { getVisibleVehicleBrands } from "@/lib/db/vehicle-brands"
@@ -73,6 +73,7 @@ export default async function Footer() {
                   className="object-contain"
                   sizes="68px"
                 />
+                {/* MODO NAVIDEÑO */}
                 <SantaHat />
               </div>
             </Link>

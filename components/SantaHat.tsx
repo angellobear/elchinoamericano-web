@@ -1,3 +1,4 @@
+// MODO NAVIDEÑO — componente temporal, ver docs/modo-navideno.md
 /**
  * Gorro de Santa sobre la punta de la "A" de logo-ca.png. Va dentro del
  * contenedor `relative` del logo; las medidas en % escalan con cualquier

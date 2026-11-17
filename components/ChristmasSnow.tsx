@@ -1,5 +1,7 @@
 "use client"
 
+// MODO NAVIDEÑO — componente temporal, ver docs/modo-navideno.md
+
 import { useSyncExternalStore, type CSSProperties } from "react"
 
 /**

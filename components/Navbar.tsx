@@ -8,8 +8,8 @@ import Image from "next/image"
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { useCart } from "@/context/CartContext"
 import CartDrawer from "@/components/CartDrawer"
-import { ChristmasSnow } from "@/components/ChristmasSnow"
-import { SantaHat } from "@/components/SantaHat"
+import { ChristmasSnow } from "@/components/ChristmasSnow" // MODO NAVIDEÑO
+import { SantaHat } from "@/components/SantaHat" // MODO NAVIDEÑO
 import { cn } from "@/lib/utils"
 import { getWhatsAppUrl } from "@/lib/constants"
 
@@ -78,6 +78,7 @@ export default function Navbar() {
                 loading="eager"
                 priority
               />
+              {/* MODO NAVIDEÑO */}
               <SantaHat />
             </div>
           </Link>
@@ -159,6 +160,7 @@ export default function Navbar() {
                         className="object-contain"
                         sizes="43px"
                       />
+                      {/* MODO NAVIDEÑO */}
                       <SantaHat />
                     </div>
                   </Link>
@@ -194,9 +196,11 @@ export default function Navbar() {
             </Sheet>
           </div>
         </div>
+        {/* MODO NAVIDEÑO: luces bajo el navbar */}
         <div className="xmas xmas-lights absolute inset-x-0 -bottom-2.5 pointer-events-none" aria-hidden="true" />
       </header>
 
+      {/* MODO NAVIDEÑO */}
       <ChristmasSnow />
       <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
     </>
