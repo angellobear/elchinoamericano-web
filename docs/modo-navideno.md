@@ -1,6 +1,6 @@
 # Modo navideño
 
-Decoración de temporada para el sitio público. **Se activa sola en diciembre**
+Decoración de temporada para el sitio público. **Se activa sola del 15 de noviembre al 31 de diciembre**
 y se apaga sola el 1 de enero; no hace falta tocar código cada año.
 
 Todo está marcado con el comentario `MODO NAVIDEÑO`. Para encontrarlo:
@@ -23,7 +23,8 @@ Tampoco con `prefers-reduced-motion`: ahí la nieve se oculta y las luces no par
 ## Cómo funciona
 
 1. `app/layout.tsx` tiene un `<script>` inline en `<head>` que agrega la clase
-   `navidad` a `<html>` si el mes del navegador es diciembre, o si la URL tiene
+   `navidad` a `<html>` si la fecha del navegador está entre el 15 de noviembre y el 31 de
+   diciembre, o si la URL tiene
    `?navidad`. Se usa la fecha del cliente porque home y fichas son ISR/SSG:
    una fecha evaluada en el servidor quedaría congelada en el HTML cacheado.
 2. Todo elemento decorativo lleva la clase `xmas`. En `app/globals.css`,
@@ -44,10 +45,11 @@ Tampoco con `prefers-reduced-motion`: ahí la nieve se oculta y las luces no par
 
 ## Ajustes rápidos
 
-- **Probar fuera de diciembre:** abrir cualquier página con `?navidad`
+- **Probar fuera de temporada:** abrir cualquier página con `?navidad`
   (ej. `/?navidad`). Se mantiene al navegar sin recargar.
-- **Cambiar fechas:** editar la condición `new Date().getMonth()===11` en el
-  script de `app/layout.tsx` (los meses van de 0 a 11).
+- **Cambiar fechas:** en el script de `app/layout.tsx`, la fecha se compara
+  como número `MMDD` (mes×100 + día). `>=1115` = desde el 15 de noviembre hasta
+  el 31 de diciembre. Ej.: `>=1201` = solo diciembre.
 - **Más o menos nieve, velocidad, viento, tamaño o color:** `SNOW_CONFIG` en
   `components/ChristmasSnow.tsx`. Si va lento en celulares, bajar `count`.
 - **Apagarlo este año sin borrar nada:** cambiar la condición del script a `false`.
