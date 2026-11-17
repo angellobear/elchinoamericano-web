@@ -16,6 +16,11 @@ grep -rn "MODO NAVIDEÑO" app components
 | Nieve (200 copos, CSS) | Home, catálogo, fichas, contacto |
 | Luces de colores intercaladas bajo el navbar | Mismas páginas |
 | Gorro de Santa sobre la "A" del logo | Header, menú móvil y footer |
+| Franja de bastón de caramelo arriba de la foto | Cards del catálogo, foto del detalle y recomendados |
+| Gorrito sobre la etiqueta de calidad (Original/OEM/Alterno) | Cards del catálogo y detalle |
+| "🎁 Oferta navideña" antes del % de descuento | Cards y detalle con descuento |
+| Borde rojo/verde/dorado al pasar el mouse | Cards del catálogo y recomendados |
+| 🎄 en el título de recomendados | Detalle de producto |
 
 **No** aparece en guías, admin, login ni `/pedido/[token]` (no usan el Navbar).
 Tampoco con `prefers-reduced-motion`: ahí la nieve se oculta y las luces no parpadean.
@@ -37,7 +42,10 @@ Tampoco con `prefers-reduced-motion`: ahí la nieve se oculta y las luces no par
 | Archivo | Qué tiene |
 |---|---|
 | `components/ChristmasSnow.tsx` | Nieve. **Archivo completo navideño.** Configuración en `SNOW_CONFIG` (mismas unidades que react-snowfall) |
-| `components/SantaHat.tsx` | Gorro SVG. **Archivo completo navideño** |
+| `components/SantaHat.tsx` | Gorro SVG (prop `style` para ubicarlo fuera del logo). **Archivo completo navideño** |
+| `components/CandyStripe.tsx` | Franja de caramelo. **Archivo completo navideño** |
+| `components/ProductCard.tsx` | 2 imports, `<CandyStripe />`, `<SantaHat />` en la etiqueta, texto "Oferta navideña" y la clase `xmas-card` (hover) |
+| `app/catalogo/[id]/page.tsx` | 2 imports, `<CandyStripe />` (foto y recomendados), `<SantaHat />` en la etiqueta, texto "Oferta navideña", 🎄 del título y clase `xmas-card` en recomendados |
 | `components/Navbar.tsx` | 2 imports, 2 `<SantaHat />`, `<ChristmasSnow />` y el `<div>` de luces |
 | `components/Footer.tsx` | 1 import y 1 `<SantaHat />` |
 | `app/layout.tsx` | `<script>` de activación en `<head>` |
@@ -56,13 +64,18 @@ Tampoco con `prefers-reduced-motion`: ahí la nieve se oculta y las luces no par
 
 ## Cómo quitarlo por completo
 
-1. Borrar `components/ChristmasSnow.tsx` y `components/SantaHat.tsx`.
-2. En `components/Navbar.tsx` y `components/Footer.tsx`, borrar cada línea
+1. Borrar `components/ChristmasSnow.tsx`, `components/SantaHat.tsx` y `components/CandyStripe.tsx`.
+2. En `components/Navbar.tsx`, `components/Footer.tsx`, `components/ProductCard.tsx`
+   y `app/catalogo/[id]/page.tsx`, borrar cada línea
    `MODO NAVIDEÑO` junto con la línea de abajo (o el import de esa línea).
 3. En `app/layout.tsx`, borrar el comentario `MODO NAVIDEÑO` y el `<script>` que le sigue.
 4. En `app/globals.css`, borrar el bloque desde `MODO NAVIDEÑO` hasta antes de
    `/* Documentos imprimibles (pedidos)`.
-5. Verificar que no quede nada: `grep -rn "MODO NAVIDEÑO\|xmas\|navidad" app components`.
+5. Quitar la clase `xmas-card` en `components/ProductCard.tsx` (`<motion.article>`)
+   y en `app/catalogo/[id]/page.tsx` (cards de recomendados).
+   (La etiqueta de calidad de la card quedó en `z-30` para ir sobre la franja;
+   es inofensivo dejarlo así.)
+6. Verificar que no quede nada: `grep -rn "MODO NAVIDEÑO\|xmas\|navidad" app components`.
 
 Alternativa: revertir el merge con `git revert -m 1 e1c26b5` (y el commit de
 esta documentación).

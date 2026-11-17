@@ -9,6 +9,8 @@ import { getWhatsAppUrl } from "@/lib/constants"
 import { getCompatibleModelLabels } from "@/lib/catalog-products"
 import { buildProductPath } from "@/lib/product-slugs"
 import { DEFAULT_PRODUCT_IMAGE_PATH, getPartBrandName, getProductPrimaryImage } from "@/lib/seo"
+import { SantaHat } from "@/components/SantaHat" // MODO NAVIDEÑO
+import { CandyStripe } from "@/components/CandyStripe" // MODO NAVIDEÑO
 
 const TYPE_BADGE: Record<string, { label: string; cls: string }> = {
   original: { label: "Original", cls: "bg-navy text-white" },
@@ -41,7 +43,7 @@ export default function ProductCard({ product, priority = false, search = "" }: 
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] as const }}
-      className="group relative flex flex-col border border-[#e6e9ef] rounded-2xl overflow-hidden bg-white hover:border-brand hover:shadow-[0_22px_44px_rgba(13,31,60,.16)] hover:-translate-y-1 transition-all duration-200 cursor-pointer"
+      className="xmas-card group relative flex flex-col border border-[#e6e9ef] rounded-2xl overflow-hidden bg-white hover:border-brand hover:shadow-[0_22px_44px_rgba(13,31,60,.16)] hover:-translate-y-1 transition-all duration-200 cursor-pointer"
     >
       {/* Full-card link */}
       <Link
@@ -53,6 +55,8 @@ export default function ProductCard({ product, priority = false, search = "" }: 
 
       {/* Image 4:3 */}
       <div className="relative aspect-square overflow-hidden pointer-events-none">
+        {/* MODO NAVIDEÑO */}
+        <CandyStripe />
         <Image
           src={displayImage}
           alt={primaryImage ? product.title : `${product.title} - imagen referencial`}
@@ -75,12 +79,16 @@ export default function ProductCard({ product, priority = false, search = "" }: 
           </div>
         )}
         {/* Type badge */}
-        <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-tiny font-bold uppercase tracking-[.06em] z-1 ${badge.cls}`}>
+        <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-tiny font-bold uppercase tracking-[.06em] z-30 ${badge.cls}`}>
           {badge.label}
+          {/* MODO NAVIDEÑO */}
+          <SantaHat style={{ top: -8, right: -9, width: 20, height: 18 }} />
         </span>
         {/* Discount badge */}
         {discountPct > 0 && (
           <span className="absolute top-3 right-3 bg-brand text-white px-2 py-1 rounded-md text-2.5 font-bold uppercase tracking-wider z-1">
+            {/* MODO NAVIDEÑO */}
+            <span className="xmas">🎁 Oferta navideña </span>
             -{discountPct}%
           </span>
         )}
