@@ -131,6 +131,11 @@ export function buildCatalogPagePath(basePath: string, page: number) {
 // Bajo este mínimo iría noindex y fuera del sitemap.
 export const MIN_INDEXABLE_MODEL_PRODUCTS = 1
 
+// ponytail: marcas sin proveedor. Sus productos siguen a la venta, pero no se
+// promocionan en buscadores. Al conseguir proveedor, sacar la marca de aquí.
+const NON_INDEXABLE_BRAND_KEYS = new Set(["byd", "mg", "jmc"])
+export const isIndexableBrandKey = (key: string) => !NON_INDEXABLE_BRAND_KEYS.has(key)
+
 export function buildCatalogModelPath(brandKey: string, modelSlug: string) {
   return `/catalogo/marca/${brandKey}/${modelSlug}`
 }

@@ -5,6 +5,7 @@ import {
   buildCatalogBrandPath,
   buildCatalogCategoryPath,
   buildCatalogModelPath,
+  isIndexableBrandKey,
   MIN_INDEXABLE_MODEL_PRODUCTS,
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
@@ -25,11 +26,12 @@ function mdLink(label: string, url: string, note?: string) {
 }
 
 export async function GET() {
-  const [brands, categories, products] = await Promise.all([
+  const [publicBrands, categories, products] = await Promise.all([
     getPublicVehicleBrands(),
     getCategories(),
     getPublicProducts(),
   ])
+  const brands = publicBrands.filter((brand) => isIndexableBrandKey(brand.key))
   const byOrigin = (origin: string) => brands.filter((b) => b.origin === origin).map((b) => b.name).join(", ")
   const brandModelSections = brands.flatMap((brand) => {
     const models = groupVehicleModels(filterCatalogProducts(products, "", [], [], [brand.key]), brand.name)

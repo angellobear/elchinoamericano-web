@@ -9,6 +9,7 @@ import { getPublicProducts } from "@/lib/db/products"
 import {
   buildCatalogBrandPath,
   buildCatalogModelPath,
+  isIndexableBrandKey,
   MIN_INDEXABLE_MODEL_PRODUCTS,
 } from "@/lib/catalog"
 import { filterCatalogProducts } from "@/lib/catalog-products"
@@ -77,7 +78,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
       imageAlt: `Repuestos ${fullName} en Ecuador`,
     },
   )
-  if (model.products.length < MIN_INDEXABLE_MODEL_PRODUCTS) metadata.robots = { index: false, follow: true }
+  if (model.products.length < MIN_INDEXABLE_MODEL_PRODUCTS || !isIndexableBrandKey(brand.key)) metadata.robots = { index: false, follow: true }
   return metadata
 }
 

@@ -324,7 +324,7 @@ const guiasProblemas: Guia[] = [
       {
         pregunta: "¿Consiguen amortiguadores para vehículos chinos en Ecuador?",
         respuesta:
-          "Sí. En El Chino Americano tenemos amortiguadores para Chery, JAC, BYD, Great Wall y otras marcas. Escríbenos con el modelo y año.",
+          "Sí. En El Chino Americano tenemos amortiguadores para Chery, JAC, Great Wall y otras marcas. Escríbenos con el modelo y año.",
       },
     ],
     productosRelacionados: [
@@ -451,7 +451,7 @@ const guiasProblemas: Guia[] = [
       "La batería necesita cambio cuando el motor arranca lento o con dificultad (especialmente por las mañanas), cuando el auto no arranca si lo dejas más de un día sin encender, o cuando la batería lleva más de 4 años. En Quito, la altitud (2.800 msnm) hace que los motores demanden más al arrancar, lo que desgasta la batería más rápido. La diferencia clave con una falla del alternador: si la batería se descarga de nuevo pocas horas después de cargarla mientras manejas, el alternador no está cargando bien. Si no retiene carga aunque el alternador funcione, la batería está sulfatada y debe reemplazarse.",
     keywords: [
       "batería auto Ecuador",
-      "batería Chery JAC BYD",
+      "batería Chery JAC",
       "cambiar batería Quito",
       "alternador o batería Ecuador",
     ],
@@ -607,7 +607,7 @@ const guiasProblemas: Guia[] = [
     categoria: "problemas",
     titulo: "Ruido al girar el volante — causas en autos chinos y americanos",
     descripcion:
-      "Chasquidos, chirridos o golpes al girar el volante en Chery, JAC, BYD, Chevrolet o Ford. Rótulas, cremallera, dirección asistida o bujes.",
+      "Chasquidos, chirridos o golpes al girar el volante en Chery, JAC, Chevrolet o Ford. Rótulas, cremallera, dirección asistida o bujes.",
     respuesta_corta:
       "Un chasquido sordo al girar despacio (maniobras de parqueo) casi siempre apunta a una rótula desgastada o a un buje de barra estabilizadora partido. Un chirrido agudo al girar puede indicar bajo nivel de aceite de dirección hidráulica o el cojinete del soporte del amortiguador desgastado. En vehículos chinos como Chery Tiggo y JAC S3, la cremallera de dirección y las rótulas son los componentes que más fallan. Las rótulas y terminales de dirección son componentes de seguridad críticos: una rótula partida en movimiento puede causar pérdida total de control del vehículo, por lo que no se debe postergar su revisión.",
     keywords: [
@@ -925,7 +925,7 @@ const guiasProblemas: Guia[] = [
       {
         pregunta: "¿Hay pastillas y discos para vehículos chinos en Ecuador?",
         respuesta:
-          "Sí. Tenemos pastillas y discos para Chery, JAC, BYD, Great Wall y otras marcas. Escríbenos con el modelo, año y si necesitas delanteros o traseros.",
+          "Sí. Tenemos pastillas y discos para Chery, JAC, Great Wall y otras marcas. Escríbenos con el modelo, año y si necesitas delanteros o traseros.",
       },
     ],
     productosRelacionados: [
@@ -1553,164 +1553,6 @@ const guiasMarcas: Guia[] = [
   },
 
   {
-    slug: "repuestos-byd-ecuador",
-    categoria: "marcas",
-    titulo: "¿Dónde comprar repuestos BYD en Ecuador?",
-    descripcion:
-      "Repuestos para BYD Song Plus, Atto 3, Dolphin, Seal y más en Ecuador. Originales y OEM desde Quito con envíos nacionales.",
-    respuesta_corta:
-      "En El Chino Americano tenemos repuestos para BYD en Ecuador: Song Plus, Atto 3, Dolphin, Seal y los modelos híbridos enchufables DM-i. Manejamos piezas para frenos, suspensión, dirección, carrocería y los sistemas convencionales de los híbridos. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. Una precisión importante: los modelos eléctricos puros, como el Dolphin y el Atto 3, tienen sistemas de alta tensión —batería de tracción, inversor y cableado naranja— que solo debe intervenir personal certificado con herramienta aislada; para esos componentes te orientamos sobre el canal correcto en lugar de venderte la pieza. En frenos, suspensión y carrocería la disponibilidad es comparable a la de otras marcas chinas. Al cotizar confirma modelo, año y versión.",
-    keywords: [
-      "repuestos BYD Ecuador",
-      "repuestos BYD Song Plus Ecuador",
-      "repuestos BYD Atto 3 Ecuador",
-      "repuestos eléctrico BYD Ecuador",
-    ],
-    contenido: [
-      {
-        tipo: "h2",
-        texto: "Modelos BYD con repuestos disponibles",
-      },
-      {
-        tipo: "ul",
-        items: [
-          "BYD Song Plus (2021–presente) — híbrido enchufable DMI",
-          "BYD Atto 3 / Yuan Plus (2022–presente) — eléctrico",
-          "BYD Dolphin (2022–presente) — eléctrico",
-          "BYD Seal (2023–presente) — eléctrico",
-          "BYD Han (2022–presente) — eléctrico",
-        ],
-      },
-      {
-        tipo: "h2",
-        texto: "¿Qué repuestos BYD están disponibles?",
-      },
-      {
-        tipo: "ul",
-        items: [
-          "Frenos: pastillas y discos (los BYD usan frenos convencionales).",
-          "Suspensión: amortiguadores, rótulas, bujes.",
-          "Carrocería: faros, luces, espejos.",
-          "Filtros: habitáculo y aire (para modelos híbridos con motor de combustión).",
-          "Sistema de enfriamiento del motor de combustión (modelos DMI).",
-        ],
-      },
-      {
-        tipo: "h2",
-        texto: "Consideraciones para vehículos eléctricos BYD",
-      },
-      {
-        tipo: "p",
-        texto:
-          "Los sistemas de alta tensión (baterías, inversores, motores eléctricos) de los BYD puros requieren técnicos certificados y herramientas especializadas. Para estos sistemas, te orientamos sobre el servicio técnico adecuado. Los sistemas mecánicos convencionales (frenos, suspensión, carrocería) los manejamos directamente.",
-      },
-      {
-        tipo: "aviso",
-        texto:
-          "Nunca intervengas los sistemas de alta tensión de un vehículo eléctrico sin la certificación adecuada. Las baterías de los BYD operan a 400–800V.",
-      },
-    ],
-    faq: [
-      {
-        pregunta: "¿Los frenos del BYD Song Plus son los mismos que otros autos chinos?",
-        respuesta:
-          "Son de especificación específica para el modelo, pero son frenos de disco convencionales. Pastillas y discos BYD Song Plus tienen disponibilidad en el mercado OEM.",
-      },
-      {
-        pregunta: "¿Qué hacer si mi BYD eléctrico tiene un problema en la batería?",
-        respuesta:
-          "Contacta al concesionario oficial o a un taller certificado en vehículos eléctricos. Las baterías de alta tensión no deben ser intervenidas sin equipo especializado.",
-      },
-    ],
-    productosRelacionados: [
-      { nombre: "Ver catálogo de BYD", href: "/catalogo/marca/byd" },
-      { nombre: "Frenos en el catálogo", href: "/catalogo/categoria/frenos" },
-    ],
-    guiasRelacionadas: [
-      { titulo: "Frenos que chirrían — ¿pastillas o discos?", href: "/guias/problemas/frenos-chirrian-pastillas-o-discos" },
-    ],
-    ctaWhatsApp: "Cotizar repuesto BYD — modelo y año:",
-    fechaPublicacion: "2026-08-26",
-  },
-
-  {
-    slug: "repuestos-mg-ecuador",
-    categoria: "marcas",
-    titulo: "¿Dónde comprar repuestos MG en Ecuador?",
-    descripcion:
-      "Repuestos para MG ZS, MG HS, MG RX5 y más en Ecuador. Originales y OEM desde Quito con envíos a todo el país.",
-    respuesta_corta:
-      "En El Chino Americano tenemos repuestos para MG en Ecuador: ZS, HS, RX5 y MG 5. Manejamos piezas originales, OEM y alternas para motor, frenos, suspensión y carrocería. Operamos desde Quito con despacho a todo el Ecuador en 24 a 72 horas y guía rastreable. MG pertenece al grupo SAIC Motor desde 2007 y comparte plataformas y proveedores con otros modelos del grupo, lo que amplía la oferta de repuestos OEM equivalentes a un precio menor que el original. El modelo con mayor circulación en Ecuador es el MG ZS con motor 1.5L atmosférico, que tiene buena disponibilidad en los sistemas principales; las versiones turbo y los modelos más recientes pueden requerir pedido. Al cotizar envía modelo, año y código de motor, o el VIN del vehículo.",
-    keywords: [
-      "repuestos MG Ecuador",
-      "repuestos MG ZS Ecuador",
-      "repuestos MG HS Ecuador",
-      "donde comprar repuestos MG Quito",
-    ],
-    contenido: [
-      {
-        tipo: "h2",
-        texto: "Modelos MG con repuestos disponibles",
-      },
-      {
-        tipo: "ul",
-        items: [
-          "MG ZS (2018–presente) — SUV compacto, el más vendido en Ecuador",
-          "MG HS (2019–presente) — SUV mediano",
-          "MG RX5 (2016–2020)",
-          "MG 5 (2020–presente) — sedán",
-          "MG ZS EV (2021–presente) — eléctrico",
-        ],
-      },
-      {
-        tipo: "h2",
-        texto: "¿Qué repuestos MG están disponibles?",
-      },
-      {
-        tipo: "ul",
-        items: [
-          "Motor: filtros, bombas de agua, correas, sensores.",
-          "Frenos: pastillas y discos delanteros y traseros.",
-          "Suspensión: amortiguadores, rótulas, terminales, bujes.",
-          "Sistema de enfriamiento: termostatos, mangueras.",
-          "Carrocería: faros, luces traseras, espejos.",
-          "Filtros: aceite, aire, habitáculo.",
-        ],
-      },
-      {
-        tipo: "h2",
-        texto: "Original vs OEM para MG",
-      },
-      {
-        tipo: "p",
-        texto:
-          "MG usa proveedores reconocidos del grupo SAIC. Los repuestos OEM compatibles están disponibles en el mercado. Para el ZS en particular, hay buena disponibilidad de pastillas, discos y filtros de calidad.",
-      },
-    ],
-    faq: [
-      {
-        pregunta: "¿Son difíciles de conseguir los repuestos para MG ZS en Ecuador?",
-        respuesta:
-          "Para los sistemas principales (frenos, filtros, suspensión), la disponibilidad es buena. Para componentes más específicos puede tomar más tiempo. Consulta antes.",
-      },
-      {
-        pregunta: "¿Tienen repuestos para el MG ZS EV (eléctrico)?",
-        respuesta:
-          "Para los sistemas convencionales del MG ZS EV (frenos, suspensión, carrocería), sí. Para los sistemas de alta tensión (batería, motor eléctrico), se requiere servicio técnico especializado.",
-      },
-    ],
-    productosRelacionados: [
-      { nombre: "Ver catálogo de MG", href: "/catalogo/marca/mg" },
-      { nombre: "Suspensión y dirección", href: "/catalogo/categoria/suspension" },
-    ],
-    guiasRelacionadas: [
-      { titulo: "¿Cómo identificar si los amortiguadores están gastados?", href: "/guias/problemas/como-identificar-amortiguadores-gastados" },
-    ],
-    ctaWhatsApp: "Cotizar repuesto MG — modelo y año:",
-    fechaPublicacion: "2026-08-26",
-  },
-
-  {
     slug: "repuestos-dfsk-ecuador",
     categoria: "marcas",
     titulo: "¿Dónde comprar repuestos DFSK en Ecuador?",
@@ -2062,13 +1904,13 @@ const guiasCompra: Guia[] = [
     categoria: "compra",
     titulo: "¿Dónde comprar repuestos para autos chinos en Ecuador?",
     descripcion:
-      "Guía completa para comprar repuestos de vehículos chinos (Chery, JAC, BYD, Great Wall, MG, DFSK) en Ecuador. Originales, OEM y alternos con envíos desde Quito.",
+      "Guía completa para comprar repuestos de vehículos chinos (Chery, JAC, Great Wall, DFSK) en Ecuador. Originales, OEM y alternos con envíos desde Quito.",
     respuesta_corta:
-      "En El Chino Americano compras repuestos para las principales marcas chinas en Ecuador: Chery, JAC, BYD, Great Wall (Haval), MG y DFSK. Tenemos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento, filtros y carrocería. Operamos desde Quito y despachamos a Guayaquil, Cuenca, Ambato, Loja, Manta, Esmeraldas, Santo Domingo de los Tsáchilas y el resto del país en 24 a 72 horas con guía rastreable. El punto crítico en marcas chinas es la identificación: varios modelos cambiaron de plataforma manteniendo el mismo nombre comercial, así que el nombre del modelo por sí solo no basta. Cotiza por WhatsApp con modelo exacto, año y código de motor; si no tienes el número de parte, con el VIN o una foto de la pieza usada lo identificamos.",
+      "En El Chino Americano compras repuestos para las principales marcas chinas en Ecuador: Chery, JAC, Great Wall (Haval) y DFSK. Tenemos piezas originales, OEM y alternas para motor, frenos, suspensión, sistema de enfriamiento, filtros y carrocería. Operamos desde Quito y despachamos a Guayaquil, Cuenca, Ambato, Loja, Manta, Esmeraldas, Santo Domingo de los Tsáchilas y el resto del país en 24 a 72 horas con guía rastreable. El punto crítico en marcas chinas es la identificación: varios modelos cambiaron de plataforma manteniendo el mismo nombre comercial, así que el nombre del modelo por sí solo no basta. Cotiza por WhatsApp con modelo exacto, año y código de motor; si no tienes el número de parte, con el VIN o una foto de la pieza usada lo identificamos.",
     keywords: [
       "repuestos autos chinos Ecuador",
       "repuestos vehículos chinos Quito",
-      "repuestos Chery JAC BYD Ecuador",
+      "repuestos Chery JAC Ecuador",
       "donde comprar repuestos chinos Ecuador",
       "repuestos marcas chinas Ecuador",
     ],
@@ -2076,7 +1918,7 @@ const guiasCompra: Guia[] = [
       {
         tipo: "p",
         texto:
-          "Los vehículos chinos representan una parte importante del parque automotor ecuatoriano. Chery, JAC, BYD, Great Wall, MG y DFSK tienen una presencia creciente, y la disponibilidad de repuestos ha mejorado significativamente en los últimos años.",
+          "Los vehículos chinos representan una parte importante del parque automotor ecuatoriano. Chery, JAC, Great Wall y DFSK tienen una presencia creciente, y la disponibilidad de repuestos ha mejorado significativamente en los últimos años.",
       },
       {
         tipo: "h2",
@@ -2087,9 +1929,7 @@ const guiasCompra: Guia[] = [
         items: [
           "Chery — Tiggo 5, Tiggo 7, Tiggo 8, Arrizo 5, QQ",
           "JAC — T8, T6, S3, S4, J7",
-          "BYD — Song Plus, Atto 3, Dolphin, Seal",
           "Great Wall / Haval — Wingle 5, Wingle 7, H2, H6, Jolion",
-          "MG — ZS, HS, RX5, MG 5",
           "DFSK — Glory 580, Glory 500, C35",
         ],
       },
@@ -2148,20 +1988,18 @@ const guiasCompra: Guia[] = [
       {
         pregunta: "¿Qué marca china tiene mejor disponibilidad de repuestos en Ecuador?",
         respuesta:
-          "Chery tiene la mejor disponibilidad por ser la marca china más vendida históricamente. JAC y BYD le siguen. Para marcas más recientes como MG y DFSK, algunos repuestos específicos pueden tomar más tiempo.",
+          "Chery tiene la mejor disponibilidad por ser la marca china más vendida históricamente. JAC le sigue. Para marcas más recientes como DFSK, algunos repuestos específicos pueden tomar más tiempo.",
       },
     ],
     productosRelacionados: [
       { nombre: "Repuestos para Chery", href: "/catalogo/marca/chery" },
       { nombre: "Repuestos para JAC", href: "/catalogo/marca/jac" },
-      { nombre: "Repuestos para BYD", href: "/catalogo/marca/byd" },
       { nombre: "Repuestos para Great Wall", href: "/catalogo/marca/great-wall" },
       { nombre: "Todo el catálogo", href: "/catalogo" },
     ],
     guiasRelacionadas: [
       { titulo: "¿Dónde comprar repuestos Chery en Ecuador?", href: "/guias/marcas/repuestos-chery-ecuador" },
       { titulo: "¿Dónde comprar repuestos JAC en Ecuador?", href: "/guias/marcas/repuestos-jac-ecuador" },
-      { titulo: "¿Dónde comprar repuestos BYD en Ecuador?", href: "/guias/marcas/repuestos-byd-ecuador" },
       { titulo: "¿Cómo saber si la bomba de agua está dañada?", href: "/guias/problemas/como-saber-si-la-bomba-de-agua-esta-danada" },
     ],
     ctaWhatsApp: "Cotizar repuesto para mi auto chino — marca, modelo y año:",
@@ -2432,7 +2270,7 @@ const guiasCompra: Guia[] = [
       {
         tipo: "p",
         texto:
-          "Pieza vendida bajo la marca de la automotriz, en su empaque oficial: Motorcraft para Ford, AC Delco para Chevrolet, o el empaque de marca en el caso de Chery, JAC, BYD, Great Wall y MG. Es la referencia de calidad y la más cara. Tiene sentido cuando la pieza es crítica, cuando el vehículo está en garantía de fábrica, o cuando no existe una alternativa OEM confiable.",
+          "Pieza vendida bajo la marca de la automotriz, en su empaque oficial: Motorcraft para Ford, AC Delco para Chevrolet, o el empaque de marca en el caso de Chery, JAC y Great Wall. Es la referencia de calidad y la más cara. Tiene sentido cuando la pieza es crítica, cuando el vehículo está en garantía de fábrica, o cuando no existe una alternativa OEM confiable.",
       },
       {
         tipo: "h3",
@@ -2480,7 +2318,7 @@ const guiasCompra: Guia[] = [
       {
         tipo: "p",
         texto:
-          "En marcas como Chery, JAC, BYD, Great Wall, MG y DFSK, muchas piezas originales son fabricadas por proveedores globales conocidos. Eso significa que existe una versión OEM de la misma pieza a mejor precio. También significa lo contrario: hay mucho alterno genérico de origen no verificable. Por eso el número de parte y el proveedor pesan más que la etiqueta del empaque.",
+          "En marcas como Chery, JAC, Great Wall y DFSK, muchas piezas originales son fabricadas por proveedores globales conocidos. Eso significa que existe una versión OEM de la misma pieza a mejor precio. También significa lo contrario: hay mucho alterno genérico de origen no verificable. Por eso el número de parte y el proveedor pesan más que la etiqueta del empaque.",
       },
       {
         tipo: "h2",
@@ -3313,7 +3151,7 @@ const guiasMantenimiento: Guia[] = [
     categoria: "mantenimiento",
     titulo: "Plan de mantenimiento por kilometraje para autos chinos en Ecuador",
     descripcion:
-      "Qué revisar y cambiar cada 5.000, 10.000, 20.000, 40.000 y 60.000 km en un Chery, JAC, BYD, Great Wall, MG o DFSK, con las particularidades del uso en Ecuador.",
+      "Qué revisar y cambiar cada 5.000, 10.000, 20.000, 40.000 y 60.000 km en un Chery, JAC, Great Wall o DFSK, con las particularidades del uso en Ecuador.",
     respuesta_corta:
       "Plan de referencia para un auto chino en Ecuador, siempre validado contra el manual de tu versión. Cada 5.000 a 10.000 km: aceite y filtro de aceite, revisión de niveles, frenos y presión de llantas, y rotación de llantas. Cada 15.000 km: filtro de aire, filtro de cabina, alineación y balanceo. Entre 20.000 y 40.000 km: filtro de combustible, pastillas de freno y revisión de discos y correas de accesorios. Cada 40.000 km: bujías en motores a gasolina, líquido de frenos y revisión completa de suspensión. Entre 60.000 y 100.000 km: kit de distribución junto con la bomba de agua si es accionada por esa correa, y cambio total de refrigerante. Tres factores locales acortan estos intervalos: la altura de la sierra, el polvo de vías sin asfaltar y el tráfico urbano denso.",
     keywords: [
