@@ -5,6 +5,7 @@ import {
   buildCatalogBrandPath,
   buildCatalogCategoryPath,
   buildCatalogModelPath,
+  isIndexableBrandKey,
   MIN_INDEXABLE_MODEL_PRODUCTS,
 } from "@/lib/catalog"
 import { getCategories } from "@/lib/db/categories"
@@ -22,7 +23,8 @@ import { guias } from "@/data/guias"
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
-  const [products, brands, categories] = await Promise.all([getPublicProducts(), getVisibleVehicleBrands(), getCategories()])
+  const [products, visibleBrands, categories] = await Promise.all([getPublicProducts(), getVisibleVehicleBrands(), getCategories()])
+  const brands = visibleBrands.filter((brand) => isIndexableBrandKey(brand.key))
 
   const staticRoutes: MetadataRoute.Sitemap = [
     {

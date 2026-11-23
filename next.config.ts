@@ -25,6 +25,12 @@ const nextConfig: NextConfig = {
         destination: "/guias/problemas/frenos-chirrian-pastillas-o-discos",
         permanent: true,
       },
+      {
+        // sin proveedor de BYD ni MG: sus guías ya no se publican
+        source: "/guias/marcas/repuestos-:marca(byd|mg)-ecuador",
+        destination: "/guias/compra/repuestos-autos-chinos-ecuador",
+        permanent: true,
+      },
     ];
   },
   turbopack: {

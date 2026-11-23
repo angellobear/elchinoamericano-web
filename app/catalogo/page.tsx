@@ -128,7 +128,7 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
             name: "¿Cómo busco un repuesto específico en el catálogo?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Puedes buscar por nombre del repuesto, número de parte (SKU) o código del fabricante usando la barra de búsqueda. También puedes filtrar por marca de vehículo (Chery, BYD, Ford, Chevrolet, etc.) y por categoría de repuesto para encontrar la pieza correcta.",
+              text: "Puedes buscar por nombre del repuesto, número de parte (SKU) o código del fabricante usando la barra de búsqueda. También puedes filtrar por marca de vehículo (Chery, Ford, Chevrolet, etc.) y por categoría de repuesto para encontrar la pieza correcta.",
             },
           },
           {
@@ -141,10 +141,10 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
           },
           {
             "@type": "Question",
-            name: "¿Puedo encontrar repuestos para marcas chinas como Chery, BYD o JAC en el catálogo?",
+            name: "¿Puedo encontrar repuestos para marcas chinas como Chery, Great Wall o JAC en el catálogo?",
             acceptedAnswer: {
               "@type": "Answer",
-              text: "Sí. El catálogo incluye repuestos específicos para las principales marcas chinas presentes en Ecuador: Chery, BYD, JAC, Great Wall, Haval, Geely, Lifan y Brilliance. Selecciona la marca de vehículo en el filtro para ver solo los repuestos compatibles.",
+              text: "Sí. El catálogo incluye repuestos específicos para las principales marcas chinas presentes en Ecuador: Chery, JAC, Great Wall, Haval, Geely, Lifan y Brilliance. Selecciona la marca de vehículo en el filtro para ver solo los repuestos compatibles.",
             },
           },
         ],
@@ -195,15 +195,15 @@ export default async function CatalogoPage(props: PageProps<"/catalogo">) {
               },
               {
                 q: "¿Cómo busco un repuesto específico en el catálogo?",
-                a: "Puedes buscar por nombre del repuesto, número de parte (SKU) o código del fabricante usando la barra de búsqueda. También puedes filtrar por marca de vehículo (Chery, BYD, Ford, Chevrolet, etc.) y por categoría de repuesto para encontrar la pieza correcta.",
+                a: "Puedes buscar por nombre del repuesto, número de parte (SKU) o código del fabricante usando la barra de búsqueda. También puedes filtrar por marca de vehículo (Chery, Ford, Chevrolet, etc.) y por categoría de repuesto para encontrar la pieza correcta.",
               },
               {
                 q: "¿Los repuestos del catálogo están disponibles para envío inmediato a todo Ecuador?",
                 a: "Los productos marcados como 'en stock' están disponibles para envío inmediato. Coordinamos envíos a Quito, Guayaquil, Cuenca, Santo Domingo de los Tsáchilas y todo el Ecuador en 24 a 72 horas. Para verificar disponibilidad de un repuesto específico, consúltanos por WhatsApp.",
               },
               {
-                q: "¿Puedo encontrar repuestos para marcas chinas como Chery, BYD o JAC en el catálogo?",
-                a: "Sí. El catálogo incluye repuestos específicos para las principales marcas chinas presentes en Ecuador: Chery, BYD, JAC, Great Wall, Haval, Geely, Lifan y Brilliance. Selecciona la marca de vehículo en el filtro para ver solo los repuestos compatibles.",
+                q: "¿Puedo encontrar repuestos para marcas chinas como Chery, Great Wall o JAC en el catálogo?",
+                a: "Sí. El catálogo incluye repuestos específicos para las principales marcas chinas presentes en Ecuador: Chery, JAC, Great Wall, Haval, Geely, Lifan y Brilliance. Selecciona la marca de vehículo en el filtro para ver solo los repuestos compatibles.",
               },
             ].map(({ q, a }) => (
               <div key={q} className="py-7">

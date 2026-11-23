@@ -13,6 +13,7 @@ import {
   buildCatalogModelPath,
   buildCatalogPagePath,
   CATALOG_PAGE_SIZE,
+  isIndexableBrandKey,
   parseCatalogPage,
   parseCatalogBrandSlug,
   parseCatalogFilters,
@@ -75,7 +76,7 @@ export async function generateMetadata({
       ? `Explora repuestos automotrices para ${titleBrandText} en Ecuador. Encuentra opciones originales, OEM y alternas con asesoría especializada.`
       : `Explora repuestos automotrices para ${titleBrandText} en Ecuador. Compara opciones originales, OEM y alternas en un solo catálogo.`
 
-  return buildCatalogMetadata(
+  const metadata = buildCatalogMetadata(
     `Repuestos para ${titleBrandText}${pageSuffix} | ${SITE_NAME}`,
     description,
     canonicalPath,
@@ -85,6 +86,8 @@ export async function generateMetadata({
       imageAlt: `Repuestos para ${titleBrandText} en Ecuador`,
     },
   )
+  if (matchedBrands.some((brand) => !isIndexableBrandKey(brand.key))) metadata.robots = { index: false, follow: true }
+  return metadata
 }
 
 export default async function CatalogoMarcaPage(props: PageProps<"/catalogo/marca/[brands]">) {
