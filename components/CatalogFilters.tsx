@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils"
 import {
   CATALOG_QUALITY_OPTIONS,
   type FilterState,
+  isIndexableBrandKey,
 } from "@/lib/catalog"
 import type { PublicVehicleBrand } from "@/lib/vehicle-brands-public"
 
@@ -97,7 +98,7 @@ export default function CatalogFilters({
   qualityCounts,
 }: CatalogFiltersProps) {
   const visibleBrands = brands.filter(
-    (brand) => (brandCounts[brand.key] ?? 0) > 0 || filters.carBrands.includes(brand.key)
+    (brand) => isIndexableBrandKey(brand.key) && ((brandCounts[brand.key] ?? 0) > 0 || filters.carBrands.includes(brand.key))
   )
   const visibleCategories = categories.filter(
     (cat) => (categoryCounts[cat.id] ?? 0) > 0 || filters.categories.includes(cat.id)
