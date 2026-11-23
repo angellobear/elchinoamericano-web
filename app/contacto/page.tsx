@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar"
 import Footer from "@/components/Footer"
 import { getWhatsAppUrl, siteConfig, contactPageContent } from "@/lib/constants"
 import { getPublicVehicleBrands } from "@/lib/db/vehicle-brands"
+import { isIndexableBrandKey } from "@/lib/catalog"
 import {
   DEFAULT_KEYWORDS,
   DEFAULT_SHARE_IMAGE_HEIGHT,
@@ -49,7 +50,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ContactoPage() {
-  const brands = await getPublicVehicleBrands()
+  const brands = (await getPublicVehicleBrands()).filter((brand) => isIndexableBrandKey(brand.key))
   const contactJsonLd = {
     "@context": "https://schema.org",
     "@graph": [
